@@ -1,0 +1,57 @@
+<!--省市区联动-->
+<div class="layui-form-item {$form['extra_class']??''}" id="{$form['name']}-area">
+    <div class="layui-form-label">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </div>
+
+    <input type="hidden" name="{$form['name']}" id="{$form['name']}"
+           value='<?= !empty($form['value']) ? json_encode($form['value']) : ''; ?>'
+    >
+
+    <?php ! isset($form['options']['level']) && $form['options']['level']=3; ?>
+
+    <div class="layui-input-inline" style="min-width: 100px;">
+        <select class="province-selector" data-value="<?= !empty($form['value']) ? $form['value']['province'] : '';?>" {$form['extra_attr']??''}>
+            <option value="">请选择省</option>
+        </select>
+    </div>
+    <div class="layui-input-inline" style="min-width: 100px;">
+        <select class="city-selector" data-value="<?= !empty($form['value']) ? $form['value']['city'] : '';?>">
+            <option value="">请选择市</option>
+        </select>
+    </div>
+    {if $form['options']['level'] == 3}
+    <div class="layui-input-inline" style="min-width: 100px;">
+        <select class="county-selector" data-value="<?= !empty($form['value']) ? $form['value']['county'] : '';?>">
+            <option value="">请选择区</option>
+        </select>
+    </div>
+    {/if}
+
+    <script>
+        layui.use(['layer', 'form', 'layarea'], function () {
+            var layer = layui.layer
+                , form = layui.form
+                , layarea = layui.layarea;
+
+            layarea.render({
+                elem: "#{$form['name']}-area",
+                data: {
+                    /*province: '广东省',
+                    city: '深圳市',
+                    county: '龙岗区',
+                    provinceCode: 0,
+                    cityCode: 0,
+                    countyCode: 0,*/
+                },
+                change: function (res) {
+                    //选择结果
+                    $("#{$form.name}").val(JSON.stringify(res));
+                }
+            });
+        });
+    </script>
+</div>

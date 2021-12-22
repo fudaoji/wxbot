@@ -1,0 +1,298 @@
+<div class="layui-tab layui-tab-brief" lay-filter="{$controller}-tab">
+    {notempty name="tab_nav"}
+    <ul class="layui-tab-title">
+        {volist name="tab_nav.tab_list" id="tab"}
+        <li class="{if $key eq $tab_nav['current_tab']}layui-this{/if}"><a href="{$tab.href}">{$tab.title}</a></li>
+        {/volist}
+    </ul>
+    {/notempty}
+    <div class="layui-tab-content">
+        {if condition="!empty($tip)"}
+        <blockquote class="layui-elem-quote">{$tip|raw}</blockquote>
+        {/if}
+
+        {notempty name="search"}
+        <fieldset class="table-search-fieldset">
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        {foreach $search as $v}
+                        {switch name="v.type" }
+                        {case datetime_range}
+                        <div class="layui-inline">
+                            <label class="layui-form-label">{$v.title}</label>
+                            <div class="layui-input-inline" style="width: 290px;">
+                                <input type="text" id="{$v.name}" name="{$v.name}" value="" class="layui-input" placeholder="{$v.placeholder ?? $v.title}">
+                            </div>
+                        </div>
+                        <script>
+                            layui.use(['laydate'], function() {
+                                var laydate = layui.laydate;
+
+                                //执行一个laydate实例
+                                laydate.render({
+                                    elem: '#{$v.name}'
+                                    , type: 'datetime'
+                                    , max: 1 //7天后
+                                    , range: '~'
+                                });
+                            });
+                        </script>
+                        {/case}
+                        {case select}
+                        <div class="layui-inline">
+                            <label class="layui-form-label">{$v.title}</label>
+                            <div class="layui-input-inline">
+                                <select name="{$v.name}">
+                                    {volist name="v.options" id="o"}
+                                    <option value="{$key}">{$o}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        {/case}
+                        {default /}
+                        <div class="layui-inline">
+                            <label class="layui-form-label">{$v.title}</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="{$v.name}" autocomplete="off" class="layui-input" placeholder="{$v.placeholder ?? $v.title}">
+                            </div>
+                        </div>
+                        {/switch}
+                        {/foreach}
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        {/notempty}
+
+        {notempty name="top_button_list"}
+        <script type="text/html" id="top-btns">
+            {foreach $top_button_list as $button}
+            <button type="button" {$button['attribute']|raw} >{$button['title']}</button>&nbsp;
+            {/foreach}
+        </script>
+        {/notempty}
+
+        <table class="layui-hide" id="{$controller}-table" lay-filter="{$controller}-table"></table>
+
+        {notempty name="right_button_list"}
+        <script type="text/html" id="right-btns">
+            <div class="layui-btn-group">
+            {foreach $right_button_list as $button}
+            <button type="button" {$button['attribute']|raw} >{$button['title']}</button>&nbsp;
+            {/foreach}
+            </div>
+        </script>
+        {/notempty}
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table', 'element', 'miniTab', 'jquery'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+        element = layui.element,
+        miniTab = layui.miniTab;
+
+        var cols = {:json_encode($table_column_list)};
+        var table_data_page = {:json_encode($table_data_page)};
+        var list_limit = table_data_page == null ? 15 : table_data_page.limit;
+        cols = cols.map((item, i) => {
+            switch(item.type){
+                case 'index':
+                    item = Object.assign(item, {width: 80,templet: function (d) {
+                            return d.LAY_TABLE_INDEX + 1;
+                        }});
+                    break;
+                case 'enum':
+                    var options = item.options;
+                    item = Object.assign(item, {templet: function (d) {
+                            return options[d[item.field]];
+                        }});
+                    break;
+                case 'video':
+                    item = Object.assign(item, {templet: function (d) {
+                            return templets.video(d[item.field]);
+                        }});
+                    break;
+                case 'price':
+                    item = Object.assign(item, {templet: function (d) {
+                            return (parseInt(d[item.field]) / 100).toFixed(2);
+                        }});
+                    break;
+                case 'pay_status':
+                    var status = ['未支付', '已支付', '已退款'];
+                    item = Object.assign(item, {templet: function (d) {
+                            return status[d[item.field]];
+                        }});
+                    break;
+                case 'datetime':
+                    item = Object.assign(item, {templet: function (d) {
+                            return d[item.field] > 0 ? tools.timeChange(d[item.field], 'timestamp','Y-m-d H:i:s') : '--';
+                        }});
+                    break;
+                case 'yesorno':
+                    item = Object.assign(item, {templet: function (d) {
+                            return d[item.field] ? '是' : '否';
+                        }});
+                    break;
+                case 'picture':
+                    item = Object.assign(item, {templet: function (d) {
+                        return templets.picture(d[item.field]);
+                    }});
+                    break;
+                case 'toolbar':
+                    item = Object.assign(item, {toolbar: '#right-btns', align: "center",fixed: 'right'});
+                    break;
+            }
+            return item;
+        });
+
+        var tt = table.render({
+            elem: '#{$controller}-table',
+            url: '{:empty($data_url) ? url($action, input("get.")) : $data_url}',
+            toolbar: '#top-btns'
+            ,method: 'post'
+            ,cols: [cols],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: list_limit,
+            page: true,
+            skin: 'line'
+            ,parseData: function(res){ //res 即为原始返回的数据
+                return {
+                    "code": Math.abs(res.code - 1), //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.data.total, //解析数据长度
+                    "data": res.data.list //解析数据列表
+                };
+            }
+            , text: {
+                none: kyDicts.emptyData
+            }
+        });
+
+        {notempty name="search"}
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('{$controller}-table', {
+                page: {
+                    curr: 1
+                }
+                , where: data.field
+            }, 'data');
+            return false;
+        });
+        {/notempty}
+
+        {notempty name="top_button_list"}
+        //顶部按钮监听事件
+        table.on('toolbar({$controller}-table)', function (obj) {
+            var href = $(this).attr('href')
+            , title = $(this).attr('title');
+
+            switch (obj.event) {
+                case 'add':
+                    var index = layer.open({
+                        title: title,
+                        type: 2,
+                        shade: 0.2,
+                        maxmin:true,
+                        shadeClose: true,
+                        area: ['100%', '100%'],
+                        content: href,
+                    });
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    return false;
+                case 'delete':
+                        layer.confirm('确认删除?', function(index){
+                            var ids = table.checkStatus('{$controller}-table').data.map((item,index) => {return item.id});
+                            var params = {ids: ids};
+                            requestPost(href, params, function (res) {
+                                table.reload('{$controller}-table');  // 刷新(异步模式)
+                            });
+                            layer.close(index);
+                        });
+                        break;
+                case 'self':
+                    if($(this).data('ajax')){
+                        requestPost(href, [], function (res) {
+                            table.reload('{$controller}-table');  // 刷新(异步模式)
+                        });
+                    }else{
+                        if($(this).attr('target') === '_blank'){
+                            window.open(href);
+                        }else{
+                            miniTab.openNewTabByIframe({
+                                href: href,
+                                title: $(this).attr('title'),
+                            });
+                        }
+                    }
+                    break;
+            }
+        });
+        {/notempty}
+
+        {notempty name="right_button_list"}
+        //监听操作栏按钮
+        table.on('tool({$controller}-table)', function (obj) {
+            var data = obj.data
+            , layEvent = obj.event
+                , title = $(this).attr('title')
+            , href = $(this).attr('href').replace('__data_id__', data.id);
+
+            switch (layEvent) {
+                case 'edit':
+                    var index = layer.open({
+                        title: title,
+                        type: 2,
+                        shade: 0.2,
+                        shadeClose: true,
+                        area: ['100%', '100%'],
+                        content: href + '/id/' + data.id,
+                    });
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    return false;
+                case 'auth':
+                    var auth = layer.open({
+                        title: '授权',
+                        type: 2,
+                        shade: 0.2,
+                        shadeClose: true,
+                        area: ['100%', '100%'],
+                        content: href + '/group_id/' + data.id,
+                    });
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    break;
+                case 'delete':
+                    layer.confirm('确认删除?', function(index){
+                        var  params = {ids: data.id};
+                        requestPost(href, params, function (res) {
+                            table.reload('{$controller}-table');  // 刷新(异步模式)
+                        });
+                        layer.close(index);
+                    });
+                    break;
+                default:
+                    miniTab.openNewTabByIframe({
+                        href: href,
+                        title: $(this).attr('title'),
+                    });
+                    break;
+            }
+        });
+        {/notempty}
+        });
+</script>

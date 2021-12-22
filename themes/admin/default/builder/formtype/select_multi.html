@@ -1,0 +1,22 @@
+<!--多选下拉框-->
+<div class="form-group">
+    <label for="{$form['name']}" class="control-label col-sm-3 {$form['extra_class']}">
+        {$form['title']}
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+    </label>
+    <div class="col-sm-8">
+        <select multiple name="{$form['name']}[]" class="form-control" id="{$form['name']}"  {$form['extra_attr']}>
+        {notempty name="form.options"}
+        {foreach $form['options'] as $k => $v}
+        {if condition="!empty($form['value']) && is_array($form['value']) and in_array($k, $form['value'])"}
+        <option value="{$k}" selected >{$v}</option>
+        {else /}
+        <option value="{$k}">{$v}</option>
+        {/if}
+        {/foreach}
+        {/notempty}
+        </select>
+    </div>
+</div>

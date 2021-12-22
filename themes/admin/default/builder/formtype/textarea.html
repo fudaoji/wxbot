@@ -1,0 +1,18 @@
+<!--textarea组件-->
+<div class="layui-form-item">
+    <label for="{$form['name']}" class="layui-form-label {$form['extra_class']}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <textarea
+                class="layui-textarea"
+                placeholder="{$form['tip'] ?? ('请输入'.$form['title'])}"
+                name="{$form['name']}"
+                id="{$form['name']}"
+                {$form['extra_attr']}
+        >{$form['value'] ?? ''}</textarea>
+    </div>
+</div>

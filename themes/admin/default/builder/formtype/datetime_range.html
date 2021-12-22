@@ -1,0 +1,43 @@
+<!--时间范围-->
+<div class="layui-form-item {$form['extra_class']??''}">
+    <label class="layui-form-label " for="{$form['name']}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input
+                type="text"
+                value="{:isset($form['value']) ? (is_string($form['value'][0]) ? ($form['value'][0].' - '.$form['value'][1]) : (date('Y-m-d H:i:s', $form['value'][0]).' - '.date('Y-m-d H:i:s', $form['value'][1]))) : ''}"
+                id="{$form['name']}"
+                placeholder="{$form['tip'] ?? ('请输入'.$form['title'])}"
+                class="layui-input"
+                {$form['extra_attr']??''}
+        ／>
+        <input type="hidden" name="{$form['name']}_from_date" value="{:isset($form['value']) ? (is_string($form['value'][0]) ? $form['value'][0] : date('Y-m-d H:i:s', $form['value'][0])) : ''}">
+        <input type="hidden" name="{$form['name']}_to_date" value="{:isset($form['value']) ? (is_string($form['value'][1]) ? $form['value'][1] : date('Y-m-d H:i:s', $form['value'][1])) : ''}">
+    </div>
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            var params = {
+                elem: "#{$form['name']}"
+                ,type: 'datetime'
+                ,range: true
+                ,change: function(value, date, endDate){
+                    $("input[name={$form.name}_from_date]").val(''+date.year+'-'+date.month+'-'+date.date + ' ' + date.hours+':'+date.minutes+':'+date.seconds);
+                    $("input[name={$form.name}_to_date]").val(''+endDate.year+'-'+endDate.month+'-'+endDate.date + ' ' + endDate.hours+':'+endDate.minutes+':'+endDate.seconds);
+                }
+            };
+
+            {if $form['options']}
+            var options = {:json_encode($form['options'])};
+            params = Object.assign(params, options);
+            {/if}
+
+            //执行一个laydate实例
+            laydate.render(params);
+        });
+    </script>
+</div>

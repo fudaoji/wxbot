@@ -1,0 +1,44 @@
+<div class="layui-row">
+    <div class="layui-col-md4 layui-col-md-offset4" >
+        <h2>机器人登录的正确姿势：</h2>
+        <ol style="margin-bottom: 30px;margin-top: 15px;">
+            <li>1、打开微信扫一扫扫描下方二维码</li>
+            <li>2、手机上点击“登录”（如果有安全提示，只管点击“继续登录”）</li>
+            <li>3、点击当前页面二维码下方的“已扫码并点击登录”</li>
+        </ol>
+
+        <div style="text-align: center;">
+            <img style="width: 90%;margin-bottom: 40px;"
+                 src="{$code}"
+                 alt="二维码">
+
+            <button class="layui-btn layui-btn-sm"
+                    id="btn-login"
+                    style="margin-bottom: 50px;"
+            >已扫码并点击登录</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'miniTab'], function() {
+        var $ = layui.jquery,
+                layer = layui.layer,
+                miniTab = layui.miniTab;
+
+        $('#btn-login').on('click', () => {
+            var loadingIndex = layer.load();
+            $.post("{:url('login')}", {id: "{$id}", uuid: "{$uuid}"}, (res) => {
+                if(res.code === 1){
+                    layer.close(loadingIndex);
+                    layer.msg(res.msg, {time: 1000}, () => {
+                        parent.location.reload();
+                        miniTab.deleteCurrentByIframe();
+                    });
+                }else{
+                    layer.alert(res.msg);
+                }
+            });
+        });
+    });
+</script>

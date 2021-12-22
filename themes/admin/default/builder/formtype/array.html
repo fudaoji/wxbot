@@ -1,0 +1,13 @@
+<!--array组件-->
+<div class="form-group">
+    <label for="{$form['name']}" class="control-label col-sm-3 {$form['extra_class']}">
+        {$form['title']}
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+    </label>
+    <div class="col-sm-8">
+        <textarea class="form-control" rows="4" placeholder="{$form['tip']}" name="{$form['name']}"
+                  id="{$form['name']}" {$form['extra_attr']} >{$form['value'] ?? ''}</textarea>
+    </div>
+</div>

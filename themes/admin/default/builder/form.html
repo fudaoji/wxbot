@@ -1,0 +1,141 @@
+<script src="__LIB__/jquery/jquery-1.11.0.min.js"></script>
+
+<div class="layui-tab layui-tab-brief" lay-filter="tabBrief">
+    {notempty name="tab_nav"}
+    <ul class="layui-tab-title" style="margin-bottom: 15px;">
+        {foreach $tab_nav['tab_list'] as $k => $vo}
+        <li class='{if condition="$k eq $tab_nav.current_tab"} layui-this {/if}' >
+            <a href="{$vo['href']}">{$vo['title']}</a>
+        </li>
+        {/foreach}
+    </ul>
+    {/notempty}
+    <div class="layui-tab-content">
+        <form class="layui-form" action="{$post_url ?? ''}" id="ajax-form" method="post">
+
+            {if condition="!empty($tip)"}
+            <blockquote class="layui-elem-quote">{$tip}</blockquote>
+            {/if}
+
+            <input type="hidden" id="__token__" name="__token__" value="{:request()->token()}" />
+            {foreach $form_items as $k => $form}
+            {switch name="form.type"}
+            {case value="datetime_range"}{include file="builder/formtype/datetime_range" /}{/case}
+            {case value="map_qq"}{include file="builder/formtype/map_qq" /}{/case}
+            {case value="layarea"}{include file="builder/formtype/layarea" /}{/case}
+            {case value="choose_addon"}{include file="builder/formtype/choose_addon" /}{/case}
+            {case value="file_to_root"}{include file="builder/formtype/file_to_root" /}{/case}
+            {case value="ueditor"}{include file="builder/formtype/ueditor" /}{/case}
+            {case value="static"}{include file="builder/formtype/static" /}{/case}
+            {case value="chosen_multi"}{include file="builder/formtype/chosen_multi" /}{/case}
+            {case value="chosen"}{include file="builder/formtype/chosen" /}{/case}
+            {case value="time"}{include file="builder/formtype/time" /}{/case}
+            {case value="date"}{include file="builder/formtype/date" /}{/case}
+            {case value="datetime"}{include file="builder/formtype/datetime" /}{/case}
+            {case value="toggle_radio"}{include file="builder/formtype/toggle_radio" /}{/case}
+            {case value="legend"}{include file="builder/formtype/legend" /}{/case}
+            {case value="media_text"}{include file="builder/formtype/media_text" /}{/case}
+            {case value="choose_media"}{include file="builder/formtype/choose_media" /}{/case}
+            {case value="media_image"}{include file="builder/formtype/media_image" /}{/case}
+            {case value="picture_url"}{include file="builder/formtype/picture_url" /}{/case}
+            {case value="pictures_url"}{include file="builder/formtype/pictures_url" /}{/case}
+            {case value="linkage"}{include file="builder/formtype/linkage" /}{/case}
+            {case value="textarea"}{include file="builder/formtype/textarea" /}{/case}
+            {case value="select"}{include file="builder/formtype/select" /}{/case}
+            {case value="radio"}{include file="builder/formtype/radio" /}{/case}
+            {case value="hidden"}{include file="builder/formtype/hidden" /}{/case}
+            {case value="icon"}{include file="builder/formtype/icon" /}{/case}
+            {default /}{include file="builder/formtype/text" /}
+            {/switch}
+            {/foreach}
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" type="submit">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="__LIB__/jq-module/jquery-validation/jquery.validate.js"></script>
+<script src="__LIB__/jq-module/jquery-validation/localization/messages_zh.js"></script>
+
+<script>
+    layui.use(['form','miniTab'], function(){
+        var form = layui.form
+        ,miniTab = layui.miniTab;
+
+        var parent_index = parent.layer.getFrameIndex(window.name);
+
+        //刷新界面 所有元素
+        form.render();
+
+        var loading_index;
+
+        //增加扩展规则
+        $.validator.addMethod("phone", function(value) {
+            if(value.length){
+                const pattern = /^1[2-9]\d{9}$/;
+                return pattern.test(value);
+            }
+            return true;
+        }, '手机号码格式错误');
+
+        /**
+         * 添加、修改的表单提交
+         * @param form
+         */
+        $('#ajax-form').validate({
+            errorClass: 'error-msg',
+            submitHandler: function(form) {  //通过之后回调
+                var param = $(form).serialize();
+                $.ajax({
+                    url : $(form).attr('action'),
+                    method: 'post',
+                    data: param,
+                    beforeSend: function(){
+                        loading_index = layer.load(1);
+                    },
+                    success : function(res) {
+                        if(res.code === 1 ) {
+                            layer.msg(res.msg, {time: 1500}, function(){
+                                if(parent_index){ //表单页为内页的情况
+                                    parent.layer.close(parent_index);
+                                    parent.location.reload();
+                                }else{
+                                    if(typeof res.url !== 'undefined' && res.url){
+                                        location.href = res.url;
+                                    }else{
+                                        miniTab.deleteCurrentByIframe();
+                                    }
+                                }
+                            });
+                        } else{
+                            $('#__token__').val(res.data.token);
+                            layer.alert(res.msg);
+                        }
+                    },
+                    error: function(request, textStatus){
+                        layer.msg('500 Internal Server Error');
+                    },
+                    complete: function(){
+                        layer.close(loading_index);
+                    }
+                });
+            },
+            invalidHandler: function(form, validator) {  //不通过回调
+                return false;
+            },
+            //必要的话重写showErrors
+            /*showErrors: function (errorMap, errorList) {
+                $.each(errorList, function (i, v) {
+                    layer.tips(v.message, v.element, { time: 2000 });
+                    return false;
+                });
+            },
+            // 失去焦点时不验证
+            onfocusout: false*/
+        });
+    });
+</script>

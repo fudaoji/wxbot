@@ -1,0 +1,47 @@
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']??''}" for="{$form['name']}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input
+                type="text"
+                value="{$form['value'] ?? ''}"
+                id="{$form['name']}"
+                name="{$form['name']}"
+                placeholder="{$form['tip']}"
+                autocomplete="off"
+                class="layui-input"
+                {$form['extra_attr']??''}
+        />
+    </div>
+</div>
+<script>
+    layui.use(['iconPickerFa'], function() {
+        var iconPickerFa = layui.iconPickerFa,
+                picker = "#{$form['name']}";
+
+        iconPickerFa.render({
+            // 选择器，推荐使用input
+            elem: picker,
+            // fa 图标接口
+            url: "__LIB__/font-awesome-4.7.0/less/variables.less",
+            // 是否开启搜索：true/false，默认true
+            search: true,
+            // 是否开启分页：true/false，默认true
+            page: true,
+            // 每页显示数量，默认12
+            limit: 20,
+            // 点击回调
+            click: function (data) {
+                $(picker).val('fa ' + data.icon);
+            },
+            // 渲染成功后的回调
+            success: function (d) {
+                console.log(d);
+            }
+        });
+    });
+</script>

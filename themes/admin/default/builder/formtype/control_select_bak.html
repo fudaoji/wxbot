@@ -1,0 +1,39 @@
+<!--控制组件显示隐藏-->
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']}" for="{$form['name']}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <select
+                id="{$form['name']}"
+                name="{$form['name']}"
+                lay-filter="{$form['name']}"
+                value="{$form['value'] ?? ''}"
+                {$form['extra_attr']}
+        >
+        {notempty name="form.options"}
+        {foreach $form['options'] as $k => $v}
+        <option
+                value="{$k}"
+                {if condition="isset($form['value']) and $form['value'] == $k"} selected {/if}
+        >{$v|raw}
+        </option>
+        {/foreach}
+        {/notempty}
+        </select>
+    </div>
+
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+
+            form.on('select({$form.name})', function (data) {
+                $('.{$form.name}-item').addClass('hide');
+                $('.{$form.name}-' + data.value).removeClass('hide');
+            });
+        });
+    </script>
+</div>

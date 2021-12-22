@@ -1,0 +1,85 @@
+<div class="form-group" id="container_{$form['name']}">
+    <label for="{$form['name']}" class="control-label col-sm-3 {$form['extra_class']}">
+        {$form['title']}
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+    </label>
+    <div class="col-sm-8">
+        <div class="row">
+            <div class="col-sm-8">
+                <input placeholder="{$form['tip']}" class="form-control" value="{notempty name='form.value'}{$form['value'] ?? ''}{/notempty}" name="{$form['name']}" id="{$form['name']}" readonly>
+            </div>
+            <div class="col-sm-4">
+                <a href="#" class="btn btn-primary btn-sm" role="button" id="pick_{$form['name']}">
+                    <i class="fa fa-upload"></i>&nbsp;上传文件
+                </a>
+                <a id="preview_btn_{$form['name']}" href="{notempty name='form.value'}{$form['value'] ?? ''}{/notempty}" target="_blank" class="btn btn-success btn-sm {empty name='form.value'}hidden{/empty}">
+                    <i class="fa fa-download"></i>&nbsp;预览
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="progress" id="process_{$form['name']}" style="background-color: #fff;">
+                    <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0; display: none;">
+                        <span class="sr-only">进度条显示</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        head.ready(function(){
+            head.load(static_url + "/plupload/plupload.full.min.js", function(){
+                //图片上传
+                var uploader_{$form['name']} = new plupload.Uploader({
+                    runtimes : 'html5, flash, silverlight, html4',
+                    browse_button : "pick_{$form['name']}",
+                    container: document.getElementById("container_{$form['name']}"),
+                    url : '/admin/upload/filepost',
+                    flash_swf_url : '<?php  echo $static_url;?>/plupload/Moxie.swf',
+                    silverlight_xap_url : '<?php  echo $static_url;?>/plupload/Moxie.xap',
+                    multipart: true,
+                    filters : {
+                        max_file_size : '10mb',
+                        mime_types: [
+                            {title : "Doc files", extensions : "txt,doc,docx,pdf,xls,xlsx,mp3"}
+                        ]
+                    },
+                    init: {
+                        'FilesAdded': function(up, files) {
+                            uploader_{$form['name']}.start();
+                        },
+
+                        UploadProgress: function(uploader,file){
+                            var process_bar = $("#process_{$form['name']}").find('.progress-bar');
+                            $(process_bar).show();
+                            $(process_bar).css('width', String(file.percent) +'%');
+                        },
+
+                        FileUploaded: function(up, file, responseObject) {
+                            $("#process_{$form['name']}").find('.progress-bar').hide();
+                            var res = JSON.parse(responseObject.response);
+                            var files = res.data;
+                            if(res.code == 1){
+                                $("#{$form['name']}").val(files[0].url);
+                                $("#preview_btn_{$form['name']}").removeClass('hidden');
+                            }else{
+                                $.toast('error',res.msg);
+                                return false;
+                            }
+                        },
+
+                        Error: function(up, err) {
+                            console.log(err);
+                        }
+                    }
+                });
+
+                uploader_{$form['name']}.init();
+            });
+
+        });
+    </script>
+</div>

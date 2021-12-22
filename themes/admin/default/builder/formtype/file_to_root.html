@@ -1,0 +1,55 @@
+<!--保存文件到项目根目录-->
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']}" for="{$form['name']}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input style="display: inline-block;width: 75%;"
+               readonly
+               type="text"
+               value="{$form['value'] ?? ''}"
+               placeholder="{$form['tip'] ?? ''}"
+               id="{$form['name']}"
+               name="{$form['name']}"
+               class="layui-input"
+               {$form['extra_attr'] ?? ''}
+        ／>
+        <div class="layui-btn-group" style="margin-left: -5px;margin-top: -3px;">
+            <a href="javascript:;" class="layui-btn layui-btn-primary" id="picker-{$form['name']}">选择文件</a>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            layui.use(['upload'],function(){
+                var upload = layui.upload
+                    ,upload_index;
+                upload.render({
+                    elem: "#picker-{$form['name']}"
+                    ,url: '{:url("admin/uploader/fileToRootPost")}'
+                    ,accept: 'file' //允许上传的文件类型
+                    ,size: "{$config.file_size ? $config.file_size/1000 : 2048}" //最大允许上传的文件大小
+                    ,exts: "{$config.file_ext ? $config.file_ext : 'xls,xlsx,txt,pdf,zip'}".split(',').join('|')
+                    ,before: function () {
+                        upload_index = layer.load(1);
+                    }
+                    ,done: function(res, index, upload){ //上传后的回调
+                        layer.close(upload_index);
+                        if(res.code === 1){
+                            layer.msg(res.msg);
+                            $("input[name={$form['name']}]").val(res.data.src);
+                        }else{
+                            layer.alert(res.msg);
+                        }
+                    }
+                    ,error: function (index, upload) {
+                        layer.close(upload_index);
+                    }
+                });
+            });
+        });
+    </script>
+</div>

@@ -1,0 +1,60 @@
+<div class="layui-form-item {$form['extra_class']}">
+    <label class="layui-form-label ">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input style="display: inline-block;width: 75%;"
+                readonly
+                type="text"
+                id="{$form['name']}-url"
+                class="layui-input"
+        ／>
+        <input type="hidden" id="{$form['name']}" name="{$form['name']}" value="{$form['value'] ?? ''}" {$form['extra_attr']}>
+        <div class="layui-btn-group" style="margin-left: -5px;margin-top: -3px;">
+            <a href="javascript:;" class="layui-btn layui-btn-primary" id="picker-{$form['name']}">选择图片</a>
+            <a href="javascript:;" class="layui-btn bg-success <?=empty($form['value']) ? 'hide' : '';?>" id="preview-{$form.name}" style="border-left: none;">预览</a>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            //点击预览
+            $("#preview-{$form['name']}").on('click', function () {
+                var url = $("#{$form['name']}-url").val();
+                layer.photos({
+                    photos: {
+                        "data": [   //相册包含的图片，数组格式
+                            {
+                                "alt": url,
+                                "pid": url, //图片id
+                                "src": url, //原图地址
+                                "thumb": url //缩略图地址
+                            }
+                        ]
+                    }
+                    ,anim: 0 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                });
+            });
+            //点击选择图片
+            $("#picker-{$form['name']}").on('click', function () {
+                layer.open({
+                    type: 2,
+                    title: '图片',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['900px', '576px'],
+                    content: ['{:url("system/material/index", ["type" => "image", "field" => $form["name"]])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            });
+        });
+        //根据iframe传回的值进行当前页面的赋值
+        function setPictureValue (value, field) {
+            $("#"+field).val(value[0].id);
+            $("#"+field+"-url").val(value[0].url);
+            $("#preview-"+field).removeClass("hide");
+        }
+    </script>
+</div>

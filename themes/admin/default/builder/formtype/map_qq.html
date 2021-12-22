@@ -1,0 +1,175 @@
+<!--
+腾讯地图搜索
+服务端调用： ->addFormItem('address', 'map_qq', '详细地址', '详细地址', ['longitude' => $data['longitude'], 'latitude' => $data['latitude']], 'required')
+-->
+<div class="layui-form-item {$form['extra_class']??''}">
+    <label class="layui-form-label " for="{$form['name']}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input
+                style="display: inline-block;width: 75%;"
+                type="{$form['type']}"
+                value="{$form['value'] ?? ''}"
+                id="{$form['name']}"
+                name="{$form['name']}"
+                placeholder="{$form['tip'] ?? ('请输入'.$form['title'])}"
+                class="layui-input"
+                {$form['extra_attr']??''}
+        ／>
+        <div class="layui-btn-group" style="margin-left: -5px;margin-top: -3px;">
+            <a href="javascript:;" class="layui-btn layui-btn-primary" id="picker-{$form['name']}"><i class="ace-icon fa fa-map-marker"></i></a>
+        </div>
+
+        <input type="hidden" id="{$form['name']}_latitude" name="{$form['name']}_latitude"
+               value="{$form['options']['latitude'] ?? 0.0000}" />
+        <input type="hidden" id="{$form['name']}_longitude" name="{$form['name']}_longitude"
+               value="{$form['options']['longitude'] ?? 0.0000}" />
+        <input type="hidden" id="{$form['name']}_area" name="{$form['name']}_area"
+               value="{$form['options']['area'] ?? 0}" />
+    </div>
+
+    <div class="layui-container" id="modal-{$form['name']}" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="layui-row" style="margin: 10px 0;">
+                    <div class="layui-col-xs6">
+                        <input type="text" class="layui-input" value="{$form['value'] ?? ''}" id="searchKey-{$form['name']}" placeholder="请输入地址"/>
+                    </div>
+                    <div class="layui-col-xs2">
+                        <button type="button" class="layui-btn layui-btn-primary" id="searchBtn-{$form['name']}"><i class="ace-icon fa fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="bootbox-body">
+                        <p class="address-result">请选择地点</p>
+                        <div id="container-{$form['name']}" style="min-height: 350px;"></div>
+                    </div>
+                </div>
+                <div class="layui-form-item tc" style="margin-top: 20px;">
+                    <button id="modal-btn-ok-{$form['name']}" type="button" class="layui-btn layui-btn-sm">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&key=<?php echo config('system.common.map_qq_key');?>"></script>
+    <script>
+        $(function () {
+            var layer;
+            layui.use(['layer'], function () {
+                layer = layui.layer;
+            });
+            var geocoder
+                ,map
+                ,markerArray = [];
+
+            var init = function() {
+                map = new qq.maps.Map(document.getElementById("container-{$form['name']}"),{
+                    zoom: 15
+                });
+
+                //调用地址解析类
+                geocoder = new qq.maps.Geocoder({
+                    complete : function(result){
+                        map.setCenter(result.detail.location);
+                        deleteOverlays();
+                        var marker = addMarker(result.detail.location);
+                        qq.maps.event.addListener(marker, "click", function(res){
+                            $("#modal-{$form['name']}").find('.address-result').html('您选择了： '+result.detail.address+'('+res.latLng.getLat() +','+res.latLng.getLng() + ')');
+                            $("#{$form['name']}").val($("#searchKey-{$form['name']}").val());
+                            $("#{$form['name']}_latitude").val(res.latLng.getLat());
+                            $("#{$form['name']}_longitude").val(res.latLng.getLng());
+
+                            $.ajax({
+                                type:"get",
+                                dataType:'jsonp',
+                                data:{
+                                    location: res.latLng.getLat() + "," + res.latLng.getLng(),
+                                    /*换成自己申请的key*/
+                                    key:"{:config('system.common.map_qq_key')}",
+                                    get_poi:0,
+                                    output: "jsonp"
+                                },
+                                jsonp:"callback",
+                                jsonpCallback:"QQmap",
+                                url: "//apis.map.qq.com/ws/geocoder/v1/?",
+                                success:function(json){
+                                    /*json对象转为文本 var aToStr=JSON.stringify(a);*/
+                                    console.log(json.result.ad_info.adcode);
+                                    $("#{$form['name']}_area").val(json.result.ad_info.adcode);
+                                },
+                                error : function(err){alert("服务端错误，请刷新浏览器后重试")}
+                            });
+                        });
+                    }
+                });
+
+                if($("#searchKey-{$form['name']}").val()){ //编辑的情况
+                    geocoder.getLocation($("#searchKey-{$form['name']}").val());
+                }
+            };
+
+            //添加标记
+            function addMarker(location) {
+                var marker = new qq.maps.Marker({
+                    position: location,
+                    map: map
+                });
+                markerArray.push(marker);
+                return marker;
+            }
+
+            //删除覆盖物
+            function deleteOverlays() {
+                if (markerArray.length > 0) {
+                    for (i in markerArray) {
+                        markerArray[i].setMap(null);
+                    }
+                    markerArray.length = 0;
+                }
+            }
+
+            var codeAddress = function () {
+                var address = $("#searchKey-{$form['name']}").val();
+                //通过getLocation();方法获取位置信息值
+                geocoder.getLocation(address);
+            };
+
+            init();
+
+            var mapModal = null;
+            //发起地图
+            $("#picker-{$form['name']}").on('click', function () {
+                mapModal = layer.open({
+                    type: 1,
+                    title: "{$form.title}",
+                    area: ['750px', '550px'],
+                    content: $("#modal-{$form['name']}")
+                });
+            });
+
+            //点击搜索
+            $("#searchBtn-{$form['name']}").on('click', function () {
+                codeAddress();
+            });
+
+            //点击确定按钮
+            $("#modal-btn-ok-{$form['name']}").on('click', function () {
+                /*var url = encodeURI("https://apis.map.qq.com/ws/geocoder/v1/?location=" + $("#{$form['name']}_latitude").val() + "," + $("#{$form['name']}_longitude").val() + "&key=<?php echo config('system.common.map_qq_key');?>&output=jsonp&&callback=?");
+                $.getJSON(url, function (result) {
+                    console.log(result);
+                    if(result.result != undefined){
+                        $("#{$form['name']}").val(result.result.address);
+                    }else{
+                        $("#{$form['name']}").val(document.getElementById("searchKey-{$form['name']}").value);
+                    }
+                });*/
+                layer.close(mapModal);
+            });
+        });
+    </script>
+</div>

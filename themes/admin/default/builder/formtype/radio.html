@@ -1,0 +1,26 @@
+<!--单选框-->
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class'] ?? ''}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+
+    <div class="layui-input-block">
+    {notempty name="form.options"}
+        {foreach $form['options'] as $k => $v }
+        <label>
+            <input
+                    type="radio"
+                    name="{$form['name']}"
+                    value="{$k}"
+                    title="{$v}"
+                    {if condition="isset($form['value']) && $k eq $form['value']"} checked="checked" {/if} {$form['extra_attr'] ?? ''}
+            />
+        </label>
+        {/foreach}
+    {/notempty}
+        <label class="error-msg"></label>
+    </div>
+</div>

@@ -1,0 +1,30 @@
+<div class="layui-form-item {$form['extra_class']??''}">
+    <label class="layui-form-label " for="{$form['name']}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input
+                type="text"
+                value="{:isset($form['value']) ? (is_string($form['value']) ? $form['value'] : date('Y-m-d', $form['value'])) : ''}"
+                id="{$form['name']}"
+                name="{$form['name']}"
+                placeholder="{$form['tip'] ?? ('请输入'.$form['title'])}"
+                class="layui-input"
+                {$form['extra_attr']??''}
+        ／>
+    </div>
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: "#{$form['name']}" //指定元素
+                ,type: 'date'
+            });
+        });
+    </script>
+</div>

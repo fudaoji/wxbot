@@ -1,0 +1,103 @@
+<iframe id="iframe_display" name="iframe_display" style="display: none;"></iframe>
+<form id="app-form" class="layui-form layuimini-form" target="iframe_display">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">权限名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" readonly="" class="layui-input" value="<?php echo $data['title']?>">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">分配节点</label>
+        <div id="dept_tree" style="margin-left: 150px;"></div>
+    </div>
+    <div class="layui-form-item text-center" style="margin-top: 50px;">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formAuth">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['layer', 'tree', 'form', 'miniTab'], function() {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            tree = layui.tree,
+            form = layui.form,
+            miniTab = layui.miniTab;
+
+        var parent_index = parent.layer.getFrameIndex(window.name);
+        //树形组件复选框
+        tree.render({
+            elem: '#dept_tree',
+            data: getData(),
+            id: 'treeId',
+            showCheckbox: true,     //是否显示复选框
+            onlyIconControl: true
+        });
+        //初始化
+        tree.setChecked('treeId', <?php echo json_encode($data['rules']);?>);
+        function getData(){
+            var rules_tree = [];
+            $.ajax({
+                url : "/admin/admingroup/getRulesTree",//后台数据请求地址
+                dataType : 'json',
+                data: <?php echo json_encode(['group_id' => $data['id']]);?>,
+                type : 'post',
+                async : false,
+                success: function(res){
+                    if(res.code === 1) {
+                        var data = res.data;
+                        rules_tree = data.rules_tree;
+                    }
+                }
+            });
+
+            return rules_tree;
+        }
+        //监听提交
+        var rules_ids = [];
+        form.on('submit(formAuth)', function() {
+            var checkData = tree.getChecked('treeId');
+            recursion(checkData);
+
+            var postData = {
+                id: "<?php echo $data['id']?>",
+                rules: rules_ids.join(',')
+            };
+            console.log(postData);
+            $.ajax({
+                url : "/admin/admingroup/auth",//后台数据请求地址
+                dataType : 'json',
+                type : 'post',
+                async : false,
+                data: postData,
+                success: function(res) {
+                    if (res.code === 1) {
+                        if (parent_index) { //表单页为内页的情况
+                            parent.layer.close(parent_index);
+                            parent.location.reload();
+                        } else {
+                            if (typeof res.url !== 'undefined' && res.url) {
+                                location.href = res.url;
+                            } else {
+                                miniTab.deleteCurrentByIframe();
+                            }
+                        }
+                    } else {
+                        layer.alert(res.msg);
+                    }
+                }
+            });
+        });
+        function recursion(data) {
+            data.forEach((el) => {
+                rules_ids.push(el.id);
+                if(el.children) {
+                    recursion(el.children);
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

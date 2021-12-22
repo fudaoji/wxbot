@@ -1,0 +1,33 @@
+<!--搜索单选下拉框-->
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']??''}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <select
+                xm-select="{$form['name']}"
+                multiple="multiple"
+                lay-search
+                id="{$form['name']}"
+                name="{$form['name']}"
+                {$form['extra_attr']??''}
+        >
+        {notempty name="form.options"}
+        {foreach $form['options'] as $k => $v}
+        <option
+                value="{$k}"
+                {if condition="isset($form['value']) and  in_array($k, $form['value'])"} selected {/if}
+        >{$v|raw}</option>
+        {/foreach}
+        {/notempty}
+        </select>
+    </div>
+    <script>
+        layui.use(['jquery', 'formSelects'], function(){
+            var formSelects = layui.formSelects;
+        });
+    </script>
+</div>

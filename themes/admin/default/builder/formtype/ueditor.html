@@ -1,0 +1,56 @@
+<!--百度编辑器-->
+<div class="layui-form-item {$form['extra_class']??''}">
+    <!--修改编辑器皮肤-->
+    <style>
+        .edui-default .edui-editor-toolbarbox {
+            box-shadow: none;filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+            -webkit-filter: grayscale(100%);
+        }
+        .edui-default .edui-editor-toolbarboxouter {
+            background-color: #fff;
+            background-image: -moz-linear-gradient(top, #ffffff, #ffffff);
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#ffffff));
+            background-image: -webkit-linear-gradient(top, #ffffff, #ffffff);
+            background-image: -o-linear-gradient(top, #ffffff, #ffffff);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff', GradientType=0);
+            box-shadow: none;
+        }
+    </style>
+    <label class="layui-form-label " for="{$form['name']}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <textarea name="{$form['name']}" id="{$form['name']}" style="width: 100%;">{$form['tip']??''}</textarea>
+        <div class="hide" id="{$form['name']}_copy">{if !empty($form['value'])}{$form['value']|raw}{/if}</div>
+    </div>
+
+    <script>
+        if(typeof(UE) === 'undefined'){
+            document.write("<script src='__LIB__/ueditor/ueditor.config.js'><\/script>" +
+                "<script src='__LIB__/ueditor/ueditor.all.min.js'><\/script>" +
+                "<script src='__LIB__/ueditor/lang/zh-cn/zh-cn.js'><\/script>"
+            );
+        }
+    </script>
+
+    <script type="text/javascript">
+        var ue_{$form['name']} = UE.getEditor("{$form['name']}", {
+            initialFrameHeight: 300,
+            maximumWords: 50000,
+            serverUrl: "{:url('admin/uploader/editorpost')}",
+            autoFloatEnabled: true,
+            /*topOffset: 0,*/
+            zIndex: 0
+        });
+
+        var value_{$form['name']} = document.getElementById("{$form['name']}_copy").innerHTML;
+        if(value_{$form['name']}){
+            ue_{$form['name']}.ready(function() {
+                ue_{$form['name']}.setContent(value_{$form['name']});
+            });
+        }
+    </script>
+</div>

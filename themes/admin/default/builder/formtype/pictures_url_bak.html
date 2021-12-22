@@ -1,0 +1,80 @@
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']}" for="{$form['name']}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input style="display: inline-block;width: 75%;"
+               placeholder="{$form['tip'] ?? ''}"
+               type="text"
+               value="{$form['value'] ?? ''}"
+               id="{$form['name']}"
+               name="{$form['name']}"
+               class="layui-input"
+               {$form['extra_attr']}
+        ／>
+        <div class="layui-btn-group" style="margin-left: -5px;margin-top: -3px;">
+            <a href="javascript:;" class="layui-btn layui-btn-primary" id="picker-{$form['name']}">选择图片</a>
+            <a href="javascript:;" class="layui-btn <?=empty($form['value']) ? 'hide' : '';?>" id="preview-{$form.name}" style="border-left: none;">预览</a>
+        </div>
+    </div>
+
+    <script>
+        layui.use(['upload', 'jquery'], function () {
+            var upload = layui.upload
+                    , $ = layui.jquery;
+
+            var upload_index;
+            upload.render({
+                elem: '#picker-{$form["name"]}'
+                ,url: '{:url("uploader/picturePost")}'
+                ,multiple: true
+                ,accept: 'image' //允许上传的文件类型
+                ,size: "{$config.image_size ? $config.image_size/1000 : 2048}" //最大允许上传的文件大小
+                ,exts: "{$config.image_ext ? $config.image_ext : 'jpg,png,jpeg'}".split(',').join('|')
+                ,before: function () {
+                    upload_index = layer.load(1);
+                }
+                ,done: function(res, index, upload){ //上传后的回调
+                    if(res.code !== 1){
+                        layer.alert(res.msg);
+                        return;
+                    }
+                    var v = $("#{$form['name']}").val();
+                    var urls = v ? v.split('|') : [];
+                    console.log(urls);
+                    urls.push(res.data[0].url);
+                    $("#{$form['name']}").val(urls.join('|'));
+                }
+                , allDone: function () {
+                    layer.close(upload_index);
+                    $("#preview-{$form.name}").removeClass('hide');
+                }
+            });
+
+            $(function () {
+                //点击预览
+                $("#preview-{$form['name']}").on('click', function () {
+                    var urls = $("#{$form['name']}").val().split('|');
+                    var data = [];
+                    for(var i = 0; i < urls.length; i++){
+                        data.push({
+                            "alt": urls[i],
+                            "pid": urls[i], //图片id
+                            "src": urls[i], //原图地址
+                            "thumb": urls[i] //缩略图地址
+                        })
+                    }
+                    layer.photos({
+                        photos: {
+                            "data": data
+                        }
+                        ,anim: 0 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                    });
+                });
+            });
+        });
+    </script>
+</div>

@@ -1,0 +1,159 @@
+<!--控制组件显示隐藏-->
+<div class="layui-form-item media-box" id="media-box-{$form.name}">
+    <style>
+        .media-box .layui-card{padding-top: 30px;}
+        .media-box .box{
+            font-size: 16px;line-height: 80px;text-align: center;width: 90%;border: #e7e7eb 1px solid;margin-bottom: 7px;
+            cursor: pointer;
+        }
+        .media-box .box i{color: #B2B2B2;}
+        .media-box .box:hover{background-color: #f4f6f9; color: var(--green);}
+        .media-box .box:hover i{color: var(--green);}
+        .media-content img{width: 180px;border: #e7e7eb 1px solid;}
+        .media-content .addon-logo{width: 30px;margin-right: 15px;}
+        .media-box video{width: 210px;height: 169px;}
+    </style>
+    <label class="layui-form-label {$form['extra_class']??''}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input type="hidden" name="{$form.name}_type" value="{$form['options']['type'] ?? ''}">
+        <input type="hidden" name="{$form.name}_id" value="{$form['options']['id'] ?? ''}">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="media-content">
+                        <!--选中结果-->
+                        {if condition="isset($form['options']['id']) && !empty($material)"}
+                        {switch $form.options.type}
+                        {case text}{$material.content}{/case}
+                        {case addon}<img class="addon-logo" src="{$material.logo}">{$material.name}{/case}
+                        {case image}<img src="{$material.url}">{/case}
+                        {case voice}
+                        <audio controls>
+                            <source src="{$material.url}" type="audio/mpeg">
+                            <source src="{$material.url}" type="audio/wma">
+                            <source src="{$material.url}" type="audio/wav">
+                            <source src="{$material.url}" type="audio/amr">
+                            您的浏览器不支持 audio 元素。
+                        </audio>
+                        {/case}
+                        {case music}
+                        <audio controls>
+                            <source src="{$material.url}" type="audio/mpeg">
+                            <source src="{$material.url}" type="audio/wma">
+                            <source src="{$material.url}" type="audio/wav">
+                            <source src="{$material.url}" type="audio/amr">
+                            您的浏览器不支持 audio 元素。
+                        </audio>
+                        {/case}
+                        {case video}
+                        <video style="width: 210px;height: 169px;" controls>
+                            <source src="{$material.url}"  type="video/mp4">
+                            <source src="{$material.url}"  type="video/ogg">
+                            您的浏览器不支持 HTML5 video 标签。
+                        </video>
+                        {/case}
+                        {/switch}
+                        {/if}
+                    </div>
+                    <hr {if condition="!isset($form['options']['id'])"} style='display: none;' {/if}>
+
+                    <?php foreach($form['options']['types'] as $k => $type):?>
+                    <div class="layui-col-xs6 layui-col-md3">
+                        <div class="box" data-type="{$k}" data-type-title="{$type}">
+                            <i class="fa fa-<?php
+                                $icons=['text'=>'pencil','image'=>'image','news'=>'drivers-license','voice'=>'file-sound-o','music'=>'music','video'=>'file-video-o','addon' => 'cube'];
+                                echo $icons[$k];
+                            ?>
+                            "></i>&nbsp;<?= $type;?>
+                        </div>
+                    </div>
+                    <?php endforeach;?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if(typeof setAddonValue === 'undefined'){
+            var setAddonValue = function(res, field){
+                $("input[name={$form.name}_id]").val(res.id);
+                $("input[name={$form.name}_type]").val("addon");
+                $("#media-box-{$form.name} .media-content").html('<img src="'+res.logo+'" class="addon-logo">'+res.name);
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setVideoValue === 'undefined'){
+            var setVideoValue = function(res, field){
+                $("input[name={$form.name}_id]").val(res[0].id);
+                $("input[name={$form.name}_type]").val("video");
+                $("#media-box-{$form.name} .media-content").html('<video controls>\
+                        <source src="url"  type="video/mp4">您的浏览器不支持 HTML5 video 标签。\
+                        </video>'.replace("url", res[0].url));
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setMusicValue === 'undefined'){
+            var setMusicValue = function(res, field){
+                $("input[name={$form.name}_id]").val(res[0].id);
+                $("input[name={$form.name}_type]").val("music");
+                $("#media-box-{$form.name} .media-content").html('<audio controls>\
+                        <source src="url" type="audio/mpeg">\
+                        <source src="url" type="audio/wma">\
+                        <source src="url" type="audio/wav">\
+                        <source src="url" type="audio/amr">您的浏览器不支持 audio 元素。\
+                    </audio>'.replace("url", res[0].url));
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setVoiceValue === 'undefined'){
+            var setVoiceValue = function(res, field){
+                $("input[name={$form.name}_id]").val(res[0].id);
+                $("input[name={$form.name}_type]").val("voice");
+                $("#media-box-{$form.name} .media-content").html('<audio controls>\
+                        <source src="url" type="audio/mpeg">\
+                        <source src="url" type="audio/wma">\
+                        <source src="url" type="audio/wav">\
+                        <source src="url" type="audio/amr">您的浏览器不支持 audio 元素。\
+                    </audio>'.replace("url", res[0].url));
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setTextValue === 'undefined'){
+            var setTextValue = function(res, field){
+                $("input[name={$form.name}_id]").val(res.id);
+                $("input[name={$form.name}_type]").val("text");
+                $("#media-box-{$form.name} .media-content").html(res.content);
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setPictureValue === 'undefined'){
+            var setPictureValue = function(res, field){
+                $("input[name={$form.name}_id]").val(res[0].id);
+                $("input[name={$form.name}_type]").val("image");
+                $("#media-box-{$form.name} .media-content").html("<img src='"+res[0].url+"' />");
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        $("#media-box-{$form.name}").on('click', '.box', function () {
+            layer.open({
+                type: 2,
+                title: $(this).data('type-title'),
+                shadeClose: false,
+                shade: 0.8,
+                area: ['900px', '576px'],
+                content: ['/mp/material/handle?type=' + $(this).data('type')+'&field=$form["name"]&controller={$controller}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            });
+        });
+    </script>
+</div>

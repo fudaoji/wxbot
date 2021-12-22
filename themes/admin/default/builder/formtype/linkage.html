@@ -1,0 +1,77 @@
+<!--下拉框联动-->
+<!--
+usage:
+  //这里只展示二级的使用，支持无限级别
+  $select_data = [
+    [
+        'id' => 1, 'title' => 'aaa', 'children' => [
+                                        ['id' => 11, 'title' => 'aaa1'],
+                                        ['id' => 12, 'title' => 'aaa2']
+                                    ]
+    ],
+    [
+        'id' => 2, 'title' => 'bbb', 'children' => [
+                                        ['id' => 21, 'title' => 'bbb1'],
+                                        ['id' => 22, 'title' => 'bbb2']
+                                    ]
+    ]
+  ];
+  ->addFormItem('xq_id', 'linkage', '单元', '单元', ['data' => $select_data, 'values' => [级别1的值, 级别2的值, ...]], 'required')
+
+-->
+<div class="layui-form-item" lay-filter="filter-{$form.name}">
+    <label class="layui-form-label {$form['extra_class']??''}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block" id="linkage-{$form.name}">
+
+    </div>
+
+    <script>
+
+        layui.use(['selectN'], function () {
+            var selectN = layui.selectN;
+            var cateData = {:json_encode($form.options.data)}
+            , selectedData = {:json_encode(empty($form['options']['values']) ? [] : $form['options']['values'])}
+            , tips = {if empty($form['options']['tips'])}"请选择"{else/}{:json_encode($form['options']['values'])}{/if};
+
+            //无限级分类-所有配置
+            var catIns2 = selectN({
+                //元素容器【必填】
+                elem: '#linkage-{$form.name}'
+                //候选数据【必填】
+                , data: cateData
+                //设置了长度
+                , width: null
+                //默认值
+                , selected: selectedData
+                , search: true
+                //为真只取最后一个值
+                //, last: false
+
+                //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+                , tips: tips
+
+                //事件过滤器，lay-filter名 不设置与选择器相同(去#.)
+                //, filter: ''
+
+                //input的name 不设置与选择器相同(去#.)
+                , name: '{$form.name}'
+
+                //数据分隔符
+                , delimiter: ','
+
+                //数据的键名
+                , field: {idName: 'id', titleName: 'title', childName: 'children'}
+
+                //表单区分 form.render(type, filter); 为class="layui-form" 所在元素的 lay-filter="" 的值
+                //, formFilter: null
+
+            });
+
+        });
+    </script>
+</div>

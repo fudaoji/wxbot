@@ -1,0 +1,36 @@
+<div class="layui-form-item {$form['extra_class']}">
+    <label class="layui-form-label">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <a href="javascript:;" id="picker-{$form.name}" class="layui-btn layui-btn-primary">选择文本</a>
+        <div id="{$form.name}-content" style="display: none;border: #e7e7e7 1px solid;padding: 10px;margin-top: 5px;"></div>
+        <input type="hidden" id="{$form.name}" name="{$form.name}">
+    </div>
+
+    <script>
+        //回调设置文本
+        if(typeof setTextValue === 'undefined'){
+            var setTextValue = function(res, field){
+                $("#"+field).val(res.id);
+                $("#"+field+"-content").show().html(res.content);
+            };
+        }
+        $(function () {
+            //点击选择文本
+            $("#picker-{$form.name}").on('click', function () {
+                layer.open({
+                    type: 2,
+                    title: '文本',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['900px', '576px'],
+                    content: ['{:url("system/material/index", ["type" => "text", "field" => $form["name"]])}', 'no']
+                });
+            });
+        });
+    </script>
+</div>

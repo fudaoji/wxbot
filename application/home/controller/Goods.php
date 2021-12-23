@@ -17,7 +17,7 @@ class Goods extends Base
      * goods_type：京推推商品一级类目： 1居家日用；2食品；3生鲜；4图书；5美妆个护；6母婴；7数码家电；8内衣；9配饰；10女装；11男装；12鞋品；
      * 13家装家纺；14文娱车品；15箱包；16户外运动（支持多类目筛选，如1,2获取类目为居家日用、食品的所有商品，请用英文都好隔开，不传则为全部商品）
      */
-    public function getGoodsList(){
+    public function getTodayTop(){
         $input = input();
         $param = [
             'appid' => $this->appid,
@@ -28,6 +28,31 @@ class Goods extends Base
             'eliteId' => $input['eliteId']??'',
             'goods_type' => $input['goods_type']??'',
             'goods_second_type' => $input['goods_second_type']??'',
+
+        ];
+        $url = 'http://japi.jingtuitui.com/api/today_top';
+        $res = http_post($url, $param);
+        echo $res;
+    }
+
+    /**
+     * 精选好货
+     * 
+     */
+    public function getGoodsList(){
+        $input = input();
+        $param = [
+            'appid' => $this->appid,
+            'appkey' => $this->appkey,
+            'v' => $this->version,
+            'pageIndex' => $input['pageIndex']??1,
+            'pageSize' => $input['pageSize']??100,
+            'keyword' => $input['keyword']??'', 
+            'goods_type' => $input['goods_type']??'',
+            'goods_second_type' => $input['goods_second_type']??'',
+            'sortName' => $input['sortName']??'',
+            'sort' => $input['sort']??'',
+            
 
         ];
         $url = 'http://japi.jingtuitui.com/api/today_top';

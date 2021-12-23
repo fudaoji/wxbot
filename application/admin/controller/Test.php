@@ -9,7 +9,7 @@
 
 namespace app\admin\controller;
 
-
+use app\admin\model\Goods;
 use ky\Bot\Wx;
 
 class Test extends Base
@@ -28,5 +28,70 @@ class Test extends Base
         $bot = new Wx(['appKey' => '15659827559']);
         $res = $bot->getFriends(['uuid' => 'ofrgqlGzLw==']);
         dump($res);exit;
+    }
+
+    public function zzy(){
+        dump(11111);exit;
+        $redis = controller('common/base', 'event')->getRedis();
+        $redis->select(1);
+        $res = $redis->setex('goods',86400,'111');
+        dump($res);exit;
+    }
+    /**
+     * 
+     * 商品入库
+     */
+    public function getGoods(){
+        $url = "http://japi.jingtuitui.com/api/get_goods_list";
+        $param = [
+            'appid' => '2112202303504964',
+            'appkey' => '3dd074414022a194939588a3547b20a6',
+            'v' => 'v2',
+            'pageIndex'=> 1,
+            'pageSize' => 100
+        ];
+        $model = new Goods();
+        $redis = controller('common/base', 'event')->getRedis();
+        $redis->select(1);
+        $key = 'goods_page';
+        $pageIndex = $redis->get($key);
+        if (!$pageIndex) {
+            $pageIndex = 1;
+            $redis->set($key, $pageIndex);
+        }
+        $num = 0;
+        $last = $pageIndex + 50;
+        for ($pageIndex; $pageIndex < $last; $pageIndex++) {
+            $param['pageIndex'] = $pageIndex;
+            $res = json_decode(http_post($url, $param),true);
+            if (count($res['result']['data']) > 0) {
+                //$insert_datas = [];
+                foreach ($res['result']['data'] as $val) {
+                    $insert_data = [];
+                    foreach($val as $k => $v2){
+                        if ($k == 'link_content') {
+                            $v2 = urlencode($v2);
+                        }
+                        if (in_array($k,['get_start_time','get_end_time','pingouStartTime','pingouEndTime'])) {
+                            $v2 = substr($v2 , 0 , 10);
+                        }
+                        $insert_data[$k] = $v2;
+                    }
+                    $redis->rpush('goods_data',json_encode($insert_data));
+                    // $insert_datas[] = $insert_data;
+                    $num ++;
+                }
+                // $model->insertAll($insert_datas);
+            } else {
+                break;
+            }
+        }
+        
+        $redis->set($key, $pageIndex);
+
+        echo "OK";
+        echo "</br>";
+        echo $num;
+        
     }
 }

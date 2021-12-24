@@ -36,13 +36,15 @@ class Botfriend extends Botbase
             $where = ['type' => \app\constants\Bot::FRIEND, 'uin' => $this->bot['uin']];
             !empty($post_data['search_key']) && $where['nickname|remark_name'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
-            if (! $total) {
-                $total = $this->pullFriends();
+            if ($total) {
+                $list = $this->model->getList(
+                    [$post_data['page'], $post_data['limit']], $where,
+                    [], true, true
+                );
+            }else{
+                $list = [];
             }
-            $list = $this->model->getList(
-                [$post_data['page'], $post_data['limit']], $where,
-                [], true, true
-            );
+
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
@@ -112,50 +114,7 @@ class Botfriend extends Botbase
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function syncFriends(){
-        $total = $this->pullFriends();
+        $total = $this->model->pullFriends($this->bot);
         $this->success('此次同步到' . $total . '位好友');
-    }
-
-    /**
-     * 拉取最新好友列表
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function pullFriends(){
-        $bot = new Wx(['appKey' => $this->bot['app_key']]);
-        $res = $bot->getFriends(['uuid' => $this->bot['uuid']]);
-
-        if($res['code'] && !empty($res['data']['count'])){
-            $list = $res['data']['friends'];
-            $nickname_arr = [];
-            foreach ($list as $k => $v){
-                $nickname = filter_emoji($v['nick_name']);
-                $remark_name = filter_emoji($v['remark_name']);
-                $nickname_arr[] = $nickname;
-                if($data = $this->model->getOneByMap(['uin' => $this->bot['uin'], 'nickname' => $nickname, 'remark_name' => $remark_name])){
-                    $this->model->updateOne([
-                        'id' => $data['id'],
-                        'nickname' => $nickname,
-                        'remark_name' => $remark_name,
-                        'username' => $v['user_name'],
-                        'alias' => $v['alias']
-                    ]);
-                }else{
-                    $this->model->addOne([
-                        'uin' => $this->bot['uin'],
-                        'nickname' => $nickname,
-                        'remark_name' => $remark_name,
-                        'username' => $v['user_name'],
-                        'alias' => $v['alias'],
-                        'type' => \app\constants\Bot::FRIEND
-                    ]);
-                }
-            }
-            //删除无效好友
-            $nickname_arr && $this->model->delByMap(['uin' => $this->bot['uin'],'type' => \app\constants\Bot::FRIEND, 'update_time' => ['lt', time() - 120]]);
-            return count($list);
-        }
-        return 0;
     }
 }

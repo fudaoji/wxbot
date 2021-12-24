@@ -9,6 +9,8 @@ app_name=KyPHP
 app_prefix=ky_
 ;应用加密key
 app_key=9eT8gFN2J1ef1118fadfegas1DDewrqw
+;任务队列名称
+queue_name=taodou
 
 ;数据库配置
 [db]

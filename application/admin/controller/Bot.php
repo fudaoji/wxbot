@@ -114,14 +114,22 @@ class Bot extends Base
         }
         if(request()->isPost()){
             $post_data = input('post.');
-            $bot = new Wx(['appKey' => $data['app_key']]);
-            $res = $bot->checkLogin(['uuid' => $post_data['uuid']]);
+            $bot_client = new Wx(['appKey' => $data['app_key']]);
+            $res = $bot_client->checkLogin(['uuid' => $post_data['uuid']]);
             if(!empty($res['code'])){
-                $this->model->updateOne([
+                $bot = $this->model->updateOne([
                     'id' => $id,
                     'uuid' => $post_data['uuid'],
                     'nickname' => $res['data']['nick_name'],
                     'uin' => $res['data']['uin']
+                ]);
+                //同步好友任务
+                controller('common/TaskQueue', 'event')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\admin\\task\\Bot', 'pullMembers'],
+                        'bot' => $bot
+                    ]
                 ]);
                 $this->success('登录成功');
             }

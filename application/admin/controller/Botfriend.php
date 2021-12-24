@@ -153,7 +153,7 @@ class Botfriend extends Botbase
                 }
             }
             //删除无效好友
-            $nickname_arr && $this->model->delByMap(['uin' => $this->bot['uin'],'type' => \app\constants\Bot::FRIEND, 'nickname' => ['notin', $nickname_arr]]);
+            $nickname_arr && $this->model->delByMap(['uin' => $this->bot['uin'],'type' => \app\constants\Bot::FRIEND, 'update_time' => ['lt', time() - 120]]);
             return count($list);
         }
         return 0;

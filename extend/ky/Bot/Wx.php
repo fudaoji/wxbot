@@ -12,7 +12,7 @@ namespace ky\Bot;
 
 class Wx extends Base
 {
-    protected $baseUri = 'http://175.24.234.211:8889/';
+    protected $baseUri = 'http://116.62.202.87:8889/';
 
     public function __construct($options = [])
     {

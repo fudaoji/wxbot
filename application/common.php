@@ -16,11 +16,12 @@
  * @return bool|string
  * @author: Doogie<461960962@qq.com>
  */
-function fetch_img($url = '', $key = ''){
+function fetch_img($url = '', $key = '')
+{
     $qiniu = controller('common/base', 'event')->getQiniu();
     $key = $key ? $key : md5($url);
     $res = $qiniu->fetch($url, $key);
-    if($res){
+    if ($res) {
         return $qiniu->downLink($key);
     }
     return false;
@@ -32,7 +33,8 @@ function fetch_img($url = '', $key = ''){
  * @return string
  * Author: fudaoji<fdj@kuryun.cn>
  */
-function ky_format_money($num){
+function ky_format_money($num)
+{
     return number_format($num, 2, '.', '');
 }
 
@@ -42,13 +44,14 @@ function ky_format_money($num){
  * @return string $result
  * @author Jason<1589856452@qq.com>
  */
-function wx_3rd_session($len) {
-    $fp = @fopen('/dev/urandom','rb');
+function wx_3rd_session($len)
+{
+    $fp = @fopen('/dev/urandom', 'rb');
     $result = '';
     if ($fp !== false) {
         $result .= @fread($fp, $len);
         @fclose($fp);
-    }else {
+    } else {
         trigger_error('Can not open /dev/urandom.');
     }
     // convert from binary to string
@@ -65,7 +68,8 @@ function wx_3rd_session($len) {
  * @Author: fudaoji<fdj@kuryun.cn>
  * @throws Exception
  */
-function logger($msg = '', $code=\ky\ErrorCode::CatchException){
+function logger($msg = '', $code = \ky\ErrorCode::CatchException)
+{
     \ky\Logger::setMsgAndCode($msg, $code);
 }
 
@@ -82,7 +86,8 @@ function filter_emoji($str = '')
         function (array $match) {
             return strlen($match[0]) >= 4 ? '' : $match[0];
         },
-        $str);
+        $str
+    );
     return $str;
 }
 
@@ -92,7 +97,8 @@ function filter_emoji($str = '')
  * @return array
  * Author: fudaoji<fdj@kuryun.cn>
  */
-function get_pay_config() {
+function get_pay_config()
+{
     return controller('common/mini', 'event')->getPayConfig();
 }
 
@@ -102,8 +108,9 @@ function get_pay_config() {
  * @return string
  * Author: fudaoji<fdj@kuryun.cn>
  */
-function build_order_no($prefix = ''){
-    return $prefix . time().substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
+function build_order_no($prefix = '')
+{
+    return $prefix . time() . substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
 }
 
 /**
@@ -113,11 +120,12 @@ function build_order_no($prefix = ''){
  * @return bool|string
  * @author: fudaoji<fdj@kuryun.cn>
  */
-function fetch_to_qiniu($url = '', $key = ''){
+function fetch_to_qiniu($url = '', $key = '')
+{
     $qiniu = controller('mp/mp', 'event')->getQiniu();
     $key = $key ? $key : md5($url);
     $res = $qiniu->fetch($url, $key);
-    if($res){
+    if ($res) {
         return $qiniu->downLink($key);
     }
     return false;
@@ -130,21 +138,22 @@ function fetch_to_qiniu($url = '', $key = ''){
  * @return bool|string
  * @author: fudaoji<fdj@kuryun.cn>
  */
-function ky_publish_time($time, $str=''){
+function ky_publish_time($time, $str = '')
+{
     isset($str) ? $str : $str = 'm-d';
     $way = time() - $time;
-    if($way < 60){
+    if ($way < 60) {
         $r = '刚刚';
-    }elseif($way >= 60 && $way <3600){
-        $r = floor($way/60).'分钟前';
-    }elseif($way >=3600 && $way <86400){
-        $r = floor($way/3600).'小时前';
-    }elseif($way >=86400 && $way <2592000){
-        $r = floor($way/86400).'天前';
-    }elseif($way >=2592000 && $way <15552000){
-        $r = floor($way/2592000).'个月前';
-    }else{
-        $r = date("$str",$time);
+    } elseif ($way >= 60 && $way < 3600) {
+        $r = floor($way / 60) . '分钟前';
+    } elseif ($way >= 3600 && $way < 86400) {
+        $r = floor($way / 3600) . '小时前';
+    } elseif ($way >= 86400 && $way < 2592000) {
+        $r = floor($way / 86400) . '天前';
+    } elseif ($way >= 2592000 && $way < 15552000) {
+        $r = floor($way / 2592000) . '个月前';
+    } else {
+        $r = date("$str", $time);
     }
     return $r;
 }
@@ -166,7 +175,7 @@ function download_file($url, $type = 'image', $filename = '')
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     $file = curl_exec($ch);
     curl_close($ch);
-    switch ($type){
+    switch ($type) {
         case 'voice':
             $ext = '.mp3';
             break;
@@ -176,9 +185,9 @@ function download_file($url, $type = 'image', $filename = '')
         default:
             $ext = '.png';
     }
-    $filename = $filename ? $filename : md5(pathinfo($url, PATHINFO_BASENAME) . time()).$ext;
+    $filename = $filename ? $filename : md5(pathinfo($url, PATHINFO_BASENAME) . time()) . $ext;
     $path = UPLOAD_PATH . '/temp/';
-    if(! file_exists($path)){
+    if (!file_exists($path)) {
         @mkdir($path, 0777);
     }
     $resource = fopen($path . $filename, 'a');
@@ -216,7 +225,8 @@ function get_server_ip()
  * @return string
  * @author Jason<dcq@kuryun.cn>
  */
-function camel_case($str , $ucfirst = false) {
+function camel_case($str, $ucfirst = false)
+{
     $str = ucwords(str_replace('_', ' ', $str));
     $str = str_replace(' ', '', lcfirst($str));
 
@@ -229,7 +239,8 @@ function camel_case($str , $ucfirst = false) {
  * @return bool|string
  * @author: fudaoji<fdj@kuryun.cn>
  */
-function ky_generate_password($password) {
+function ky_generate_password($password)
+{
     $options['cost']  = 10;
     return password_hash($password, PASSWORD_DEFAULT, $options);
 }
@@ -357,7 +368,8 @@ function get_rand_char($len = 6, $type = '', $addChars = '')
  * @return array
  * @author: fudaoji<fdj@kuryun.cn>
  */
-function select_list_as_tree($model, $where = [], $extra = null, $key = 'id', $order=['sort' => 'asc']) {
+function select_list_as_tree($model, $where = [], $extra = null, $key = 'id', $order = ['sort' => 'asc'])
+{
     //获取列表
     $con['status'] = 1;
     if ($where) {
@@ -373,7 +385,7 @@ function select_list_as_tree($model, $where = [], $extra = null, $key = 'id', $o
     if ($extra) {
         $result[0] = $extra;
     }
-    if($list){
+    if ($list) {
         //转换成树状列表(非严格模式)
         $list = app\common\facade\KyTree::toFormatTree($list, 'title', 'id', 'pid', 0, false);
         //转换成一维数组
@@ -403,12 +415,10 @@ function tree_to_list($tree, $child = 'child', $order = 'id', &$list = array())
             $reffer = $value;
             if (isset($reffer[$child])) {
                 if ($reffer[$child] == null) {
-
                 } else {
                     unset($reffer[$child]);
                     tree_to_list($value[$child], $child, $order, $list);
                 }
-
             }
             $list[] = $reffer;
         }
@@ -436,7 +446,7 @@ function list_sort_by($list, $field, $sortby = 'asc')
             case 'asc': // 正向排序
                 asort($refer);
                 break;
-            case 'desc':// 逆向排序
+            case 'desc': // 逆向排序
                 arsort($refer);
                 break;
             case 'nat': // 自然排序
@@ -451,32 +461,43 @@ function list_sort_by($list, $field, $sortby = 'asc')
 }
 
 /**
-  * 生成不重复的随机数字(不能超过10位数，否则while循环陷入死循环)
-  * @param  int $start 需要生成的数字开始范围
-  * @param  int $end 结束范围
-  * @param  int $length 需要生成的随机数个数
-  * @return number      生成的随机数
-  */
-function getRandNumber($start = 0, $end = 9, $length = 8) {
-     //初始化变量为0
-     $count = 0;
-     //建一个新数组
-     $temp = array();
-     while ($count < $length) {
-         //在一定范围内随机生成一个数放入数组中
-         $temp[] = mt_rand($start, $end);
-         //$data = array_unique($temp);
-         //去除数组中的重复值用了“翻翻法”，就是用array_flip()把数组的key和value交换两次。这种做法比用 array_unique() 快得多。
-         $data = array_flip(array_flip($temp));
-         //将数组的数量存入变量count中
-         $count = count($data);
-     }
-     //为数组赋予新的键名
-     shuffle($data);
-     //数组转字符串
-     $str = implode(",", $data);
-     //替换掉逗号
-     $number = str_replace(',', '', $str);
+ * 生成不重复的随机数字(不能超过10位数，否则while循环陷入死循环)
+ * @param  int $start 需要生成的数字开始范围
+ * @param  int $end 结束范围
+ * @param  int $length 需要生成的随机数个数
+ * @return number      生成的随机数
+ */
+function getRandNumber($start = 0, $end = 9, $length = 8)
+{
+    //初始化变量为0
+    $count = 0;
+    //建一个新数组
+    $temp = array();
+    while ($count < $length) {
+        //在一定范围内随机生成一个数放入数组中
+        $temp[] = mt_rand($start, $end);
+        //$data = array_unique($temp);
+        //去除数组中的重复值用了“翻翻法”，就是用array_flip()把数组的key和value交换两次。这种做法比用 array_unique() 快得多。
+        $data = array_flip(array_flip($temp));
+        //将数组的数量存入变量count中
+        $count = count($data);
+    }
+    //为数组赋予新的键名
+    shuffle($data);
+    //数组转字符串
+    $str = implode(",", $data);
+    //替换掉逗号
+    $number = str_replace(',', '', $str);
 
-     return $number;
+    return $number;
+}
+
+function writeJson($statusCode = 200, $message = null, $result = null)
+{
+    $data = array(
+        "code" => $statusCode,
+        "msg" => $message,
+        "result" => $result
+    );
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }

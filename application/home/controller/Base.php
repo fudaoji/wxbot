@@ -1,15 +1,8 @@
 <?php
 namespace app\home\controller;
-use think\Controller;
+use app\common\controller\BaseCtl;
 
-class Base extends Controller
+class Base extends BaseCtl
 {
-    protected $appid;
-    protected $appkey;
-    protected $version;
-    public function __construct(){
-        $this->appid = "2112202303504964";
-        $this->appkey = "3dd074414022a194939588a3547b20a6";
-        $this->version = 2;
-    }
+
 }

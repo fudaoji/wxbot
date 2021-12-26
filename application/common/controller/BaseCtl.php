@@ -58,4 +58,10 @@ class BaseCtl extends Controller
     public function _empty($name){
         $this->error($name . '方法不存在');
     }
+
+    protected function getAjax()
+    {
+        $json = file_get_contents("php://input");
+        return json_decode($json, 1);
+    }
 }

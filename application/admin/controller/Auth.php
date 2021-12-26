@@ -47,7 +47,6 @@ class Auth extends Base
     public function login(){
         if (request()->isPost()) {
             $post_data = input('post.');
-
             Validate::extend([
                 'checkCode'=> function ($value) {
                     $captcha = new Captcha();

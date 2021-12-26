@@ -25,6 +25,22 @@ class Wx extends Base
     }
 
     /**
+     * 发送文本消息给好友
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendTextToFriend($params = []){
+        $url = '/message/user';
+        return $this->request([
+            'url' => $url . '?uuid=' . $params['uuid'],
+            'method' => 'post',
+            'headers' => ['AppKey' => $this->appKey],
+            'data' => $params['data'] //{to: "", content:"", type:"text"}
+        ]);
+    }
+
+    /**
      * 设置好友备注名
      * @param array $params
      * @return bool|mixed
@@ -96,7 +112,8 @@ class Wx extends Base
         return $this->request([
             'url' => $url . '?uuid=' . $params['uuid'],
             'method' => 'post',
-            'headers' => ['AppKey' => $this->appKey]
+            'headers' => ['AppKey' => $this->appKey],
+            'data' => $params['data']
         ]);
     }
 

@@ -20,7 +20,7 @@ return [
     'app_title'              => Env::get('app_title', 'KyPHP'),
     'app_prefix'             => Env::get('app_prefix', 'ky_'),
     'app_key'                => Env::get('app_key', '123456'),
-    'queue_name'             => Env::get('queue_name', 'taodou'),
+    'queue_name'             => Env::get('queue_name', ''),
     'version'                => 'v1.0.0',
     'theme'                  => 'default',
 

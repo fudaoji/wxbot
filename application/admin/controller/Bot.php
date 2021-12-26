@@ -115,7 +115,10 @@ class Bot extends Base
         if(request()->isPost()){
             $post_data = input('post.');
             $bot_client = new Wx(['appKey' => $data['app_key']]);
-            $res = $bot_client->checkLogin(['uuid' => $post_data['uuid']]);
+            $res = $bot_client->checkLogin([
+                'uuid' => $post_data['uuid'],
+                'data' => ['webhook' => request()->domain() . url('onmessage/botCallback')]
+            ]);
             if(!empty($res['code'])){
                 $bot = $this->model->updateOne([
                     'id' => $id,

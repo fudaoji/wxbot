@@ -286,10 +286,30 @@
                     });
                     break;
                 default:
-                    miniTab.openNewTabByIframe({
-                        href: href,
-                        title: $(this).attr('title'),
-                    });
+                    if($(this).data('ajax')){
+                        if($(this).data('confirm')) {
+                            layer.confirm('确认操作吗?', function(index){
+                                var  params = {id: data.id};
+                                requestPost(href, params, function (res) {
+                                    table.reload('{$controller}-table');  // 刷新(异步模式)
+                                });
+                                layer.close(index);
+                            });
+                        }else{
+                            requestPost(href, [], function (res) {
+                                table.reload('{$controller}-table');  // 刷新(异步模式)
+                            });
+                        }
+                    }else{
+                        if($(this).attr('target') === '_blank'){
+                            window.open(href);
+                        }else{
+                            miniTab.openNewTabByIframe({
+                                href: href,
+                                title: $(this).attr('title'),
+                            });
+                        }
+                    }
                     break;
             }
         });

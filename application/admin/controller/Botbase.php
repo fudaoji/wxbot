@@ -10,7 +10,7 @@
 namespace app\admin\controller;
 
 
-class Botbase extends Base
+class Botbase extends Bbase
 {
     protected $bot;
     public function initialize()

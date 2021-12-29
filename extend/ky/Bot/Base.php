@@ -31,7 +31,7 @@ class Base
     protected function request($params = []){
         $this->client = new Client([
             'base_uri' => empty($this->options['base_uri']) ? $this->baseUri : $this->options['base_uri'],
-            'timeout' => empty($this->options['timeout']) ? 10 : $this->options['timeout']
+            //'timeout' => empty($this->options['timeout']) ? 10 : $this->options['timeout']
         ]);
         $method = empty($params['method']) ? 'post' : $params['method'];
         $extra = [

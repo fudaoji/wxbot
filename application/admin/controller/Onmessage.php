@@ -13,6 +13,7 @@ namespace app\admin\controller;
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\controller\BaseCtl;
+use ky\Bot\Qyk;
 use ky\Bot\Wx;
 use ky\Helper;
 use ky\Logger;
@@ -28,6 +29,12 @@ class Onmessage extends BaseCtl
      * @var BotMember
      */
     private $memberM;
+    private $sender;
+    private $bot;
+    /**
+     * @var Wx
+     */
+    private $botClient;
 
     public function initialize()
     {
@@ -43,21 +50,271 @@ class Onmessage extends BaseCtl
     public function botCallback(){
         if(request()->isPost()){
             Helper::$ajax = $this->getAjax();
-            $bot_client = new Wx(['appKey' => Helper::$ajax['appkey']]);
-            $bot = $this->getBot();
-            $res = $bot_client->sendTextToFriend([
+            Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
+            $this->bot = $this->getBot();
+            $this->botClient = $this->getBotClient();
+            $this->sender = $this->memberM->getOneByMap(['username' => Helper::$ajax['from']], ['username', 'nickname', 'remark_name', 'type']);
+            if(!empty($this->sender)){
+                switch ($this->sender['type']){
+                    case \app\constants\Bot::GROUP:
+                        $this->testEmoji();
+                        break;
+                    default:
+                        $this->testFriend();
+                        break;
+                }
+            }
+            /*if(!empty(Helper::$ajax['useringroup'])){
+                    $res = $bot_client->sendVideoToGroup([
+                        'uuid' => $bot['uuid'],
+                        'data' => [
+                            'to' => Helper::$ajax['from'],
+                            "content" => "https://zyx.images.huihuiba.net/0-5b4de17faa005.mp4",
+                            "type" => \app\constants\Bot::MSGTYPE_FILE,
+                            "filename" => "test.mp4"
+                        ]
+                    ]);
+                }else{
+                    $res = $bot_client->sendVideoToFriend([
+                        'uuid' => $bot['uuid'],
+                        'data' => [
+                            'to' => Helper::$ajax['from'],
+                            "content" => "https://zyx.images.huihuiba.net/0-5b4de17faa005.mp4",
+                            "type" => \app\constants\Bot::MSGTYPE_FILE,
+                            "filename" => "test.mp4"
+                        ]
+                    ]);
+                }*/
+
+            /*$res = $bot_client->sendFileToGroup([
                 'uuid' => $bot['uuid'],
                 'data' => [
                     'to' => Helper::$ajax['from'],
-                    "content" => Helper::$ajax['content'],
-                    "type" => \app\constants\Bot::MSGTYPE_TEXT
+                    "content" => "https://zyx.images.huihuiba.net/0-5b4de2e1040f4.mp3",
+                    "type" => \app\constants\Bot::MSGTYPE_FILE,
+                    "filename" => "test.mp3"
+                ]
+            ]);*/
+
+            /*$res = $bot_client->sendImgToFriend([
+                'uuid' => $bot['uuid'],
+                'data' => [
+                    'to' => Helper::$ajax['from'],
+                    "content" => "https://zyx.images.huihuiba.net/0-5b84e57890385.jpg",
+                    "type" => \app\constants\Bot::MSGTYPE_IMAGE
                 ] //{to: "", content:"", type:"text"}
             ]);
+            */
+        }
+    }
+
+    private function testFriend(){
+        if($this->sender['nickname'] == '傅道集'){
+            switch (Helper::$ajax['content']){
+                case '群发视频':
+                    $res = $this->sendVideoBatch();
+                    break;
+                case '群发文件':
+                    $res = $this->sendFileBatch();
+                    break;
+                case '群发图片':
+                    $res = $this->sendImgBatch();
+                    break;
+                case '群发文本':
+                    $res = $this->sendTextBatch();
+                    break;
+                case '邀请入群':
+                    $res = $this->addFriendsIntoGroup();
+                    break;
+                case '邀请入多群':
+                    $res = $this->addFriendIntoGroups();
+                    break;
+                case "test":
+                    $res = $this->sendTextToFriend();
+                    break;
+                default:
+                    $res = $this->testQyk();
+                    break;
+            }
             if(empty($res['code'])) {
                 Logger::error("消息回复错误：" . $res['msg']);
             }
-            Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
         }
+    }
+
+    private function sendVideoBatch(){
+        return $this->botClient->sendVideoBatch([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                //'groups' => ['@@194328651289274a2af54e56b5d199b6b36dcdd6b9577d694ddb59f31d0986f3'],
+                'friends' => ['@d8d567bae469380473a9f7763c8bec6375bf7044d4b0018f86125fb514d387bc'],
+                'content' => "https://zyx.images.huihuiba.net/0-5b850b0d5c9a6.mp4"
+            ]
+        ]);
+    }
+
+    private function sendFileBatch(){
+        return $this->botClient->sendFileBatch([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                //'groups' => ['@@194328651289274a2af54e56b5d199b6b36dcdd6b9577d694ddb59f31d0986f3'],
+                'friends' => ['@d8d567bae469380473a9f7763c8bec6375bf7044d4b0018f86125fb514d387bc'],
+                'content' => "https://zyx.images.huihuiba.net/0-5b4de169d053e.mp3",
+                'filename' => 'test.mp3'
+            ]
+        ]);
+    }
+
+    private function sendImgBatch(){
+        return $this->botClient->sendImgBatch([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                'groups' => ['@@194328651289274a2af54e56b5d199b6b36dcdd6b9577d694ddb59f31d0986f3'],
+                'friends' => ['@d8d567bae469380473a9f7763c8bec6375bf7044d4b0018f86125fb514d387bc'],
+                'content' => "https://zyx.images.huihuiba.net//qtk/subjects/sf.png"
+            ]
+        ]);
+    }
+
+    private function sendTextBatch(){
+        return $this->botClient->sendTextBatch([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                'groups' => ['@@42b7c4fc860fbb8dd24359b03c1cb6104db404d3bbe6aa9ccf4fd49c629f4f3f'],
+                'friends' => ['@d8d567bae469380473a9f7763c8bec6375bf7044d4b0018f86125fb514d387bc'],
+                'content' => "大家好！"
+            ]
+        ]);
+    }
+
+    private function sendTextToFriend(){
+        $qyk = new Qyk();
+        $res = $qyk->smart([
+            "content" => Helper::$ajax['content'],
+        ]);
+        $content = Helper::$ajax['content'];
+        if(!empty($res['content'])){
+            $content = $res['content'];
+        }
+        return $this->botClient->sendTextToFriend([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                'to' => Helper::$ajax['from'],
+                "content" => $content,
+                "type" => \app\constants\Bot::MSGTYPE_TEXT
+            ]
+        ]);
+    }
+
+    private function testQyk(){
+        $qyk = new Qyk();
+        $res = $qyk->smart([
+            "content" => str_replace(["小乔同学", ",", "，"], "", Helper::$ajax['content']),
+        ]);
+
+        if(!empty($res['content'])){
+            $content = $res['content'];
+        }else{
+            $content = "不知道你说神马！";
+        }
+        return $this->botClient->sendTextToFriend([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                'to' => Helper::$ajax['from'],
+                "content" => $content,
+                "type" => \app\constants\Bot::MSGTYPE_TEXT
+            ]
+        ]);
+    }
+
+    private function testQykGroup(){
+        $qyk = new Qyk();
+        $res = $qyk->smart([
+            "content" => str_replace(["小乔同学", ",", "，"], "", Helper::$ajax['content']),
+        ]);
+
+        if(!empty($res['content'])){
+            $content = $res['content'];
+        }else{
+            $content = "不知道你说神马！";
+        }
+        return $this->botClient->sendTextToGroup([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                'to' => Helper::$ajax['from'],
+                "content" => $content,
+                "type" => \app\constants\Bot::MSGTYPE_TEXT
+            ]
+        ]);
+    }
+
+    private function testEmoji(){
+        if(!empty(Helper::$ajax['useringroup'])){
+            if(strstr(Helper::$ajax['content'], "小乔同学")){
+                $res = $this->testQykGroup();
+            }else if(strstr(Helper::$ajax['useringroup'], "蒙圈的海马体") || strstr(Helper::$ajax['useringroup'], "小余")){
+                $nickname = htmlspecialchars_decode(explode('@', Helper::$ajax['useringroup'])[0]);
+                switch (Helper::$ajax['type']){
+                    case \app\constants\Bot::MSGTYPE_IMAGE:
+                        $res = $this->botClient->sendTextToGroup([
+                            'uuid' => $this->bot['uuid'],
+                            'data' => [
+                                'to' => Helper::$ajax['from'],
+                                "content" => "@{$nickname} 好好说话别发图",
+                                "type" => \app\constants\Bot::MSGTYPE_TEXT
+                            ]
+                        ]);
+                        break;
+                    default:
+                        if(strstr(Helper::$ajax['content'], "闭嘴")){
+                            $res = $this->botClient->sendTextToGroup([
+                                'uuid' => $this->bot['uuid'],
+                                'data' => [
+                                    'to' => Helper::$ajax['from'],
+                                    "content" => "@{$nickname} 你说脏话",
+                                    "type" => \app\constants\Bot::MSGTYPE_TEXT
+                                ]
+                            ]);
+                        }
+                        break;
+                }
+            }
+            if(empty($res['code'])) {
+                Logger::error("消息回复错误：" . $res['msg']);
+            }
+        }
+    }
+
+    private function addFriendsIntoGroup(){
+        return $this->botClient->addFriendsIntoGroup([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                'group' => '@@42b7c4fc860fbb8dd24359b03c1cb6104db404d3bbe6aa9ccf4fd49c629f4f3f',
+                'friends' => ['@d8d567bae469380473a9f7763c8bec6375bf7044d4b0018f86125fb514d387bc']
+            ]
+        ]);
+    }
+
+    private function addFriendIntoGroups(){
+        return $this->botClient->addFriendIntoGroups([
+            'uuid' => $this->bot['uuid'],
+            'data' => [
+                'groups' => [
+                    '@@42b7c4fc860fbb8dd24359b03c1cb6104db404d3bbe6aa9ccf4fd49c629f4f3f',
+                    '@@194328651289274a2af54e56b5d199b6b36dcdd6b9577d694ddb59f31d0986f3'
+                ],
+                'friend' => '@d8d567bae469380473a9f7763c8bec6375bf7044d4b0018f86125fb514d387bc'
+            ]
+        ]);
+    }
+
+    /**
+     * @return Wx
+     * @throws \think\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function getBotClient(){
+        return new Wx(['appKey' => Helper::$ajax['appkey']]);
     }
 
     /**

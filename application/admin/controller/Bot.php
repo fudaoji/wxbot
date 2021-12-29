@@ -5,6 +5,7 @@ namespace app\admin\controller;
 use app\admin\model\Bot as BotM;
 use app\constants\Common;
 use ky\Bot\Wx;
+use ky\Upload\Driver\Qiniu;
 
 class Bot extends Base
 {
@@ -12,6 +13,7 @@ class Bot extends Base
      * @var BotM
      */
     protected $model;
+    protected $insertAdminId = true;
 
     /**
      * 初始化
@@ -26,7 +28,7 @@ class Bot extends Base
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = [];
+            $where = ['admin_id' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['name'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
@@ -59,6 +61,7 @@ class Bot extends Base
             ->addTableColumn(['title' => '微信昵称', 'field' => 'nickname'])
             ->addTableColumn(['title' => '操作中', 'field' => 'is_current', 'type' => 'enum', 'options' => Common::yesOrNo()])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线']])
+            ->addTableColumn(['title' => '最后登录时间', 'field' => 'login_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm'])
@@ -124,7 +127,8 @@ class Bot extends Base
                     'id' => $id,
                     'uuid' => $post_data['uuid'],
                     'nickname' => $res['data']['nick_name'],
-                    'uin' => $res['data']['uin']
+                    'uin' => $res['data']['uin'],
+                    'login_time' => time()
                 ]);
                 //同步好友任务
                 controller('common/TaskQueue', 'event')->push([
@@ -136,7 +140,7 @@ class Bot extends Base
                 ]);
                 $this->success('登录成功');
             }
-            $this->error($res['msg']);
+            $this->error("登录失败:" . $res['msg']);
             //$this->success('登录成功');
         }
         $bot = new Wx(['appKey' => $data['app_key']]);

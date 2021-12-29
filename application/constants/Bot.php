@@ -19,6 +19,7 @@ class Bot
 
     const MSGTYPE_TEXT = "text";           // 文本消息
     const MSGTYPE_IMAGE = "image";          // 图片消息
+    const MSGTYPE_FILE = "file";          // 文件消息
     const MSGTYPE_VOICE = "voice";          // 语音消息
     const MSGTYPE_VIDEO = "video" ;         // 视频消息
     const MSGTYPE_EMOTICON = "emotion" ;       // 表情消息

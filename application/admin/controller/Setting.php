@@ -27,7 +27,7 @@ class Setting extends Base
                 'title' => '附件设置',
                 'href' => url('index', ['name' => 'upload'])
             ],
-            'weixin' => [
+            /*'weixin' => [
                 'title' => '微信设置',
                 'href' => url('index', ['name' => 'weixin'])
             ],
@@ -38,7 +38,7 @@ class Setting extends Base
             'common' => [
                 'title' => '其他设置',
                 'href' => url('index', ['name' => 'common'])
-            ]
+            ]*/
         ];
     }
 

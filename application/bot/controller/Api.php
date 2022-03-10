@@ -146,7 +146,9 @@ class Api extends BaseCtl
     private function msgTransfer(){
         $content = Helper::$ajax['content'];
         $group_wxid = Helper::$ajax['Event'] == \app\constants\Bot::EVENT_GROUPCHAT ? $content['from_group'] : $content['to_wxid'];
-        //Logger::error(json_encode($group, JSON_UNESCAPED_UNICODE));
+        if($group_wxid == '20849217466@chatroom'){
+            Logger::error(json_encode($this->content, JSON_UNESCAPED_UNICODE));
+        }
         //1、判断当前群组是否是某个用户的中央调度群
         if($group = $this->memberM->getOneJoin([
             'alias' => 'm',

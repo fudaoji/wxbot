@@ -14,12 +14,13 @@
         <form class="layui-form" action="{$post_url ?? ''}" id="ajax-form" method="post">
 
             {if condition="!empty($tip)"}
-            <blockquote class="layui-elem-quote">{$tip}</blockquote>
+            <blockquote class="layui-elem-quote">{$tip|raw}</blockquote>
             {/if}
 
             <input type="hidden" id="__token__" name="__token__" value="{:request()->token()}" />
             {foreach $form_items as $k => $form}
             {switch name="form.type"}
+            {case value="video_detail"}{include file="builder/formtype/video_detail" /}{/case}
             {case value="file_detail"}{include file="builder/formtype/file_detail" /}{/case}
             {case value="picture_detail"}{include file="builder/formtype/picture_detail" /}{/case}
             {case value="datetime_range"}{include file="builder/formtype/datetime_range" /}{/case}

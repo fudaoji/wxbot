@@ -9,6 +9,7 @@
 
 namespace app\admin\controller;
 
+use app\admin\model\BotGrouppos;
 use app\admin\model\BotMember;
 use ky\Bot\Wx;
 
@@ -18,6 +19,10 @@ class Botgroup extends Botbase
      * @var BotMember
      */
     protected $model;
+    /**
+     * @var BotGrouppos
+     */
+    private $groupPosM;
 
     /**
      * 初始化
@@ -26,20 +31,30 @@ class Botgroup extends Botbase
     {
         parent::initialize();
         $this->model = new BotMember();
+        $this->groupPosM = new BotGrouppos();
     }
 
     public function index()
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['type' => \app\constants\Bot::GROUP, 'uin' => $this->bot['uin']];
-            !empty($post_data['search_key']) && $where['nickname|remark_name'] = ['like', '%' . $post_data['search_key'] . '%'];
-            $total = $this->model->total($where, true);
+            $where = ['g.type' => \app\constants\Bot::GROUP, 'g.uin' => $this->bot['uin']];
+            !empty($post_data['search_key']) && $where['nickname|remark_name|wxid'] = ['like', '%' . $post_data['search_key'] . '%'];
+            $params = [
+                'alias' => 'g',
+                'join' => [
+                    ['bot_grouppos gp', 'g.id=gp.group_id', 'left'],
+                    ['league_position p', 'p.id=gp.position_id', 'left']
+                ],
+                'where' => $where,
+                'refresh' => true
+            ];
+            $total = $this->model->totalJoin($params);
             if ($total) {
-                $list = $this->model->getList(
-                    [$post_data['page'], $post_data['limit']], $where,
-                    [], true, true
-                );
+                $list = $this->model->getListJoin(array_merge($params, [
+                    'limit' => [$post_data['page'], $post_data['limit']],
+                    'field' => ['g.id', 'g.nickname', 'g.remark_name', 'p.name', 'g.wxid']
+                ]));
             }else{
                 $list = [];
             }
@@ -49,15 +64,64 @@ class Botgroup extends Botbase
 
         $builder = new ListBuilder();
         $builder->setSearch([
-            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '群名称、备注名称']
+            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '群名称、备注名称、wxid']
         ])
             ->setTip("注意：当前的备注名称就是指实际微信通讯录当中您对该群的备注")
             ->addTopButton('self', ['title'=>'拉取最新群组', 'href' => url('syncGroups'), 'data-ajax' => 1])
             ->addTableColumn(['title' => '序号', 'field' => 'id', 'type' => 'index', 'minWidth' => 70])
+            ->addTableColumn(['title' => '群id', 'field' => 'wxid'])
             ->addTableColumn(['title' => '群名称', 'field' => 'nickname'])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name'])
-            /*->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
-            ->addRightButton('edit', ['title' => '设置备注名'])*/;
+            ->addTableColumn(['title' => '关联推广位', 'field' => 'name'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
+            ->addRightButton('edit', ['title' => '群成员', 'href' => url('groupmember/index', ['group_id' => '__data_id__'])])
+            ->addRightButton('edit', ['title' => '关联推广位', 'href' => url('bindPos'), 'class' => 'layui-btn layui-btn-xs']);
+
+        return $builder->show();
+    }
+
+    /**
+     * 绑定推广位
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\Exception
+     */
+    public function bindPos(){
+        if(request()->isPost()){
+            $post_data = input('post.');
+            if($gp = $this->groupPosM->getOneByMap(['group_id' => $post_data['group_id']])){
+                $this->groupPosM->updateOne([
+                    'id' => $gp['id'],
+                    'position_id' => $post_data['position_id']
+                ]);
+            }else{
+                $this->groupPosM->addOne([
+                    'group_id' => $post_data['group_id'],
+                    'position_id' => $post_data['position_id']
+                ]);
+            }
+            $this->success('操作成功');
+        }
+        $id = input('id');
+        $data = $this->model->getOne($id);
+        $data['group_id'] = $id;
+        $data['group_title'] = $data['nickname'];
+        if($gp = $this->groupPosM->getOneByMap(['group_id' => $id], ['position_id'])){
+            $data['position_id'] = $gp['position_id'];
+        }else{
+            $data['position_id'] = 0;
+        }
+        //使用FormBuilder快速建立表单页面。
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('绑定推广位')  //设置页面标题
+            ->setPostUrl(url('bindPos')) //设置表单提交地址
+            ->addFormItem('group_id', 'hidden', 'group id', 'group id')
+            ->addFormItem('group_title', 'text', '发单群', '发单群', [], 'required readonly')
+            ->addFormItem('position_id', 'chosen', '推广位', '推广位', model('leaguePosition')->getField('id,name',['status' => 1]), 'required')
+            ->setFormData($data);
 
         return $builder->show();
     }

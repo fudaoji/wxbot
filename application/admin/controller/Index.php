@@ -50,7 +50,7 @@ class Index extends Base
     public function getSystemInit(){
         $homeInfo = [
             'title' => '首页',
-            'href'  => 'welcome',
+            'href'  => '/admin/index/welcome',
         ];
         $logoInfo = [
             'title' => config('system.site.company_title'),

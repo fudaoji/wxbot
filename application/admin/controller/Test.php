@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 use app\admin\model\Goods;
 use ky\Bot\Wx;
+use ky\Bot\Wxwork;
 
 class Test extends Base
 {
@@ -20,13 +21,8 @@ class Test extends Base
     }
 
     public function vbot(){
-        /*$bot = new Wx(['appKey' => '15659827559']);
-        dump($bot->getLoginCode());*/
-        /*$bot = new Wx(['appKey' => '15659827559']);
-        $res = $bot->checkLogin(['uuid' => 'IfiHyG9TIQ==']);*/
-
-        $bot = new Wx(['appKey' => '15659827559']);
-        $res = $bot->getFriends(['uuid' => 'ofrgqlGzLw==']);
+        $bot = new Wxwork(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.222.4.168:8090']);
+        $res = $bot->getFriends(['robot_wxid' => '1688856404324777']);
         dump($res);exit;
     }
 

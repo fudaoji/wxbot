@@ -13,9 +13,13 @@ namespace app\admin\controller;
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\controller\BaseCtl;
+use ky\Bot\Kam;
 use ky\Bot\Qyk;
+use ky\Bot\Vlw;
 use ky\Bot\Wx;
+use ky\Bot\Xp;
 use ky\Helper;
+use ky\Jtt;
 use ky\Logger;
 
 class Onmessage extends BaseCtl
@@ -44,6 +48,265 @@ class Onmessage extends BaseCtl
     }
 
     /**
+     * vlw框架
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function vlw(){
+        if(request()->isPost()) {
+            Helper::$ajax = $this->getAjax();
+            $this->botClient = $this->getBotClient('vlw', ['base_uri' => '124.222.4.168:8090']);
+            $fdj = "wxid_xokb2ezu1p6t21";
+            $yyp = 'weiwei562608';
+            $jane = "wxid_a98qqf9m4bny22";
+
+            $data = [
+                "token" => '123456',//true时，http-sdk才处理，false直接丢弃
+                "api" => Vlw::SEND_TEXT_MSG,
+                "robot_wxid" => $fdj,//用哪个机器人发
+                "to_wxid" => $jane,//发到哪里？群/好友
+                "msg" => "test"
+            ];
+
+            //Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
+            if(empty(Helper::$ajax['content']['from_wxid']) && empty(Helper::$ajax['content']['from_group'])){ //说明机器人本人发
+                $wxid = Helper::$ajax['content']['robot_wxid'];
+            }else{
+                $wxid = Helper::$ajax['content']['from_wxid'];
+            }
+
+            if($wxid == $fdj){
+                //Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
+                $res = $this->botClient->sendTextToFriend(['data' => $data]);
+                Logger::error(json_encode($res, JSON_UNESCAPED_UNICODE));
+            }
+        }else{
+            exit('非法请求');
+        }
+    }
+
+    public function keaimao(){
+        if(request()->isPost()) {
+            Helper::$ajax = $this->getAjax();
+            $this->botClient = $this->getBotClient('kam', ['base_uri' => '192.168.0.108:8090']);
+            $fdj = "wxid_xokb2ezu1p6t21";
+            $yyp = 'weiwei562608';
+            $weixin = 'weixin';
+            $jane = "wxid_a98qqf9m4bny22";
+
+            $data = [
+                "success" => true,//true时，http-sdk才处理，false直接丢弃
+                "message" => "successful!",
+                "event" => "SendImageMsg",//告诉它干什么，SendImageMsg是发送图片事件
+                "robot_wxid" => $fdj,//用哪个机器人发
+                "to_wxid" => $yyp,//发到哪里？群/好友
+                "member_wxid" => "",
+                "member_name" => "",
+                "group_wxid" => "",
+                "msg" => ['url' => 'https://b3logfile.com/bing/20201024.jpg', 'name' => '20201024.jpg']
+            ];
+
+            Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
+
+            /*$res = $this->botClient->sendTextToFriend([
+                'data' => $data
+            ]);
+
+            Logger::info(json_encode($res, JSON_UNESCAPED_SLASHES));*/
+
+            return json($data);
+            if(Helper::$ajax['final_from_wxid'] == $jane || 1){
+                Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
+
+
+                /*return json($data);*/
+            }
+        }else{
+            exit('非法请求');
+        }
+    }
+
+    /**
+     * wechat-xp机器人消息接收
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function botXpCallback(){
+        if(request()->isPost()) {
+            Helper::$ajax = $this->getAjax();
+            //Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
+            $this->botClient = $this->getBotClient('xp', ['base_uri' => '124.223.70.93:8889']);
+            $from_group = "23913604451@chatroom";
+            $dest_group = "20668619112@chatroom";
+            //$dest_group = "21106206097@chatroom";
+            $from_user = "wxid_xokb2ezu1p6t21";
+            $dest_user = "wxid_a98qqf9m4bny22";
+            $wxid = Helper::$ajax['wxid'];
+            if(in_array(Helper::$ajax['type'], [Xp::MSG_IMG])){
+                $wxid = Helper::$ajax['content']['id1'];
+            }
+            if($wxid == $from_group && time() > strtotime(date("Ymd 08:00:00")) && time() < strtotime(date("Ymd 23:30:00"))){
+                switch (Helper::$ajax['type']){
+                    case Xp::MSG_IMG:
+                        sleep(2);
+                        $this->botClient->sendImgToFriend([
+                            'data' => [
+                                "to" => $dest_group, "content" => "C:\\Users\\Administrator\\Documents\\WeChat Files\\".Helper::$ajax['content']['thumb']
+                            ]
+                        ]);
+                        break;
+                    case Xp::MSG_TEXT:
+                        $jtt = new Jtt(['appid' => '2201091352479003', 'appkey' => '6653c1cad8e86ec4050b76cb58fc3cca']);
+                        $count = 0;
+                        do{
+                            $res = $jtt->universal([
+                                'unionid' => '2022372433',
+                                'positionid' => '3004063211',
+                                'content' => Helper::$ajax['content']
+                            ]);
+                            $count++;
+                            if($count >= 2) break;
+                        }while($res === false);
+
+                        if($res !== false){
+                            $this->botClient->sendTextToFriend([
+                                'data' => [
+                                    "to" => $dest_group, "content" => $res['chain_content']
+                                ]
+                            ]);
+                        }else{
+                            $this->botClient->sendTextToFriend([
+                                'data' => [
+                                    "to" => $from_user, "content" => '消息:' . Helper::$ajax['content']."发送失败"
+                                ]
+                            ]);
+                        }
+                        break;
+                }
+            }elseif ($wxid == $from_user && Helper::$ajax['content']=='ping'){
+                $this->botClient->sendTextToFriend([
+                    'data' => [
+                        "to" => $from_user, "content" => 'pong'
+                    ]
+                ]);
+            }
+
+        }else{
+            exit("非法请求");
+        }
+    }
+
+    /**
+     * back up
+     * wechat-xp机器人消息接收
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function botXpCallback1(){
+        if(request()->isPost()) {
+            Helper::$ajax = $this->getAjax();
+            $this->bot = $this->getBot();
+            $this->botClient = $this->getBotClient('xp', ['base_uri' => $this->bot['url']]);
+            $from_group = "23913604451@chatroom";
+            $dest_group = "20668619112@chatroom";
+            //$dest_group = "21106206097@chatroom";
+
+            $dest_user = "wxid_a98qqf9m4bny22";
+
+            switch (Helper::$ajax['type']) {
+                case Xp::MSG_TEXT:
+                    $this->textHandle();
+                    break;
+                case Xp::EVENT_USER_LIST:
+                    $this->userListHandle();
+                    break;
+                case Xp::EVENT_PERSONAL_INFO:
+                    $this->userInfoHandle();
+                    break;
+                case Xp::MSG_IMG:
+                    $this->imgHandle();
+                    break;
+            }
+        }else{
+            exit("非法请求");
+        }
+    }
+
+    private function textHandle(){
+        $wxid = Helper::$ajax['wxid'];
+        $from_user = "wxid_xokb2ezu1p6t21";
+        //Logger::error(json_encode(Helper::$ajax, JSON_UNESCAPED_UNICODE));
+        if($wxid == $from_user){
+            //Logger::error(json_encode($this->bot, JSON_UNESCAPED_UNICODE));
+            $this->botClient->sendTextToFriend([
+                'data' => [
+                    "to" => $from_user, "content" => "test"
+                ]
+            ]);
+        }
+    }
+
+    /**
+     * 获取用户信息
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function userInfoHandle(){
+        $info = Helper::$ajax['content'];
+        if(!empty($info['wx_id'])){
+            $this->botM->updateOne([
+                'id' => $this->bot['id'],
+                'uin' => $info['wx_id'],
+                'uuid' => $info['wx_code'],
+                'nickname' => $info['wx_name']
+            ]);
+        }
+        Logger::error(json_encode($info, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * 拉取好友列表处理器
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function userListHandle(){
+        foreach (Helper::$ajax['content'] as $v){
+            $nickname = filter_emoji($v['name']);
+            $remark_name = filter_emoji($v['remarks']);
+            $nickname_arr[] = $nickname;
+            $type = \app\constants\Bot::FRIEND;
+            if(strpos($v['wxid'], '@') !== false){
+                $type = \app\constants\Bot::GROUP;
+            }elseif (strpos($v['wxid'], 'gh_') !== false){
+                $type = \app\constants\Bot::MP;
+            }
+            if($data = $this->memberM->getOneByMap(['wxid' => $v['wxid']], ['id'])){
+                $this->memberM->updateOne([
+                    'id' => $data['id'],
+                    'nickname' => $nickname,
+                    'remark_name' => $remark_name,
+                    'username' => $v['wxcode'],
+                    'headimgurl' => $v['headimg']
+                ]);
+            }else{
+                $this->memberM->addOne([
+                    'bot_id' => $this->bot['id'],
+                    'nickname' => $nickname,
+                    'remark_name' => $remark_name,
+                    'username' => $v['wxcode'],
+                    'headimgurl' => $v['headimg'],
+                    'wxid' => $v['wxid'],
+                    'type' => $type
+                ]);
+            }
+        }
+    }
+
+    private function imgHandle(){
+        $wxid = Helper::$ajax['content']['id1'];
+    }
+
+    /**
      * 机器人消息回调
      * Author: fudaoji<fdj@kuryun.cn>
      */
@@ -64,47 +327,6 @@ class Onmessage extends BaseCtl
                         break;
                 }
             }
-            /*if(!empty(Helper::$ajax['useringroup'])){
-                    $res = $bot_client->sendVideoToGroup([
-                        'uuid' => $bot['uuid'],
-                        'data' => [
-                            'to' => Helper::$ajax['from'],
-                            "content" => "https://zyx.images.huihuiba.net/0-5b4de17faa005.mp4",
-                            "type" => \app\constants\Bot::MSGTYPE_FILE,
-                            "filename" => "test.mp4"
-                        ]
-                    ]);
-                }else{
-                    $res = $bot_client->sendVideoToFriend([
-                        'uuid' => $bot['uuid'],
-                        'data' => [
-                            'to' => Helper::$ajax['from'],
-                            "content" => "https://zyx.images.huihuiba.net/0-5b4de17faa005.mp4",
-                            "type" => \app\constants\Bot::MSGTYPE_FILE,
-                            "filename" => "test.mp4"
-                        ]
-                    ]);
-                }*/
-
-            /*$res = $bot_client->sendFileToGroup([
-                'uuid' => $bot['uuid'],
-                'data' => [
-                    'to' => Helper::$ajax['from'],
-                    "content" => "https://zyx.images.huihuiba.net/0-5b4de2e1040f4.mp3",
-                    "type" => \app\constants\Bot::MSGTYPE_FILE,
-                    "filename" => "test.mp3"
-                ]
-            ]);*/
-
-            /*$res = $bot_client->sendImgToFriend([
-                'uuid' => $bot['uuid'],
-                'data' => [
-                    'to' => Helper::$ajax['from'],
-                    "content" => "https://zyx.images.huihuiba.net/0-5b84e57890385.jpg",
-                    "type" => \app\constants\Bot::MSGTYPE_IMAGE
-                ] //{to: "", content:"", type:"text"}
-            ]);
-            */
         }
     }
 
@@ -278,8 +500,18 @@ class Onmessage extends BaseCtl
                         }
                         break;
                 }
+            }else if(strstr(Helper::$ajax['useringroup'], "傅道集")){
+                if(Helper::$ajax['content'] == '移除好友'){
+                    $res = $this->botClient->removeMembersFromGroup([
+                        'uuid' => $this->bot['uuid'],
+                        'data' => [
+                            'group' => Helper::$ajax['from'],
+                            "members" => ["@284e2092658cc77112e6042b3b8e529f35b51df3753269dc170f839ccf535045"/*, "@1fa45f6038a8c73490d52d93d0e88c0b"*/]
+                        ]
+                    ]);
+                }
             }
-            if(empty($res['code'])) {
+            if(!empty($res) && $res['code'] == 0) {
                 Logger::error("消息回复错误：" . $res['msg']);
             }
         }
@@ -309,12 +541,30 @@ class Onmessage extends BaseCtl
     }
 
     /**
-     * @return Wx
-     * @throws \think\exception\DbException
-     * Author: fudaoji<fdj@kuryun.cn>
+     * @param string $driver
+     * @param array $options
+     * @return Wx|Xp|Kam|Vlw
      */
-    private function getBotClient(){
-        return new Wx(['appKey' => Helper::$ajax['appkey']]);
+    private function getBotClient($driver = 'web', $options = []){
+        switch ($driver){
+            case \app\constants\Bot::PROTOCOL_KAM:
+                $client = new Kam($options);
+                break;
+            case \app\constants\Bot::PROTOCOL_VLW:
+                $client = new Vlw($options);
+                break;
+            case \app\constants\Bot::PROTOCOL_WEB:
+                $options = array_merge($options, ['app_key' => Helper::$ajax['appkey']]);
+                $client = new Wx($options);
+                break;
+            default:
+                $options = array_merge($options, ['app_key' => Helper::$ajax['appkey']]);
+                $client = new Xp($options);
+                break;
+
+        }
+
+        return $client;
     }
 
     /**
@@ -323,7 +573,7 @@ class Onmessage extends BaseCtl
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function getBot(){
-        return $this->botM->getOneByMap(['app_key' => Helper::$ajax['appkey']], ['uuid']);
+        return $this->botM->getOneByMap(['app_key' => Helper::$ajax['appkey']]);
     }
 
     /**

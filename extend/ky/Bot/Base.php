@@ -12,27 +12,38 @@ namespace ky\Bot;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 
-class Base
+Abstract class Base
 {
     private $client;
     private $options = [];
     protected $baseUri = '';
-    private $errMsg = '';
+    protected $errMsg = '';
     protected $appKey = '';
 
     public function __construct($options = [])
     {
         $this->options = array_merge($this->options, $options);
-        if(!empty($this->options['appKey'])){
-            $this->appKey = $this->options['appKey'];
+        if(!empty($this->options['app_key'])){
+            $this->appKey = $this->options['app_key'];
         }
+    }
+
+    public function setAppKey($app_key = ''){
+        $this->appKey = $app_key;
+        return $this;
+    }
+
+    public function setBaseUri($url = ''){
+        $this->baseUri = $url;
+        return $this;
     }
 
     protected function request($params = []){
         $this->client = new Client([
             'base_uri' => empty($this->options['base_uri']) ? $this->baseUri : $this->options['base_uri'],
-            //'timeout' => empty($this->options['timeout']) ? 10 : $this->options['timeout']
+            'timeout' => empty($this->options['timeout']) ? 15 : $this->options['timeout']
         ]);
+        $url = empty($params['url']) ? '/' : $params['url'];
         $method = empty($params['method']) ? 'post' : $params['method'];
         $extra = [
             'http_errors' => false
@@ -51,7 +62,7 @@ class Base
             }else{
                 switch ($method){
                     case 'get':
-                        $params['url'] .= '?' . http_build_query($params['data']);
+                        $url .= '?' . http_build_query($params['data']);
                         break;
                     default:
                         $extra['json'] = $params['data'];
@@ -60,14 +71,14 @@ class Base
             }
         }
 
-        $response = $this->client->request($method, $params['url'], $extra);
+        $response = $this->client->request($method, $url, $extra);
 
         if($response->getStatusCode() !== 200){
             $this->setError($response->getStatusCode());
             return false;
         }
         //return $response->getBody()->getContents();
-        return json_decode($response->getBody()->getContents(), true);
+        return $this->dealRes(json_decode($response->getBody()->getContents(), true));
     }
 
     public function setError($code = 200){
@@ -83,5 +94,7 @@ class Base
     public function getError(){
         return $this->errMsg;
     }
+
+    abstract public function dealRes($res);
 
 }

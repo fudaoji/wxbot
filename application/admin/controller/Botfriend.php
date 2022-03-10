@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 
 use app\admin\model\BotMember;
+use ky\Bot\Vlw;
 use ky\Bot\Wx;
 
 class Botfriend extends Botbase
@@ -34,7 +35,7 @@ class Botfriend extends Botbase
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = ['type' => \app\constants\Bot::FRIEND, 'uin' => $this->bot['uin']];
-            !empty($post_data['search_key']) && $where['nickname|remark_name'] = ['like', '%' . $post_data['search_key'] . '%'];
+            !empty($post_data['search_key']) && $where['nickname|remark_name|username|wxid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList(
@@ -50,13 +51,14 @@ class Botfriend extends Botbase
 
         $builder = new ListBuilder();
         $builder->setSearch([
-            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '昵称、备注名称']
+            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => 'wxid、微信号、昵称、备注名称']
         ])
-            ->setTip("注意：当前的备注名称就是指实际微信通讯录当中您对该好友的备注")
+            ->setTip("注意：当前的备注名称就是您对该好友的微信备注")
             ->addTopButton('self', ['title'=>'拉取最新好友', 'href' => url('syncFriends'), 'data-ajax' => 1])
-            ->addTableColumn(['title' => '序号', 'field' => 'id', 'type' => 'index', 'minWidth' => 70])
-            ->addTableColumn(['title' => '微信昵称', 'field' => 'nickname'])
-            ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name'])
+            ->addTableColumn(['title' => 'Wxid', 'field' => 'wxid', 'minWidth' => 90])
+            ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 90])
+            ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 90])
+            ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name', 'minWidth' => 70])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('edit', ['title' => '设置备注名']);
 
@@ -83,14 +85,13 @@ class Botfriend extends Botbase
         }
         if(request()->isPost()){
             $post_data = input('post.');
-            $bot = new Wx(['appKey' => $this->bot['app_key']]);
-            $res = $bot->setFriendRemarkName([
-                'uuid' => $this->bot['uuid'],
-                'data' => ['to' => $data['username'], 'remark_name' => $post_data['remark_name']]
+            $res = Vlw::init(['app_key' => $this->bot['app_key'], 'base_uri' => $this->bot['url']])->setFriendRemarkName([
+                'robot_wxid' => $this->bot['uin'],
+                'to_wxid' => $data['wxid'],
+                'note' => $post_data['remark_name']
             ]);
             if($res['code']){
                 $this->model->updateOne(['id' => $id, 'remark_name' => $post_data['remark_name']]);
-                $bot->getFriends(['uuid' => $this->bot['uuid']]); //刷新好友数据
                 $this->success('设置成功');
             }
             $this->error($res['msg']);

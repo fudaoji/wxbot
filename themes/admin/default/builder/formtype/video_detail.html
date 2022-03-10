@@ -1,0 +1,70 @@
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']}">
+        <span class="text-danger">*</span>
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <input style="display: inline-block;width: 75%;"
+               placeholder="{$form['tip'] ?? ''}"
+               type="text"
+               readonly
+               value="{$form['options']['url'] ?? ''}"
+               id="url"
+               class="layui-input"
+               name="url"
+               required
+               ／>
+        <div class="layui-btn-group" style="margin-left: -5px;margin-top: -3px;">
+            <a href="javascript:;" class="layui-btn layui-btn-primary" id="picker">选择视频</a>
+            <a href="{$form['options']['url'] ?? ''}" class="layui-btn <?=empty($form['options']['url']) ? 'hide' : '';?>" id="preview" style="border-left: none;">预览</a>
+        </div>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label " >文件名称</label>
+    <div class="layui-input-block">
+        <input
+                type="text"
+                id="title"
+                class="layui-input"
+                readonly
+                name="title"
+                value="{$form['options']['title'] ?? ''}"
+                ／>
+    </div>
+    <input type="hidden" id="size" name="size" value="{$form['options']['size'] ?? ''}" ／>
+    <input type="hidden" id="ext" name="ext" value="{$form['options']['ext'] ?? ''}" ／>
+</div>
+
+<script>
+    layui.use(['upload', 'jquery'], function () {
+        var upload = layui.upload
+                , $ = layui.jquery;
+
+        var upload_index;
+        upload.render({
+            elem: '#picker'
+            ,url: '{:url("uploader/filePost")}'
+            ,multiple: false
+            ,accept: 'file' //允许上传的文件类型
+            ,size: "{:config('system.upload.video_size')/1000}" //最大允许上传的文件大小
+            ,exts: "{:config('system.upload.video_ext')}".split(',').join('|')
+            ,before: function () {
+                upload_index = layer.load(1);
+            }
+            ,done: function(res, index, upload){ //上传后的回调
+                layer.close(upload_index);
+                if(res.code !== 1){
+                    layer.alert(res.msg);
+                    return;
+                }
+                $("#url").val(res.data[0].url);
+                $("#title").val(res.data[0].original_name);
+                $("#ext").val(res.data[0].ext);
+                $("#size").val(res.data[0].size);
+                $("#preview").removeClass('hide');
+            }
+        });
+    });
+</script>

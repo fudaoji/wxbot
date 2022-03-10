@@ -82,6 +82,7 @@ class Adminrule extends Base
             ->addFormItem('href', 'text', '链接', '链接', [])
             ->addFormItem('icon', 'icon', '图标', 'font-awesome图标')
             ->addFormItem('sort', 'number', '排序', '按数字从小到大排列', [], 'required')
+            ->addFormItem('status', 'radio', '状态', '状态', [1 => '显示', 0 => '隐藏'])
             ->setFormData($data);
 
         return $builder->show();

@@ -25,6 +25,22 @@ class Wx extends Base
     }
 
     /**
+     * 拉取群成员
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function pullGroupMembers($params = []){
+        $url = '/user/group/members';
+        return $this->request([
+            'url' => $url . '?uuid=' . $params['uuid'],
+            'method' => 'post',
+            'headers' => ['AppKey' => $this->appKey],
+            'data' => $params['data']
+        ]);
+    }
+
+    /**
      * 群发视频
      * @param array $params
      * @return bool|mixed
@@ -80,6 +96,22 @@ class Wx extends Base
      */
     public function sendTextBatch($params = []){
         $url = '/message/batch';
+        return $this->request([
+            'url' => $url . '?uuid=' . $params['uuid'],
+            'method' => 'post',
+            'headers' => ['AppKey' => $this->appKey],
+            'data' => $params['data']
+        ]);
+    }
+
+    /**
+     * 移除群成员
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function removeMembersFromGroup($params = []){
+        $url = '/user/group/removemembers';
         return $this->request([
             'url' => $url . '?uuid=' . $params['uuid'],
             'method' => 'post',
@@ -272,8 +304,7 @@ class Wx extends Base
         return $this->request([
             'url' => $url . '?uuid=' . $params['uuid'],
             'method' => 'post',
-            'headers' => ['AppKey' => $this->appKey],
-            'data' => $params['data']
+            'headers' => ['AppKey' => $this->appKey]
         ]);
     }
 
@@ -289,5 +320,9 @@ class Wx extends Base
             'method' => 'get',
             'headers' => ['AppKey' => $this->appKey]
         ]);
+    }
+
+    public function dealRes($res){
+        return $res;
     }
 }

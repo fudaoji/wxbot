@@ -19,11 +19,20 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'c10986cf89c5ba6ecfc94d371c0de7dfc7e880d2',
+    'reference' => '90ae11b13b48b2da256bbafc0bb8a6ebcfaea14d',
     'name' => 'topthink/think',
   ),
   'versions' => 
   array (
+    'alchemy/binary-driver' => 
+    array (
+      'pretty_version' => 'v5.2.0',
+      'version' => '5.2.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'e0615cdff315e6b4b05ada67906df6262a020d22',
+    ),
     'doctrine/instantiator' => 
     array (
       'pretty_version' => '1.4.0',
@@ -41,6 +50,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '3fc6a7ab6d3853c0f4e2922539b56cc37ef361cd',
+    ),
+    'evenement/evenement' => 
+    array (
+      'pretty_version' => 'v3.0.1',
+      'version' => '3.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '531bfb9d15f8aa57454f5f0285b18bec903b8fb7',
     ),
     'guzzlehttp/guzzle' => 
     array (
@@ -100,6 +118,15 @@ private static $installed = array (
         0 => '1.10.2',
       ),
     ),
+    'neutron/temporary-filesystem' => 
+    array (
+      'pretty_version' => '3.0.1',
+      'version' => '3.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '55f3d4896eff3bf070e491916e6c564db5e640b5',
+    ),
     'overtrue/socialite' => 
     array (
       'pretty_version' => '2.0.23',
@@ -135,6 +162,15 @@ private static $installed = array (
       array (
       ),
       'reference' => 'a70c0ced4be299a63d32fa96d9281d03e94041df',
+    ),
+    'php-ffmpeg/php-ffmpeg' => 
+    array (
+      'pretty_version' => 'v0.19.0',
+      'version' => '0.19.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '22b71931fd1a97207788636b283eee1c0067eff7',
     ),
     'phpdocumentor/reflection-common' => 
     array (
@@ -518,6 +554,15 @@ private static $installed = array (
         0 => '2.0',
       ),
     ),
+    'symfony/filesystem' => 
+    array (
+      'pretty_version' => 'v5.4.5',
+      'version' => '5.4.5.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '797680071ea8f71b94eb958680c50d0e002638f5',
+    ),
     'symfony/http-foundation' => 
     array (
       'pretty_version' => 'v5.3.3',
@@ -581,6 +626,15 @@ private static $installed = array (
       ),
       'reference' => 'eca0bf41ed421bed1b57c4958bab16aa86b757d0',
     ),
+    'symfony/process' => 
+    array (
+      'pretty_version' => 'v5.4.5',
+      'version' => '5.4.5.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '95440409896f90a5f85db07a32b517ecec17fa4c',
+    ),
     'symfony/psr-http-message-bridge' => 
     array (
       'pretty_version' => 'v2.1.0',
@@ -633,7 +687,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'c10986cf89c5ba6ecfc94d371c0de7dfc7e880d2',
+      'reference' => '90ae11b13b48b2da256bbafc0bb8a6ebcfaea14d',
     ),
     'topthink/think-captcha' => 
     array (

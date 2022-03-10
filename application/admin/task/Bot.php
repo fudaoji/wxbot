@@ -19,6 +19,7 @@ class Bot extends Base
 {
     public function __construct(){
         parent::__construct();
+        set_time_limit(0);
     }
 
     /**
@@ -41,6 +42,7 @@ class Bot extends Base
                 $bot_client = model('admin/bot')->getRobotClient($task);
                 if(!empty($task['img'])){
                     $bot_client->sendImgToFriends(['robot_wxid' => $task['wxid'], 'to_wxid' => $task['members'], 'path' => $task['img']]);
+                    sleep(3);
                 }
                 if(!empty($task['content'])){
                     $bot_client->sendTextToFriends(['robot_wxid' => $task['wxid'], 'to_wxid' => $task['members'], 'msg' => $task['content']]);

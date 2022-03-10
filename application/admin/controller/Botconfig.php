@@ -49,7 +49,7 @@ class Botconfig extends Botbase
         }
 
         $groups = model('botMember')->getField('id,nickname',['uin' => $this->bot['uin'], 'type' => Bot::GROUP]);
-        $members = model('botMember')->getField('wxid,nickname',['uin' => $this->bot['uin'], 'type' => Bot::FRIEND]);
+        $members = model('botGroupmember')->getField('wxid,nickname',['group_id' => ['in', array_keys($groups)]]);
         $builder = new FormBuilder();
         $builder->setTip("调度群：所有发单机器人集合群，选品人员把商品素材发到此群，那么群里的所有机器人会各自采集然后转发各自负责的群。")
             ->addFormItem('central_group', 'chosen', '选择调度群', '选择调度群', $groups, 'required')

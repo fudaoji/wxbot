@@ -157,6 +157,7 @@ class Bottask extends Botbase
     /**
      * 新增任务
      * @return mixed
+     * @throws \think\exception\DbException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function add(){
@@ -164,10 +165,18 @@ class Bottask extends Botbase
             'admin_id' => $this->adminInfo['id'],
             'bot_id' => $this->bot['id'],
         ];
-        if($gid = model('botConfig')->getConf(['admin_id' => $this->adminInfo['id']], 'central_group')){
+        $last_one = $this->model->getOneByOrder([
+            'where' => ['admin_id' => $this->adminInfo['id'], 'bot_id' => $this->bot['id']],
+            'field' => 'members',
+            'order' => ['id' => 'desc']
+        ]);
+        if($last_one){
+            $data['members'] = explode(',', $last_one['members']);
+        }else if($gid = model('botConfig')->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $this->bot['id']], 'central_group')){
             $group = model('botMember')->getOne($gid);
             $data['members'] = [$group['wxid']];
         }
+
         $groups = model('botMember')->getField('wxid,nickname',['uin' => $this->bot['uin']]);
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
@@ -311,7 +320,7 @@ class Bottask extends Botbase
         if(empty($data['img']) && empty($data['content'])){
             $this->error('图片或文本内容必填一项');
         }
-
+        $data['bot_id'] = $this->bot['id'];
         if (empty($data[$this->pk])) {
             $res = $this->model->addOne($data);
         } else {

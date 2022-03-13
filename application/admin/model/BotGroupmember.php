@@ -28,9 +28,43 @@ class BotGroupmember extends Base
      * @throws \think\exception\PDOException Author: fudaoji<fdj@kuryun.cn>
      */
     public function pullMembers($bot, $group){
+        $bot_client = model('bot')->getRobotClient($bot);
         switch ($bot['protocol']) {
+            case Bot::PROTOCOL_WXWORK:
+                $res = $bot_client->getGroupMember([
+                    'robot_wxid' => $bot['uin'],
+                    'group_wxid' => $group['wxid'],
+                ]);
+
+                if($res['code'] && !empty($res['ReturnJson']['data']['member_list'])) {
+                    $list = $res['ReturnJson']['data']['member_list'];
+                    $wxid_arr = [];
+                    foreach ($list as $k => $v){
+                        $nickname = filter_emoji($v['username']);
+                        $wxid = $v['user_id'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['group_id' => $group['id'], 'wxid' => $wxid], ['id'])){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'bot_id' => $bot['id'],
+                                'group_id' => $group['id'],
+                                'nickname' => $nickname,
+                                'wxid' => $wxid
+                            ]);
+                        }
+                    }
+                    //删除无效数据
+                    $this->delByMap(['group_id' => $group['id'], 'wxid' => ['notin', $wxid_arr]]);
+                    return count($list);
+                } else{
+                    Logger::error("pullGroupMembers:" . json_encode($res, JSON_UNESCAPED_UNICODE));
+                }
+                break;
             case Bot::PROTOCOL_VLW:
-                $bot_client = new Vlw(['app_key' => $bot['app_key'], 'base_uri' => $bot['url']]);
                 $res = $bot_client->getGroupMember([
                         'robot_wxid' => $bot['uin'],
                         'group_wxid' => $group['wxid'],

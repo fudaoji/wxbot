@@ -35,21 +35,23 @@ class Botconfig extends Botbase
                 if($res = $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'key' => $k], true, true)){
                     $this->model->updateOne([
                         'id' => $res['id'],
-                        'value' => $v
+                        'value' => $v,
+                        'bot_id' => $this->bot['id']
                     ]);
                 }else{
                     $this->model->addOne([
                         'key' => $k,
                         'value' => $v,
-                        'admin_id' => $this->adminInfo['id']
+                        'admin_id' => $this->adminInfo['id'],
+                        'bot_id' => $this->bot['id']
                     ]);
                 }
             }
             $this->success('保存成功');
         }
 
-        $groups = model('botMember')->getField('id,nickname',['uin' => $this->bot['uin'], 'type' => Bot::GROUP]);
-        $members = model('botGroupmember')->getField('wxid,nickname',['group_id' => ['in', array_keys($groups)]]);
+        $groups = model('botMember')->getField('id,nickname',['uin' => $this->bot['uin'], 'type' => Bot::GROUP], true);
+        $members = model('botGroupmember')->getField('wxid,nickname',['group_id' => ['in', array_keys($groups)]], true);
         $builder = new FormBuilder();
         $builder->setTip("调度群：所有发单机器人集合群，选品人员把商品素材发到此群，那么群里的所有机器人会各自采集然后转发各自负责的群。")
             ->addFormItem('central_group', 'chosen', '选择调度群', '选择调度群', $groups, 'required')

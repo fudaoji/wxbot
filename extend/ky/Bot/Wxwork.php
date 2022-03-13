@@ -363,23 +363,22 @@ class Wxwork extends Base
      * res:
             robot_wxid (string)  // 机器人ID
             group_wxid (string)  // 群ID
-            is_refresh (int)  // 1为重刷列表再获取，0为取缓存，默认为0
      *resp:
         {
             "Code": 0,
             "Result": "OK",
             "ReturnJson": {
-                "group_wxid": "", // 群ID
-                "group_name": "", // 群昵称
-                "count": 2, // 成员数量
-                "owner_wxid": "", // 群主微信ID
-                "owner_nickname": "", // 群主微信昵称
-                "member_list": [{
-                    "wxid": "", // 微信ID
-                    "wx_num": "", // 微信号
-                    "group_nickname": "", // 群内昵称
-                    "nickname": "" // 微信昵称
-                }...]
+                "data":[{
+                    "avatar": "", // 头像
+                    "corp_id": "", // 公司
+                    "nickname": "", // 昵称  有时候会返回空 尽量取 username
+                    "position": "", // 职位
+                    "realname": "", // 实名认证姓名
+                    "remark": "", // 备注
+                    "sex": 1, // 性别，0 无 / 1 男 / 2 女
+                    "user_id": "", // 用户ID
+                    "username": "" // 昵称
+                }]
             }
         }
      * @param array $params

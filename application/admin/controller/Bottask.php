@@ -58,6 +58,17 @@ class Bottask extends Botbase
                     [$post_data['page'], $post_data['limit']], $where,
                     ['plan_time' => 'asc'], true, true
                 );
+                foreach ($list as $k => $v){
+                    $ids = explode(',', $v['members']);
+                    $member = model('botMember')->getOneByMap([
+                        'wxid' => $ids[0]
+                    ]);
+                    $v['members'] = $member['nickname'];
+                    if(count($ids) > 1){
+                        $v['members'] .= "等".count($ids)."个对象";
+                    }
+                    $list[$k] = $v;
+                }
             }else{
                 $list = [];
             }
@@ -78,15 +89,16 @@ class Bottask extends Botbase
             ->addTableColumn(['title' => '计划发送时间', 'field' => 'plan_time', 'minWidth' => 180, 'type' => 'datetime'])
             ->addTableColumn(['title' => '发送图片', 'field' => 'img', 'minWidth' => 100, 'type' => 'picture'])
             ->addTableColumn(['title' => '发送文本', 'field' => 'content', 'minWidth' => 200])
-            ->addTableColumn(['title' => '发送对象', 'field' => 'members', 'minWidth' => 200, 'type' => 'enum', 'options' => $groups = model('botMember')->getField('wxid,nickname',['uin' => $this->bot['uin']])]);
+            ->addTableColumn(['title' => '发送对象', 'field' => 'members', 'minWidth' => 200]);
+            //->addTableColumn(['title' => '发送对象', 'field' => 'members', 'minWidth' => 200, 'type' => 'enum', 'options' => $groups = model('botMember')->getField('wxid,nickname',['uin' => $this->bot['uin']])]);
         if($name == 'done'){
             $builder->addTableColumn(['title' => '完成时间', 'field' => 'complete_time', 'minWidth' => 180, 'type' => 'datetime']);
         }else{
             $builder->addTableColumn(['title' => '是否开启', 'field' => 'status', 'minWidth' => 70, 'type' => 'enum', 'options' => [0 => '停止', 1 => '开启']])
                 ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
                 ->addRightButton('edit')
-                ->addRightButton('self', ['title' => '置顶', 'href' => url('topPost', ['id' => '__data_id__']), 'lay-event' => 'ajax'])
-                ->addRightButton('delete', ['href' => url('delPost', ['id' => '__data_id__'])]);
+                /*->addRightButton('self', ['title' => '置顶', 'href' => url('topPost', ['id' => '__data_id__']), 'lay-event' => 'ajax'])
+                ->addRightButton('delete', ['href' => url('delPost', ['id' => '__data_id__'])])*/;
         }
 
         return $builder->show();
@@ -326,7 +338,7 @@ class Bottask extends Botbase
         } else {
             $old = $this->model->getOne($data['id']);
             $res = $this->model->updateOne($data);
-            $this->model->afterUpdatePlanTime($res, $old);
+            //$this->model->afterUpdatePlanTime($res, $old);
         }
         if ($res) {
             $this->success('数据保存成功', '/undefined');

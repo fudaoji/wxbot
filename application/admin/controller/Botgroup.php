@@ -68,7 +68,6 @@ class Botgroup extends Botbase
         ])
             ->setTip("注意：当前的备注名称就是指实际微信通讯录当中您对该群的备注")
             ->addTopButton('self', ['title'=>'拉取最新群组', 'href' => url('syncGroups'), 'data-ajax' => 1])
-            ->addTableColumn(['title' => '序号', 'field' => 'id', 'type' => 'index', 'minWidth' => 70])
             ->addTableColumn(['title' => '群id', 'field' => 'wxid'])
             ->addTableColumn(['title' => '群名称', 'field' => 'nickname'])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name'])

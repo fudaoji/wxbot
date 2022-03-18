@@ -47,7 +47,7 @@ class Bot extends Base
                     ->getRobotList();
                 if($return['code'] && !empty($return['ReturnJson'])){
                     foreach ($return['ReturnJson']['data'] as $v){
-                        if($v['username'] == $params['nickname']){
+                        if($v['wxid'] == $params['uin']){
                             $v['nickname'] = $v['username'];
                             $v['username'] = $v['wx_num'];
                             $v['headimgurl'] = $v['wx_headimgurl'];

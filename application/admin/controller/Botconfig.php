@@ -50,12 +50,17 @@ class Botconfig extends Botbase
             $this->success('保存成功');
         }
 
+        if(!empty($settings['officer'])){
+            $settings['officer'] = explode(',', $settings['officer']);
+        }else{
+            $settings['officer'] = [];
+        }
         $groups = model('botMember')->getField('id,nickname',['uin' => $this->bot['uin'], 'type' => Bot::GROUP], true);
         $members = model('botGroupmember')->getField('wxid,nickname',['group_id' => ['in', array_keys($groups)]], true);
         $builder = new FormBuilder();
         $builder->setTip("调度群：所有发单机器人集合群，选品人员把商品素材发到此群，那么群里的所有机器人会各自采集然后转发各自负责的群。")
             ->addFormItem('central_group', 'chosen', '选择调度群', '选择调度群', $groups, 'required')
-            ->addFormItem('officer', 'chosen', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
+            ->addFormItem('officer', 'chosen_multi', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
             ->setFormData($settings);
         return $builder->show();
     }

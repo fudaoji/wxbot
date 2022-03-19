@@ -184,7 +184,7 @@ class Onmessage extends BaseCtl
             }elseif ($wxid == $from_user && Helper::$ajax['content']=='ping'){
                 $this->botClient->sendTextToFriend([
                     'data' => [
-                        "to" => $from_user, "content" => 'pong'
+                        "to" => $from_user, "content" => 'pong！'
                     ]
                 ]);
             }

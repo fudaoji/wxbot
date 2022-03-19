@@ -162,7 +162,8 @@ class Api extends BaseCtl
                 'admin_id' => $group['admin_id'],
                 'key' => 'officer'
             ], ['value'], true);
-            if($officer && $officer['value'] != $this->fromWxid){ //设置了指挥官且当前发信人不是指挥官则退出
+            //未设置指挥官或当前发信人不是指挥官则退出
+            if(empty($officer) || strpos($officer['value'], $this->fromWxid)===false ){
                 return;
             }
 

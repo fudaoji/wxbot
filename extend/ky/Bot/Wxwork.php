@@ -24,6 +24,7 @@ class Wxwork extends Base
     const EVENT_LOGIN = 0; //登录
     const EVENT_QUIT = 1; //退出
 
+    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMemberEnterprise'; //将好友移除群
     const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
     const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
     const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
@@ -76,6 +77,21 @@ class Wxwork extends Base
         return array_merge(empty($params['data']) ? $params : $params['data'], [
             'api' => $api,
             'token' => $this->token
+        ]);
+    }
+
+    /**
+     * req:
+    robot_wxid (string)  // 机器人ID
+    group_wxid (string)  // 群ID
+    to_wxid (string)  // 要踢出的群成员ID，多个成员用英文逗号“,”分开
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function removeGroupMemberEnterprise($params = []){
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_REMOVE_GROUP_MEMBER)
         ]);
     }
 

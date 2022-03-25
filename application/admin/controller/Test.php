@@ -21,8 +21,11 @@ class Test extends Base
     }
 
     public function testPregMatch(){
-        $content = "@每日里客服[emoji=\\u2005][弱]";
-        $res = preg_match("/^@(.*)\[emoji=\\\\u2005\]\[弱\]/", $content, $matches);
+        $content = "@每日里客服[emoji=\u00A0][弱]";
+        if(($pos1 = strpos($content, "@") !== false) && ($pos2 = strpos($content, "[")) !== false){
+            $matches = trim(substr($content, $pos1, $pos2-1));
+        }
+        //$res = preg_match("/^@(.*)(?:\[emoji=\\\\u2005\]|\[emoji=\\u00A0\]).*\[弱\]/", $content, $matches);
         dump($matches);
     }
 

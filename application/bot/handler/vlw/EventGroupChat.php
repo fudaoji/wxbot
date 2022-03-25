@@ -88,11 +88,11 @@ class EventGroupChat extends Api
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function rmGroupMember(){
-        if($this->fromWxid == '7881299942929761'){
-            Logger::error(json_encode($this->content, JSON_UNESCAPED_UNICODE));
-            if(preg_match("/^@(.*)\[emoji=\\\\u2005\]\[弱\]/", $this->content['msg'], $matches)){
-                Logger::error(json_encode($matches, JSON_UNESCAPED_UNICODE));
-                if(!empty($matches[1]) && $gm = $this->getGroupMemberByNickname($matches[1])){
+        if($this->groupWxid == 'R:10951134140940878'){
+            if(($pos1 = strpos($this->content['msg'], "@") !== false) && ($pos2 = strpos($this->content['msg'], "[")) !== false){
+                $nickname = trim(substr($this->content['msg'], $pos1, $pos2-1));
+                if(!empty($nickname) && $gm = $this->getGroupMemberByNickname($nickname)){
+                    Logger::error($gm);
                     /*
                      * todo
                      * 1.根据昵称找到wxid
@@ -104,11 +104,11 @@ class EventGroupChat extends Api
                             [
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $this->groupWxid,
-                                'msg' => "@".$matches[1]."你已经被[弱]3次，现将你请出群。"
+                                'msg' => "@".$nickname."你已经被[弱]3次，现将你移出群。"
                             ]
                         );
                         //踢出
-                        if(! $res = $this->botClient->removeGroupMemberEnterprise(
+                        if(! $res = $this->botClient->removeGroupMember(
                             [
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $gm['wxid'],
@@ -116,13 +116,13 @@ class EventGroupChat extends Api
                             ]
                         )){
                             Logger::error($this->botClient->getError());
-                        };
+                        }
                     }else{
                         $this->botClient->sendTextToFriends(
                             [
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $this->groupWxid,
-                                'msg' => "@".$matches[1]."你已经被[弱]2次，当达到3次的时候会被请出群，请遵守群规！！！"
+                                'msg' => "@".$nickname."你已经被[弱]2次，当达到3次的时候会被移出群。若被误伤，请私聊管理员！！！"
                             ]
                         );
                     }

@@ -318,7 +318,7 @@ class Bottask extends Botbase
         $plan_time = time() + $step_tasktime;
         if(empty($data['plan_time'])){
             $last_task = $this->model->getOneByOrder([
-                'where' => ['admin_id' => $this->adminInfo['id'], 'status' => 1, 'plan_time' => ['gt', time()]],
+                'where' => ['admin_id' => $this->adminInfo['id'], 'status' => 1, 'bot_id' => $this->bot['id'], 'plan_time' => ['gt', time()]],
                 'order' => ['plan_time' => 'desc'],
                 'field' => 'plan_time'
             ]);

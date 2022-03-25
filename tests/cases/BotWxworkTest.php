@@ -16,10 +16,12 @@ class BotWxworkTest extends TestCase
 {
     private $bot;
     private $robotFdj = 'wxid_xokb2ezu1p6t21';
+    private $qyRobotFdj = '1688854317341474';
     private $robotYxg = '1688856404324777';
     private $externalYxg = '7881301713149756';
     private $internalFdj = '1688854317341474';
     private $groupId = 'R:10840821540390231';
+    private $cpGroupId='R:10951134140940878';
 
     /**
      * 初始化
@@ -36,8 +38,8 @@ class BotWxworkTest extends TestCase
      */
     public function testGetGroupMember() {
         $res = $this->bot->getGroupMember([
-            'robot_wxid' => $this->robotYxg,
-            'group_wxid' => $this->groupId,
+            'robot_wxid' => $this->qyRobotFdj,
+            'group_wxid' => $this->cpGroupId,
         ]);
         dump($res);
         $this->assertSame(1, $res['code']);
@@ -89,7 +91,7 @@ class BotWxworkTest extends TestCase
      */
     public function testGetInternalFriendlist() {
         $res = $this->bot->getInternalFriendlist([
-            'robot_wxid' => $this->robotYxg
+            'robot_wxid' => $this->qyRobotFdj
         ]);
         dump($res);
         $this->assertSame(1, $res['code']);
@@ -101,7 +103,7 @@ class BotWxworkTest extends TestCase
      */
     public function testGetExternalFriendlist() {
         $res = $this->bot->getExternalFriendlist([
-            'robot_wxid' => $this->robotYxg
+            'robot_wxid' => $this->qyRobotFdj
         ]);
         dump($res);
         $this->assertSame(1, $res['code']);

@@ -274,10 +274,12 @@ class Bot extends Base
             $res = $this->model->updateOne($post_data);
         }
         if ($res) {
+            $msg = '数据保存成功';
             try{
                 $info = $this->model->getRobotInfo($res);
-                if($info){
-                    $msg = '数据保存成功';
+                if(is_string($info)){
+                    $msg .= "，但是绑定机器人错误：".$info;
+                }else if(!empty($info)){
                     $this->model->updateOne([
                         'id' => $res['id'],
                         'uin' => $info['wxid'],
@@ -287,17 +289,12 @@ class Bot extends Base
                         'alive' => 1
                     ]);
                 }else{
-                    $msg = '数据保存成功，但系统检测到您的机器人尚未登录，请及时前往登录机器人对应的微信';
+                    $msg .= '，但系统检测到您的机器人尚未登录';
                 }
             }catch (\Exception $e){
-                $info = false;
                 $msg = "请检查接口地址是否填写正确";
             }
-            if($info){
-                $this->success($msg, $jump_to);
-            }else{
-                $this->error($msg);
-            }
+            $this->success($msg, $jump_to);
         } else {
             $this->error('数据保存出错');
         }

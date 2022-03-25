@@ -37,14 +37,14 @@ class Bot extends Base
     /**
      * 获取机器人信息
      * @param array $params
-     * @return array
+     * @return array|string
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getRobotInfo($params = []){
         switch ($params['free']){
             case 0:
-                $return = Wxwork::init(['app_key' => $params['app_key'], 'base_uri' => $params['url']])
-                    ->getRobotList();
+                $bot_client = new Wxwork(['app_key' => $params['app_key'], 'base_uri' => $params['url']]);
+                $return = $bot_client->getRobotList();
                 if($return['code'] && !empty($return['ReturnJson'])){
                     foreach ($return['ReturnJson']['data'] as $v){
                         if($v['wxid'] == $params['uin']){
@@ -54,15 +54,19 @@ class Bot extends Base
                             return $v;
                         }
                     }
+                }else{
+                    return  $bot_client->getError();
                 }
                 break;
             default:
-                $return = Vlw::init(['app_key' => $params['app_key'], 'base_uri' => $params['url']])
-                    ->getCurrentUser(['data' => ['robot_wxid' => $params['uin']]]);
+                $bot_client = new Vlw(['app_key' => $params['app_key'], 'base_uri' => $params['url']]);
+                $return = $bot_client->getCurrentUser(['data' => ['robot_wxid' => $params['uin']]]);
                 if($return['code'] && !empty($return['ReturnJson'])){
                     $info = $return['ReturnJson'];
                     $info['username'] = $info['wx_num'];
                     return $info;
+                }else{
+                    return  $bot_client->getError();
                 }
                 break;
         }

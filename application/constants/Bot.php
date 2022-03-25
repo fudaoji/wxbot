@@ -22,7 +22,8 @@ class Bot
     const GROUP = 'group';
     const MP = 'mp';
 
-
+    const EVENT_GROUP_MEMBER_ADD = 'EventGroupMemberAdd'; //群人员减少
+    const EVENT_GROUP_MEMBER_DEC = 'EventGroupMemberDecrease'; //群人员减少
     const EVENT_FRIEND_VERIFY = 'EventFrieneVerify'; //好友请求事件
     const EVENT_DEVICE = "EventDeviceCallback"; //设备回调事件
     const EVENT_LOGIN = "Login"; //登录、退出

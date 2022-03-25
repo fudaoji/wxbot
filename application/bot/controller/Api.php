@@ -46,6 +46,7 @@ class Api extends BaseCtl
     protected $botWxid = '';
     protected $groupWxid = '';
     protected $content;
+    protected $group;
 
     public function initialize()
     {
@@ -63,6 +64,7 @@ class Api extends BaseCtl
         if(request()->isPost()) {
             $this->botM = new Bot();
             $this->memberM = new BotMember();
+            $this->groupMemberM = new BotGroupmember();
             sleep(1); //间隔两次请求做个随机等待
 
             $this->botWxid = !empty(Helper::$ajax['content']['robot_wxid']) ? Helper::$ajax['content']['robot_wxid'] : Helper::$ajax['content']['Wxid'];
@@ -106,7 +108,11 @@ class Api extends BaseCtl
      * @throws \think\exception\DbException Author: fudaoji<fdj@kuryun.cn>
      */
     private function getBot($uin = ''){
-        if(! $bot = $this->botM->getOneByMap(['uin' => $uin, 'alive' => 1])) {
+        $map = ['uin' => $uin, 'alive' => 1];
+        if(Helper::$ajax['Event'] == \app\constants\Bot::EVENT_LOGIN){
+            unset($map['alive']);
+        }
+        if(! $bot = $this->botM->getOneByMap($map)) {
             Logger::error('Bot not exists or not logged in: ' . $uin);
             exit(0);
         }
@@ -120,7 +126,7 @@ class Api extends BaseCtl
      */
     protected function getGroupMemberByNickname($nickname=''){
         $group = $this->memberM->getOneByMap(
-            ['uin' => $this->bot['id'], 'wxid' => $this->groupWxid],
+            ['uin' => $this->bot['uin'], 'wxid' => $this->groupWxid],
             ['id']
         );
         return $this->groupMemberM->getOneByMap(['nickname' => $nickname, 'group_id' => $group['id']]);

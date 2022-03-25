@@ -14,10 +14,37 @@ use app\common\model\Base;
 use app\constants\Bot;
 use ky\Bot\Vlw;
 use ky\Bot\Wx;
+use ky\Bot\Wxwork;
 use ky\Logger;
 
 class BotGroupmember extends Base
 {
+    /**
+     * 新增群员回调
+     * @param array $params
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function addMember($params = []){
+        if(!$this->total(['bot_id' => $params['bot_id'], 'group_id' => $params['group_id'],'wxid' => $params['wxid']])){
+            $this->addOne($params);
+            //todo 记录进群统计数据
+        }
+    }
+
+    /**
+     * 移除群员回调
+     * @param array $params
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function rmMember($params = []){
+        $this->delByMap(['bot_id' => $params['bot_id'], 'wxid' => $params['wxid']]);
+        //todo 记录退群统计数据
+    }
+
     /**
      * 拉取最新群成员
      * @param $bot
@@ -28,6 +55,9 @@ class BotGroupmember extends Base
      * @throws \think\exception\PDOException Author: fudaoji<fdj@kuryun.cn>
      */
     public function pullMembers($bot, $group){
+        /**
+         * @var $bot_client Vlw|Wxwork
+         */
         $bot_client = model('bot')->getRobotClient($bot);
         switch ($bot['protocol']) {
             case Bot::PROTOCOL_WXWORK:
@@ -40,19 +70,23 @@ class BotGroupmember extends Base
                     $list = $res['ReturnJson']['data']['member_list'];
                     $wxid_arr = [];
                     foreach ($list as $k => $v){
-                        $nickname = filter_emoji($v['username']);
+                        $nickname = filter_emoji($v['nickname']);
+                        $username = filter_emoji($v['username']);
+                        $nickname = $nickname ? $nickname : $username;
                         $wxid = $v['user_id'];
                         $wxid_arr[] = $wxid;
                         if($data = $this->getOneByMap(['group_id' => $group['id'], 'wxid' => $wxid], ['id'])){
                             $this->updateOne([
                                 'id' => $data['id'],
-                                'nickname' => $nickname,
+                                'nickname' => $username,
+                                'group_nickname' => $nickname,
                             ]);
                         }else{
                             $this->addOne([
                                 'bot_id' => $bot['id'],
                                 'group_id' => $group['id'],
-                                'nickname' => $nickname,
+                                'nickname' => $username,
+                                'group_nickname' => $nickname,
                                 'wxid' => $wxid
                             ]);
                         }

@@ -89,7 +89,7 @@ class Wxwork extends Base
      * @param array $params
      * @return bool
      */
-    public function removeGroupMemberEnterprise($params = []){
+    public function removeGroupMember($params = []){
         return $this->request([
             'data' => $this->buildPostData($params, self::API_REMOVE_GROUP_MEMBER)
         ]);

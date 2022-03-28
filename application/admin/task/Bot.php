@@ -9,7 +9,7 @@
 
 namespace app\admin\task;
 
-
+use app\common\model\tpzs\Task;
 use ky\Bot\Vlw;
 use ky\Bot\Wxwork;
 use think\Db;
@@ -25,9 +25,15 @@ class Bot extends Base
     /**
      * 定时任务
      * @return string
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
      */
     public function runTask(){
-        if(count($task_list = model('admin/botTask')->getAllJoin([
+        $task_m = new Task();
+        if(count($task_list = $task_m->getAllJoin([
             'alias' => 'bt',
             'join' => [
                 ['bot', 'bot.id=bt.bot_id']
@@ -47,7 +53,7 @@ class Bot extends Base
                 if(!empty($task['content'])){
                     $bot_client->sendTextToFriends(['robot_wxid' => $task['wxid'], 'to_wxid' => $task['members'], 'msg' => $task['content']]);
                 }
-                model('admin/botTask')->updateOne(['id' => $task['id'], 'complete_time' => time()]);
+                $task_m->updateOne(['id' => $task['id'], 'complete_time' => time()]);
             }
             dump("num:" . count($task_list));
         }else{

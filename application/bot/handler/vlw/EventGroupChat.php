@@ -9,7 +9,6 @@
 
 namespace app\bot\handler\vlw;
 
-
 use app\admin\model\BotMember;
 use app\bot\controller\Api;
 use ky\Bot\Vlw;
@@ -29,17 +28,16 @@ class EventGroupChat extends Api
      */
     public function handle(){
         $this->groupWxid = $this->content['from_group'];
-        $this->msgTransfer();
-        $this->rmGroupMember();
+        $this->tpzsHandler();
     }
 
     /**
-     *  机器人消息转发
+     * 推品助手响应
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function msgTransfer(){
+    public function tpzsHandler(){
         $content = Helper::$ajax['content'];
         //Logger::error($content);
         $group_wxid = $this->groupWxid;
@@ -48,12 +46,12 @@ class EventGroupChat extends Api
         if($group = $this->memberM->getOneJoin([
             'alias' => 'm',
             'join' => [
-                ['botConfig c', 'c.value=m.id']
+                ['tpzsConfig c', 'c.value=m.id']
             ],
             'where' => ['m.wxid' => $group_wxid, 'c.key' => 'central_group', 'm.uin' => $this->botWxid],
             'field' => ['c.admin_id', 'm.wxid']
         ])){
-            $officer = model('admin/botConfig')->getOneByMap([
+            $officer = model('common/tpzs/config')->getOneByMap([
                 'admin_id' => $group['admin_id'],
                 'key' => 'officer'
             ], ['value'], true);
@@ -63,7 +61,7 @@ class EventGroupChat extends Api
             }
 
             //2.取出机器人负责的群并转发
-            $team = model('admin/botTeam')->getOneByMap([
+            $team = model('common/tpzs/Team')->getOneByMap([
                 'admin_id' => $group['admin_id'],
                 'bot_id' => $this->bot['id']
             ], ['groups']);

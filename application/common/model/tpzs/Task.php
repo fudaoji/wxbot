@@ -1,19 +1,23 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yyp
- * Date: 2022/1/30
- * Time: 14:03
- */
+namespace app\common\model\tpzs;
 
-namespace app\admin\model;
-
-
-use app\common\model\Base;
-
-class BotTask extends Base
+class Task extends Tpzs
 {
     //protected $isCache = true;
+    protected $table = 'task';
+
+    const TYPE_BASIC = 'basic';
+    const TYPE_CK = 'ck';
+    const TYPE_JD = 'jd';
+
+    public static function types($id = null){
+        $list = [
+            self::TYPE_BASIC => '普通',
+            self::TYPE_JD => '京东联盟',
+            //self::TYPE_CK => '创客店铺'
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
 
     /**
      * 修改某单发送时间后，队列重排

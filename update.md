@@ -2,9 +2,10 @@
 
 功能更新
 * 新增京东联盟品类
+* 调整采品群设置
 
 数据库表更新
-* 新增tpzs_union、tpzs_position
+* 新增tpzs_union、tpzs_position、tpzs_gather
 * 修改bot_grouppos为tpzs_grouppos表
 
 2022-03-28

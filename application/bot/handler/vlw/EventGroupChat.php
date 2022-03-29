@@ -47,19 +47,19 @@ class EventGroupChat extends Api
         if($group = $this->memberM->getOneJoin([
             'alias' => 'm',
             'join' => [
-                ['tpzsConfig c', 'c.value=m.id']
+                ['tpzsGather gather', 'gather.group_id=m.id']
             ],
-            'where' => ['m.wxid' => $group_wxid, 'c.key' => 'central_group', 'm.uin' => $this->botWxid],
-            'field' => ['c.admin_id', 'm.wxid']
+            'where' => ['m.wxid' => $group_wxid, 'gather.officer' => ['like', "%".$this->fromWxid."%"], 'm.uin' => $this->botWxid],
+            'field' => ['gather.admin_id', 'm.wxid']
         ])){
-            $officer = model('common/tpzs/config')->getOneByMap([
+            /*$officer = model('common/tpzs/config')->getOneByMap([
                 'admin_id' => $group['admin_id'],
                 'key' => 'officer'
             ], ['value'], true);
             //未设置指挥官或当前发信人不是指挥官则退出
             if(empty($officer) || strpos($officer['value'], $this->fromWxid)===false ){
                 return;
-            }
+            }*/
 
             //2.取出机器人负责的群并转发
             $team = model('common/tpzs/Team')->getOneByMap([

@@ -27,10 +27,6 @@ class Setting extends Base
                 'title' => '平台设置',
                 'href' => url('index', ['name' => 'site'])
             ],
-            'send' => [
-                'title' => '发单设置',
-                'href' => url('index', ['name' => 'send'])
-            ],
             'upload' => [
                 'title' => '附件设置',
                 'href' => url('index', ['name' => 'upload'])
@@ -89,14 +85,6 @@ class Setting extends Base
         }
         $builder = new FormBuilder();
         switch ($current_name){
-            case 'send':
-                if(empty($data)){
-                    $data['step_tasktime'] = 600;
-                    $data['step_grouptime'] = 1;
-                }
-                $builder->addFormItem('step_tasktime', 'number', '待发间隔时间(s)', '默认的待发间隔时间，单位秒', [], 'required min=1')
-                    /*->addFormItem('step_grouptime', 'number', '群发间隔时间(s)', '单位秒', [], 'required min=1')*/;
-                break;
             case 'weixin':
                 $builder
                     ->addFormItem('appid', 'text', 'AppId', 'AppId', [], 'required maxlength=150')

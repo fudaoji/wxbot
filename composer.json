@@ -23,7 +23,6 @@
         "topthink/think-image": "^1.0",
         "topthink/think-queue": "^2.0",
         "qiniu/php-sdk": "^7.0",
-        "intervention/image": "^2.4",
         "topthink/think-testing": "2.0.*",
         "guzzlehttp/guzzle": "~6.0",
         "ext-json": "*",

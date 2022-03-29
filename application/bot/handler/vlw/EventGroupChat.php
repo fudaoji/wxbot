@@ -13,6 +13,7 @@ use app\admin\model\BotMember;
 use app\bot\controller\Api;
 use ky\Bot\Vlw;
 use ky\Helper;
+use ky\Jtt;
 use ky\Logger;
 
 class EventGroupChat extends Api
@@ -74,7 +75,39 @@ class EventGroupChat extends Api
                         $this->botClient->sendImgToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'path' => $path]);
                         break;
                     default:
-                        $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                        if(strpos($content['msg'], 'jd.com') === false){
+                            $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                        }else{
+                            $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
+                            foreach ($groups as $gid){
+                                if($dest_group = $this->memberM->getOneJoin([
+                                    'alias' => 'm',
+                                    'join' => [
+                                        ['tpzsGrouppos gp', 'gp.group_id=m.id'],
+                                        ['tpzsPosition tp', 'gp.position_id=tp.id'],
+                                        ['tpzsUnion tu', 'tu.id=tp.union_id']
+                                    ],
+                                    'where' => ['m.wxid' => $gid],
+                                    'field' => ['tu.unionid', 'tp.position_id']
+                                ])) {
+                                    $count = 0;
+                                    do{
+                                        $reply_content = $jtt->universal([
+                                            'unionid' => $dest_group['unionid'],
+                                            'positionid' => $dest_group['position_id'],
+                                            'content' => $content['msg']
+                                        ]);
+                                        $count++;
+                                        if($count >= 2) break;
+                                    }while($reply_content === false);
+                                    $reply_content && $this->botClient->sendTextToFriend([
+                                        'robot_wxid' => $content['robot_wxid'],
+                                        'to_wxid' => $gid,
+                                        'msg' => $reply_content['chain_content']
+                                    ]);
+                                }
+                            }
+                        }
                         break;
                 }
             }

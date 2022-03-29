@@ -1,3 +1,12 @@
+2022-03-29
+
+功能更新
+* 新增京东联盟品类
+
+数据库表更新
+* 新增tpzs_union、tpzs_position
+* 修改bot_grouppos为tpzs_grouppos表
+
 2022-03-28
 
 功能更新

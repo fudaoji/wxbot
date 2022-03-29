@@ -9,8 +9,8 @@
 
 namespace app\admin\controller;
 
-use app\admin\model\BotGrouppos;
 use app\admin\model\BotMember;
+use app\common\model\tpzs\Grouppos;
 use ky\Bot\Wx;
 
 class Botgroup extends Botbase
@@ -20,7 +20,7 @@ class Botgroup extends Botbase
      */
     protected $model;
     /**
-     * @var BotGrouppos
+     * @var Grouppos
      */
     private $groupPosM;
 
@@ -31,7 +31,7 @@ class Botgroup extends Botbase
     {
         parent::initialize();
         $this->model = new BotMember();
-        $this->groupPosM = new BotGrouppos();
+        $this->groupPosM = new Grouppos();
     }
 
     public function index()
@@ -43,8 +43,8 @@ class Botgroup extends Botbase
             $params = [
                 'alias' => 'g',
                 'join' => [
-                    ['bot_grouppos gp', 'g.id=gp.group_id', 'left'],
-                    ['league_position p', 'p.id=gp.position_id', 'left']
+                    ['tpzs_grouppos gp', 'g.id=gp.group_id', 'left'],
+                    ['tpzs_position p', 'p.id=gp.position_id', 'left']
                 ],
                 'where' => $where,
                 'refresh' => true
@@ -53,7 +53,7 @@ class Botgroup extends Botbase
             if ($total) {
                 $list = $this->model->getListJoin(array_merge($params, [
                     'limit' => [$post_data['page'], $post_data['limit']],
-                    'field' => ['g.id', 'g.nickname', 'g.remark_name', 'p.name', 'g.wxid']
+                    'field' => ['g.id', 'g.nickname', 'g.remark_name', 'p.title', 'g.wxid']
                 ]));
             }else{
                 $list = [];
@@ -71,7 +71,7 @@ class Botgroup extends Botbase
             ->addTableColumn(['title' => '群id', 'field' => 'wxid'])
             ->addTableColumn(['title' => '群名称', 'field' => 'nickname'])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name'])
-            ->addTableColumn(['title' => '关联推广位', 'field' => 'name'])
+            ->addTableColumn(['title' => '关联推广位', 'field' => 'title'])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('edit', ['title' => '群成员', 'href' => url('groupmember/index', ['group_id' => '__data_id__'])])
             ->addRightButton('edit', ['title' => '关联推广位', 'href' => url('bindPos'), 'class' => 'layui-btn layui-btn-xs']);
@@ -119,7 +119,7 @@ class Botgroup extends Botbase
             ->setPostUrl(url('bindPos')) //设置表单提交地址
             ->addFormItem('group_id', 'hidden', 'group id', 'group id')
             ->addFormItem('group_title', 'text', '发单群', '发单群', [], 'required readonly')
-            ->addFormItem('position_id', 'chosen', '推广位', '推广位', model('leaguePosition')->getField('id,name',['status' => 1]), 'required')
+            ->addFormItem('position_id', 'chosen', '推广位', '推广位', model('common/tpzs/position')->getField('id,title',['admin_id' => $this->adminInfo['id'], 'status' => 1]), 'required')
             ->setFormData($data);
 
         return $builder->show();

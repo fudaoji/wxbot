@@ -1,3 +1,26 @@
+### 2.3.5 (2021-10-01)
+
+  * Fixed regression in StreamHandler since 2.3.3 on systems with the memory_limit set to >=20GB (#1592)
+
+### 2.3.4 (2021-09-15)
+
+  * Fixed support for psr/log 3.x (#1589)
+
+### 2.3.3 (2021-09-14)
+
+  * Fixed memory usage when using StreamHandler and calling stream_get_contents on the resource you passed to it (#1578, #1577)
+  * Fixed support for psr/log 2.x (#1587)
+  * Fixed some type annotations
+
+### 2.3.2 (2021-07-23)
+
+  * Fixed compatibility with PHP 7.2 - 7.4 when experiencing PCRE errors (#1568)
+
+### 2.3.1 (2021-07-14)
+
+  * Fixed Utils::getClass handling of anonymous classes not being fully compatible with PHP 8 (#1563)
+  * Fixed some `@inheritDoc` annotations having the wrong case
+
 ### 2.3.0 (2021-07-05)
 
   * Added a ton of PHPStan type annotations as well as type aliases on Monolog\Logger for Record, Level and LevelName that you can import (#1557)

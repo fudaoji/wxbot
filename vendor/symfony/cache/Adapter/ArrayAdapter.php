@@ -190,14 +190,14 @@ class ArrayAdapter implements AdapterInterface, CacheInterface, LoggerAwareInter
 
         $now = microtime(true);
 
-        if (0 === $expiry) {
-            $expiry = \PHP_INT_MAX;
-        }
+        if (null !== $expiry) {
+            if (!$expiry) {
+                $expiry = \PHP_INT_MAX;
+            } elseif ($expiry <= $now) {
+                $this->deleteItem($key);
 
-        if (null !== $expiry && $expiry <= $now) {
-            $this->deleteItem($key);
-
-            return true;
+                return true;
+            }
         }
         if ($this->storeSerialized && null === $value = $this->freeze($value, $key)) {
             return false;
@@ -223,7 +223,7 @@ class ArrayAdapter implements AdapterInterface, CacheInterface, LoggerAwareInter
         }
 
         $this->values[$key] = $value;
-        $this->expiries[$key] = null !== $expiry ? $expiry : \PHP_INT_MAX;
+        $this->expiries[$key] = $expiry ?? \PHP_INT_MAX;
 
         return true;
     }
@@ -306,7 +306,7 @@ class ArrayAdapter implements AdapterInterface, CacheInterface, LoggerAwareInter
         $this->clear();
     }
 
-    private function generateItems(array $keys, $now, $f)
+    private function generateItems(array $keys, float $now, \Closure $f): \Generator
     {
         foreach ($keys as $i => $key) {
             if (!$isHit = isset($this->expiries[$key]) && ($this->expiries[$key] > $now || !$this->deleteItem($key))) {
@@ -336,7 +336,7 @@ class ArrayAdapter implements AdapterInterface, CacheInterface, LoggerAwareInter
         }
     }
 
-    private function freeze($value, $key)
+    private function freeze($value, string $key)
     {
         if (null === $value) {
             return 'N;';

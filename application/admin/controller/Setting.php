@@ -112,11 +112,9 @@ class Setting extends Base
             case 'site':
                 empty($data) && $data['close'] = 0;
                 $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
-                    ->addFormItem('jdunion', 'legend', '京东联盟', '京东联盟')
+                    ->addFormItem('jdunion', 'legend', '京东开放平台', '京东开放平台')
                     ->addFormItem('jd_appkey', 'text', 'Appkey', '开放平台AppKey')
                     ->addFormItem('jd_appsecret', 'text', 'AppSecret', '开放平台AppSecret')
-                    ->addFormItem('jd_unionid', 'text', '联盟ID', '平台的京东联盟ID')
-                    ->addFormItem('period', 'text', '结算周期(天)', '结算周期(天)')
                     ->addFormItem('jtt', 'legend', '京推推开发者', '京推推开发者')
                     ->addFormItem('jtt_appid', 'text', 'Appid', '京推推Appid')
                     ->addFormItem('jtt_appkey', 'text', 'Appkey', '京推推Appkey');

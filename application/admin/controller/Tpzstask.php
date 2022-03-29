@@ -64,12 +64,15 @@ class Tpzstask extends Botbase
                 );
                 foreach ($list as $k => $v){
                     $ids = explode(',', $v['members']);
-                    $member = model('botMember')->getOneByMap([
+                    if($member = model('botMember')->getOneByMap([
                         'wxid' => $ids[0]
-                    ]);
-                    $v['members'] = $member['nickname'];
-                    if(count($ids) > 1){
-                        $v['members'] .= "等".count($ids)."个对象";
+                    ])){
+                        $v['members'] = $member['nickname'];
+                        if(count($ids) > 1){
+                            $v['members'] .= "等".count($ids)."个对象";
+                        }
+                    }else{
+                        $v['members'] = "--";
                     }
                     $list[$k] = $v;
                 }
@@ -90,12 +93,12 @@ class Tpzstask extends Botbase
             //->addTopButton('addnew', ['title' => '快速添加', 'href' => url('quickAdd')])
             ->addTopButton('addnew', ['title' => '添加任务'])
             ->addTableColumn(['title' => '发送顺序', 'field' => 'id', 'type' => 'index'])
-            ->addTableColumn(['title' => '标题', 'field' => 'title', 'minWidth' => 30])
             ->addTableColumn(['title' => '类型', 'field' => 'type', 'type' => 'enum', 'options' => Task::types(),'minWidth' => 30])
             ->addTableColumn(['title' => '计划发送时间', 'field' => 'plan_time', 'minWidth' => 180, 'type' => 'datetime'])
             ->addTableColumn(['title' => '发送图片', 'field' => 'img', 'minWidth' => 100, 'type' => 'picture'])
             ->addTableColumn(['title' => '发送文本', 'field' => 'content', 'minWidth' => 200])
-            ->addTableColumn(['title' => '发送对象', 'field' => 'members', 'minWidth' => 200]);
+            ->addTableColumn(['title' => '发送对象', 'field' => 'members', 'minWidth' => 200])
+            ->addTableColumn(['title' => '备注', 'field' => 'title', 'minWidth' => 60]);
             //->addTableColumn(['title' => '发送对象', 'field' => 'members', 'minWidth' => 200, 'type' => 'enum', 'options' => $groups = model('botMember')->getField('wxid,nickname',['uin' => $this->bot['uin']])]);
         if($name == 'done'){
             $builder->addTableColumn(['title' => '完成时间', 'field' => 'complete_time', 'minWidth' => 180, 'type' => 'datetime']);
@@ -182,6 +185,7 @@ class Tpzstask extends Botbase
         $data = [
             'admin_id' => $this->adminInfo['id'],
             'bot_id' => $this->bot['id'],
+            'type' => Task::TYPE_BASIC
         ];
         $last_one = $this->model->getOneByOrder([
             'where' => ['admin_id' => $this->adminInfo['id'], 'bot_id' => $this->bot['id']],
@@ -200,11 +204,12 @@ class Tpzstask extends Botbase
         $builder->setPostUrl(url('savePost'))
             ->addFormItem('admin_id', 'hidden', 'adminid', 'adminid', [], 'required')
             ->addFormItem('bot_id', 'hidden', 'bot', 'bot', [], 'required')
+            ->addFormItem('type', 'radio', '类型', '类型', Task::types(), 'required')
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则根据设置的发单间隔时间确定', [], '')
             ->addFormItem('members', 'chosen_multi', '发送对象', '发送对象', $groups, 'required')
-            //->addFormItem('sku_id', 'text', '商品skuID', '商品skuID')
             ->addFormItem('img', 'picture_url', '发送图片', '1M以内')
-            ->addFormItem('content', 'textarea', '发送内容', '文本内容')
+            ->addFormItem('content', 'textarea', '发送内容', '文本内容', [], 'style=min-height:150px;')
+            ->addFormItem('title', 'text', '备注', '')
             ->setFormData($data);
         return $builder->show();
     }
@@ -308,12 +313,13 @@ class Tpzstask extends Botbase
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'id', 'id')
+            ->addFormItem('type', 'radio', '类型', '类型', Task::types(), 'required')
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则根据设置的发单间隔时间确定', [], 'required')
             ->addFormItem('members', 'chosen_multi', '发送对象', '发送对象', $groups, 'required')
             //->addFormItem('sku_id', 'text', '商品skuID', '商品skuID')
             ->addFormItem('img', 'picture_url', '发送图片', '1M以内')
-            ->addFormItem('content', 'textarea', '发送内容', '文本')
-            //->addFormItem('status', 'radio', '是否开启', '是否开启', [0 => '停止', 1 => '开启'])
+            ->addFormItem('content', 'textarea', '发送内容', '文本', [], 'style=min-height:150px;')
+            ->addFormItem('title', 'text', '备注', '')
             ->setFormData($data);
         return $builder->show();
     }

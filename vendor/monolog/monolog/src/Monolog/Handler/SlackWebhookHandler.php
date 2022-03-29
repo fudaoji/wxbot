@@ -58,6 +58,10 @@ class SlackWebhookHandler extends AbstractProcessingHandler
         bool $bubble = true,
         array $excludeFields = array()
     ) {
+        if (!extension_loaded('curl')) {
+            throw new MissingExtensionException('The curl extension is needed to use the SlackWebhookHandler');
+        }
+
         parent::__construct($level, $bubble);
 
         $this->webhookUrl = $webhookUrl;
@@ -84,7 +88,7 @@ class SlackWebhookHandler extends AbstractProcessingHandler
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function write(array $record): void
     {

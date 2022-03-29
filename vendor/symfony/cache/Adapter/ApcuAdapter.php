@@ -25,7 +25,7 @@ class ApcuAdapter extends AbstractAdapter
     /**
      * @throws CacheException if APCu is not enabled
      */
-    public function __construct(string $namespace = '', int $defaultLifetime = 0, string $version = null, ?MarshallerInterface $marshaller = null)
+    public function __construct(string $namespace = '', int $defaultLifetime = 0, string $version = null, MarshallerInterface $marshaller = null)
     {
         if (!static::isSupported()) {
             throw new CacheException('APCu is not enabled.');
@@ -60,7 +60,14 @@ class ApcuAdapter extends AbstractAdapter
         $unserializeCallbackHandler = ini_set('unserialize_callback_func', __CLASS__.'::handleUnserializeCallback');
         try {
             $values = [];
-            foreach (apcu_fetch($ids, $ok) ?: [] as $k => $v) {
+            $ids = array_flip($ids);
+            foreach (apcu_fetch(array_keys($ids), $ok) ?: [] as $k => $v) {
+                if (!isset($ids[$k])) {
+                    // work around https://github.com/krakjoe/apcu/issues/247
+                    $k = key($ids);
+                }
+                unset($ids[$k]);
+
                 if (null !== $v || $ok) {
                     $values[$k] = null !== $this->marshaller ? $this->marshaller->unmarshall($v) : $v;
                 }
@@ -122,7 +129,7 @@ class ApcuAdapter extends AbstractAdapter
         } catch (\Throwable $e) {
             if (1 === \count($values)) {
                 // Workaround https://github.com/krakjoe/apcu/issues/170
-                apcu_delete(key($values));
+                apcu_delete(array_key_first($values));
             }
 
             throw $e;

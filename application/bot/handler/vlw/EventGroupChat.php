@@ -127,7 +127,7 @@ class EventGroupChat extends Api
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){
-        if(strpos($this->content['msg'], "我要") !== false){ //主动搜商品
+        if(strpos($this->content['msg'], "@所有人") === false && strpos($this->content['msg'], "我要") !== false){ //主动搜商品
             //Logger::error($this->content);
             if(model('common/tpzs/Team')->total([
                 'bot_id' => $this->bot['id'],

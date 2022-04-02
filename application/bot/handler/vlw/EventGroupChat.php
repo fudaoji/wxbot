@@ -193,7 +193,7 @@ https://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXV
                 }
 
                 if($k + 1 >= count($res['goods'])){
-                    $link .= "\r\n-------------------------------------------\r\n\r\n如果您对查询结果不满意，可以自主查询：\r\nhttps://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA";
+                    $link .= "\r\n-------------------------------------------\r\n\r\n[玫瑰]如果您对查询结果不满意，可以自主查询：\r\nhttps://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA";
                 }else{
                     $link .= "\r\n-------------------------------------------\r\n";
                 }
@@ -212,7 +212,7 @@ https://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXV
                 if($reply_content && !empty($reply_content['chain_content'])){
                     $link = $reply_content['chain_content'];
                 }else{
-                    $link = $goods['goods_link'] . "\r\n-------------------------------------------\r\n";
+                    $link = "https://".$goods['goods_link'] . "\r\n-------------------------------------------\r\n";
                 }
 
                 $temp_content = str_replace(

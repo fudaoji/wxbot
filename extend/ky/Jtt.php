@@ -23,6 +23,44 @@ class Jtt
     }
 
     /**
+     * 查询联盟的商品信息
+     * @param array $params
+     * @return bool
+     * @link http://www.jingtuitui.com/api_item?id=3
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function jdBugGoodsQuery($params = [])
+    {
+        !empty($params['v']) && $this->version = $params['v'];
+        $url = "http://japi.jingtuitui.com/api/get_goods_list?eliteId=bugGoods&appid={$this->appId}&appkey={$this->appKey}&v={$this->version}";
+
+        $res = json_decode(http_post($url, $params), true);
+        if (isset($res['return']) && $res['return'] == 0) {
+            return $res['result'];
+        }
+        return false;
+    }
+
+    /**
+     * 查询联盟的商品信息
+     * @param array $params
+     * @return bool
+     * @link http://www.jingtuitui.com/api_item?id=3
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function jdGoodsQuery($params = [])
+    {
+        !empty($params['v']) && $this->version = $params['v'];
+        $url = "http://japi.jingtuitui.com/api/jd_goods_query?appid={$this->appId}&appkey={$this->appKey}&v={$this->version}";
+
+        $res = json_decode(http_post($url, $params), true);
+        if (isset($res['return']) && $res['return'] == 0) {
+            return $res['result'];
+        }
+        return false;
+    }
+
+    /**
      * 创建推广位
      * @param array $params
      * @return bool

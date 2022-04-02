@@ -52,15 +52,6 @@ class EventGroupChat extends Api
             'where' => ['m.wxid' => $group_wxid, 'gather.officer' => ['like', "%".$this->fromWxid."%"], 'm.uin' => $this->botWxid],
             'field' => ['gather.admin_id', 'm.wxid']
         ])){
-            /*$officer = model('common/tpzs/config')->getOneByMap([
-                'admin_id' => $group['admin_id'],
-                'key' => 'officer'
-            ], ['value'], true);
-            //未设置指挥官或当前发信人不是指挥官则退出
-            if(empty($officer) || strpos($officer['value'], $this->fromWxid)===false ){
-                return;
-            }*/
-
             //2.取出机器人负责的群并转发
             $team = model('common/tpzs/Team')->getOneByMap([
                 'admin_id' => $group['admin_id'],
@@ -75,9 +66,13 @@ class EventGroupChat extends Api
                         $this->botClient->sendImgToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'path' => $path]);
                         break;
                     default:
-                        if(strpos($content['msg'], 'jd.com') === false){
+                        if(strpos($content['msg'], 'jd.com') === false){//basic
                             $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
-                        }else{
+                        }else{//jd
+                            /**
+                             * @var $redis \Redis
+                             */
+                            $redis = controller('common/base', 'event')->getRedis();
                             $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
                             foreach ($groups as $gid){
                                 if($dest_group = $this->memberM->getOneJoin([
@@ -90,20 +85,28 @@ class EventGroupChat extends Api
                                     'where' => ['m.wxid' => $gid],
                                     'field' => ['tu.unionid', 'tp.position_id']
                                 ])) {
-                                    $count = 0;
-                                    do{
-                                        $reply_content = $jtt->universal([
-                                            'unionid' => $dest_group['unionid'],
-                                            'positionid' => $dest_group['position_id'],
-                                            'content' => $content['msg']
-                                        ]);
-                                        $count++;
-                                        if($count >= 2) break;
-                                    }while($reply_content === false);
+                                    $rKey = $this->content['msg_id'].$dest_group['position_id'];
+                                    if(! $reply_content = $redis->get($rKey)){
+                                        $count = 0;
+                                        do{
+                                            $reply_content = $jtt->universal([
+                                                'unionid' => $dest_group['unionid'],
+                                                'positionid' => $dest_group['position_id'],
+                                                'content' => $content['msg']
+                                            ]);
+                                            $count++;
+                                            if($count >= 2) break;
+                                        }while($reply_content === false);
+                                        if($reply_content){
+                                            $reply_content = $reply_content['chain_content'];
+                                            $redis->setex($rKey, 300, $reply_content);
+                                        }
+                                    }
+
                                     $reply_content && $this->botClient->sendTextToFriend([
                                         'robot_wxid' => $content['robot_wxid'],
                                         'to_wxid' => $gid,
-                                        'msg' => $reply_content['chain_content']
+                                        'msg' => $reply_content
                                     ]);
                                 }
                             }
@@ -112,6 +115,109 @@ class EventGroupChat extends Api
                 }
             }
         }
+        //2、关键词
+        $this->keyword();
+    }
+
+    /**
+     * 关键词回复
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function keyword(){
+        if(strpos($this->content['msg'], "我要") !== false){ //主动搜商品
+            Logger::error($this->content);
+            if($dest_group = $this->memberM->getOneJoin([
+                'alias' => 'm',
+                'join' => [
+                    ['tpzsGrouppos gp', 'gp.group_id=m.id'],
+                    ['tpzsPosition tp', 'gp.position_id=tp.id'],
+                    ['tpzsUnion tu', 'tu.id=tp.union_id']
+                ],
+                'where' => ['m.wxid' => $this->groupWxid],
+                'field' => ['tu.unionid', 'tp.position_id']
+            ])){
+                $msg = explode("我要", $this->content['msg']);
+                if(!empty($msg[1])){
+                    $keyword = trim($msg[1]);
+                    $this->botClient->sendTextToFriend([
+                        'robot_wxid' => $this->content['robot_wxid'],
+                        'to_wxid' => $this->groupWxid,
+                        'msg' => "@".$this->content['from_name'] . " ".$this->searchGoods([
+                                'keyword' => $keyword,
+                                'unionid' => $dest_group['unionid'],
+                                'positionid' => $dest_group['position_id'],
+                            ])
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * 用户主动搜索
+     * @param array $params
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function searchGoods($params = []){
+        $keyword = $params['keyword'];
+        $page_size = empty($params['page_size']) ? 3 : $params['page_size'];
+        $unionid = $params['unionid'];
+        $positionid = $params['positionid'];
+        $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
+        $res = $jtt->jdGoodsQuery([
+            'v' => 'v3', 'keyword' => $keyword, 'sortName' => 'inOrderCount30Days', 'sort' => 'desc', 'isCoupon' => 1,
+            'pageSize' => $page_size
+        ]);
+
+        $template = "[商品标题]
+京东价：[商品原价]元
+抢购价：[优惠价]元
+抢购链接：[抢购链接]";
+        $content = "暂未找到相关内容，您可以点击以下链接自助查询哦：
+https://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA
+";
+        if(!empty($res['totalCount'])){
+            $content = "为您查询到以下".count($res['goods'])."个商品：\r\n\r\n";
+            foreach ($res['goods'] as $k => $goods){
+                $temp_content = str_replace(
+                    ['[商品标题]', '[商品原价]', '[优惠价]', '[抢购链接]'],
+                    [$goods['skuName'], $goods['priceInfo']['goods_price'], $goods['priceInfo']['lowestCouponPrice'], $goods['goods_link']],
+                    $template
+                );
+
+                $count = 0;
+                do{
+                    $reply_content = $jtt->universal([
+                        'unionid' => $unionid,
+                        'positionid' => $positionid,
+                        'content' => $temp_content
+                    ]);
+                    $count++;
+                    if($count >= 2) break;
+                }while($reply_content === false);
+                if($reply_content && !empty($reply_content['link_date'][0]['chain_link'])){
+                    $temp_content = str_replace($goods['goods_link'], $reply_content['link_date'][0]['chain_link'], $temp_content);
+                }
+                if($k + 1 >= count($res['goods'])){
+                    $temp_content .= "\r\n-------------------------------------------\r\n\r\n[玫瑰]如果您对查询结果不满意，可以自主查询：\r\nhttps://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA";
+                }else{
+                    $temp_content .= "\r\n-------------------------------------------\r\n";
+                }
+                $content .= $temp_content;
+            }
+        }
+        if($reply_content = $jtt->universal([
+            'unionid' => $unionid,
+            'positionid' => $positionid,
+            'content' => $content
+        ])){
+            return $reply_content['chain_content'];
+        }
+        return $content;
     }
 
     /**
@@ -120,7 +226,10 @@ class EventGroupChat extends Api
      */
     private function rmGroupMember(){
         if($this->groupWxid == 'R:10951134140940878'){
-            if(($pos1 = strpos($this->content['msg'], "@") !== false) && ($pos2 = strpos($this->content['msg'], "[")) !== false){
+            if(($pos1 = strpos($this->content['msg'], "@") !== false)
+                && ($pos2 = strpos($this->content['msg'], "[")) !== false
+                && strpos($this->content['msg'], "[弱]") !== false
+            ){
                 $nickname = trim(substr($this->content['msg'], $pos1, $pos2-1));
                 if(!empty($nickname) && $gm = $this->getGroupMemberByNickname($nickname)){
                     Logger::error($gm);

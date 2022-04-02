@@ -414,8 +414,7 @@ function tree_to_list($tree, $child = 'child', $order = 'id', &$list = array())
         foreach ($tree as $key => $value) {
             $reffer = $value;
             if (isset($reffer[$child])) {
-                if ($reffer[$child] == null) {
-                } else {
+                if ($reffer[$child] != null) {
                     unset($reffer[$child]);
                     tree_to_list($value[$child], $child, $order, $list);
                 }
@@ -434,7 +433,7 @@ function tree_to_list($tree, $child = 'child', $order = 'id', &$list = array())
  * @param string $field 排序的字段名
  * @param array $sortby 排序类型
  * asc正向排序 desc逆向排序 nat自然排序
- * @return array
+ * @return array|bool
  */
 function list_sort_by($list, $field, $sortby = 'asc')
 {
@@ -467,7 +466,7 @@ function list_sort_by($list, $field, $sortby = 'asc')
  * @param  int $length 需要生成的随机数个数
  * @return number      生成的随机数
  */
-function getRandNumber($start = 0, $end = 9, $length = 8)
+function get_unique_number_arr($start = 0, $end = 9, $length = 8)
 {
     //初始化变量为0
     $count = 0;
@@ -487,17 +486,5 @@ function getRandNumber($start = 0, $end = 9, $length = 8)
     //数组转字符串
     $str = implode(",", $data);
     //替换掉逗号
-    $number = str_replace(',', '', $str);
-
-    return $number;
-}
-
-function writeJson($statusCode = 200, $message = null, $result = null)
-{
-    $data = array(
-        "code" => $statusCode,
-        "msg" => $message,
-        "result" => $result
-    );
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    return str_replace(',', '', $str);
 }

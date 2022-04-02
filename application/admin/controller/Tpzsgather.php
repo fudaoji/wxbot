@@ -60,7 +60,7 @@ class Tpzsgather extends Botbase
                     'field' => ['g.id','m.nickname as group_title', 'g.officer', 'm.id as group_id']
                 ]));
                 foreach ($list as $k => $v){
-                    $group_members = $this->groupMemberM->getField(['nickname'], ['wxid' => ['in', $v['officer']]]);
+                    $group_members = $this->groupMemberM->getField(['nickname'], ['wxid' => ['in', $v['officer']], 'group_id' => $v['group_id']]);
                     $v['officer_names'] = implode(',', $group_members);
                     $list[$k] = $v;
                 }

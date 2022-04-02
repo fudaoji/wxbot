@@ -128,8 +128,11 @@ class EventGroupChat extends Api
      */
     public function keyword(){
         if(strpos($this->content['msg'], "我要") !== false){ //主动搜商品
-            Logger::error($this->content);
-            if($dest_group = $this->memberM->getOneJoin([
+            //Logger::error($this->content);
+            if(model('common/tpzs/Team')->total([
+                'bot_id' => $this->bot['id'],
+                'groups' => ['like', "%".$this->groupWxid."%"]
+            ]) && $dest_group = $this->memberM->getOneJoin([
                 'alias' => 'm',
                 'join' => [
                     ['tpzsGrouppos gp', 'gp.group_id=m.id'],

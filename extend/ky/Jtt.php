@@ -89,10 +89,11 @@ class Jtt
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function universal($params = []){
+        !empty($params['v']) && $this->version = $params['v'];
         $url = "http://japi.jingtuitui.com/api/universal?appid={$this->appId}&appkey={$this->appKey}&v={$this->version}";
         $url .= '&'.http_build_query($params);
         $body = file_get_contents($url);
-        //Logger::error($body);
+
         $res = json_decode($body, true);
         if(!$res){
             $res = json_decode(substr($body, 5), true);
@@ -100,6 +101,7 @@ class Jtt
         if(isset($res['return']) && $res['return'] == 0){
             return $res['result'];
         }
+        Logger::error($body);
         return false;
     }
 }

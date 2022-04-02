@@ -22,7 +22,7 @@ class Test extends Base
     }
 
     public function testJtt(){
-        $keyword = "苹果";
+        $keyword = "草莓干";
         $page_size = 3;
         $unionid = "2025003964";
         $positionid = "3004264525";
@@ -35,46 +35,59 @@ class Test extends Base
         $template = "[商品标题]
 京东价：[商品原价]元
 抢购价：[优惠价]元
-抢购链接：[抢购链接]";
+领券+下单：[抢购链接]";
         $content = "暂未找到相关内容，您可以点击以下链接自助查询哦：
 https://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA
 ";
         if(!empty($res['totalCount'])){
             $content = "为您查询到以下".count($res['goods'])."个商品：\r\n\r\n";
             foreach ($res['goods'] as $k => $goods){
-                $temp_content = str_replace(
-                    ['[商品标题]', '[商品原价]', '[优惠价]', '[抢购链接]'],
-                    [$goods['skuName'], $goods['priceInfo']['goods_price'], $goods['priceInfo']['lowestCouponPrice'], $goods['goods_link']],
-                    $template
-                );
+                $link = $goods['goods_link'];
+                if(!empty($goods['couponInfo']['couponList'][0]['discount_link'])){
+                    $coupon_link = $goods['couponInfo']['couponList'][0]['discount_link'];
+                    $link = $coupon_link . "\r\n" . $goods['goods_link'];
+                }
+
+                if($k + 1 >= count($res['goods'])){
+                    $link .= "\r\n-------------------------------------------\r\n\r\n如果您对查询结果不满意，可以自主查询：\r\nhttps://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA";
+                }else{
+                    $link .= "\r\n-------------------------------------------\r\n";
+                }
 
                 $count = 0;
                 do{
                     $reply_content = $jtt->universal([
                         'unionid' => $unionid,
                         'positionid' => $positionid,
-                        'content' => $temp_content
+                        'content' => $link
                     ]);
                     $count++;
                     if($count >= 2) break;
                 }while($reply_content === false);
-                if($reply_content && !empty($reply_content['link_date'][0]['chain_link'])){
-                    $temp_content = str_replace($goods['goods_link'], $reply_content['link_date'][0]['chain_link'], $temp_content);
+
+                if($reply_content && !empty($reply_content['chain_content'])){
+                    $link = ltrim($reply_content['chain_content'], "\r\n");
                 }
-                if($k + 1 >= count($res['goods'])){
-                    $temp_content .= "\r\n-------------------------------------------\r\n\r\n如果您对查询结果不满意，可以自主查询：\r\nhttps://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA";
-                }else{
-                    $temp_content .= "\r\n-------------------------------------------\r\n";
-                }
+
+                $temp_content = str_replace(
+                    ['[商品标题]', '[商品原价]', '[优惠价]', '[抢购链接]'],
+                    [$goods['skuName'], $goods['priceInfo']['goods_price'], $goods['priceInfo']['lowestCouponPrice'], $link],
+                    $template
+                );
+
                 $content .= $temp_content;
             }
+        }else{
+            $reply_content = $jtt->universal([
+                'unionid' => $unionid,
+                'positionid' => $positionid,
+                'content' => $content,
+                'v' => 'v2'
+            ]);
+            $content = $reply_content['chain_content'];
         }
-        $reply_content = $jtt->universal([
-            'unionid' => $unionid,
-            'positionid' => $positionid,
-            'content' => $content
-        ]);
-        dump($reply_content['chain_content']);
+
+        dump($content);exit;
     }
 
     public function testPregMatch()

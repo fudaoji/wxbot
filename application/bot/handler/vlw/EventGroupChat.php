@@ -148,7 +148,7 @@ class EventGroupChat extends Api
                     $this->botClient->sendTextToFriend([
                         'robot_wxid' => $this->content['robot_wxid'],
                         'to_wxid' => $this->groupWxid,
-                        'msg' => "@".$this->content['from_name'] . " ".$this->searchGoods([
+                        'msg' => "@".$this->content['from_name'] . "[emoji=\\u2005] ".$this->searchGoods([
                                 'keyword' => $keyword,
                                 'unionid' => $dest_group['unionid'],
                                 'positionid' => $dest_group['position_id'],
@@ -179,46 +179,58 @@ class EventGroupChat extends Api
         $template = "[商品标题]
 京东价：[商品原价]元
 抢购价：[优惠价]元
-抢购链接：[抢购链接]";
+领券+下单：[抢购链接]";
         $content = "暂未找到相关内容，您可以点击以下链接自助查询哦：
 https://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA
 ";
         if(!empty($res['totalCount'])){
             $content = "为您查询到以下".count($res['goods'])."个商品：\r\n\r\n";
             foreach ($res['goods'] as $k => $goods){
-                $temp_content = str_replace(
-                    ['[商品标题]', '[商品原价]', '[优惠价]', '[抢购链接]'],
-                    [$goods['skuName'], $goods['priceInfo']['goods_price'], $goods['priceInfo']['lowestCouponPrice'], $goods['goods_link']],
-                    $template
-                );
+                $link = $goods['goods_link'];
+                if(!empty($goods['couponInfo']['couponList'][0]['discount_link'])){
+                    $coupon_link = $goods['couponInfo']['couponList'][0]['discount_link'];
+                    $link = $goods['goods_link'] . "\r\n" . $coupon_link;
+                }
+
+                if($k + 1 >= count($res['goods'])){
+                    $link .= "\r\n-------------------------------------------\r\n\r\n如果您对查询结果不满意，可以自主查询：\r\nhttps://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA";
+                }else{
+                    $link .= "\r\n-------------------------------------------\r\n";
+                }
 
                 $count = 0;
                 do{
                     $reply_content = $jtt->universal([
                         'unionid' => $unionid,
                         'positionid' => $positionid,
-                        'content' => $temp_content
+                        'content' => $link
                     ]);
                     $count++;
                     if($count >= 2) break;
                 }while($reply_content === false);
-                if($reply_content && !empty($reply_content['link_date'][0]['chain_link'])){
-                    $temp_content = str_replace($goods['goods_link'], $reply_content['link_date'][0]['chain_link'], $temp_content);
-                }
-                if($k + 1 >= count($res['goods'])){
-                    $temp_content .= "\r\n-------------------------------------------\r\n\r\n[玫瑰]如果您对查询结果不满意，可以自主查询：\r\nhttps://union-click.jd.com/jdc?e=618%7Cpc%7C&p=JF8BAOkJK1olXDYDZBoCUBVIMzZNXhpXVhgcDVpCVFRMVnBaRQcLDlZRAAMoUAMJaDtMWUVzBnF0ACcPYABWAxJTTjt9HnUGFigtWC9rXz8WQwRACU8dDRsBVUVWUzlcYw4ZBFhHZBkLYAtWBjp-eCBjIhwECQ5DEgBzZR8EF2sQXQcDU1ddC04eM2wJGF8UXAQKU1ttOEsUMyRmGmsXXAcHV1lYDEgTM28PHlIcVAABUF5UDk4nBG8BKwBAMwNEHz0jCCNzRBNAeF5QHzYyZF1tD0seF2l6WgkBW3QyZF9tC3tIRzJVK1kUXAILZA";
+
+                if($reply_content && !empty($reply_content['chain_content'])){
+                    $link = $reply_content['chain_content'];
                 }else{
-                    $temp_content .= "\r\n-------------------------------------------\r\n";
+                    $link = $goods['goods_link'] . "\r\n-------------------------------------------\r\n";
                 }
+
+                $temp_content = str_replace(
+                    ['[商品标题]', '[商品原价]', '[优惠价]', '[抢购链接]'],
+                    [$goods['skuName'], $goods['priceInfo']['goods_price'], $goods['priceInfo']['lowestCouponPrice'], $link],
+                    $template
+                );
+
                 $content .= $temp_content;
             }
-        }
-        if($reply_content = $jtt->universal([
-            'unionid' => $unionid,
-            'positionid' => $positionid,
-            'content' => $content
-        ])){
-            return $reply_content['chain_content'];
+        }else{
+            $reply_content = $jtt->universal([
+                'unionid' => $unionid,
+                'positionid' => $positionid,
+                'content' => $content,
+                'v' => 'v2'
+            ]);
+            $content = $reply_content['chain_content'];
         }
         return $content;
     }

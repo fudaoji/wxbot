@@ -88,7 +88,7 @@ class Tpzsgather extends Botbase
         $builder->setTip("调度群：所有发单机器人集合群，选品人员把商品素材发到此群，那么群里的所有机器人会各自采集然后转发各自负责的群。")
             ->setPostUrl('savePost')
             ->addFormItem('bot_id', 'hidden', 'bot_id', 'bot_id')
-            ->addFormItem('group_id', 'chosen', '选择调度群', '选择调度群', $groups, 'required')
+            ->addFormItem('group_id', 'chosen', '选择调度群', '选择调度群', $groups)
             ->addFormItem('officer', 'chosen_multi', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
             ->setFormData($data);
         return $builder->show();
@@ -109,6 +109,7 @@ class Tpzsgather extends Botbase
             ->setPostUrl('savePost')
             ->addFormItem('group_id', 'chosen', '选择调度群', '选择调度群', $groups, 'required')
             ->addFormItem('officer', 'chosen_multi', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
+            ->addFormItem('status', 'radio', '状态', '状态', [1=>'启用', 0 => '禁用'], 'required')
             ->setFormData($data);
         return $builder->show();
     }

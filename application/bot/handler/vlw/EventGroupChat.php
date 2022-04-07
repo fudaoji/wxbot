@@ -49,7 +49,7 @@ class EventGroupChat extends Api
             'join' => [
                 ['tpzsGather gather', 'gather.group_id=m.id']
             ],
-            'where' => ['m.wxid' => $group_wxid, 'gather.officer' => ['like', "%".$this->fromWxid."%"], 'm.uin' => $this->botWxid],
+            'where' => ['gather.status' => 1, 'm.wxid' => $group_wxid, 'gather.officer' => ['like', "%".$this->fromWxid."%"], 'm.uin' => $this->botWxid],
             'field' => ['gather.admin_id', 'm.wxid']
         ])){
             //2.取出机器人负责的群并转发

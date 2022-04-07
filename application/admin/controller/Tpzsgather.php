@@ -57,7 +57,7 @@ class Tpzsgather extends Botbase
             if ($total) {
                 $list = $this->model->getListJoin(array_merge($params, [
                     'limit' => [$post_data['page'], $post_data['limit']],
-                    'field' => ['g.id','m.nickname as group_title', 'g.officer', 'm.id as group_id']
+                    'field' => ['g.id','m.nickname as group_title', 'g.officer', 'm.id as group_id','g.status']
                 ]));
                 foreach ($list as $k => $v){
                     $group_members = $this->groupMemberM->getField(['nickname'], ['wxid' => ['in', $v['officer']], 'group_id' => $v['group_id']]);
@@ -74,6 +74,7 @@ class Tpzsgather extends Botbase
             ->addTableColumn(['title' => '序号', 'field' => 'id', 'type' => 'index','minWidth' => 50])
             ->addTableColumn(['title' => '群聊', 'field' => 'group_title', 'width' => 120])
             ->addTableColumn(['title' => '指挥官', 'field' => 'officer_names', 'minWidth' => 200])
+            ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => [0 => '禁用', 1 => '启用'],'minWidth' => 60])
             ->addTableColumn(['title' => '操作', 'width' => 70, 'type' => 'toolbar'])
             ->addRightButton('edit');
 
@@ -86,7 +87,7 @@ class Tpzsgather extends Botbase
         $members = model('botGroupmember')->getField('wxid,nickname',['group_id' => ['in', array_keys($groups)]], true);
         $builder = new FormBuilder();
         $builder->setTip("调度群：所有发单机器人集合群，选品人员把商品素材发到此群，那么群里的所有机器人会各自采集然后转发各自负责的群。")
-            ->setPostUrl('savePost')
+            ->setPostUrl(url('savePost'))
             ->addFormItem('bot_id', 'hidden', 'bot_id', 'bot_id')
             ->addFormItem('group_id', 'chosen', '选择调度群', '选择调度群', $groups)
             ->addFormItem('officer', 'chosen_multi', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
@@ -106,7 +107,7 @@ class Tpzsgather extends Botbase
         $members = model('botGroupmember')->getField('wxid,nickname',['group_id' => ['in', array_keys($groups)]], true);
         $builder = new FormBuilder();
         $builder->setTip("调度群：所有发单机器人集合群，选品人员把商品素材发到此群，那么群里的所有机器人会各自采集然后转发各自负责的群。")
-            ->setPostUrl('savePost')
+            ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '选择调度群', '选择调度群', $groups, 'required')
             ->addFormItem('officer', 'chosen_multi', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
             ->addFormItem('status', 'radio', '状态', '状态', [1=>'启用', 0 => '禁用'], 'required')

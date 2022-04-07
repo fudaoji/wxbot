@@ -135,7 +135,7 @@ class Tpzstask extends Botbase
             'refresh' => true
         ]);
         if(count($list) && $list[0]['id'] != $id){
-            $step_tasktime = model('botConfig')->getStepTaskTime($this->adminInfo['id']);
+            $step_tasktime = model('common/tpzs/Config')->getStepTaskTime($this->adminInfo['id']);
             foreach ($list as $k => $v){
                 $this->model->updateOne(['id' => $v['id'], 'plan_time' => $data['plan_time'] + $step_tasktime * $k]);
             }
@@ -165,7 +165,7 @@ class Tpzstask extends Botbase
         ]);
         if($list[0]['id'] != $id){
             $data = $this->model->updateOne(['id' => $id, 'plan_time' => $list[0]['plan_time']]);
-            $step_tasktime = model('botConfig')->getStepTaskTime($this->adminInfo['id']);
+            $step_tasktime = model('common/tpzs/Config')->getStepTaskTime($this->adminInfo['id']);
             $before = $data;
             foreach ($list as $k => $v){
                 if($v['id'] == $id)  continue;
@@ -194,7 +194,7 @@ class Tpzstask extends Botbase
         ]);
         if($last_one){
             $data['members'] = explode(',', $last_one['members']);
-        }else if($gid = model('botConfig')->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $this->bot['id']], 'central_group')){
+        }else if($gid = model('common/tpzs/Config')->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $this->bot['id']], 'central_group')){
             $group = model('botMember')->getOne($gid);
             $data['members'] = [$group['wxid']];
         }

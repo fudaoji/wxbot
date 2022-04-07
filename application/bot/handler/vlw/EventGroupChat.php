@@ -43,6 +43,7 @@ class EventGroupChat extends Api
         //Logger::error($content);
         $group_wxid = $this->groupWxid;
 
+        //一、群发
         //1、判断当前群组是否是某个用户的中央调度群
         if($group = $this->memberM->getOneJoin([
             'alias' => 'm',
@@ -66,9 +67,7 @@ class EventGroupChat extends Api
                         $this->botClient->sendImgToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'path' => $path]);
                         break;
                     default:
-                        if(strpos($content['msg'], 'jd.com') === false){//basic
-                            $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
-                        }else{//jd
+                        if(strpos($content['msg'], 'jd.com') !== false){//jd
                             /**
                              * @var $redis \Redis
                              */
@@ -110,12 +109,41 @@ class EventGroupChat extends Api
                                     ]);
                                 }
                             }
+                        }elseif (strpos($content['msg'], 'ckjr001.com') !== false){ //https://wx74161fcecb84d46c.wx.ckjr001.com/kpv2p/6m5oe8/?1649328453716=#/homePage/course/voice?courseId=2913528&ckFrom=5&extId=-1&refereeId=[推广人]
+                            /**
+                             * @var $redis \Redis
+                             */
+                            $redis = controller('common/base', 'event')->getRedis();
+                            foreach ($groups as $gid){
+                                if($dest_group = $this->memberM->getOneJoin([
+                                    'alias' => 'm',
+                                    'join' => [
+                                        ['tpzsGrouppos gp', 'gp.group_id=m.id'],
+                                        ['tpzsChannel channel', 'channel.id=gp.channel_id']
+                                    ],
+                                    'where' => ['m.wxid' => $gid, 'm.uin' => $this->bot['uin']],
+                                    'field' => ['channel.ckid']
+                                ])) {
+                                    $rKey = $this->content['msg_id'].$dest_group['ckid'];
+                                    if(! $reply_content = $redis->get($rKey)){
+                                        $reply_content = str_replace('[推广人]', $dest_group['ckid'], $this->content['msg']);
+                                        $redis->setex($rKey, 300, $reply_content);
+                                    }
+                                    $this->botClient->sendTextToFriend([
+                                        'robot_wxid' => $content['robot_wxid'],
+                                        'to_wxid' => $gid,
+                                        'msg' => $reply_content
+                                    ]);
+                                }
+                            }
+                        }else{ //basic
+                            $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
                         }
                         break;
                 }
             }
         }
-        //2、关键词
+        //二、关键词
         $this->keyword();
     }
 

@@ -47,12 +47,12 @@ class EventGroupMemberAdd extends Api
         $this->groupWxid = $this->content['from_group'];
         $this->group = $this->memberM->getOneByMap(['uin' => $this->botWxid, 'wxid' => $this->groupWxid]);
         $guest = $this->content['guest'];
-        $this->groupMemberM->addMember([
+        /*$this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
             'wxid' => $guest['wxid'],
             'group_id' => $this->group['id'],
             'nickname' => filter_emoji($guest['username'])
-        ]);
-        //Logger::error($this->content);
+        ]);*/
+        Logger::error($this->content);
     }
 }

@@ -16,12 +16,11 @@ class BotWxworkTest extends TestCase
 {
     private $bot;
     private $robotFdj = 'wxid_xokb2ezu1p6t21';
-    private $qyRobotFdj = '1688854317341474';
     private $robotYxg = '1688856404324777';
     private $externalYxg = '7881301713149756';
     private $internalFdj = '1688854317341474';
-    private $groupId = 'R:10840821540390231';
-    private $cpGroupId='R:10951134140940878';
+    private $groupId = 'R:10951134140940878';
+    private $externalFdj = '7881299942929761';
 
     /**
      * 初始化
@@ -33,13 +32,43 @@ class BotWxworkTest extends TestCase
     }
 
     /**
+     *
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendGroupMsgAndAt() {
+        $res = $this->bot->sendGroupMsgAndAt([
+            'robot_wxid' => $this->internalFdj,
+            'group_wxid' => $this->groupId,
+            'member_wxid' => $this->robotFdj,
+            'member_name' => "DJ",
+            'msg' => 'cool'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 转发信息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testForwardMsg() {
+        $res = $this->bot->forwardMsg([
+            'robot_wxid' => $this->internalFdj,
+            'to_wxid' => $this->groupId,
+            'msgid' => '1022188'
+        ]);
+        dump($res);
+        $this->assertSame(1, $res['code']);
+    }
+
+    /**
      * 获取群成员
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function testGetGroupMember() {
         $res = $this->bot->getGroupMember([
-            'robot_wxid' => $this->qyRobotFdj,
-            'group_wxid' => $this->cpGroupId,
+            'robot_wxid' => $this->robotYxg,
+            'group_wxid' => $this->groupId,
         ]);
         dump($res);
         $this->assertSame(1, $res['code']);
@@ -55,6 +84,23 @@ class BotWxworkTest extends TestCase
         ]);
         dump($res);
         $this->assertSame(1, $res['code']);
+    }
+
+    /**
+     * 发送文本消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendShareLink() {
+        $res = $this->bot->sendShareLinkMsg([
+            'robot_wxid' => $this->internalFdj,
+            'to_wxid' => $this->externalFdj,
+            'url' => 'https://wx74161fcecb84d46c.wx.ckjr001.com/kpv2p/6m5oe8/?1649472627421=#/?refereeId=b8ln59l',
+            'image_url' => 'https://my.chinaz.com/avatar/user.png',
+            'title' => '6-12岁儿童家庭都在用的【每日里】学习平台',
+            'desc' => '你的每日里，学习更轻松、生活更有味！',
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
     }
 
     /**
@@ -78,7 +124,7 @@ class BotWxworkTest extends TestCase
     public function testSendText() {
         $res = $this->bot->sendTextToFriends([
             'robot_wxid' => $this->robotYxg,
-            'to_wxid' => $this->internalFdj,
+            'to_wxid' => $this->externalFdj,
             'msg' => "来自企业微信的消息"
         ]);
         dump($res);
@@ -91,7 +137,7 @@ class BotWxworkTest extends TestCase
      */
     public function testGetInternalFriendlist() {
         $res = $this->bot->getInternalFriendlist([
-            'robot_wxid' => $this->qyRobotFdj
+            'robot_wxid' => $this->robotYxg
         ]);
         dump($res);
         $this->assertSame(1, $res['code']);
@@ -103,7 +149,7 @@ class BotWxworkTest extends TestCase
      */
     public function testGetExternalFriendlist() {
         $res = $this->bot->getExternalFriendlist([
-            'robot_wxid' => $this->qyRobotFdj
+            'robot_wxid' => $this->robotYxg
         ]);
         dump($res);
         $this->assertSame(1, $res['code']);

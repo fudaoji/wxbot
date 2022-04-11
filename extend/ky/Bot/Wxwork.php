@@ -24,15 +24,16 @@ class Wxwork extends Base
     const EVENT_LOGIN = 0; //登录
     const EVENT_QUIT = 1; //退出
 
+    const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
     const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMemberEnterprise'; //将好友移除群
     const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
     const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
     const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
-    const API_SEND_VIDEO_MSG = 'SendVideoMsg'; // 发送视频消息，只支持pro版
-    const API_SEND_FILE_MSG = 'SendFileMsg'; // 发送文件消息，只支持pro版
+    const API_SEND_VIDEO_MSG = 'SendVideoMsgEnterprise'; // 发送视频消息，只支持pro版
+    const API_SEND_FILE_MSG = 'SendFileMsgEnterprise'; // 发送文件消息，只支持pro版
     const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
     const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
-    const API_SEND_SHARE_LINK_MSG = 'SendShareLinkMsg'; //发送普通分享链接
+    const API_SEND_SHARE_LINK_MSG = 'SendLinkMsgEnterprise'; //发送普通分享链接
     const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
     const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
     const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
@@ -77,6 +78,21 @@ class Wxwork extends Base
         return array_merge(empty($params['data']) ? $params : $params['data'], [
             'api' => $api,
             'token' => $this->token
+        ]);
+    }
+
+    /**
+     * req:
+    robot_wxid (string)  // 机器人ID
+    to_wxid (string)  // 目标wxid
+    msgid (string)  // 消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function forwardMsg($params = []){
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_FORWARD_MSG)
         ]);
     }
 
@@ -160,6 +176,25 @@ class Wxwork extends Base
     }
 
     /**
+     * 批量发送视频消息给好友/群聊等
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendVideoToFriends($params = []){
+        $data = $this->buildPostData($params, self::API_SEND_VIDEO_MSG);
+        $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $res = $this->request([
+                'data' => $data
+            ]);
+            sleep(rand(1,3));
+        }
+        return $res;
+    }
+
+    /**
     res:
     robot_wxid (string)  // 机器人ID
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
@@ -172,6 +207,25 @@ class Wxwork extends Base
         return $this->request([
             'data' => $this->buildPostData($params, self::API_SEND_VIDEO_MSG)
         ]);
+    }
+
+    /**
+     * 批量发送文件消息给好友/群聊等
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendFileToFriends($params = []){
+        $data = $this->buildPostData($params, self::API_SEND_FILE_MSG);
+        $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $res = $this->request([
+                'data' => $data
+            ]);
+            sleep(rand(1,3));
+        }
+        return $res;
     }
 
     /**
@@ -207,6 +261,25 @@ class Wxwork extends Base
         return $this->request([
             'data' => $this->buildPostData($params, self::API_SEND_MUSIC_LINK_MSG)
         ]);
+    }
+
+    /**
+     * 批量发送链接消息给好友/群聊等
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendShareLinkToFriends($params = []){
+        $data = $this->buildPostData($params, self::API_SEND_SHARE_LINK_MSG);
+        $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $res = $this->request([
+                'data' => $data
+            ]);
+            sleep(rand(1,3));
+        }
+        return $res;
     }
 
     /**

@@ -13,4 +13,5 @@ namespace tests;
 class TestCase extends \think\testing\TestCase
 {
     protected $baseUrl = 'http://sttx.dcq.kuryun.cn';
+    protected $codeArr = [0, 1, -4];
 }

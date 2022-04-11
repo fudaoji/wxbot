@@ -14,12 +14,14 @@ use ky\Logger;
 
 class Vlw extends Base
 {
-    //1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请
+    //2004文件消息  1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请
     const MSG_TEXT = 1;
     const MSG_IMG = 3;
     const MSG_VOICE = 34;
     const MSG_CARD = 42;
     const MSG_VIDEO = 43;
+    const MSG_FILE = 2004;
+    const MSG_LINK = 49;
 
     const EVENT_LOGIN = 0; //登录
     const EVENT_QUIT = 1; //退出

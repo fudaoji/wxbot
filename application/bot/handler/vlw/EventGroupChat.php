@@ -62,11 +62,7 @@ class EventGroupChat extends Api
             if($team){
                 $groups = explode(',', $team['groups']);
                 switch($content['type']){
-                    case Vlw::MSG_IMG:
-                        $path = str_replace(['[pic=', ']'], '', $content['msg']);
-                        $this->botClient->sendImgToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'path' => $path]);
-                        break;
-                    default:
+                    case Vlw::MSG_TEXT:
                         if(strpos($content['msg'], 'jd.com') !== false){//jd
                             /**
                              * @var $redis \Redis
@@ -140,7 +136,23 @@ class EventGroupChat extends Api
                             $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
                         }
                         break;
+                    case Vlw::MSG_LINK:
+                        $msg = json_decode($this->content['msg'], true)['Link'][0];
+                        $res = $this->botClient->sendShareLinkToFriends([
+                            'robot_wxid' => $content['robot_wxid'],
+                            'to_wxid' => $groups,
+                            'url' => $msg['url'],
+                            'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
+                            'title' => $msg['title'],
+                            'desc' => $msg['desc']
+                        ]);
+                        //Logger::error($res);
+                        break;
+                    default:
+                        $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                        break;
                 }
+                //Logger::error($this->content);
             }
         }
         //二、关键词

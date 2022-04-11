@@ -14,6 +14,7 @@
                 id="{$form['name']}"
                 name="{$form['name']}"
                 {$form['extra_attr']??''}
+                xm-select-search=""
         >
         {notempty name="form.options"}
         {foreach $form['options'] as $k => $v}
@@ -30,4 +31,21 @@
             var formSelects = layui.formSelects;
         });
     </script>
+
+
+    <style>
+        .xm-select-title {
+            height: auto !important;
+        }
+        .xm-select-parent .xm-select {
+            position: relative;
+        }
+        .xm-select--suffix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: -1;
+        }
+    </style>
 </div>

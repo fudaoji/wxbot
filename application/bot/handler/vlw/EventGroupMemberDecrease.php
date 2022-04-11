@@ -35,8 +35,8 @@ class EventGroupMemberDecrease extends Api
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function handle(){
-        //Logger::error($this->content);
+        Logger::error($this->content);
         $this->groupWxid = $this->content['from_group'];
-        $this->groupMemberM->rmMember(['bot_id' => $this->bot['id'], 'wxid' => $this->content['to_wxid']]);
+        //$this->groupMemberM->rmMember(['bot_id' => $this->bot['id'], 'wxid' => $this->content['to_wxid']]);
     }
 }

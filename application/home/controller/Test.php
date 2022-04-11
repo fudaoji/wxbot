@@ -19,4 +19,9 @@ class Test extends Base
         var_dump($url2);exit;
         var_dump(file_get_contents("https://ock.cn/api/short?longurl=" . $url2));
     }
+
+    public function testUrl(){
+        var_dump(input('name'));exit;
+        //var_dump(file_get_contents("https://ock.cn/api/short?longurl=" . $url2));
+    }
 }

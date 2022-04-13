@@ -50,7 +50,7 @@ class Groupmember extends Botbase
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = ['bot_id' => $this->bot['id'], 'group_id' => $group_id];
-            !empty($post_data['search_key']) && $where['nickname|remark_name'] = ['like', '%' . $post_data['search_key'] . '%'];
+            !empty($post_data['search_key']) && $where['nickname|group_nickname'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if (! $total) {
                 $group = $this->groupM->getOne($group_id);

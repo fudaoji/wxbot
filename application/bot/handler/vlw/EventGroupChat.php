@@ -138,10 +138,12 @@ class EventGroupChat extends Api
                         break;
                     case Vlw::MSG_LINK:
                         $msg = json_decode($this->content['msg'], true)['Link'][0];
+                        //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']
+                        $url = $msg['url'];
                         $res = $this->botClient->sendShareLinkToFriends([
                             'robot_wxid' => $content['robot_wxid'],
                             'to_wxid' => $groups,
-                            'url' => $msg['url'],
+                            'url' => $url,
                             'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
                             'title' => $msg['title'],
                             'desc' => $msg['desc']

@@ -73,7 +73,7 @@ class Mediavideo extends Bbase
     public function edit()
     {
         $id = input('id', null);
-        $data = $this->model->getOne($id);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
 
         if (!$data) {
             $this->error('参数错误');

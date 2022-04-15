@@ -32,6 +32,34 @@ class BotWxworkTest extends TestCase
     }
 
     /**
+     * 根据手机号加微信
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testAddFriendBySearch() {
+        $res = $this->bot->addFriendBySearch([
+            'robot_wxid' => $this->internalFdj,
+            'content' => '15659827559',
+            'msg' => 'hi, 我是Rocky'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 获取某个群成员信息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testGetGroupMemberInfo() {
+        $res = $this->bot->getGroupMemberInfo([
+            'robot_wxid' => $this->internalFdj,
+            'group_wxid' => $this->groupId,
+            'member_wxid' => '7881300941971174'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
      *
      * Author: fudaoji<fdj@kuryun.cn>
      */

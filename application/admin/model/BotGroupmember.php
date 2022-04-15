@@ -27,9 +27,12 @@ class BotGroupmember extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function addMember($params = []){
-        if(!$this->total(['bot_id' => $params['bot_id'], 'group_id' => $params['group_id'],'wxid' => $params['wxid']])){
+        if(!$gm = $this->getOneByMap(['bot_id' => $params['bot_id'], 'group_id' => $params['group_id'],'wxid' => $params['wxid']])){
             $this->addOne($params);
             //todo 记录进群统计数据
+        }else{
+            $params['id'] = $gm['id'];
+            $this->updateOne($params);
         }
     }
 
@@ -58,7 +61,7 @@ class BotGroupmember extends Base
         /**
          * @var $bot_client Vlw|Wxwork
          */
-        $bot_client = model('bot')->getRobotClient($bot);
+        $bot_client = model('admin/bot')->getRobotClient($bot);
         switch ($bot['protocol']) {
             case Bot::PROTOCOL_WXWORK:
                 $res = $bot_client->getGroupMember([

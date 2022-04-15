@@ -1,0 +1,40 @@
+<table class="layui-table" lay-skin="line">
+    <colgroup>
+        <col width="200">
+        <col>
+        <col width="200">
+    </colgroup>
+    <thead>
+    <tr>
+        <th>语音名称</th>
+        <th>试听</th>
+        <th width="120">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="data_list" id="item"}
+    <tr>
+        <td>{$item.title}</td>
+        <td>
+            <audio controls>
+                <source src="{$item.url}" type="audio/mpeg">
+                <source src="{$item.url}" type="audio/wma">
+                <source src="{$item.url}" type="audio/wav">
+                <source src="{$item.url}" type="audio/amr">
+                您的浏览器不支持 audio 元素。
+            </audio>
+        </td>
+        <td>
+            <div class="">
+                <button onclick="clickSync('{$item.id}', '{$item.media_id}')" class="layui-btn layui-btn-xs ">
+                    <i class="fa fa-upload"></i>传至微信
+                </button>
+                <button onclick="clickDelOne('{$item.id}')" class="layui-btn layui-btn-xs layui-btn-danger">
+                    <i class="fa fa-trash-o"></i>删除
+                </button>
+            </div>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>

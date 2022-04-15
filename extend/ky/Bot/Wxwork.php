@@ -24,6 +24,7 @@ class Wxwork extends Base
     const EVENT_LOGIN = 0; //登录
     const EVENT_QUIT = 1; //退出
 
+    const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
     const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMemberEnterprise'; //将好友移除群
     const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
@@ -78,6 +79,21 @@ class Wxwork extends Base
         return array_merge(empty($params['data']) ? $params : $params['data'], [
             'api' => $api,
             'token' => $this->token
+        ]);
+    }
+
+    /**
+     * req:
+        robot_wxid (string)  // 机器人ID
+        content (string)  // 手机号
+        msg (string)  // 打招呼的内容
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function addFriendBySearch($params = []){
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_ADD_FRIEND_BY_SEARCH)
         ]);
     }
 

@@ -19,6 +19,8 @@ use ky\Logger;
 
 class BotMember extends Base
 {
+    protected $isCache = true;
+
     /**
      * 拉取最新群组列表
      * @param $bot
@@ -252,5 +254,34 @@ class BotMember extends Base
                 break;
         }
         return 0;
+    }
+
+    /**
+     * 保存新好友
+     * @param array $params
+     * @return array|false|\PDOStatement|string|\think\Model
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function addFriend($params = [])
+    {
+        $bot = $params['bot'];
+        $insert = [
+            'uin' => $bot['uin'],
+            'nickname' => $params['nickname'],
+            'username' => empty($params['username']) ? '' : $params['username'],
+            'wxid' => $params['wxid'],
+            'type' => \app\constants\Bot::FRIEND,
+            'internal' => 1
+        ];
+        switch ($bot['protocol']){
+            case Bot::PROTOCOL_WXWORK:
+                $insert['internal'] = 2;
+                break;
+        }
+        $this->addOne($insert);
+        //refresh
+        return $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $params['wxid']], true, true);
     }
 }

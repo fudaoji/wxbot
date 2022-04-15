@@ -1,0 +1,115 @@
+{extend name="../layout/inline_page_base"/}
+
+{block name="body"}
+<form class="layui-form" action="" style="margin: 20px;">
+    <div class="layui-row">
+        <div class="layui-col-sm7">
+            <!--预留搜索-->
+        </div>
+    </div>
+
+    <div class="layui-row">
+        <table class="layui-table" lay-skin="line">
+            <colgroup>
+                <col width="50">
+                <col width="80">
+                <col width="100">
+                <col >
+            </colgroup>
+            <tbody>
+            {volist name="data_list" id="item"}
+            <tr>
+                <td>
+                    <input
+                        type="checkbox"
+                        class="id"
+                        lay-filter="id"
+                        value="{$item.id}"
+                        lay-skin="primary"
+                        data-logo="{$item.logo}"
+                        data-name="{$item.name}"
+                    />
+                </td>
+                <td>
+                    <img src="{$item.logo}" style="width: 70px;">
+                </td>
+                <td>{$item.name}</td>
+                <td>{$item.desc}</td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+    <div id="page">
+        {$pager|raw}
+    </div>
+</form>
+<div class="bottom">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn bg-success" onclick="clickSure();">确定</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn">取消</button>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script>
+    var parent_index = parent.layer.getFrameIndex(window.name) //获取窗口索引
+            ,ids = []
+            ,$checkBoxes = []
+            ,dataLen = parseInt("{:count($data_list)}");
+
+    $(function () {
+        $checkBoxes = $('.id');
+        //点击取消
+        $('.js-cancel-btn').on('click', function () {
+            parent.layer.close(parent_index);
+        });
+    });
+
+    layui.use(['form'],function(){
+        var form = layui.form;
+        //刷新界面 所有元素
+        form.render();
+
+        //监听单个选中
+        form.on('checkbox(id)', function (data) {
+            $("#ids").prop('checked', $('.id:checked').length < dataLen ? false : true);
+            layui.form.render('checkbox');
+        });
+
+    });
+
+    //点击确认
+    function clickSure() {
+        if($('.id:checked').length < 1){
+            layer.alert("请选择应用");
+            return;
+        }
+        var $item = $('.id:checked:first-child');
+        var res = {
+            id: $item.val(),
+            name: $item.data('name'),
+            logo: $item.data('logo')
+        };
+        parent.setAddonValue(res, "{$field}");
+        parent.layer.close(parent_index);
+    }
+</script>
+{/block}
+
+{block name="css" /}
+<style>
+    body{background-color: #fff;}
+
+    .layui-form-checkbox[lay-skin=primary]{height: 19px !important;margin-top: -12px;margin-left: -1px;}
+    #page{margin: 20px auto;text-align: center;}
+    #page .layui-laypage .layui-laypage-curr .layui-laypage-em{background-color: var(--green);}
+    .bottom{
+        background-color: #f8f8f8;line-height: 52px;height: 52px;position: fixed;text-align: center;
+        width: 100%; bottom: 0;
+    }
+</style>
+{/block}

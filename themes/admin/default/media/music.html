@@ -1,0 +1,258 @@
+{extend name="../layout/inline_page_base"/}
+
+{block name="body"}
+<div id="dialog-add" style="display: none;padding: 10px 15px;">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">音乐标题</label>
+            <div class="layui-input-block">
+                <input name="title"  lay-verify="required" placeholder="请输入音乐标题" class="layui-input" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择音乐</label>
+            <div class="layui-input-block">
+                <input name="url"
+                       id="url"
+                       lay-verify="required"
+                       placeholder="填写音乐链接或者选择上传的音频文件，常用格式：mp3"
+                       class="layui-input"
+                       style="width: 75%; display: inline-block;"
+                />
+                <a href="javascript:;" class="layui-btn layui-btn-primary" id="picker-music">点击选择</a>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">高品质链接</label>
+            <div class="layui-input-block">
+                <input name="hq_url" placeholder="没有高品质音乐链接，请留空。高质量音乐链接，WIFI环境优先使用该链接播放音乐" class="layui-input" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <input name="desc" placeholder="描述内容将出现在音乐名称下方，建议控制在20个汉字以内最佳" class="layui-input" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="add">提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<form class="layui-form" action="" style="margin: 20px;">
+    <div class="layui-row">
+        <div class="layui-col-sm7">
+            <!--预留搜索-->
+        </div>
+        <div class="layui-col-sm5 layui-col-sm-offset7 tr">
+            <input type="checkbox" lay-filter="ids" title="全选" id="ids">
+            <div class="layui-btn-group">
+                <a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="clickDelBatch()">
+                    <i class="fa fa-trash-o"></i>批量删除
+                </a>
+                <button type="button" class="layui-btn  layui-btn-sm" id="picker-add">
+                    <i class="fa fa-plus"></i>新增音乐
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row">
+        <table class="layui-table" lay-skin="line">
+            <colgroup>
+                <col width="50">
+                <col>
+                <col>
+                <col width="100">
+            </colgroup>
+            <tbody>
+            {volist name="data_list" id="item"}
+            <tr>
+                <td>
+                    <input
+                        type="checkbox"
+                        class="id"
+                        lay-filter="id"
+                        value="{$item.id}"
+                        lay-skin="primary"
+                        data-url="{$item.url}"
+                        data-title="{$item.title}"
+                    />
+                </td>
+                <td>{$item.title}</td>
+                <td>
+                    <audio controls>
+                        <source src="{$item.url}" type="audio/mpeg">
+                        <source src="{$item.url}" type="audio/wma">
+                        <source src="{$item.url}" type="audio/wav">
+                        <source src="{$item.url}" type="audio/amr">
+                        您的浏览器不支持 audio 元素。
+                    </audio>
+                </td>
+                <td>
+                    <a href="javascript:;" onclick="clickDelOne('{$item.id}')" class="layui-btn layui-btn-danger layui-btn-sm">删除</a>
+                </td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+    <div id="page">
+        {$pager|raw}
+    </div>
+</form>
+<div class="bottom">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn bg-success" onclick="clickSure();">确定</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn">取消</button>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script>
+    var parent_index = parent.layer.getFrameIndex(window.name) //获取窗口索引
+            ,ids = []
+            ,$checkBoxes = []
+            ,dataLen = parseInt("{:count($data_list)}");
+
+    //根据iframe传回的值进行当前页面的赋值
+    var setVoiceValue = function (value, field) {
+        $("#"+field).val(value[0].url);
+    };
+
+    $(function () {
+        $checkBoxes = $('.id');
+        //点击取消
+        $('.js-cancel-btn').on('click', function () {
+            parent.layer.close(parent_index);
+        });
+
+        $("#picker-add").on('click', function () {
+            layer.open({
+                title: "新增音乐",
+                type: 1,
+                shift: 2,
+                resize: false,
+                area: ['600px', '450px'],
+                shadeClose: false,
+                content: $('#dialog-add') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+            });
+        });
+
+        //点击选择音频
+        $("#picker-music").on('click', function () {
+            layer.open({
+                type: 2,
+                title: '音频',
+                shadeClose: false,
+                shade: 0.8,
+                area: ['600px', '450px'],
+                content: ['{:url("mp/material/handle", ["type" => "voice", "field" => "url"])}'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            });
+        });
+    });
+
+    //点击删除单个
+    var clickDelOne = function (id) {
+        ids = [id];
+        delRequest()
+    };
+    //点击批量删除
+    var clickDelBatch = function (id) {
+        $.each($('.id:checked'), function(i, item){
+            ids.push($(item).val());
+        });
+        delRequest()
+    };
+
+    //请求服务端进行删除操作
+    var delRequest = function () {
+        if(ids.length < 1){
+            layer.alert('请选中要删除的数据');
+        }
+        layer.confirm('删除后无法恢复，你确定吗？', {
+            title: '提示',
+            btn: ['是','不'] //按钮
+        }, function(){
+            var loading_index = layer.load(1);
+            $.post("{:url('materialDelPost')}", {'ids': ids, 'type': 'music'}, function (res) {
+                if(res.code === 1){
+                    layer.msg(res.msg, {time: 1000}, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.alert(res.msg);
+                }
+                layer.close(loading_index);
+            })
+        });
+    };
+
+    layui.use(['form'],function(){
+        var form = layui.form;
+        //刷新界面 所有元素
+        form.render();
+        form.on('submit(add)', function (data) {
+            var loading_index = layer.load(1);
+            $.post('{:url("music")}', data.field, function (res) {
+                layer.close(loading_index);
+                if(res.code === 1){
+                    layer.msg(res.msg, {time: 1000}, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.alert(res.msg);
+                }
+            });
+            return false;
+        });
+
+        //监听全选
+        form.on('checkbox(ids)', function(data){
+            $checkBoxes.prop('checked', data.elem.checked);
+            layui.form.render('checkbox');
+        });
+        //监听单个选中
+        form.on('checkbox(id)', function (data) {
+            $("#ids").prop('checked', $('.id:checked').length < dataLen ? false : true);
+            layui.form.render('checkbox');
+        });
+
+    });
+
+    //点击确认
+    function clickSure() {
+        var list = [];
+        $('.id:checked').each(function (i, item) {
+            list.push({id: $(item).val(), url: $(item).data('url'), title: $(item).data('title')});
+        });
+        if(list.length < 1){
+            layer.alert("请选择音乐");
+            return;
+        }
+
+        parent.setMusicValue(list, "{$field}");
+        parent.layer.close(parent_index);
+    }
+</script>
+{/block}
+
+{block name="css" /}
+<style>
+    body{background-color: #fff;}
+    
+    .layui-form-checkbox[lay-skin=primary]{height: 19px !important;margin-top: -12px;margin-left: -1px;}
+    #page{margin: 20px auto;text-align: center;}
+    #page .layui-laypage .layui-laypage-curr .layui-laypage-em{background-color: var(--green);}
+    .bottom{
+        background-color: #f8f8f8;line-height: 52px;height: 52px;position: fixed;text-align: center;
+        width: 100%; bottom: 0;
+    }
+</style>
+{/block}

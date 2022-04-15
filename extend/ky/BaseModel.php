@@ -425,6 +425,7 @@ class BaseModel extends Model
      * @Author: fudaoji <fdj@kuryun.cn>
      */
     public function getOneByMap($where=[], $field = true, $refresh = 0, $order = []){
+        ksort($where);
         $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($where) . serialize($order));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);

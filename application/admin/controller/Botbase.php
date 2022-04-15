@@ -10,6 +10,8 @@
 namespace app\admin\controller;
 
 
+use app\constants\Bot;
+
 class Botbase extends Bbase
 {
     protected $botList = [];
@@ -25,5 +27,10 @@ class Botbase extends Bbase
         $this->botList = model('bot')->getField(['id','title'], ['status' => 1]);
         $this->assign['bot_info'] = $this->bot;
         $this->assign['bot_list'] = $this->botList;
+    }
+
+    public function getGroups($where = []){
+        $where = array_merge($where, ['uin' => $this->bot['uin'], 'type' => Bot::GROUP]);
+        return model('botMember')->getField('wxid,nickname', $where);
     }
 }

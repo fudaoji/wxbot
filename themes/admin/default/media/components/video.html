@@ -1,0 +1,82 @@
+<ul class="material-img-list clr">
+    {volist name="data_list" id="item"}
+    <li class="material-img-item">
+        <div class="appimg-info">
+            <span class="appimg-title text-ellipsis" title="{$item.title}">{$item.title}</span>
+        </div>
+        <div class="img-item">
+            <video style="width: 210px;height: 169px;" controls>
+                <source src="{$item.url}"  type="video/mp4">
+                <source src="{$item.url}"  type="video/ogg">
+                您的浏览器不支持 HTML5 video 标签。
+            </video>
+        </div>
+        <div class="img-opr">
+            <ul>
+                <li class="img-opr-item">
+                    <a href="javascript:;" data-mediaid="{$item['media_id']}" onclick="clickSync({$item.id}, '{$item.media_id}')" title="转换为微信视频"><i class="fa fa-upload"></i></a>
+                </li>
+                <li class="img-opr-item">
+                    <a href="javascript:;" onclick="clickDelOne({$item.id})" title="删除"><i class="fa fa-trash-o"></i></a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    {/volist}
+</ul>
+<script>
+
+</script>
+<style>
+    .material-img-list {
+        margin-top: 30px;
+    }
+    .material-img-item {
+        float: left;
+        width: 210px;
+        margin: 0 10px 30px 10px;
+        cursor: pointer;
+        position: relative;
+        border: 1px solid #e7e7eb;
+    }
+    .material-img-item:hover{
+        border: 2px solid var(--main-color);
+    }
+    .material-img-item .appimg-info {
+        font-size: 13px;
+        line-height: 20px;
+        padding: 6px 12px;
+        border-bottom: 1px solid #e7e7eb;
+    }
+    .material-img-item .appimg-info .appimg-title {
+        display: inline-block;
+        width: 100%;
+    }
+    .material-img-item .img-item {
+        position: relative;
+        height: 169px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+    }
+    .material-img-item .img-opr {
+        background-color: #f4f4f4;
+        border-top: 1px solid #e7e7eb;
+    }
+    .material-img-item .img-opr li:first-child:nth-last-child(2), .material-img-item .img-opr li:first-child:nth-last-child(2)~li {
+        width: 50%;
+    }
+    .material-img-item .img-opr-item {
+        float: left;
+        line-height: 30px;
+        height: 30px;
+        background-color: #f4f4f4;
+    }
+    .material-img-item .img-opr-item a {
+        display: block;
+        border-right: 1px solid #e7e7eb;
+        text-align: center;
+        text-decoration: none;
+        color: #98999a;
+    }
+</style>

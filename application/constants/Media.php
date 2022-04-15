@@ -16,4 +16,16 @@ class Media
     const IMAGE = "image";
     const FILE = "file";
     const VIDEO = "video";
+    const LINK = "link";
+
+    public static function types($id = null){
+        $list = [
+            Media::TEXT => '文本',
+            Media::IMAGE => '图片',
+            Media::FILE => '文件',
+            Media::VIDEO => '视频',
+            Media::LINK => '分享链接'
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
 }

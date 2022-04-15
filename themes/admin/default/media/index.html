@@ -1,0 +1,172 @@
+<div class="layui-tab layui-tab-brief" style="padding: 0px 10px 0px 10px;">
+    <ul class="layui-tab-title">
+        {volist name="types" id="item"}
+        <li class="<?= $type == $key ? 'layui-this' : '';?>"> <a href="{:url('index', ['type' => $key])}">{$item}</a></li>
+        {/volist}
+    </ul>
+</div>
+
+<div class="layui-row">
+    <div class="layui-col-xs10">
+        <form class="layui-form" action="">
+            <div class="layui-col-xs5" style="margin-left: 5px; line-height: 38px;">
+                <div class="layui-form-item">
+                    <input name="search_key" placeholder="请输入名称搜索" value="{:input('search_key')}" class="layui-input"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-col-xs4" style="margin-left: 5px; line-height: 38px;">
+                <button class="layui-btn layui-btn-primary" lay-submit="" lay-filter="formDemo">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="layui-col-xs2 tr">
+        <a href="javascript:;" id="picker" class="layui-btn layui-btn-sm">新增{$types[$type]}</a>
+    </div>
+</div>
+<div class="layui-row hide" id="process-bar">
+    <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="upload-process">
+        <div class="layui-progress-bar " lay-percent="5%"></div>
+    </div>
+</div>
+
+<div class="layui-tab" lay-filter="docDemoTabBrief">
+    <div class="layui-tab-content">
+        {switch name="type"}
+        {case value="image"}{include file="material/components/image" /}{/case}
+        {case value="news"}{include file="material/components/news" /}{/case}
+        {case value="voice"}{include file="material/components/voice" /}{/case}
+        {case value="video"}{include file="material/components/video" /}{/case}
+        {/switch}
+        <div id="page">
+            {$pager|raw}
+        </div>
+    </div>
+</div>
+
+{/block}
+
+{block name="js"}
+<script>
+    var type = "{$type}";
+    //上传素材至微信端
+    var clickSync = function(id, mediaId){
+        if(mediaId){
+            layer.alert("素材已在微信上，无需操作");
+            return;
+        }
+        layer.confirm('文件较大时需要消耗较多的时间，请勿关闭浏览器？', {
+            title: '提示',
+            btn: ['晓得','先不用'] //按钮
+        }, function(){
+            var loading_index = layer.load(1);
+            $.post("{:url('materialSyncPost')}", {'id': id, 'type': "{$type}"}, function (res) {
+                layer.close(loading_index);
+                if (res.code === 1) {
+                    layer.msg(res.msg, {time: 1500}, function (index) {
+                        window.location.reload();
+                    })
+                } else {
+                    layer.alert(res.msg);
+                }
+            })
+        });
+    };
+
+    //点击删除单个
+    var clickDelOne = function (id) {
+        ids = [id];
+        delRequest();
+    };
+    //点击批量删除
+    var clickDelBatch = function (id) {
+        $.each($('.id:checked'), function(i, item){
+            ids.push($(item).val());
+        });
+        delRequest();
+    };
+
+    //请求服务端进行删除操作
+    var delRequest = function () {
+        if(ids.length < 1){
+            layer.alert('请选中要删除的数据');
+        }
+        layer.confirm('删除后无法恢复，你确定吗？', {
+            title: '提示',
+            btn: ['是','不'] //按钮
+        }, function(){
+            var loading_index = layer.load(1);
+            $.post("{:url('materialDelPost', ['type' => $type])}", {'ids': ids, 'type': "{$type}"}, function (res) {
+                layer.close(loading_index);
+                if(res.code === 1){
+                    layer.msg(res.msg, {time: 1000}, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.alert(res.msg);
+                }
+            })
+        });
+    };
+
+    layui.use(['form', 'upload', 'jquery'],function(){
+        var form = layui.form,
+            upload = layui.upload
+        , $ = layui.jquery;
+        //刷新界面 所有元素
+        form.render();
+
+        {if $type eq 'news'}
+
+        $('#picker').on('click', function () {
+            layer.open({
+                title:'选择图文类型',
+                type: 1,
+                area: ['560px', '310px'],
+                content: $('#news-type') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+            });
+        });
+
+        {else /}
+
+        var upload_index;
+        upload.render({
+            elem: '#picker'
+            ,url: '{:url("uploadPost", ["type" => $type])}'
+            ,multiple: true
+            ,accept: type ==='image' ? 'images' : type //允许上传的文件类型images（图片）、file（所有文件）、video（视频）、audio（音频）
+            ,size: "{$config[$type.'_size']/1000}" //最大允许上传的文件大小
+            ,exts: "{$config[$type.'_ext']}".split(',').join('|')
+            ,number: 5 //可同时传5张
+            ,before: function () {
+                upload_index = layer.load(1);
+                $('#process-bar').removeClass('hide');
+            }
+            ,done: function(res, index, upload){ //上传后的回调
+                if(res.code !== 1){
+                    layer.alert(res.msg);
+                    return;
+                }
+            }
+            ,allDone: function(obj){ //当文件全部被提交后，才触发
+                layer.close(upload_index);
+                layer.msg("上传完成", {time: 1000}, function () {
+                    location.href = location.href.replace(/page=\d+$/g, "page=1"); //回到首页
+                });
+                //$('#process-bar').addClass('hide');
+            }
+            ,progress: function(n, elem){
+                var percent = n + '%'; //获取进度百分比
+                element.progress('upload-process', percent); //可配合 layui 进度条元素使用
+
+                //以下系 layui 2.5.6 新增
+                console.log(elem); //得到当前触发的元素 DOM 对象。可通过该元素定义的属性值匹配到对应的进度条。
+            }
+            //,……
+        })
+        {/if}
+    });
+</script>
+{/block}

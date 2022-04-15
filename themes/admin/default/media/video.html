@@ -1,0 +1,230 @@
+
+<div class="layui-tab layui-tab-brief" lay-filter="tabBrief">
+    <div class="layui-tab-content">
+        <form class="layui-form" action="" method="post">
+            <div class="layui-row">
+                <div class="layui-col-sm7">
+                    <!--预留搜索-->
+                </div>
+                <div class="layui-col-sm5 layui-col-sm-offset7 tr">
+                    <input type="checkbox" lay-filter="ids" title="全选" id="ids">
+                    <div class="layui-btn-group">
+                        <a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="clickDelBatch()">
+                            <i class="fa fa-trash-o"></i>批量删除
+                        </a>
+                        <button type="button" class="layui-btn  layui-btn-sm  bg-success" id="picker">
+                            <i class="fa fa-upload"></i>上传视频
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-row">
+                {volist name="data_list" id="item"}
+                <div class="layui-col-xs4">
+                    <div class="layui-card top-panel" id="item-{$item.id}">
+                        <!--<div class="layui-card-header">要展示的指标名称</div>-->
+                        <div class="layui-card-body">
+                            <div class="check-btn">
+                                <input
+                                        type="checkbox"
+                                        class="id"
+                                        lay-filter="id"
+                                        value="{$item.id}"
+                                        lay-skin="primary"
+                                        data-title="{$item.title}"
+                                        data-url="{$item.url}"
+                                />
+                            </div>
+                            <video controls>
+                                <source src="{$item.url}"  type="video/mp4">
+                                <source src="{$item.url}"  type="video/ogg">
+                                您的浏览器不支持 HTML5 video 标签。
+                            </video>
+                            <div class="picture-title">{$item.title}</div>
+                            <div class="delete-btn" onclick="clickDelOne({$item.id})"><i class="fa fa-trash"></i></div>
+                        </div>
+                    </div>
+                </div>
+                {/volist}
+            </div>
+            <div id="page">
+                {$pager|raw}
+            </div>
+        </form>
+    </div>
+</div>
+<div class="bottom">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn bg-success" onclick="clickSure();">确定</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn">取消</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var parent_index
+        ,ids = []
+    ,$checkBoxes = []
+    ,dataLen = parseInt("{:count($data_list)}")
+    , clickDelOne
+    , clickDelBatch
+    , clickSure;
+
+    layui.use(['jquery','form', 'upload'],function(){
+        var form = layui.form,
+            upload = layui.upload,
+        $ = layui.jquery;
+        //刷新界面 所有元素
+        form.render();
+
+        parent_index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+
+        $(function () {
+            $checkBoxes = $('.id');
+            //点击取消
+            $('.js-cancel-btn').on('click', function () {
+                parent.layer.close(parent_index);
+            });
+        });
+
+        //点击确认
+        clickSure = function () {
+            var list = [];
+            $('.id:checked').each(function (i, item) {
+                list.push({id: $(item).val(), url: $(item).data('url')});
+            });
+            if(list.length < 1){
+                layer.alert("请选择视频");
+                return;
+            }
+
+            parent.setVideoValue(list, "{$field}");
+            parent.layer.close(parent_index);
+        };
+
+        //点击删除单个
+        clickDelOne = function (id) {
+            ids = [id];
+            delRequest()
+        };
+        //点击批量删除
+        clickDelBatch = function (id) {
+            $.each($('.id:checked'), function(i, item){
+                ids.push($(item).val());
+            });
+            delRequest()
+        };
+
+        //请求服务端进行删除操作
+        var delRequest = function () {
+            if(ids.length < 1){
+                layer.alert('请选中要删除的数据');
+            }
+            layer.confirm('删除后无法恢复，你确定吗？', {
+                title: '提示',
+                btn: ['是','不'] //按钮
+            }, function(){
+                var loading_index = layer.load(1);
+                $.post("{:url('delPost')}", {'ids': ids, 'type': 'video'}, function (res) {
+                    if(res.code === 1){
+                        layer.msg(res.msg, {time: 1000}, function () {
+                            location.reload();
+                        });
+                    }else{
+                        layer.alert(res.msg);
+                    }
+                    layer.close(loading_index);
+                })
+            });
+        };
+
+        //监听全选
+        form.on('checkbox(ids)', function(data){
+            $checkBoxes.prop('checked', data.elem.checked);
+            layui.form.render('checkbox');
+        });
+        //监听单个选中
+        form.on('checkbox(id)', function (data) {
+            $("#ids").prop('checked', $('.id:checked').length < dataLen ? false : true);
+            layui.form.render('checkbox');
+        });
+        var upload_index;
+        upload.render({
+            elem: '#picker'
+            ,url: '{:url("uploadPost", ["type" => "video"])}'
+            ,accept: 'video' //允许上传的文件类型
+            ,size: "{$config.video_size ? $config.video_size/1000 : 20480}" //最大允许上传的文件大小
+            ,exts: "{$config.video_ext ? $config.video_ext : 'mp4'}".split(',').join('|')
+            ,before: function () {
+                layer.msg('文件比较大时需要较长的时间，请勿关闭浏览器！', {time: 1500}, function () {
+                    upload_index = layer.load(1);
+                });
+            }
+            ,done: function(res, index, upload){ //上传后的回调
+                layer.close(upload_index);
+                if(res.code === 1){
+                    layer.msg(res.msg, {time: 1000}, function () {
+                        location.href = location.href.replace(/page=\d+$/g, "page=1"); //回到首页
+                    });
+                }else{
+                    layer.alert(res.msg);
+                    return;
+                }
+            }
+        })
+    });
+</script>
+
+<style>
+    body{background-color: #fff;}
+
+    .layui-card{
+        margin: 10px auto 0;
+        height: 160px;
+        width: 220px;
+    }
+    .layui-card-body {
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+    .layui-card-body video{margin: auto 5px;width: 220px;height: 160px;}
+    .layui-card-body:hover{
+        border: 1px solid #FF5722;
+    }
+    .layui-form-checkbox[lay-skin=primary]{padding-left: 0;}
+    .check-btn,.picture-title,.delete-btn{
+        position: absolute;bottom: 0;
+        line-height: 30px;
+        text-align: center;
+        color: #fff;
+    }
+    .check-btn{
+        width: 19px;height: 19px;left: 0;
+        z-index: 6;
+        top: 0;
+    }
+    .picture-title{
+        width: 100%;
+        left: 0;background-color: rgba(0,0,0,.5);
+        font-size: 12px;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .delete-btn{
+        right: 0;
+        width: 34px;
+        background-color: #FF5722;
+        cursor: pointer;
+        z-index: 6;
+        display: none;
+    }
+    .layui-card-body:hover .delete-btn,.layui-card-body:hover .check-btn{display: block;}
+    .layui-form-checkbox[lay-skin=primary]{height: 19px !important;margin-top: -12px;margin-left: -1px;}
+    .bottom{
+        background-color: #f8f8f8;line-height: 52px;height: 52px;position: fixed;text-align: center;
+        width: 100%; bottom: 0;
+    }
+</style>

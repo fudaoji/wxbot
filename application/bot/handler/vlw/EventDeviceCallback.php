@@ -40,6 +40,7 @@ class EventDeviceCallback extends Api
     }
      */
     public function handle(){
+        Logger::error($this->content);
         $this->groupWxid = $this->content['to_wxid'];
         controller("\\app\\bot\\handler\\vlw\\EventGroupChat")->tpzsHandler();
     }

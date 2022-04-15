@@ -1,0 +1,206 @@
+<div class="material-appmsg-list">
+    {volist name="data_list" id="item"}
+    {if count($item.child)}
+    <div class="material-appmsg-item multi" >
+        <div class="appmsg-content">
+            <div class="cover-appmsg-item">
+                <h4 class="appmsg-title">
+                    <a target="blank">{$item.title}</a>
+                </h4>
+                <div class="appmsg-thumb" style="background-image:url('{$item.cover_url}?imageView2/2/w/150')">
+                </div>
+                <p class="appmsg-desc">{$item.digest}</p>
+            </div>
+            {volist name="item.child" id="c"}
+            <div class="appmsg-item has-cover">
+                <div class="appmsg-thumb" style="background-image:url('{$c.cover_url}?imageView2/2/w/80')">
+                </div>
+                <h4 class="appmsg-title">
+                    <a target="_blank">{$c.title}</a>
+                </h4>
+            </div>
+            {/volist}
+        </div>
+        <div class="appmsg-opr">
+            <ul>
+                <li class="appmsg-opr-item">
+                    <a href="{:url('newsadd', ['id' => $item['id']])}" >&nbsp;<i class="fa fa-pencil"></i></a>
+                </li>
+                <li class="appmsg-opr-item">
+                    <a onclick="clickDelOne({$item.id})" title="删除" href="javascript:void(0);" >&nbsp;<i class="fa fa-trash-o"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {else/}
+    <div class="material-appmsg-item" >
+        <div class="appmsg-content">
+            <div class="appmsg-item">
+                <h4 class="appmsg-title">
+                    <a target="blank">{$item.title}</a>
+                </h4>
+                <div class="appmsg-thumb" style="background-image:url('{$item.cover_url}?imageView2/2/w/150')">
+                </div>
+                <p class="appmsg-desc">{$item.digest}</p>
+            </div>
+        </div>
+        <div class="appmsg-opr">
+            <ul>
+                <li class="appmsg-opr-item">
+                    <a href="{:url('newsadd', ['id' => $item['id']])}">&nbsp;<i class="fa fa-pencil"></i></a>
+                </li>
+                <li class="appmsg-opr-item">
+                    <a onclick="clickDelOne({$item.id})" title="删除" href="javascript:void(0);" >&nbsp;<i class="fa fa-trash-o"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {/if}
+    {/volist}
+</div>
+
+<script crossorigin="anonymous" integrity="sha384-dlapdy3xQpJZf6W4IkSoLiZesqt82H8EBX5zC2FA6/evcVdKA3H4na+9o2542KkF" src="https://lib.baomitu.com/jquery.wookmark/1.3.1/jquery.wookmark.min.js"></script>
+<script>
+    $(function () {
+        //瀑布流
+        $('.material-appmsg-list .material-appmsg-item').wookmark({
+            align: 'left',
+            autoResize: false,
+            container: $('.material-appmsg-list'),
+            itemWidth: 289,
+            offset: 30
+        });
+    });
+</script>
+
+<div class="container" id="news-type" style="display: none;">
+    <div class="layui-row">
+        <div class="layui-col-md5">
+            <h3 class="title">创建公众号图文</h3>
+            <div class="con">
+                图文消息会自动同步至公众号素材库， 并可以直接群发给粉丝
+            </div>
+            <div>
+                <a href="{:url('newsadd', ['type' => 1])}" class="layui-btn">去创建</a>
+            </div>
+        </div>
+
+        <div class="layui-col-md5 layui-col-lg-offset2">
+            <h3 class="title">创建图文链接</h3>
+            <div class="con">
+                点击图文直接跳转至指定链接，可用于自动回复及认证号菜单 配置，不能同步至微信素材库。
+            </div>
+            <div>
+                <a href="{:url('newsadd', ['type' => 2])}" class="layui-btn layui-btn-primary">去创建</a>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .material-appmsg-list {
+        position: relative;
+        margin-top: 30px;
+    }
+    .material-appmsg-item {
+        width: 286px;
+        display: inline-block;
+        position: relative;
+        border: 1px solid #e8e9eb;
+    }
+    .material-appmsg-item .appmsg-content {
+        position: relative;
+    }
+    .material-appmsg-item .appmsg-item {
+        position: relative;
+        padding: 12px 14px;
+    }
+    .material-appmsg-item .appmsg-title {
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        line-height: 1.6;
+        overflow: hidden;
+        word-wrap: break-word;
+        color: #222;
+    }
+    .material-appmsg-item .appmsg-thumb {
+        height: 160px;
+        overflow: hidden;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 100% 100%;
+    }
+    .material-appmsg-item .appmsg-desc {
+        padding: 5px 0 10px;
+        word-break: break-all;
+    }
+
+    .material-appmsg-item .appmsg-opr {
+        background-color: #f4f4f4;
+        border-top: 1px solid #e8e9eb;
+        margin-right: -1px;
+    }
+    .material-appmsg-item .appmsg-opr-item {
+        float: left;
+        line-height: 44px;
+        height: 44px;
+        background-color: #f4f4f4;
+    }
+    .material-appmsg-item .appmsg-opr li{
+        width: 49.99%;
+    }
+    .material-appmsg-item .appmsg-opr-item a {
+        display: block;
+        border-right: 1px solid #e8e9eb;
+        text-align: center;
+        text-decoration: none;
+        color: #999;
+    }
+
+    .multi .appmsg-item {
+        border-top: 1px solid #e8e9eb;
+        overflow: hidden;
+    }
+    .material-appmsg-item .cover-appmsg-item {
+        margin: 12px 14px 12px;
+        position: relative;
+    }
+    .material-appmsg-item .cover-appmsg-item .appmsg-title {
+        font-size: 14px;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+        line-height: 28px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,.6)!important;
+        filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#99000000', endcolorstr='#99000000');
+    }
+    .material-appmsg-item .cover-appmsg-item .appmsg-title a{color: #fff;padding-left: 10px;}
+    .material-appmsg-item .cover-appmsg-item .appmsg-desc {
+        display: none;
+    }
+    .multi .appmsg-item .appmsg-thumb {
+        float: right;
+        width: 78px;
+        height: 78px;
+        margin-left: 14px;
+    }
+    .multi .appmsg-item .appmsg-title {
+        line-height: 24px;
+        max-height: 48px;
+        overflow: hidden;
+        *zoom: 1;
+    }
+
+
+    /*选择框*/
+    #news-type {background-color: #fbfbfb;padding: 30px 50px;border: 1px solid #e7e7eb;}
+    #news-type .title{
+        font-size: 20px;
+        margin-bottom: 25px;
+    }
+    #news-type .con{height: 90px;padding-bottom: 20px;}
+</style>

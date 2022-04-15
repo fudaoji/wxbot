@@ -1,0 +1,198 @@
+<div class="layui-tab layui-tab-brief" lay-filter="tabBrief">
+    <div class="layui-tab-content">
+        <form class="layui-form" action="" >
+            <div class="layui-row">
+                <div class="layui-col-sm7">
+                    <!--预留搜索-->
+                </div>
+                <div class="layui-col-sm5 layui-col-sm-offset7 tr">
+                    <input type="checkbox" lay-filter="ids" title="全选" id="ids">
+                    <div class="layui-btn-group">
+                        <a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="clickDelBatch()">
+                            <i class="fa fa-trash-o"></i>批量删除
+                        </a>
+                        <button type="button" class="layui-btn  layui-btn-sm" id="picker-add">
+                            <i class="fa fa-plus"></i>新增链接
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-row">
+                <table class="layui-table" lay-skin="line">
+                    <colgroup>
+                        <col width="50">
+                        <col width="300">
+                        <col >
+                    </colgroup>
+                    <tbody>
+                    {volist name="data_list" id="item"}
+                    <tr>
+                        <td>
+                            <input
+                                type="checkbox"
+                                class="id"
+                                lay-filter="id"
+                                value="{$item.id}"
+                                lay-skin="primary"
+                                data-url="{$item.url}"
+                                data-title="{$item.title}"
+                                data-desc="{$item.desc}"
+                                data-image_url="{$item.image_url}"
+                            />
+                        </td>
+                        <td>
+                            <div class="layui-row">
+                                <div class="layui-col-xs8">
+                                    <p class="link-title">{$item.title}</p>
+                                    <p class="link-desc">{$item.desc}</p>
+                                </div>
+                                <div class="layui-col-xs4">
+                                    <img src="{$item.image_url}" alt="" style="width: 50px;">
+                                </div>
+                            </div>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="javascript:;" onclick="clickDelOne('{$item.id}')" class="layui-btn layui-btn-danger layui-btn-sm">删除</a>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+            <div id="page">
+                {$pager|raw}
+            </div>
+        </form>
+    </div>
+</div>
+<div class="bottom">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn bg-success" onclick="clickSure();">确定</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn">取消</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var parent_index //获取窗口索引
+            ,ids = []
+            ,$checkBoxes = []
+            ,dataLen = parseInt("{:count($data_list)}")
+    ,clickDelOne
+    , clickDelBatch
+    , clickSure;
+
+    layui.use(['jquery','form', 'upload'],function(){
+        var form = layui.form
+        ,upload = layui.upload
+        , $ = layui.jquery;
+        //刷新界面 所有元素
+        form.render();
+
+        parent_index = parent.layer.getFrameIndex(window.name);
+
+        $(function () {
+            $checkBoxes = $('.id');
+            //点击取消
+            $('.js-cancel-btn').on('click', function () {
+                parent.layer.close(parent_index);
+            });
+
+            $("#picker-add").on('click', function () {
+                layer.open({
+                    title: "新增分享链接",
+                    type: 2,
+                    shift: 2,
+                    resize: false,
+                    area: ['90%', '90%'],
+                    shadeClose: false,
+                    content: "{:url('medialink/add')}"
+                });
+            });
+        });
+
+        //点击删除单个
+        clickDelOne = function (id) {
+            ids = [id];
+            delRequest()
+        };
+        //点击批量删除
+        clickDelBatch = function (id) {
+            $.each($('.id:checked'), function(i, item){
+                ids.push($(item).val());
+            });
+            delRequest()
+        };
+
+        //点击确认
+        clickSure = function () {
+            var list = [];
+            $('.id:checked').each(function (i, item) {
+                list.push({
+                    id: $(item).val(),
+                    url: $(item).data('url'),
+                    title: $(item).data('title'),
+                    desc: $(item).data('desc'),
+                    image_url: $(item).data('image_url')
+                });
+            });
+            if(list.length < 1){
+                layer.alert("请选择文件");
+                return;
+            }
+
+            parent.setLinkValue(list, "{$field}");
+            parent.layer.close(parent_index);
+        };
+
+        //请求服务端进行删除操作
+        var delRequest = function () {
+            if(ids.length < 1){
+                layer.alert('请选中要删除的数据');
+            }
+            layer.confirm('删除后无法恢复，你确定吗？', {
+                title: '提示',
+                btn: ['是','不'] //按钮
+            }, function(){
+                var loading_index = layer.load(1);
+                $.post("{:url('delPost')}", {'ids': ids, 'type': 'link'}, function (res) {
+                    if(res.code === 1){
+                        layer.msg(res.msg, {time: 1000}, function () {
+                            location.reload();
+                        });
+                    }else{
+                        layer.alert(res.msg);
+                    }
+                    layer.close(loading_index);
+                })
+            });
+        };
+
+        //监听全选
+        form.on('checkbox(ids)', function(data){
+            $checkBoxes.prop('checked', data.elem.checked);
+            layui.form.render('checkbox');
+        });
+        //监听单个选中
+        form.on('checkbox(id)', function (data) {
+            $("#ids").prop('checked', $('.id:checked').length < dataLen ? false : true);
+            layui.form.render('checkbox');
+        });
+    });
+</script>
+
+<style>
+    body{background-color: #fff;}
+    .layui-card-body:hover .delete-btn,.layui-card-body:hover .check-btn{display: block;}
+    .layui-form-checkbox[lay-skin=primary]{height: 19px !important;margin-top: -12px;margin-left: -1px;}
+    #page{margin: 20px auto;text-align: center;}
+    #page .layui-laypage .layui-laypage-curr .layui-laypage-em{background-color: var(--green);}
+    .bottom{
+        background-color: #f8f8f8;line-height: 52px;height: 52px;position: fixed;text-align: center;
+        width: 100%; bottom: 0;
+    }
+    .link-title{font-weight: bold; font-size: 18px;color: #000;}
+    .link-desc{font-weight: lighter; color: #c2c2c2;padding-top: 5px;}
+</style>

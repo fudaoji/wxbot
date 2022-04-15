@@ -47,12 +47,21 @@ class EventGroupMemberAdd extends Api
         $this->groupWxid = $this->content['from_group'];
         $this->group = $this->memberM->getOneByMap(['uin' => $this->botWxid, 'wxid' => $this->groupWxid]);
         $guest = $this->content['guest'];
-        /*$this->groupMemberM->addMember([
+        $nickname = filter_emoji(isset($guest['username']) ? $guest['username'] : $guest['nickname']);
+        $nickname && $this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
             'wxid' => $guest['wxid'],
             'group_id' => $this->group['id'],
-            'nickname' => filter_emoji($guest['username'])
-        ]);*/
+            'nickname' => $nickname,
+            'group_nickname' => $nickname
+        ]);
+        if($this->groupWxid == 'R:10951134140940878'){
+            $this->botClient->sendTextToFriend([
+                'robot_wxid' => $this->botWxid,
+                'to_wxid' => $this->groupWxid,
+                'msg' => "[握手]欢迎新朋友！"
+            ]);
+        }
         Logger::error($this->content);
     }
 }

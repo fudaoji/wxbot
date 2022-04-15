@@ -113,7 +113,7 @@ class Api extends BaseCtl
             unset($map['alive']);
         }
         if(! $bot = $this->botM->getOneByMap($map)) {
-            Logger::error('Bot not exists or not logged in: ' . $uin);
+            //Logger::error('Bot not exists or not logged in: ' . $uin);
             exit(0);
         }
         return $bot;

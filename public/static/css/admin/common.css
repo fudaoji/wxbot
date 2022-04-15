@@ -35,6 +35,7 @@ body {
     right: 5px;
 }
 .error-msg,.text-danger{color: red;}
+.form-tip{color: #a29c9c;}
 
 .layuimini-form > .layui-form-item > .layui-form-label {
     width: 120px !important;

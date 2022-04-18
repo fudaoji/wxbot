@@ -17,6 +17,7 @@ class Base extends BaseCtl
     protected $layout = 'layout/base';
     protected $needLogin = true;
     protected $pk = 'id';
+    protected $sKey = 'aid';
 
     /**
      * @var int
@@ -36,7 +37,7 @@ class Base extends BaseCtl
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function isLogin(){
-        $this->aid = (int)session("aid");
+        $this->aid = (int)session($this->sKey);
         $this->adminInfo = model("admin/admin")->getOne($this->aid);
         if (empty($this->adminInfo)) {
             $this->redirect(url('auth/login'));

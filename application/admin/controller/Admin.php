@@ -177,11 +177,10 @@ class Admin extends Base
 
             $res = $this->model->updateOne($post_data);
             if($res){
-                $this->model->getOneByMap(['username' => $res['username']], 1);
-                session('aid', null);
-                return $this->success('密码修改成功', url('auth/login'));
+                session($this->sKey, null);
+                $this->success('密码修改成功', url('auth/login'));
             }else{
-                return $this->error('系统出错');
+                $this->error('系统出错');
             }
         }
         //使用FormBuilder快速建立表单页面。

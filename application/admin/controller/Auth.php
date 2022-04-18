@@ -86,7 +86,7 @@ class Auth extends Base
                         'ip' => request()->ip(),
                         'last_time' => time()
                     ]);
-                    session('aid', $user['id']);
+                    session($this->sKey, $user['id']);
                     if(!empty($post_data['keeplogin'])){
                         cookie('record_admin', $post_data['username']);
                     }
@@ -100,7 +100,7 @@ class Auth extends Base
 
         }
 
-        if(session('aid')){
+        if(session($this->sKey)){
             $this->redirect(url('index/index'));
         }
         return $this->show(['username' => cookie('record_admin')]);

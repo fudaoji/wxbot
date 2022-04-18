@@ -163,6 +163,9 @@ class Admin extends Base
      * 修改个人密码
      * @return mixed
      * Author: Doogie<fdj@kuryun.cn>
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
      */
     public function setPersonPw(){
         if(request()->isPost()){
@@ -185,7 +188,7 @@ class Admin extends Base
         $builder = new FormBuilder();
         $builder->setMetaTitle('修改个人密码')  //设置页面标题
             ->setPostUrl(url('setPersonPw')) //设置表单提交地址
-            ->addFormItem('password', 'password', '新密码', '6-20位', [], 'required minlength="6" maxlength="20"');
+            ->addFormItem('password', 'password', '新密码', '6-20位', [], 'required minlength=6 maxlength=20');
 
         return $builder->show();
     }

@@ -40,9 +40,17 @@ class EventDeviceCallback extends Api
     }
      */
     public function handle(){
-        Logger::error($this->content);
+        //Logger::error($this->content);
         $this->groupWxid = $this->content['to_wxid'];
-        controller("\\app\\bot\\handler\\vlw\\EventGroupChat")->tpzsHandler();
+        $this->addon();
+    }
+
+    /**
+     * 插件处理
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function addon(){
+        controller('bot/tpzs')->deviceCallbackHandle(); //推品助手，后期这部分应是动态获取
     }
 
 }

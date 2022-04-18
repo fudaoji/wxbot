@@ -32,7 +32,7 @@ class Mediaimage extends Bbase
             if ($total) {
                 $list = $this->model->getList(
                     [$post_data['page'], $post_data['limit']], $where,
-                    [], true, true
+                    ['id' => 'desc'], true, true
                 );
             } else {
                 $list = [];
@@ -75,7 +75,7 @@ class Mediaimage extends Bbase
     public function edit()
     {
         $id = input('id', null);
-        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']], true, true);
 
         if (!$data) {
             $this->error('参数错误');
@@ -90,5 +90,22 @@ class Mediaimage extends Bbase
             ->setFormData($data);
 
         return $builder->show();
+    }
+
+    public function savePost($jump_to = '', $data = [])
+    {
+        $post_data = input('post.');
+        $post_data['admin_id'] = $this->adminInfo['id'];
+        if(empty($post_data[$this->pk])){
+            $res = $this->model->addOne($post_data);
+        }else {
+            $res = $this->model->updateOne($post_data);
+        }
+        if($res){
+            $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'id' => $res['id']], true, true);
+            $this->success('数据保存成功', $jump_to);
+        }else{
+            $this->error('数据保存出错');
+        }
     }
 }

@@ -32,7 +32,7 @@ class Medialink extends Bbase
             if ($total) {
                 $list = $this->model->getList(
                     [$post_data['page'], $post_data['limit']], $where,
-                    [], true, true
+                    ['id' => 'desc'], true, true
                 );
             } else {
                 $list = [];
@@ -80,7 +80,7 @@ class Medialink extends Bbase
     public function edit()
     {
         $id = input('id', null);
-        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']], true, true);
 
         if (!$data) {
             $this->error('参数错误');
@@ -91,12 +91,29 @@ class Medialink extends Bbase
         $builder->setMetaTitle('编辑文本')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('title', 'text', '标题', '100字内', [], 'required max=150')
-            ->addFormItem('desc', 'textarea', '描述', '200字内', [], 'required max=150')
-            ->addFormItem('image_url', 'picture_url', '图片', '图片比例1:1', [], 'required')
+            ->addFormItem('title', 'text', '标题', '100字内', [], 'required maxlength=100')
+            ->addFormItem('desc', 'textarea', '描述', '200字内', [], 'required maxlength=150')
+            ->addFormItem('image_url', 'choose_picture', '图片', '图片比例1:1', [], 'required')
             ->addFormItem('url', 'text', '跳转链接', '跳转链接', [], 'required')
             ->setFormData($data);
 
         return $builder->show();
+    }
+
+    public function savePost($jump_to = '', $data = [])
+    {
+        $post_data = input('post.');
+        $post_data['admin_id'] = $this->adminInfo['id'];
+        if(empty($post_data[$this->pk])){
+            $res = $this->model->addOne($post_data);
+        }else {
+            $res = $this->model->updateOne($post_data);
+        }
+        if($res){
+            $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'id' => $res['id']], true, true);
+            $this->success('数据保存成功', $jump_to);
+        }else{
+            $this->error('数据保存出错');
+        }
     }
 }

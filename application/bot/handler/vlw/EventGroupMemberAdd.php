@@ -11,6 +11,7 @@ namespace app\bot\handler\vlw;
 
 
 use app\bot\controller\Api;
+use app\constants\Reply;
 use ky\Logger;
 
 class EventGroupMemberAdd extends Api
@@ -46,22 +47,32 @@ class EventGroupMemberAdd extends Api
     public function handle(){
         $this->groupWxid = $this->content['from_group'];
         $this->group = $this->memberM->getOneByMap(['uin' => $this->botWxid, 'wxid' => $this->groupWxid]);
+        $this->basic();
+        $this->addon();
+    }
+
+    private function basic()
+    {
         $guest = $this->content['guest'];
-        $nickname = filter_emoji(isset($guest['username']) ? $guest['username'] : $guest['nickname']);
-        $nickname && $this->groupMemberM->addMember([
+        $nickname = isset($guest['username']) ? $guest['username'] : $guest['nickname'];
+        /*$nickname && $this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
             'wxid' => $guest['wxid'],
             'group_id' => $this->group['id'],
             'nickname' => $nickname,
             'group_nickname' => $nickname
+        ]);*/
+        //回复消息
+        $reply = model('reply')->getOneByMap([
+            'bot_id' => $this->bot['id'],
+            'event' => Reply::FRIEND_IN
         ]);
-        if($this->groupWxid == 'R:10951134140940878'){
-            $this->botClient->sendTextToFriend([
-                'robot_wxid' => $this->botWxid,
-                'to_wxid' => $this->groupWxid,
-                'msg' => "[握手]欢迎新朋友！"
-            ]);
+        if(!empty($reply['status']) && (empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false )){
+            model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid, ['nickname' => $nickname]);
         }
-        Logger::error($this->content);
+    }
+
+    private function addon()
+    {
     }
 }

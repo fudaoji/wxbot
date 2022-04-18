@@ -45,7 +45,7 @@
                                 <!--选中结果-->
                                 {if condition="isset($form['options']['id']) && !empty($material)"}
                                 {switch $form.options.type}
-                                {case text}{$material.content}{/case}
+                                {case text}<pre>{$material.content}</pre>{/case}
                                 {case image}<img src="{$material.url}">{/case}
                                 {case file}<i class="fa fa-file-o"></i> <a href='{$material.url}' target='_blank'>{$material.title}</a>{/case}
                                 {case link}
@@ -146,7 +146,7 @@
                 shadeClose: false,
                 shade: 0.8,
                 area: ['80%', '80%'],
-                content: ['/admin/media/handle?type=' + $(this).data('type')+'&field=$form["name"]&controller={$controller}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                content: ['/admin/media/handle?type=' + $(this).data('type')+'&field=$form["name"]&controller={$controller}'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
             });
         });
     </script>

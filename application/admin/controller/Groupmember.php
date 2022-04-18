@@ -69,7 +69,7 @@ class Groupmember extends Botbase
         ])
             ->setDataUrl(url('index', ['group_id' => $group_id]))
             //->setTip("注意：当前的备注名称就是指实际微信通讯录当中您对该好友的备注")
-            ->addTopButton('self', ['title'=>'拉取最新群成员', 'href' => url('syncMembers', ['group_id' => $group_id]), 'data-ajax' => 1])
+            ->addTopButton('self', ['title'=>'同步群成员', 'href' => url('syncMembers', ['group_id' => $group_id]), 'data-ajax' => 1])
             ->addTableColumn(['title' => 'wxid', 'field' => 'wxid', 'minWidth' => 170])
             ->addTableColumn(['title' => '微信昵称', 'field' => 'nickname'])
             ->addTableColumn(['title' => '群内昵称', 'field' => 'group_nickname'])

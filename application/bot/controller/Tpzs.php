@@ -12,6 +12,7 @@ namespace app\bot\controller;
 use ky\Bot\Vlw;
 use ky\Helper;
 use ky\Jtt;
+use ky\Logger;
 
 class Tpzs extends Addon
 {

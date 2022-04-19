@@ -33,7 +33,7 @@ class Tpzsteam extends Botbase
             $data['groups'] = explode(',', $data['groups']);
         }
         $data['admin_id'] = $this->adminInfo['id'];
-        $groups = model('botMember')->getField('wxid,nickname',['uin' => $this->bot['uin'], 'type' => Bot::GROUP]);
+        $groups = $this->getGroups();
         $builder = new FormBuilder();
         $builder->setTip("运营经验：建议每个机器人负责的群在100个以内。")
             ->setPostUrl(url('savePost'))

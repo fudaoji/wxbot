@@ -31,11 +31,11 @@ class Botbase extends Bbase
 
     public function getGroups($where = []){
         $where = array_merge($where, ['uin' => $this->bot['uin'], 'type' => Bot::GROUP]);
-        return model('botMember')->getField('wxid,nickname', $where, 1);
+        return model('botMember')->getField('wxid,nickname', $where, true);
     }
 
     public function getMembers($where = []){
         $where = array_merge($where, ['uin' => $this->bot['uin']]);
-        return model('botMember')->getField('wxid,nickname', $where, 1);
+        return model('botMember')->getField('wxid,nickname', $where, true);
     }
 }

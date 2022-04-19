@@ -138,6 +138,7 @@ class Tpzs extends Addon
                         }
                         break;
                     case Vlw::MSG_LINK:
+                        Logger::error($this->content['msg']);
                         $msg = json_decode($this->content['msg'], true)['Link'][0];
                         //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']
                         $url = $msg['url'];
@@ -149,7 +150,6 @@ class Tpzs extends Addon
                             'title' => $msg['title'],
                             'desc' => $msg['desc']
                         ]);
-                        //Logger::error($res);
                         break;
                     default:
                         $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);

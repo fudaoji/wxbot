@@ -139,7 +139,6 @@ class Tpzs extends Addon
                         }
                         break;
                     case Vlw::MSG_LINK:
-                        //Logger::error($this->content['msg']);
                         if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
                             $msg = json_decode($this->content['msg'], true)['Link'][0];
                             //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']
@@ -152,8 +151,7 @@ class Tpzs extends Addon
                                 'title' => $msg['title'],
                                 'desc' => $msg['desc']
                             ]);
-                        }else{ //个微直接发
-                            Logger::error($content['msg']);
+                        }else{ //个微
                             $this->botClient->sendLinkMsg(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'xml' => $content['msg']]);
                         }
                         break;

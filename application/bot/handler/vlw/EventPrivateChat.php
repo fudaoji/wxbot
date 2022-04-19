@@ -68,7 +68,7 @@ class EventPrivateChat extends Api
 
             //回复消息
             $reply = model('reply')->getOneByMap(['bot_id' => $this->bot['id'], 'event' => Reply::BEADDED]);
-            if($reply && $reply['status']){
+            if(!empty($reply['status']) && (empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false) ){
                 model('reply')->botReply($this->bot, $this->botClient, $reply, $this->fromWxid);
             }
         }

@@ -240,6 +240,25 @@ class Vlw extends Base
     }
 
     /**
+     * 批量发送链接消息给好友/群聊等
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendShareLinkToFriends($params = []){
+        $data = $this->buildPostData($params, self::API_SEND_SHARE_LINK_MSG);
+        $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $res = $this->request([
+                'data' => $data
+            ]);
+            sleep(rand(1,3));
+        }
+        return $res;
+    }
+
+    /**
      *
     robot_wxid (string)  // 机器人ID
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）

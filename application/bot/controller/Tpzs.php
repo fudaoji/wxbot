@@ -152,7 +152,10 @@ class Tpzs extends Addon
                                 'desc' => $msg['desc']
                             ]);
                         }else{ //个微
-                            $this->botClient->sendLinkMsg(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'xml' => $content['msg']]);
+                            $this->botClient->sendLinkMsg([
+                                'robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups,
+                                'xml' => '<?xml version="1.0"?>'.$content['msg']
+                            ]);
                         }
                         break;
                     default:

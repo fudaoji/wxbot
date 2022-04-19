@@ -63,7 +63,7 @@ class EventGroupChat extends Api
             'bot_id' => $this->bot['id'],
             'keyword' => $this->content['msg'],
         ]);
-        //Logger::error(strpos($keyword['wxids'], $this->groupWxid));
+
         if(!empty($keyword['status']) && (empty($keyword['wxids']) || strpos($keyword['wxids'], $this->groupWxid) !== false )){
             model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid, ['nickname' => $this->content['from_name']]);
         }

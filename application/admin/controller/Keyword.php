@@ -95,7 +95,7 @@ class Keyword extends Botbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')
             ->setPostUrl(url('savePost'))
-            ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'maxlength=30')
+            ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'required maxlength=30')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types()], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members);
 
@@ -122,7 +122,7 @@ class Keyword extends Botbase
         $builder->setMetaTitle('编辑')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'maxlength=30')
+            ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'required maxlength=30')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types(), 'id' => $data['media_id'], 'type' => $data['media_type']], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])

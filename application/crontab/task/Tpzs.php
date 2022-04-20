@@ -7,15 +7,13 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\admin\task;
+namespace app\crontab\task;
 
 use app\common\model\tpzs\Task;
 use ky\Bot\Vlw;
 use ky\Bot\Wxwork;
-use think\Db;
-use think\facade\Log;
 
-class Bot extends Base
+class Tpzs extends Base
 {
     public function __construct(){
         parent::__construct();
@@ -31,7 +29,7 @@ class Bot extends Base
      * @throws \think\exception\DbException
      * @throws \think\exception\PDOException
      */
-    public function runTask(){
+    public function minuteTask(){
         $task_m = new Task();
         if(count($task_list = $task_m->getAllJoin([
             'alias' => 'bt',
@@ -59,22 +57,5 @@ class Bot extends Base
         }else{
             dump(0);
         }
-    }
-
-    /**
-     * 下拉通讯录
-     * @param $params
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function pullMembers($params){
-        /**
-         * @var \think\queue\Job
-         */
-        $job = $params['job'];
-        $bot = $params['bot'];
-        model('admin/BotMember')->pullFriends($bot);
-        model('admin/BotMember')->pullGroups($bot);
-
-        $job->delete();
     }
 }

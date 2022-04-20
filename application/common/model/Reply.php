@@ -42,9 +42,30 @@ class Reply extends Base
                     'desc' => $media['desc']
                 ]);
                 break;
-            default:
+            case Media::TEXT:
                 $msg = empty($extra['nickname']) ? $media['content'] : str_replace('[昵称]', $extra['nickname'], $media['content']);
-                $client->sendTextToFriend(['robot_wxid' => $bot['uin'], 'to_wxid' => $to_wxid, 'msg' => $msg]);
+                $client->sendTextToFriends(['robot_wxid' => $bot['uin'], 'to_wxid' => $to_wxid, 'msg' => $msg]);
+                break;
+            case Media::IMAGE:
+                $client->sendImgToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $to_wxid,
+                    'path' => $media['url']
+                ]);
+                break;
+            case Media::VIDEO:
+                $client->sendVideoToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $to_wxid,
+                    'path' => $media['url']
+                ]);
+                break;
+            case Media::FILE:
+                $client->sendFileToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $to_wxid,
+                    'path' => $media['url']
+                ]);
                 break;
         }
     }

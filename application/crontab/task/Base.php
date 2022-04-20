@@ -7,7 +7,7 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\admin\task;
+namespace app\crontab\task;
 
 
 class Base

@@ -10,6 +10,38 @@
 // +----------------------------------------------------------------------
 
 /**
+ * 执行sql
+ * @param string $sql
+ * @return bool|string
+ * @throws \think\db\exception\BindParamException
+ * @throws \think\exception\PDOException
+ * @author: fudaoji<fdj@kuryun.cn>
+ */
+function execute_sql($sql = "")
+{
+    $sql = str_replace("\r", "\n", $sql);
+    $sql = explode(";\n", $sql);
+
+    foreach ($sql as $k => $value) {
+        $value = trim($value, "\n");
+        if(stripos($value, 'drop') !== false){
+            return 'SQL语句包含了DROP TABLE类似的语句';
+        }
+        if (!empty($value)) {
+            $sql[$k] = $value;
+        }
+    }
+
+    foreach ($sql as $value) {
+        if (empty($value) || strlen($value) < 2) { //过滤空行
+            continue;
+        }
+        \think\Db::execute($value);
+    }
+    return true;
+}
+
+/**
  * 获取远程图片存到七牛
  * @param string $url
  * @param string $key

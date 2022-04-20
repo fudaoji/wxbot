@@ -30,15 +30,7 @@ class Setting extends Base
             'upload' => [
                 'title' => '附件设置',
                 'href' => url('index', ['name' => 'upload'])
-            ],
-            'sms' => [
-                'title' => '短信设置',
-                'href' => url('index', ['name' => 'sms'])
-            ],
-            /*'weixin' => [
-                'title' => '微信设置',
-                'href' => url('index', ['name' => 'weixin'])
-            ]*/
+            ]
         ];
     }
 
@@ -62,12 +54,12 @@ class Setting extends Base
                 $res = $this->model->addOne([
                     'name' => $current_name,
                     'title' => $this->tabList[$current_name]['title'],
-                    'value' => json_encode($post_data)
+                    'value' => json_encode($post_data, JSON_UNESCAPED_UNICODE)
                 ]);
             }else{
                 $res = $this->model->updateOne([
                     'id' => $setting['id'],
-                    'value' => json_encode($post_data)
+                    'value' => json_encode($post_data, JSON_UNESCAPED_UNICODE)
                 ]);
             }
             if($res){
@@ -85,18 +77,6 @@ class Setting extends Base
         }
         $builder = new FormBuilder();
         switch ($current_name){
-            case 'weixin':
-                $builder
-                    ->addFormItem('appid', 'text', 'AppId', 'AppId', [], 'required maxlength=150')
-                    ->addFormItem('secret', 'text', 'Secret', 'Secret', [], 'required maxlength=150')
-                    ->addFormItem('pay_appid', 'text', '支付AppId', 'AppId', [], 'required maxlength=150')
-                    ->addFormItem('pay_secret', 'text', '支付Secret', 'Secret', [], 'required maxlength=150')
-                    ->addFormItem('pay_merchant_id', 'text', '商户ID', '商户ID', [], 'required maxlength=100')
-                    ->addFormItem('pay_key', 'text', '支付秘钥', '支付秘钥', [], 'required maxlength=32 minlength=32')
-                    ->addFormItem('pay_cert_path', 'textarea', '支付证书cert', '请在微信商户后台下载支付证书，用记事本打开apiclient_cert.pem，并复制里面的内容粘贴到这里。', [], 'maxlength=20000')
-                    ->addFormItem('pay_key_path', 'textarea', '支付证书key', '请在微信商户后台下载支付证书，使用记事本打开apiclient_key.pem，并复制里面的内容粘贴到这里。', [], ' maxlength=20000')
-                    ->addFormItem('pay_rsa_path', 'textarea', 'RSA公钥', '企业付款到银行卡需要RSA公钥匙');
-                break;
             case 'site':
                 empty($data) && $data['close'] = 0;
                 $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
@@ -135,12 +115,6 @@ class Setting extends Base
                     ->addFormItem('video_size', 'number', '视频大小限制', '单位B', [], 'required min=1 max=1000000000')
                     ->addFormItem('video_ext', 'text', '视频格式支持', '多个用逗号隔开', [], 'required')
                     ;
-                break;
-            case 'sms':
-                $builder
-                    ->addFormItem('sms_account', 'text', 'sms账号', 'sms账号', [], 'required maxlength=150')
-                    ->addFormItem('sms_pwd', 'text', 'sms密码', 'sms密码', [], 'required maxlength=150')
-                    ->addFormItem('sms_type', 'text', 'sms类型', 'sms类型', [], 'required maxlength=150');
                 break;
         }
         $builder->setFormData($data);

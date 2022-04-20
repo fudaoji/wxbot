@@ -34,7 +34,7 @@
 
 #### 使用文档
 
-开发文档：[http://kyphp.kuryun.com/home/guide/index](http://kyphp.kuryun.com/home/guide/index)
+开发文档：[http://kyphp.kuryun.com/home/guide/index](http://kyphp.kuryun.com/home/guide/bot.html)
 
 #### 参与贡献
 

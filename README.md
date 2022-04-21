@@ -1,7 +1,8 @@
-# [Wxbot](http://kyphp.kuryun.com/)
+# [Wxbot](http://kyphp.kuryun.com/home/guide/bot.html)
 
 #### 介绍
-基于thinkphp的多用户多设备多微信号的私域社群管家web系统。
+基于thinkphp的多商户多微信号的私域社群web系统。
+系统的功能设计架构为：通用功能+插件应用，因此开发者可以基于此系统进行满足自身业务需求的应用开发。
 
 
 - 主要功能：

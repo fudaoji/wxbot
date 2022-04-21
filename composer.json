@@ -26,7 +26,6 @@
         "topthink/think-testing": "2.0.*",
         "guzzlehttp/guzzle": "~6.0",
         "ext-json": "*",
-        "php-ffmpeg/php-ffmpeg": "^0.19.0",
         "yeardley/easytbk": "^1.2"
     },
     "autoload": {

@@ -18,10 +18,11 @@
 
 #### 软件架构
 - [ThinkPHP5.1](https://www.kancloud.cn/manual/thinkphp5_1/)
-- [Vlw](http://a.vlwai.cn/)
 - Mysql
 - Memcached & Redis
 - [Layui](https://www.layui.com/)
+- [Vlw](http://a.vlwai.cn/)
+- [Vlw配套接口Xyo](https://www.yuque.com/httpapi/)
 
 #### 安装教程
 
@@ -29,12 +30,11 @@
 2.  在项目根目录下`cp env .env`, 修改.env对应的配置信息
 3.  将项目目录下的install/install.sql导入数据库
 4.  修改项目目录、runtime、public/uploads的读写权限
-5.  根目录下执行 `composer update`
-6.  默认超管账号：admin 密码：123456
+5.  默认超管账号：admin 密码：123456
 
 #### 使用文档
 
-开发文档：[http://kyphp.kuryun.com/home/guide/index](http://kyphp.kuryun.com/home/guide/bot.html)
+开发文档：[http://kyphp.kuryun.com/home/guide/bot](http://kyphp.kuryun.com/home/guide/bot.html)
 
 #### 参与贡献
 

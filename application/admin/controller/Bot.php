@@ -227,7 +227,7 @@ class Bot extends Base
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
-            //->setTip("机器人添加教程：<a target='_blank' href='".(request()->domain() . url('/home/tutorial/index/?cate_id=8&help_id=23'))."'>点击查看</a>")
+            ->setTip("机器人添加教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a>")
             ->setPostUrl(url('savePost'))
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', \app\constants\Bot::protocols())
             ->addFormItem('free', 'radio', '是否免费版', '是否免费', [0 => '否', 1 => '是'])

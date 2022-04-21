@@ -51,5 +51,5 @@ QQ交流群：
 
 微信交流群：
 
-![输入图片说明](https://zyx.images.huihuiba.net/1-5fa129cf4c886.png "forever_code.png")
+![输入图片说明](group.png)
 

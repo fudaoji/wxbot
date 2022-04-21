@@ -14,7 +14,6 @@
  * Description:  配置
  * Author: fudaoji<fdj@kuryun.cn>
  */
-
 namespace app\common\model;
 use ky\BaseModel;
 

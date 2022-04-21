@@ -230,9 +230,9 @@ class Bot extends Base
             //->setTip("机器人添加教程：<a target='_blank' href='".(request()->domain() . url('/home/tutorial/index/?cate_id=8&help_id=23'))."'>点击查看</a>")
             ->setPostUrl(url('savePost'))
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', \app\constants\Bot::protocols())
-            ->addFormItem('free', 'radio', '是否免费版', '是否免费', [1 => '是', 0 => '否'])
+            ->addFormItem('free', 'radio', '是否免费版', '是否免费', [0 => '否', 1 => '是'])
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
-            ->addFormItem('uin', 'text', 'Wxid', 'Wxid', [], 'required maxlength=30')
+            ->addFormItem('uin', 'text', 'Wxid', '微信在vlw框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', 'AppKey', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '接口地址', [], 'required')
             ->setFormData(['protocol' => \app\constants\Bot::PROTOCOL_VLW, 'app_key' => get_rand_char(32), 'free' => 1]);
@@ -255,9 +255,9 @@ class Bot extends Base
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', \app\constants\Bot::protocols())
-            ->addFormItem('free', 'radio', '是否免费版', '是否免费', [1 => '是', 0 => '否'])
+            ->addFormItem('free', 'radio', '是否免费版', '是否免费', [0 => '否', 1 => '是'])
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
-            ->addFormItem('uin', 'text', 'Wxid', 'Wxid', [], 'required maxlength=30')
+            ->addFormItem('uin', 'text', 'Wxid', '微信在vlw框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', 'AppKey', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '接口地址', [], 'required')
             ->setFormData($data);

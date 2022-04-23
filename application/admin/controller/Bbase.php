@@ -21,7 +21,7 @@ class Bbase extends Base
      * 设置一条或者多条数据的状态
      * @Author  fudaoji<fdj@kuryun.cn>
      */
-    public function setStatus() {
+    public function setStatusBak() {
         $ids = input('ids/a');
         $status = input('status');
 
@@ -34,6 +34,65 @@ class Bbase extends Base
             $this->model->delOne(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
         }
         $this->success('删除成功');
+    }
+
+    /**
+     * 设置一条或者多条数据的状态
+     * @Author  fudaoji<fdj@kuryun.cn>
+     */
+    public function setStatus() {
+        $ids = input('ids/a');
+        $status = input('status');
+
+        if (empty($ids)) {
+            $this->error('请选择要操作的数据');
+        }
+
+        $ids = (array) $ids;
+        if($status == 'delete'){
+            foreach ($ids as $id){
+                $this->model->delOne(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
+            }
+        }else{
+            $arr = [];
+            $msg = [
+                'success' => '操作成功！',
+                'error'   => '操作失败！',
+            ];
+            switch ($status) {
+                case 'forbid' :  // 禁用条目
+                    $data['status'] = 0;
+                    break;
+                case 'resume' :  // 启用条目
+                    $data['status'] = 1;
+                    break;
+                case 'hide' :  // 隐藏条目
+                    $data['status'] = 2;
+                    break;
+                case 'show' :  // 显示条目
+                    $data['status'] = 1;
+                    break;
+                case 'recycle' :  // 移动至回收站
+                    $data['status'] = 1;
+                    break;
+                case 'restore' :  // 从回收站还原
+                    $data['status'] = 1;
+                    break;
+                default:
+                    $this->error('参数错误');
+                    break;
+            }
+            foreach($ids as $id){
+                $data[$this->pk] = $id;
+                $data['admin_id'] = $this->adminInfo['id'];
+                $arr[] = $data;
+            }
+            if($this->model->updateBatch($arr)){
+                $this->success($msg['success']);
+            }else{
+                $this->error($msg['error']);
+            }
+        }
     }
 
     /**

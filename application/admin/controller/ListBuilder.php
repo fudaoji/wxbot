@@ -133,10 +133,11 @@ class ListBuilder extends BaseCtl
                 break;
             case 'forbid':  // 添加禁用按钮(启用的反操作)
                 // 预定义按钮属性以简化使用
+                $my_attribute['lay-event']  = 'forbid';
                 $my_attribute['title'] = '批量禁用';
                 $my_attribute['target-form'] = 'ids';
-                $my_attribute['class'] = 'btn btn-warning btn-sm ajax-post confirm';
-                $my_attribute['__href__']  = url($set_status_url, ['status' => 'forbid']);
+                $my_attribute['class'] = 'layui-btn layui-btn-warm layui-btn-sm data-ajax data-confirm';
+                $my_attribute['href']  = url($set_status_url, ['status' => 'forbid']);
 
                 // 如果定义了属性数组则与默认的进行合并，详细使用方法参考上面的新增按钮
                 if ($attribute && is_array($attribute)) {
@@ -146,7 +147,6 @@ class ListBuilder extends BaseCtl
                 //这个按钮定义好了把它丢进按钮池里
                 $this->_top_button_list[] = $my_attribute;
                 break;
-
             case 'self': //添加自定义按钮(第一原则使用上面预设的按钮，如果有特殊需求不能满足则使用此自定义按钮方法)
                 // 预定义按钮属性以简化使用
                 $my_attribute['lay-event'] = 'self';

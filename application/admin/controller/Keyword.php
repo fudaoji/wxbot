@@ -75,6 +75,8 @@ class Keyword extends Botbase
             ])
             ->addTopButton('addnew')
             ->addTopButton('addnew', ['title' => '从其他机器人复制', 'href' => url('copy'), 'class' => 'layui-btn layui-btn-sm'])
+            ->addTopButton('forbid')
+            ->addTableColumn(['title' => '', 'type' => 'checkbox'])
             ->addTableColumn(['title' => '关键词', 'field' => 'keyword', 'minWidth' => 100])
             ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
             ->addTableColumn(['title' => '回复内容', 'field' => 'media_title', 'minWidth' => 100])
@@ -170,7 +172,7 @@ class Keyword extends Botbase
         }
         if($res){
             //refresh
-            $this->model->getOneByMap(['bot_id' => $this->bot['id'], 'id' => $res['id']], true, true);
+            $this->model->getOneByMap(['bot_id' => $this->bot['id'], 'keyword' => $res['keyword']], true, true);
             $this->success('数据保存成功', $jump_to);
         }else{
             $this->error('数据保存出错');

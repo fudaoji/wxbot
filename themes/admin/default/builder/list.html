@@ -110,7 +110,7 @@
                         }});
                     break;
                 case 'index':
-                    item = Object.assign(item, {templet: function (d) {
+                    item = Object.assign(item, {width: 50,templet: function (d) {
                             return d.LAY_TABLE_INDEX + 1;
                         }});
                     break;
@@ -225,6 +225,16 @@
                             layer.close(index);
                         });
                         break;
+                case 'forbid':
+                    layer.confirm('确认批量禁用吗?', function(index){
+                        var ids = table.checkStatus('{$controller}-table').data.map((item,index) => {return item.id});
+                        var params = {ids: ids};
+                        requestPost(href, params, function (res) {
+                            table.reload('{$controller}-table');  // 刷新(异步模式)
+                        });
+                        layer.close(index);
+                    });
+                    break;
                 case 'self':
                     if($(this).data('ajax')){
                         requestPost(href, [], function (res) {

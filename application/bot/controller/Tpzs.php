@@ -156,6 +156,7 @@ class Tpzs extends Addon
                                 'robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups,
                                 'xml' => $content['msg']
                             ]);*/
+                            
                             $this->botClient->forwardMsgToFriends([
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $groups,

@@ -74,7 +74,7 @@ class Keyword extends Botbase
                 ['type' => 'text', 'name' => 'search_key', 'title' => '关键词']
             ])
             ->addTopButton('addnew')
-            ->addTopButton('addnew', ['title' => '从其他机器人复制', 'href' => url('copy'), 'class' => 'layui layui-btn-sm'])
+            ->addTopButton('addnew', ['title' => '从其他机器人复制', 'href' => url('copy'), 'class' => 'layui-btn layui-btn-sm'])
             ->addTableColumn(['title' => '关键词', 'field' => 'keyword', 'minWidth' => 100])
             ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
             ->addTableColumn(['title' => '回复内容', 'field' => 'media_title', 'minWidth' => 100])
@@ -98,7 +98,7 @@ class Keyword extends Botbase
             ]);
             foreach ($list as $v){
                 $v['bot_id'] = $this->bot['id'];
-                $this->model->addOne($v->toArray());
+                $this->model->addOne($v);
             }
             $this->success('操作成功');
         }

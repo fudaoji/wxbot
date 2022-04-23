@@ -97,6 +97,7 @@ class Keyword extends Botbase
                 'refresh' => true
             ]);
             foreach ($list as $v){
+                unset($v['id']);
                 $v['bot_id'] = $this->bot['id'];
                 $this->model->addOne($v);
             }

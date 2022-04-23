@@ -53,6 +53,7 @@ class Reply extends Botbase
             foreach ($list as $v){
                 unset($v['id']);
                 $v['bot_id'] = $this->bot['id'];
+                $v['wxids'] = '';
                 $this->model->addOne($v);
             }
             $this->success('操作成功');

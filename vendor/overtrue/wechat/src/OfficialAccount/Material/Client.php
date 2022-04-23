@@ -33,11 +33,9 @@ class Client extends BaseClient
     /**
      * Upload image.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $path
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function uploadImage(string $path)
     {
@@ -47,11 +45,9 @@ class Client extends BaseClient
     /**
      * Upload voice.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $path
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function uploadVoice(string $path)
     {
@@ -61,11 +57,9 @@ class Client extends BaseClient
     /**
      * Upload thumb.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $path
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function uploadThumb(string $path)
     {
@@ -75,11 +69,11 @@ class Client extends BaseClient
     /**
      * Upload video.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $path
+     * @param string $title
+     * @param string $description
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function uploadVideo(string $path, string $title, string $description)
     {
@@ -88,9 +82,7 @@ class Client extends BaseClient
                 [
                     'title' => $title,
                     'introduction' => $description,
-                ],
-                JSON_UNESCAPED_UNICODE
-            ),
+                ], JSON_UNESCAPED_UNICODE),
         ];
 
         return $this->upload('video', $path, $params);
@@ -102,9 +94,6 @@ class Client extends BaseClient
      * @param array|Article $articles
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function uploadArticle($articles)
     {
@@ -126,12 +115,11 @@ class Client extends BaseClient
     /**
      * Update article.
      *
+     * @param string        $mediaId
      * @param array|Article $article
+     * @param int           $index
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function updateArticle(string $mediaId, $article, int $index = 0)
     {
@@ -151,10 +139,9 @@ class Client extends BaseClient
     /**
      * Upload image for article.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $path
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function uploadArticleImage(string $path)
     {
@@ -164,16 +151,15 @@ class Client extends BaseClient
     /**
      * Fetch material.
      *
-     * @return mixed
+     * @param string $mediaId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function get(string $mediaId)
     {
         $response = $this->requestRaw('cgi-bin/material/get_material', 'POST', ['json' => ['media_id' => $mediaId]]);
 
-        if (false !== stripos($response->getHeaderLine('Content-disposition'), 'attachment')) {
+        if (false === strpos($response->getHeaderLine('Content-Type'), 'text')) {
             return StreamResponse::buildFromPsrResponse($response);
         }
 
@@ -183,10 +169,9 @@ class Client extends BaseClient
     /**
      * Delete material by media ID.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $mediaId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function delete(string $mediaId)
     {
@@ -210,17 +195,18 @@ class Client extends BaseClient
      *   ]
      * }
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $type
+     * @param int    $offset
+     * @param int    $count
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function list(string $type, int $offset = 0, int $count = 20)
     {
         $params = [
             'type' => $type,
-            'offset' => $offset,
-            'count' => $count,
+            'offset' => intval($offset),
+            'count' => min(20, $count),
         ];
 
         return $this->httpPostJson('cgi-bin/material/batchget_material', $params);
@@ -230,8 +216,6 @@ class Client extends BaseClient
      * Get stats of materials.
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function stats()
     {
@@ -241,11 +225,13 @@ class Client extends BaseClient
     /**
      * Upload material.
      *
+     * @param string $type
+     * @param string $path
+     * @param array  $form
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws InvalidArgumentException
      */
     public function upload(string $type, string $path, array $form = [])
     {
@@ -260,6 +246,8 @@ class Client extends BaseClient
 
     /**
      * Get API by type.
+     *
+     * @param string $type
      *
      * @return string
      */

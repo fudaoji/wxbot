@@ -28,10 +28,6 @@ class CachePoolPrunerPass implements CompilerPassInterface
 
     public function __construct(string $cacheCommandServiceId = 'console.command.cache_pool_prune', string $cachePoolTag = 'cache.pool')
     {
-        if (0 < \func_num_args()) {
-            trigger_deprecation('symfony/cache', '5.3', 'Configuring "%s" is deprecated.', __CLASS__);
-        }
-
         $this->cacheCommandServiceId = $cacheCommandServiceId;
         $this->cachePoolTag = $cachePoolTag;
     }

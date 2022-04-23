@@ -23,10 +23,10 @@ class RelationClient extends BaseClient
     /**
      * Bind pages for device.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array $deviceIdentifier
+     * @param array $pageIds
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function bindPages(array $deviceIdentifier, array $pageIds)
     {
@@ -41,10 +41,9 @@ class RelationClient extends BaseClient
     /**
      * Get pageIds by deviceId.
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection
+     * @param array $deviceIdentifier
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection
      */
     public function listByDeviceId(array $deviceIdentifier)
     {
@@ -59,10 +58,11 @@ class RelationClient extends BaseClient
     /**
      * Get devices by pageId.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param int $pageId
+     * @param int $begin
+     * @param int $count
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function listByPageId(int $pageId, int $begin, int $count)
     {

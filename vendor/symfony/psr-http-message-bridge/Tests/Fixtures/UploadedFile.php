@@ -24,7 +24,7 @@ class UploadedFile implements UploadedFileInterface
     private $clientFileName;
     private $clientMediaType;
 
-    public function __construct($filePath, $size = null, $error = \UPLOAD_ERR_OK, $clientFileName = null, $clientMediaType = null)
+    public function __construct($filePath, $size = null, $error = UPLOAD_ERR_OK, $clientFileName = null, $clientMediaType = null)
     {
         $this->filePath = $filePath;
         $this->size = $size;
@@ -33,32 +33,32 @@ class UploadedFile implements UploadedFileInterface
         $this->clientMediaType = $clientMediaType;
     }
 
-    public function getStream(): Stream
+    public function getStream()
     {
         return new Stream(file_get_contents($this->filePath));
     }
 
-    public function moveTo($targetPath): void
+    public function moveTo($targetPath)
     {
         rename($this->filePath, $targetPath);
     }
 
-    public function getSize(): ?int
+    public function getSize()
     {
         return $this->size;
     }
 
-    public function getError(): int
+    public function getError()
     {
         return $this->error;
     }
 
-    public function getClientFilename(): ?string
+    public function getClientFilename()
     {
         return $this->clientFileName;
     }
 
-    public function getClientMediaType(): ?string
+    public function getClientMediaType()
     {
         return $this->clientMediaType;
     }

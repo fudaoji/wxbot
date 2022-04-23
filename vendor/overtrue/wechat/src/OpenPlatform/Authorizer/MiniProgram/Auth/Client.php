@@ -29,6 +29,9 @@ class Client extends BaseClient
 
     /**
      * Client constructor.
+     *
+     * @param \EasyWeChat\Kernel\ServiceContainer  $app
+     * @param \EasyWeChat\OpenPlatform\Application $component
      */
     public function __construct(ServiceContainer $app, Application $component)
     {
@@ -40,9 +43,9 @@ class Client extends BaseClient
     /**
      * Get session info by code.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $code
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function session(string $code)
     {

@@ -17,8 +17,6 @@ use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
- *
- * @deprecated Use Doctrine\Common\Cache\Psr6\DoctrineProvider instead
  */
 class DoctrineProvider extends CacheProvider implements PruneableInterface, ResettableInterface
 {
@@ -26,8 +24,6 @@ class DoctrineProvider extends CacheProvider implements PruneableInterface, Rese
 
     public function __construct(CacheItemPoolInterface $pool)
     {
-        trigger_deprecation('symfony/cache', '5.4', '"%s" is deprecated, use "Doctrine\Common\Cache\Psr6\DoctrineProvider" instead.', __CLASS__);
-
         $this->pool = $pool;
     }
 

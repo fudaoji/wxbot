@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the Monolog package.
@@ -15,16 +15,11 @@ namespace Monolog\Processor;
  * An optional interface to allow labelling Monolog processors.
  *
  * @author Nicolas Grekas <p@tchwork.com>
- *
- * @phpstan-import-type Record from \Monolog\Logger
  */
 interface ProcessorInterface
 {
     /**
-     * @return array The processed record
-     *
-     * @phpstan-param  Record $record
-     * @phpstan-return Record
+     * @return array The processed records
      */
-    public function __invoke(array $record);
+    public function __invoke(array $records);
 }

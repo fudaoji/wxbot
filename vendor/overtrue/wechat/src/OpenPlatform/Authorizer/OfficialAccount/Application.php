@@ -19,13 +19,15 @@ use EasyWeChat\OpenPlatform\Authorizer\Aggregate\AggregateServiceProvider;
  *
  * @author mingyoung <mingyoungcheung@gmail.com>
  *
- * @property \EasyWeChat\OpenPlatform\Authorizer\OfficialAccount\Account\Client     $account
- * @property \EasyWeChat\OpenPlatform\Authorizer\OfficialAccount\MiniProgram\Client $mini_program
+ * @property \EasyWeChat\OpenPlatform\Authorizer\Aggregate\Account\Client $account
  */
 class Application extends OfficialAccount
 {
     /**
      * Application constructor.
+     *
+     * @param array $config
+     * @param array $prepends
      */
     public function __construct(array $config = [], array $prepends = [])
     {
@@ -33,7 +35,6 @@ class Application extends OfficialAccount
 
         $providers = [
             AggregateServiceProvider::class,
-            MiniProgram\ServiceProvider::class,
         ];
 
         foreach ($providers as $provider) {

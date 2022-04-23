@@ -67,13 +67,9 @@ class JsonResponse extends Response
      * @param array $headers An array of response headers
      *
      * @return static
-     *
-     * @deprecated since Symfony 5.1, use __construct() instead.
      */
-    public static function create($data = null, int $status = 200, array $headers = [])
+    public static function create($data = null, $status = 200, $headers = [])
     {
-        trigger_deprecation('symfony/http-foundation', '5.1', 'The "%s()" method is deprecated, use "new %s()" instead.', __METHOD__, static::class);
-
         return new static($data, $status, $headers);
     }
 
@@ -91,7 +87,7 @@ class JsonResponse extends Response
      *
      * @return static
      */
-    public static function fromJsonString(string $data, int $status = 200, array $headers = [])
+    public static function fromJsonString($data, $status = 200, $headers = [])
     {
         return new static($data, $status, $headers, true);
     }
@@ -105,7 +101,7 @@ class JsonResponse extends Response
      *
      * @throws \InvalidArgumentException When the callback name is not valid
      */
-    public function setCallback(string $callback = null)
+    public function setCallback($callback = null)
     {
         if (null !== $callback) {
             // partially taken from https://geekality.net/2011/08/03/valid-javascript-identifier/
@@ -134,9 +130,11 @@ class JsonResponse extends Response
     /**
      * Sets a raw string containing a JSON document to be sent.
      *
+     * @param string $json
+     *
      * @return $this
      */
-    public function setJson(string $json)
+    public function setJson($json)
     {
         $this->data = $json;
 
@@ -187,11 +185,13 @@ class JsonResponse extends Response
     /**
      * Sets options used while encoding data to JSON.
      *
+     * @param int $encodingOptions
+     *
      * @return $this
      */
-    public function setEncodingOptions(int $encodingOptions)
+    public function setEncodingOptions($encodingOptions)
     {
-        $this->encodingOptions = $encodingOptions;
+        $this->encodingOptions = (int) $encodingOptions;
 
         return $this->setData(json_decode($this->data));
     }

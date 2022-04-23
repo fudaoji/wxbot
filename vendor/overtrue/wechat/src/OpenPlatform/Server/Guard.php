@@ -17,7 +17,6 @@ use EasyWeChat\OpenPlatform\Server\Handlers\Unauthorized;
 use EasyWeChat\OpenPlatform\Server\Handlers\UpdateAuthorized;
 use EasyWeChat\OpenPlatform\Server\Handlers\VerifyTicketRefreshed;
 use Symfony\Component\HttpFoundation\Response;
-use function EasyWeChat\Kernel\data_get;
 
 /**
  * Class Guard.
@@ -26,16 +25,13 @@ use function EasyWeChat\Kernel\data_get;
  */
 class Guard extends ServerGuard
 {
-    public const EVENT_AUTHORIZED = 'authorized';
-    public const EVENT_UNAUTHORIZED = 'unauthorized';
-    public const EVENT_UPDATE_AUTHORIZED = 'updateauthorized';
-    public const EVENT_COMPONENT_VERIFY_TICKET = 'component_verify_ticket';
-    public const EVENT_THIRD_FAST_REGISTERED = 'notify_third_fasteregister';
+    const EVENT_AUTHORIZED = 'authorized';
+    const EVENT_UNAUTHORIZED = 'unauthorized';
+    const EVENT_UPDATE_AUTHORIZED = 'updateauthorized';
+    const EVENT_COMPONENT_VERIFY_TICKET = 'component_verify_ticket';
 
     /**
-     * @throws \EasyWeChat\Kernel\Exceptions\BadRequestException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function resolve(): Response
     {
@@ -43,8 +39,8 @@ class Guard extends ServerGuard
 
         $message = $this->getMessage();
 
-        if ($infoType = data_get($message, 'InfoType')) {
-            $this->dispatch($infoType, $message);
+        if (isset($message['InfoType'])) {
+            $this->dispatch($message['InfoType'], $message);
         }
 
         return new Response(static::SUCCESS_EMPTY_RESPONSE);

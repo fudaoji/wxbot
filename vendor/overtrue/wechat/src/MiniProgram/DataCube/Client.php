@@ -23,6 +23,9 @@ class Client extends BaseClient
     /**
      * Get summary trend.
      *
+     * @param string $from
+     * @param string $to
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function summaryTrend(string $from, string $to)
@@ -32,6 +35,9 @@ class Client extends BaseClient
 
     /**
      * Get daily visit trend.
+     *
+     * @param string $from
+     * @param string $to
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -43,6 +49,9 @@ class Client extends BaseClient
     /**
      * Get weekly visit trend.
      *
+     * @param string $from
+     * @param string $to
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function weeklyVisitTrend(string $from, string $to)
@@ -52,6 +61,9 @@ class Client extends BaseClient
 
     /**
      * Get monthly visit trend.
+     *
+     * @param string $from
+     * @param string $to
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -63,6 +75,9 @@ class Client extends BaseClient
     /**
      * Get visit distribution.
      *
+     * @param string $from
+     * @param string $to
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function visitDistribution(string $from, string $to)
@@ -72,6 +87,9 @@ class Client extends BaseClient
 
     /**
      * Get daily retain info.
+     *
+     * @param string $from
+     * @param string $to
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -83,6 +101,9 @@ class Client extends BaseClient
     /**
      * Get weekly retain info.
      *
+     * @param string $from
+     * @param string $to
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function weeklyRetainInfo(string $from, string $to)
@@ -92,6 +113,9 @@ class Client extends BaseClient
 
     /**
      * Get monthly retain info.
+     *
+     * @param string $from
+     * @param string $to
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -103,6 +127,9 @@ class Client extends BaseClient
     /**
      * Get visit page.
      *
+     * @param string $from
+     * @param string $to
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function visitPage(string $from, string $to)
@@ -112,6 +139,9 @@ class Client extends BaseClient
 
     /**
      * Get user portrait.
+     *
+     * @param string $from
+     * @param string $to
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -123,10 +153,11 @@ class Client extends BaseClient
     /**
      * Unify query.
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $api
+     * @param string $from
+     * @param string $to
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     protected function query(string $api, string $from, string $to)
     {

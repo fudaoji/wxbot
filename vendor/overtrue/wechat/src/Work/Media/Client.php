@@ -12,7 +12,6 @@
 namespace EasyWeChat\Work\Media;
 
 use EasyWeChat\Kernel\BaseClient;
-use EasyWeChat\Kernel\Http\StreamResponse;
 
 /**
  * Class Client.
@@ -24,28 +23,19 @@ class Client extends BaseClient
     /**
      * Get media.
      *
-     * @return array|\EasyWeChat\Kernel\Http\Response|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $mediaId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function get(string $mediaId)
     {
-        $response = $this->requestRaw('cgi-bin/media/get', 'GET', [
-            'query' => [
-                'media_id' => $mediaId,
-            ],
-        ]);
-
-        if (false !== stripos($response->getHeaderLine('Content-Type'), 'text/plain')) {
-            return $this->castResponseToType($response, $this->app['config']->get('response_type'));
-        }
-
-        return StreamResponse::buildFromPsrResponse($response);
+        return $this->httpGet('cgi-bin/media/get', ['media_id' => $mediaId]);
     }
 
     /**
      * Upload Image.
+     *
+     * @param string $path
      *
      * @return mixed
      */
@@ -57,6 +47,8 @@ class Client extends BaseClient
     /**
      * Upload Voice.
      *
+     * @param string $path
+     *
      * @return mixed
      */
     public function uploadVoice(string $path)
@@ -66,6 +58,8 @@ class Client extends BaseClient
 
     /**
      * Upload Video.
+     *
+     * @param string $path
      *
      * @return mixed
      */
@@ -77,6 +71,8 @@ class Client extends BaseClient
     /**
      * Upload File.
      *
+     * @param string $path
+     *
      * @return mixed
      */
     public function uploadFile(string $path)
@@ -87,10 +83,10 @@ class Client extends BaseClient
     /**
      * Upload media.
      *
-     * @return mixed
+     * @param string $type
+     * @param string $path
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function upload(string $type, string $path)
     {

@@ -12,7 +12,6 @@
 namespace EasyWeChat\Work\User;
 
 use EasyWeChat\Kernel\BaseClient;
-use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 
 /**
  * Class Client.
@@ -24,10 +23,9 @@ class Client extends BaseClient
     /**
      * Create a user.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array $data
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function create(array $data)
     {
@@ -37,10 +35,10 @@ class Client extends BaseClient
     /**
      * Update an exist user.
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $id
+     * @param array  $data
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function update(string $id, array $data)
     {
@@ -53,9 +51,6 @@ class Client extends BaseClient
      * @param string|array $userId
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function delete($userId)
     {
@@ -69,22 +64,21 @@ class Client extends BaseClient
     /**
      * Batch delete users.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array $userIds
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function batchDelete(array $userIds)
     {
-        return $this->httpPostJson('cgi-bin/user/batchdelete', ['useridlist' => $userIds]);
+        return $this->httpPost('cgi-bin/user/batchdelete', ['useridlist' => $userIds]);
     }
 
     /**
      * Get user.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $userId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function get(string $userId)
     {
@@ -94,9 +88,10 @@ class Client extends BaseClient
     /**
      * Get simple user list.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param int  $departmentId
+     * @param bool $fetchChild
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function getDepartmentUsers(int $departmentId, bool $fetchChild = false)
     {
@@ -111,9 +106,10 @@ class Client extends BaseClient
     /**
      * Get user list.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param int  $departmentId
+     * @param bool $fetchChild
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function getDetailedDepartmentUsers(int $departmentId, bool $fetchChild = false)
     {
@@ -128,10 +124,10 @@ class Client extends BaseClient
     /**
      * Convert userId to openid.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string   $userId
+     * @param int|null $agentId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function userIdToOpenid(string $userId, int $agentId = null)
     {
@@ -146,10 +142,9 @@ class Client extends BaseClient
     /**
      * Convert openid to userId.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $openid
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function openidToUserId(string $openid)
     {
@@ -161,26 +156,9 @@ class Client extends BaseClient
     }
 
     /**
-     * Convert mobile to userId.
+     * @param string $userId
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function mobileToUserId(string $mobile)
-    {
-        $params = [
-            'mobile' => $mobile,
-        ];
-
-        return $this->httpPostJson('cgi-bin/user/getuserid', $params);
-    }
-
-    /**
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function accept(string $userId)
     {
@@ -189,35 +167,5 @@ class Client extends BaseClient
         ];
 
         return $this->httpGet('cgi-bin/user/authsucc', $params);
-    }
-
-    /**
-     * Batch invite users.
-     *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function invite(array $params)
-    {
-        return $this->httpPostJson('cgi-bin/batch/invite', $params);
-    }
-
-    /**
-     * Get invitation QR code.
-     *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
-     *
-     * @throws InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     */
-    public function getInvitationQrCode(int $sizeType = 1)
-    {
-        if (!\in_array($sizeType, [1, 2, 3, 4], true)) {
-            throw new InvalidArgumentException('The sizeType must be 1, 2, 3, 4.');
-        }
-
-        return $this->httpGet('cgi-bin/corp/get_join_qrcode', ['size_type' => $sizeType]);
     }
 }

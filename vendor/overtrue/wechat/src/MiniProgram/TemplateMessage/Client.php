@@ -20,7 +20,7 @@ use EasyWeChat\OfficialAccount\TemplateMessage\Client as BaseClient;
  */
 class Client extends BaseClient
 {
-    public const API_SEND = 'cgi-bin/message/wxopen/template/send';
+    const API_SEND = 'cgi-bin/message/wxopen/template/send';
 
     /**
      * {@inheritdoc}.
@@ -40,10 +40,10 @@ class Client extends BaseClient
     protected $required = ['touser', 'template_id', 'form_id'];
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param int $offset
+     * @param int $count
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function list(int $offset, int $count)
     {
@@ -51,10 +51,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $id
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function get(string $id)
     {
@@ -62,10 +61,10 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $id
+     * @param array  $keyword
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function add(string $id, array $keyword)
     {
@@ -76,10 +75,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $templateId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function delete(string $templateId)
     {
@@ -89,10 +87,10 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param int $offset
+     * @param int $count
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function getTemplates(int $offset, int $count)
     {

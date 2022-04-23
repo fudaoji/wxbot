@@ -33,6 +33,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * set data.
+     *
+     * @param mixed $items
      */
     public function __construct(array $items = [])
     {
@@ -53,6 +55,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Return specific items.
+     *
+     * @param array $keys
      *
      * @return \EasyWeChat\Kernel\Support\Collection
      */
@@ -94,13 +98,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function merge($items)
     {
-        $clone = new static($this->all());
-
         foreach ($items as $key => $value) {
-            $clone->set($key, $value);
+            $this->set($key, $value);
         }
 
-        return $clone;
+        return new static($this->all());
     }
 
     /**
@@ -263,7 +265,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      *
      * @see http://php.net/manual/en/countable.count.php
      *
-     * @return int the custom count as an integer.
+     * @return int The custom count as an integer.
      *             </p>
      *             <p>
      *             The return value is cast to an integer
@@ -340,9 +342,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      *
      * @return array
      */
-    public static function __set_state(array $properties)
+    public function __set_state()
     {
-        return (new static($properties))->all();
+        return $this->all();
     }
 
     /**

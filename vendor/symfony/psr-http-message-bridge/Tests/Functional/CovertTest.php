@@ -34,11 +34,15 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CovertTest extends TestCase
 {
-    protected function setUp(): void
+    private $tmpDir;
+
+    public function setUp(): void
     {
-        if (!class_exists(Psr7Request::class)) {
+        if (!class_exists('Nyholm\Psr7\ServerRequest')) {
             $this->markTestSkipped('nyholm/psr7 is not installed.');
         }
+
+        $this->tmpDir = sys_get_temp_dir();
     }
 
     /**
@@ -120,8 +124,8 @@ class CovertTest extends TestCase
                 'c2' => ['c3' => 'bar'],
             ],
             [
-                'f1' => $this->createUploadedFile('F1', 'f1.txt', 'text/plain', \UPLOAD_ERR_OK),
-                'foo' => ['f2' => $this->createUploadedFile('F2', 'f2.txt', 'text/plain', \UPLOAD_ERR_OK)],
+                'f1' => $this->createUploadedFile('F1', 'f1.txt', 'text/plain', UPLOAD_ERR_OK),
+                'foo' => ['f2' => $this->createUploadedFile('F2', 'f2.txt', 'text/plain', UPLOAD_ERR_OK)],
             ],
             [
                 'REQUEST_METHOD' => 'POST',
@@ -129,30 +133,23 @@ class CovertTest extends TestCase
                 'SERVER_NAME' => 'dunglas.fr',
                 'SERVER_PORT' => null,
                 'HTTP_X_SYMFONY' => '2.8',
-                'REQUEST_URI' => '/testCreateRequest?foo=1&bar%5Bbaz%5D=42',
-                'QUERY_STRING' => 'foo=1&bar%5Bbaz%5D=42',
+                'REQUEST_URI' => '/testCreateRequest?bar[baz]=42&foo=1',
+                'QUERY_STRING' => 'foo=1&bar[baz]=42',
             ],
             'Content'
         );
 
-        $psr7Requests = [
-            (new Psr7Request('POST', 'http://tnyholm.se/foo/?bar=biz'))
-                ->withQueryParams(['bar' => 'biz']),
-            new Psr7Request('GET', 'https://hey-octave.com/'),
-            new Psr7Request('GET', 'https://hey-octave.com:443/'),
-            new Psr7Request('GET', 'https://hey-octave.com:4242/'),
-            new Psr7Request('GET', 'http://hey-octave.com:80/'),
-        ];
+        $psr7Request = (new Psr7Request('POST', 'http://tnyholm.se/foo/?bar=biz'))
+            ->withQueryParams(['bar' => 'biz']);
 
         $nyholmFactory = new Psr17Factory();
         $psr17Factory = new PsrHttpFactory($nyholmFactory, $nyholmFactory, $nyholmFactory, $nyholmFactory);
         $symfonyFactory = new HttpFoundationFactory();
 
-        return array_merge([
+        return [
             [$sfRequest, $psr17Factory, $symfonyFactory],
-        ], array_map(function ($psr7Request) use ($symfonyFactory, $psr17Factory) {
-            return [$psr7Request, $symfonyFactory, $psr17Factory];
-        }, $psr7Requests));
+            [$psr7Request, $symfonyFactory, $psr17Factory],
+        ];
     }
 
     /**
@@ -229,7 +226,7 @@ class CovertTest extends TestCase
 
     private function createUploadedFile($content, $originalName, $mimeType, $error)
     {
-        $path = tempnam(sys_get_temp_dir(), uniqid());
+        $path = tempnam($this->tmpDir, uniqid());
         file_put_contents($path, $content);
 
         return new UploadedFile($path, $originalName, $mimeType, $error, true);

@@ -19,10 +19,9 @@ namespace EasyWeChat\OfficialAccount\Card;
 class MeetingTicketClient extends Client
 {
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array $params
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function updateUser(array $params)
     {

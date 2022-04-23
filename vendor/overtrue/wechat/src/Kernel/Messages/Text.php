@@ -34,6 +34,8 @@ class Text extends Message
 
     /**
      * Text constructor.
+     *
+     * @param string $content
      */
     public function __construct(string $content)
     {

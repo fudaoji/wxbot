@@ -24,8 +24,6 @@ class Client extends BaseClient
      * Get menu.
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function get()
     {
@@ -35,10 +33,9 @@ class Client extends BaseClient
     /**
      * Create menu for the given agent.
      *
-     * @return mixed
+     * @param array $data
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function create(array $data)
     {
@@ -49,8 +46,6 @@ class Client extends BaseClient
      * Delete menu.
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function delete()
     {

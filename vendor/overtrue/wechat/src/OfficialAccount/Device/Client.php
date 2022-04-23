@@ -23,10 +23,11 @@ use EasyWeChat\Kernel\BaseClient;
 class Client extends BaseClient
 {
     /**
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $deviceId
+     * @param string $openid
+     * @param string $content
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function message(string $deviceId, string $openid, string $content)
     {
@@ -43,10 +44,9 @@ class Client extends BaseClient
     /**
      * Get device qrcode.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array $deviceIds
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function qrCode(array $deviceIds)
     {
@@ -59,10 +59,11 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array  $devices
+     * @param string $productId
+     * @param int    $opType
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function authorize(array $devices, string $productId, int $opType = 0)
     {
@@ -79,9 +80,9 @@ class Client extends BaseClient
     /**
      * 获取 device id 和二维码
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $productId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function createId(string $productId)
     {
@@ -93,10 +94,11 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $openid
+     * @param string $deviceId
+     * @param string $ticket
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function bind(string $openid, string $deviceId, string $ticket)
     {
@@ -110,10 +112,11 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $openid
+     * @param string $deviceId
+     * @param string $ticket
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function unbind(string $openid, string $deviceId, string $ticket)
     {
@@ -127,10 +130,10 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $openid
+     * @param string $deviceId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function forceBind(string $openid, string $deviceId)
     {
@@ -143,10 +146,10 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $openid
+     * @param string $deviceId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function forceUnbind(string $openid, string $deviceId)
     {
@@ -159,9 +162,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $deviceId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function status(string $deviceId)
     {
@@ -173,9 +176,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $ticket
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function verify(string $ticket)
     {
@@ -187,9 +190,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $deviceId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function openid(string $deviceId)
     {
@@ -202,9 +205,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $openid
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function listByOpenid(string $openid)
     {

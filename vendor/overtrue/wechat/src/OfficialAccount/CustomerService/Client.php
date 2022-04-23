@@ -24,8 +24,6 @@ class Client extends BaseClient
      * List all staffs.
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function list()
     {
@@ -36,8 +34,6 @@ class Client extends BaseClient
      * List all online staffs.
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function online()
     {
@@ -47,10 +43,10 @@ class Client extends BaseClient
     /**
      * Create a staff.
      *
-     * @return mixed
+     * @param string $account
+     * @param string $nickname
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function create(string $account, string $nickname)
     {
@@ -65,10 +61,10 @@ class Client extends BaseClient
     /**
      * Update a staff.
      *
-     * @return mixed
+     * @param string $account
+     * @param string $nickname
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function update(string $account, string $nickname)
     {
@@ -83,10 +79,9 @@ class Client extends BaseClient
     /**
      * Delete a staff.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $account
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function delete(string $account)
     {
@@ -96,10 +91,10 @@ class Client extends BaseClient
     /**
      * Invite a staff.
      *
-     * @return mixed
+     * @param string $account
+     * @param string $wechatId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function invite(string $account, string $wechatId)
     {
@@ -114,10 +109,10 @@ class Client extends BaseClient
     /**
      * Set staff avatar.
      *
-     * @return mixed
+     * @param string $account
+     * @param string $path
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function setAvatar(string $account, string $path)
     {
@@ -130,6 +125,8 @@ class Client extends BaseClient
      * @param \EasyWeChat\Kernel\Messages\Message|string $message
      *
      * @return \EasyWeChat\OfficialAccount\CustomerService\Messenger
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function message($message)
     {
@@ -141,10 +138,9 @@ class Client extends BaseClient
     /**
      * Send a message.
      *
-     * @return mixed
+     * @param string|array $message
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function send(array $message)
     {
@@ -152,47 +148,14 @@ class Client extends BaseClient
     }
 
     /**
-     * Show typing status.
-     *
-     * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function showTypingStatusToUser(string $openid)
-    {
-        return $this->httpPostJson('cgi-bin/message/custom/typing', [
-            'touser' => $openid,
-            'command' => 'Typing',
-        ]);
-    }
-
-    /**
-     * Hide typing status.
-     *
-     * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function hideTypingStatusToUser(string $openid)
-    {
-        return $this->httpPostJson('cgi-bin/message/custom/typing', [
-            'touser' => $openid,
-            'command' => 'CancelTyping',
-        ]);
-    }
-
-    /**
      * Get messages history.
      *
      * @param int $startTime
      * @param int $endTime
+     * @param int $msgId
+     * @param int $number
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function messages($startTime, $endTime, int $msgId = 1, int $number = 10000)
     {

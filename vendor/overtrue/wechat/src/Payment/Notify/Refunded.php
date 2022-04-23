@@ -19,6 +19,8 @@ class Refunded extends Handler
     protected $check = false;
 
     /**
+     * @param \Closure $closure
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \EasyWeChat\Kernel\Exceptions\Exception

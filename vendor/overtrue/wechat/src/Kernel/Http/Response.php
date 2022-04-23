@@ -36,6 +36,8 @@ class Response extends GuzzleResponse
     }
 
     /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *
      * @return \EasyWeChat\Kernel\Http\Response
      */
     public static function buildFromPsrResponse(ResponseInterface $response)
@@ -66,13 +68,13 @@ class Response extends GuzzleResponse
      */
     public function toArray()
     {
-        $content = $this->removeControlCharacters($this->getBodyContents());
+        $content = $this->getBodyContents();
 
         if (false !== stripos($this->getHeaderLine('Content-Type'), 'xml') || 0 === stripos($content, '<xml')) {
             return XML::parse($content);
         }
 
-        $array = json_decode($content, true, 512, JSON_BIGINT_AS_STRING);
+        $array = json_decode($this->getBodyContents(), true);
 
         if (JSON_ERROR_NONE === json_last_error()) {
             return (array) $array;
@@ -96,7 +98,7 @@ class Response extends GuzzleResponse
      */
     public function toObject()
     {
-        return json_decode($this->toJson());
+        return json_decode($this->getBodyContents());
     }
 
     /**
@@ -105,13 +107,5 @@ class Response extends GuzzleResponse
     public function __toString()
     {
         return $this->getBodyContents();
-    }
-
-    /**
-     * @return string
-     */
-    protected function removeControlCharacters(string $content)
-    {
-        return \preg_replace('/[\x00-\x1F\x80-\x9F]/u', '', $content);
     }
 }

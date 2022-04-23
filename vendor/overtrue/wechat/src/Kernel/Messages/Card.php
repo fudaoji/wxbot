@@ -42,6 +42,8 @@ class Card extends Message
 
     /**
      * Media constructor.
+     *
+     * @param string $cardId
      */
     public function __construct(string $cardId)
     {

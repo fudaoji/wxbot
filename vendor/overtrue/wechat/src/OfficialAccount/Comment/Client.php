@@ -23,10 +23,10 @@ class Client extends BaseClient
     /**
      * Open article comment.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string   $msgId
+     * @param int|null $index
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function open(string $msgId, int $index = null)
     {
@@ -41,10 +41,10 @@ class Client extends BaseClient
     /**
      * Close comment.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string   $msgId
+     * @param int|null $index
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function close(string $msgId, int $index = null)
     {
@@ -59,10 +59,13 @@ class Client extends BaseClient
     /**
      * Get article comments.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
+     * @param int    $index
+     * @param int    $begin
+     * @param int    $count
+     * @param int    $type
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function list(string $msgId, int $index, int $begin, int $count, int $type = 0)
     {
@@ -80,10 +83,11 @@ class Client extends BaseClient
     /**
      * Mark elect comment.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
+     * @param int    $index
+     * @param int    $commentId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function markElect(string $msgId, int $index, int $commentId)
     {
@@ -99,10 +103,11 @@ class Client extends BaseClient
     /**
      * Unmark elect comment.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
+     * @param int    $index
+     * @param int    $commentId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function unmarkElect(string $msgId, int $index, int $commentId)
     {
@@ -118,10 +123,11 @@ class Client extends BaseClient
     /**
      * Delete comment.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
+     * @param int    $index
+     * @param int    $commentId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function delete(string $msgId, int $index, int $commentId)
     {
@@ -137,10 +143,12 @@ class Client extends BaseClient
     /**
      * Reply to a comment.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
+     * @param int    $index
+     * @param int    $commentId
+     * @param string $content
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function reply(string $msgId, int $index, int $commentId, string $content)
     {
@@ -157,10 +165,11 @@ class Client extends BaseClient
     /**
      * Delete a reply.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
+     * @param int    $index
+     * @param int    $commentId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function deleteReply(string $msgId, int $index, int $commentId)
     {

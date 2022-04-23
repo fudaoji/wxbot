@@ -36,7 +36,9 @@ class Media extends Message implements MediaInterface
     /**
      * MaterialClient constructor.
      *
+     * @param string $mediaId
      * @param string $type
+     * @param array  $attributes
      */
     public function __construct(string $mediaId, $type = null, array $attributes = [])
     {
@@ -46,7 +48,7 @@ class Media extends Message implements MediaInterface
     }
 
     /**
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @return string
      */
     public function getMediaId(): string
     {

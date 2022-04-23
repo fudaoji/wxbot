@@ -11,27 +11,21 @@
 
 namespace EasyWeChat\Payment\Order;
 
-use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
-use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
 use EasyWeChat\Kernel\Support;
-use EasyWeChat\Kernel\Support\Collection;
 use EasyWeChat\Payment\Kernel\BaseClient;
-use Psr\Http\Message\ResponseInterface;
 
 class Client extends BaseClient
 {
     /**
      * Unify order.
      *
-     * @param bool $isContract
+     * @param array $params
      *
-     * @return ResponseInterface|Collection|array|object|string
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function unify(array $params, $isContract = false)
+    public function unify(array $params)
     {
         if (empty($params['spbill_create_ip'])) {
             $params['spbill_create_ip'] = ('NATIVE' === $params['trade_type']) ? Support\get_server_ip() : Support\get_client_ip();
@@ -40,25 +34,17 @@ class Client extends BaseClient
         $params['appid'] = $this->app['config']->app_id;
         $params['notify_url'] = $params['notify_url'] ?? $this->app['config']['notify_url'];
 
-        if ($isContract) {
-            $params['contract_appid'] = $this->app['config']['app_id'];
-            $params['contract_mchid'] = $this->app['config']['mch_id'];
-            $params['request_serial'] = $params['request_serial'] ?? time();
-            $params['contract_notify_url'] = $params['contract_notify_url'] ?? $this->app['config']['contract_notify_url'];
-
-            return $this->request($this->wrap('pay/contractorder'), $params);
-        }
-
         return $this->request($this->wrap('pay/unifiedorder'), $params);
     }
 
     /**
      * Query order by out trade number.
      *
-     * @return ResponseInterface|Collection|array|object|string
+     * @param string $number
      *
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function queryByOutTradeNumber(string $number)
     {
@@ -70,10 +56,11 @@ class Client extends BaseClient
     /**
      * Query order by transaction id.
      *
-     * @return ResponseInterface|Collection|array|object|string
+     * @param string $transactionId
      *
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function queryByTransactionId(string $transactionId)
     {
@@ -83,11 +70,11 @@ class Client extends BaseClient
     }
 
     /**
-     * @return ResponseInterface|Collection|array|object|string
+     * @param array $params
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function query(array $params)
     {
@@ -99,11 +86,11 @@ class Client extends BaseClient
     /**
      * Close order by out_trade_no.
      *
-     * @return ResponseInterface|Collection|array|object|string
+     * @param string $tradeNo
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function close(string $tradeNo)
     {

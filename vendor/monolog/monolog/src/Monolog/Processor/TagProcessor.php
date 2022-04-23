@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the Monolog package.
@@ -18,41 +18,24 @@ namespace Monolog\Processor;
  */
 class TagProcessor implements ProcessorInterface
 {
-    /** @var string[] */
     private $tags;
 
-    /**
-     * @param string[] $tags
-     */
-    public function __construct(array $tags = [])
+    public function __construct(array $tags = array())
     {
         $this->setTags($tags);
     }
 
-    /**
-     * @param string[] $tags
-     */
-    public function addTags(array $tags = []): self
+    public function addTags(array $tags = array())
     {
         $this->tags = array_merge($this->tags, $tags);
-
-        return $this;
     }
 
-    /**
-     * @param string[] $tags
-     */
-    public function setTags(array $tags = []): self
+    public function setTags(array $tags = array())
     {
         $this->tags = $tags;
-
-        return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function __invoke(array $record): array
+    public function __invoke(array $record)
     {
         $record['extra']['tags'] = $this->tags;
 

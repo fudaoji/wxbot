@@ -23,10 +23,9 @@ class Client extends BaseClient
     /**
      * Get authorization info.
      *
-     * @return mixed
+     * @param string|null $authCode
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function handleAuthorize(string $authCode = null)
     {
@@ -41,10 +40,9 @@ class Client extends BaseClient
     /**
      * Get authorizer info.
      *
-     * @return mixed
+     * @param string $appId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function getAuthorizer(string $appId)
     {
@@ -59,10 +57,10 @@ class Client extends BaseClient
     /**
      * Get options.
      *
-     * @return mixed
+     * @param string $appId
+     * @param string $name
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function getAuthorizerOption(string $appId, string $name)
     {
@@ -78,10 +76,11 @@ class Client extends BaseClient
     /**
      * Set authorizer option.
      *
-     * @return mixed
+     * @param string $appId
+     * @param string $name
+     * @param string $value
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function setAuthorizerOption(string $appId, string $name, string $value)
     {
@@ -102,9 +101,6 @@ class Client extends BaseClient
      * @param int $count
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getAuthorizers($offset = 0, $count = 500)
     {
@@ -121,9 +117,6 @@ class Client extends BaseClient
      * Create pre-authorization code.
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function createPreAuthorizationCode()
     {
@@ -132,24 +125,5 @@ class Client extends BaseClient
         ];
 
         return $this->httpPostJson('cgi-bin/component/api_create_preauthcode', $params);
-    }
-
-    /**
-     * OpenPlatform Clear quota.
-     *
-     * @see https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318587
-     *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function clearQuota()
-    {
-        $params = [
-            'component_appid' => $this->app['config']['app_id'],
-        ];
-
-        return $this->httpPostJson('cgi-bin/component/clear_quota', $params);
     }
 }

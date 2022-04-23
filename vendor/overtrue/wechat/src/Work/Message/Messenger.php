@@ -83,6 +83,8 @@ class Messenger
     }
 
     /**
+     * @param int $agentId
+     *
      * @return \EasyWeChat\Work\Message\Messenger
      */
     public function ofAgent(int $agentId)
@@ -136,6 +138,7 @@ class Messenger
 
     /**
      * @param array|string $ids
+     * @param string       $key
      *
      * @return \EasyWeChat\Work\Message\Messenger
      */
@@ -176,8 +179,6 @@ class Messenger
             'agentid' => $this->agentId,
             'safe' => intval($this->secretive),
         ], $this->to));
-
-        $this->secretive = false;
 
         return $this->client->send($message);
     }

@@ -100,7 +100,7 @@ class MetadataBag implements SessionBagInterface
      *                      to expire with browser session. Time is in seconds, and is
      *                      not a Unix timestamp.
      */
-    public function stampNew(int $lifetime = null)
+    public function stampNew($lifetime = null)
     {
         $this->stampCreated($lifetime);
     }
@@ -139,7 +139,6 @@ class MetadataBag implements SessionBagInterface
     public function clear()
     {
         // nothing to do
-        return null;
     }
 
     /**
@@ -152,8 +151,10 @@ class MetadataBag implements SessionBagInterface
 
     /**
      * Sets name.
+     *
+     * @param string $name
      */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
     }

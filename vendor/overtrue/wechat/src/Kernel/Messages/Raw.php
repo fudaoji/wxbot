@@ -30,6 +30,8 @@ class Raw extends Message
 
     /**
      * Constructor.
+     *
+     * @param string $content
      */
     public function __construct(string $content)
     {
@@ -37,7 +39,10 @@ class Raw extends Message
     }
 
     /**
-     * @param bool $withType
+     * @param array $appends
+     * @param bool  $withType
+     *
+     * @return array
      */
     public function transformForJsonRequest(array $appends = [], $withType = true): array
     {

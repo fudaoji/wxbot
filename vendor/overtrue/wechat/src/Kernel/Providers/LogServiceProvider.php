@@ -32,47 +32,56 @@ class LogServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        !isset($pimple['log']) && $pimple['log'] = function ($app) {
+        $pimple['logger'] = $pimple['log'] = function ($app) {
             $config = $this->formatLogConfig($app);
 
             if (!empty($config)) {
-                $app->rebind('config', $app['config']->merge($config));
+                $app['config']->merge($config);
             }
 
             return new LogManager($app);
         };
-
-        !isset($pimple['logger']) && $pimple['logger'] = $pimple['log'];
     }
 
     public function formatLogConfig($app)
     {
-        if (!empty($app['config']->get('log.channels'))) {
-            return $app['config']->get('log');
-        }
-
         if (empty($app['config']->get('log'))) {
             return [
                 'log' => [
-                    'default' => 'null',
+                    'default' => 'errorlog',
                     'channels' => [
-                        'null' => [
-                            'driver' => 'null',
+                        'errorlog' => [
+                            'driver' => 'errorlog',
+                            'level' => 'debug',
                         ],
                     ],
                 ],
             ];
         }
 
+        // 4.0 version
+        if (empty($app['config']->get('log.driver'))) {
+            return [
+                'log' => [
+                    'default' => 'single',
+                    'channels' => [
+                        'single' => [
+                            'driver' => 'single',
+                            'path' => $app['config']->get('log.file') ?: \sys_get_temp_dir().'/logs/easywechat.log',
+                            'level' => $app['config']->get('log.level', 'debug'),
+                        ],
+                    ],
+                ],
+            ];
+        }
+
+        $name = $app['config']->get('log.driver');
+
         return [
             'log' => [
-                'default' => 'single',
+                'default' => $name,
                 'channels' => [
-                    'single' => [
-                        'driver' => 'single',
-                        'path' => $app['config']->get('log.file') ?: \sys_get_temp_dir().'/logs/easywechat.log',
-                        'level' => $app['config']->get('log.level', 'debug'),
-                    ],
+                    $name => $app['config']->get('log'),
                 ],
             ],
         ];

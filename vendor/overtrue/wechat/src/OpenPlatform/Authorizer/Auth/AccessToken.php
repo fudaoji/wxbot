@@ -44,6 +44,9 @@ class AccessToken extends BaseAccessToken
 
     /**
      * AuthorizerAccessToken constructor.
+     *
+     * @param \Pimple\Container                    $app
+     * @param \EasyWeChat\OpenPlatform\Application $component
      */
     public function __construct(Container $app, Application $component)
     {
@@ -64,6 +67,9 @@ class AccessToken extends BaseAccessToken
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getEndpoint(): string
     {
         return 'cgi-bin/component/api_authorizer_token?'.http_build_query([

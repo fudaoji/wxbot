@@ -23,10 +23,10 @@ class CodeClient extends BaseClient
     /**
      * 导入code接口.
      *
-     * @return mixed
+     * @param string $cardId
+     * @param array  $codes
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function deposit(string $cardId, array $codes)
     {
@@ -41,10 +41,9 @@ class CodeClient extends BaseClient
     /**
      * 查询导入code数目.
      *
-     * @return mixed
+     * @param string $cardId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function getDepositedCount(string $cardId)
     {
@@ -58,10 +57,10 @@ class CodeClient extends BaseClient
     /**
      * 核查code接口.
      *
-     * @return mixed
+     * @param string $cardId
+     * @param array  $codes
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function check(string $cardId, array $codes)
     {
@@ -76,10 +75,11 @@ class CodeClient extends BaseClient
     /**
      * 查询 Code 接口.
      *
-     * @return mixed
+     * @param string $code
+     * @param string $cardId
+     * @param bool   $checkConsume
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function get(string $code, string $cardId = '', bool $checkConsume = true)
     {
@@ -95,10 +95,11 @@ class CodeClient extends BaseClient
     /**
      * 更改Code接口.
      *
-     * @return mixed
+     * @param string $code
+     * @param string $newCode
+     * @param string $cardId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function update(string $code, string $newCode, string $cardId = '')
     {
@@ -114,10 +115,10 @@ class CodeClient extends BaseClient
     /**
      * 设置卡券失效.
      *
-     * @return mixed
+     * @param string $code
+     * @param string $cardId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function disable(string $code, string $cardId = '')
     {
@@ -132,10 +133,10 @@ class CodeClient extends BaseClient
     /**
      * 核销 Code 接口.
      *
-     * @return mixed
+     * @param string      $code
+     * @param string|null $cardId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function consume(string $code, string $cardId = null)
     {
@@ -153,10 +154,9 @@ class CodeClient extends BaseClient
     /**
      * Code解码接口.
      *
-     * @return mixed
+     * @param string $encryptedCode
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function decrypt(string $encryptedCode)
     {

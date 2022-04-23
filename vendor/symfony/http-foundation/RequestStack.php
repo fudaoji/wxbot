@@ -11,9 +11,6 @@
 
 namespace Symfony\Component\HttpFoundation;
 
-use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-
 /**
  * Request stack that controls the lifecycle of requests.
  *
@@ -65,13 +62,15 @@ class RequestStack
     }
 
     /**
-     * Gets the main request.
+     * Gets the master Request.
      *
-     * Be warned that making your code aware of the main request
+     * Be warned that making your code aware of the master request
      * might make it un-compatible with other features of your framework
      * like ESI support.
+     *
+     * @return Request|null
      */
-    public function getMainRequest(): ?Request
+    public function getMasterRequest()
     {
         if (!$this->requests) {
             return null;
@@ -81,27 +80,13 @@ class RequestStack
     }
 
     /**
-     * Gets the master request.
-     *
-     * @return Request|null
-     *
-     * @deprecated since symfony/http-foundation 5.3, use getMainRequest() instead
-     */
-    public function getMasterRequest()
-    {
-        trigger_deprecation('symfony/http-foundation', '5.3', '"%s()" is deprecated, use "getMainRequest()" instead.', __METHOD__);
-
-        return $this->getMainRequest();
-    }
-
-    /**
      * Returns the parent request of the current.
      *
      * Be warned that making your code aware of the parent request
      * might make it un-compatible with other features of your framework
      * like ESI support.
      *
-     * If current Request is the main request, it returns null.
+     * If current Request is the master request, it returns null.
      *
      * @return Request|null
      */
@@ -110,19 +95,5 @@ class RequestStack
         $pos = \count($this->requests) - 2;
 
         return $this->requests[$pos] ?? null;
-    }
-
-    /**
-     * Gets the current session.
-     *
-     * @throws SessionNotFoundException
-     */
-    public function getSession(): SessionInterface
-    {
-        if ((null !== $request = end($this->requests) ?: null) && $request->hasSession()) {
-            return $request->getSession();
-        }
-
-        throw new SessionNotFoundException();
     }
 }

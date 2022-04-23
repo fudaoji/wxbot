@@ -23,10 +23,11 @@ class Client extends BaseClient
     /**
      * Create a department.
      *
+     * @param array $data
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function create(array $data)
     {
@@ -36,10 +37,12 @@ class Client extends BaseClient
     /**
      * Update a department.
      *
+     * @param int   $id
+     * @param array $data
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function update(int $id, array $data)
     {

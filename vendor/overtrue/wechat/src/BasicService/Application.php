@@ -18,11 +18,10 @@ use EasyWeChat\Kernel\ServiceContainer;
  *
  * @author overtrue <i@overtrue.me>
  *
- * @property \EasyWeChat\BasicService\Jssdk\Client           $jssdk
- * @property \EasyWeChat\BasicService\Media\Client           $media
- * @property \EasyWeChat\BasicService\QrCode\Client          $qrcode
- * @property \EasyWeChat\BasicService\Url\Client             $url
- * @property \EasyWeChat\BasicService\ContentSecurity\Client $content_security
+ * @property \EasyWeChat\BasicService\Jssdk\Client  $jssdk
+ * @property \EasyWeChat\BasicService\Media\Client  $media
+ * @property \EasyWeChat\BasicService\QrCode\Client $qrcode
+ * @property \EasyWeChat\BasicService\Url\Client    $url
  */
 class Application extends ServiceContainer
 {
@@ -34,6 +33,5 @@ class Application extends ServiceContainer
         QrCode\ServiceProvider::class,
         Media\ServiceProvider::class,
         Url\ServiceProvider::class,
-        ContentSecurity\ServiceProvider::class,
     ];
 }

@@ -29,49 +29,39 @@ class Message implements MessageInterface
     {
         $this->version = $version;
         $this->headers = $headers;
-        $this->body = $body ?? new Stream();
+        $this->body = null === $body ? new Stream() : $body;
     }
 
-    public function getProtocolVersion(): string
+    public function getProtocolVersion()
     {
         return $this->version;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return static
-     */
     public function withProtocolVersion($version)
     {
         throw new \BadMethodCallException('Not implemented.');
     }
 
-    public function getHeaders(): array
+    public function getHeaders()
     {
         return $this->headers;
     }
 
-    public function hasHeader($name): bool
+    public function hasHeader($name)
     {
         return isset($this->headers[$name]);
     }
 
-    public function getHeader($name): array
+    public function getHeader($name)
     {
         return $this->hasHeader($name) ? $this->headers[$name] : [];
     }
 
-    public function getHeaderLine($name): string
+    public function getHeaderLine($name)
     {
         return $this->hasHeader($name) ? implode(',', $this->headers[$name]) : '';
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return static
-     */
     public function withHeader($name, $value)
     {
         $this->headers[$name] = (array) $value;
@@ -79,21 +69,11 @@ class Message implements MessageInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return static
-     */
     public function withAddedHeader($name, $value)
     {
         throw new \BadMethodCallException('Not implemented.');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return static
-     */
     public function withoutHeader($name)
     {
         unset($this->headers[$name]);
@@ -101,16 +81,11 @@ class Message implements MessageInterface
         return $this;
     }
 
-    public function getBody(): StreamInterface
+    public function getBody()
     {
         return $this->body;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return static
-     */
     public function withBody(StreamInterface $body)
     {
         throw new \BadMethodCallException('Not implemented.');

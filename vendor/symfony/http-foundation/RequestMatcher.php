@@ -84,8 +84,10 @@ class RequestMatcher implements RequestMatcherInterface
 
     /**
      * Adds a check for the URL host name.
+     *
+     * @param string|null $regexp A Regexp
      */
-    public function matchHost(?string $regexp)
+    public function matchHost($regexp)
     {
         $this->host = $regexp;
     }
@@ -102,8 +104,10 @@ class RequestMatcher implements RequestMatcherInterface
 
     /**
      * Adds a check for the URL path info.
+     *
+     * @param string|null $regexp A Regexp
      */
-    public function matchPath(?string $regexp)
+    public function matchPath($regexp)
     {
         $this->path = $regexp;
     }
@@ -113,7 +117,7 @@ class RequestMatcher implements RequestMatcherInterface
      *
      * @param string $ip A specific IP address or a range specified using IP/netmask like 192.168.1.0/24
      */
-    public function matchIp(string $ip)
+    public function matchIp($ip)
     {
         $this->matchIps($ip);
     }
@@ -125,11 +129,7 @@ class RequestMatcher implements RequestMatcherInterface
      */
     public function matchIps($ips)
     {
-        $ips = null !== $ips ? (array) $ips : [];
-
-        $this->ips = array_reduce($ips, static function (array $ips, string $ip) {
-            return array_merge($ips, preg_split('/\s*,\s*/', $ip));
-        }, []);
+        $this->ips = null !== $ips ? (array) $ips : [];
     }
 
     /**
@@ -144,8 +144,11 @@ class RequestMatcher implements RequestMatcherInterface
 
     /**
      * Adds a check for request attribute.
+     *
+     * @param string $key    The request attribute name
+     * @param string $regexp A Regexp
      */
-    public function matchAttribute(string $key, string $regexp)
+    public function matchAttribute($key, $regexp)
     {
         $this->attributes[$key] = $regexp;
     }
@@ -185,7 +188,7 @@ class RequestMatcher implements RequestMatcherInterface
             return false;
         }
 
-        if (IpUtils::checkIp($request->getClientIp() ?? '', $this->ips)) {
+        if (IpUtils::checkIp($request->getClientIp(), $this->ips)) {
             return true;
         }
 

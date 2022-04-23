@@ -35,7 +35,7 @@ final class UrlHelper
             return $path;
         }
 
-        if (null === $request = $this->requestStack->getMainRequest()) {
+        if (null === $request = $this->requestStack->getMasterRequest()) {
             return $this->getAbsoluteUrlFromContext($path);
         }
 
@@ -64,7 +64,7 @@ final class UrlHelper
             return $path;
         }
 
-        if (null === $request = $this->requestStack->getMainRequest()) {
+        if (null === $request = $this->requestStack->getMasterRequest()) {
             return $path;
         }
 

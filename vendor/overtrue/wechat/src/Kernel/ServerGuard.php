@@ -34,8 +34,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ServerGuard
 {
-    use Observable;
-    use ResponseCastable;
+    use Observable, ResponseCastable;
 
     /**
      * @var bool
@@ -45,12 +44,12 @@ class ServerGuard
     /**
      * Empty string.
      */
-    public const SUCCESS_EMPTY_RESPONSE = 'success';
+    const SUCCESS_EMPTY_RESPONSE = 'success';
 
     /**
      * @var array
      */
-    public const MESSAGE_TYPE_MAPPING = [
+    const MESSAGE_TYPE_MAPPING = [
         'text' => Message::TEXT,
         'image' => Message::IMAGE,
         'voice' => Message::VOICE,
@@ -62,7 +61,6 @@ class ServerGuard
         'device_text' => Message::DEVICE_TEXT,
         'event' => Message::EVENT,
         'file' => Message::FILE,
-        'miniprogrampage' => Message::MINIPROGRAM_PAGE,
     ];
 
     /**
@@ -88,6 +86,8 @@ class ServerGuard
 
     /**
      * Handle and return response.
+     *
+     * @return Response
      *
      * @throws BadRequestException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -116,7 +116,7 @@ class ServerGuard
      */
     public function validate()
     {
-        if (!$this->alwaysValidate && !$this->isSafeMode()) {
+        if (!$this->isSafeMode()) {
             return $this;
         }
 
@@ -127,18 +127,6 @@ class ServerGuard
             ])) {
             throw new BadRequestException('Invalid request signature.', 400);
         }
-
-        return $this;
-    }
-
-    /**
-     * Force validate request.
-     *
-     * @return $this
-     */
-    public function forceValidate()
-    {
-        $this->alwaysValidate = true;
 
         return $this;
     }
@@ -161,7 +149,12 @@ class ServerGuard
         }
 
         if ($this->isSafeMode() && !empty($message['Encrypt'])) {
-            $message = $this->decryptMessage($message);
+            $message = $this->app['encryptor']->decrypt(
+                $message['Encrypt'],
+                $this->app['request']->get('msg_signature'),
+                $this->app['request']->get('nonce'),
+                $this->app['request']->get('timestamp')
+            );
 
             // Handle JSON format.
             $dataSet = json_decode($message, true);
@@ -179,6 +172,8 @@ class ServerGuard
     /**
      * Resolve server request and return the response.
      *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
      * @throws \EasyWeChat\Kernel\Exceptions\BadRequestException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -188,18 +183,14 @@ class ServerGuard
         $result = $this->handleRequest();
 
         if ($this->shouldReturnRawResponse()) {
-            $response = new Response($result['response']);
-        } else {
-            $response = new Response(
-                $this->buildResponse($result['to'], $result['from'], $result['response']),
-                200,
-                ['Content-Type' => 'application/xml']
-            );
+            return new Response($result['response']);
         }
 
-        $this->app->events->dispatch(new Events\ServerGuardResponseCreated($response));
-
-        return $response;
+        return new Response(
+            $this->buildResponse($result['to'], $result['from'], $result['response']),
+            200,
+            ['Content-Type' => 'application/xml']
+        );
     }
 
     /**
@@ -211,6 +202,8 @@ class ServerGuard
     }
 
     /**
+     * @param string                                                   $to
+     * @param string                                                   $from
      * @param \EasyWeChat\Kernel\Contracts\MessageInterface|string|int $message
      *
      * @return string
@@ -245,6 +238,8 @@ class ServerGuard
     /**
      * Handle request.
      *
+     * @return array
+     *
      * @throws \EasyWeChat\Kernel\Exceptions\BadRequestException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -266,6 +261,12 @@ class ServerGuard
 
     /**
      * Build reply XML.
+     *
+     * @param string                                        $to
+     * @param string                                        $from
+     * @param \EasyWeChat\Kernel\Contracts\MessageInterface $message
+     *
+     * @return string
      */
     protected function buildReply(string $to, string $from, MessageInterface $message): string
     {
@@ -287,6 +288,8 @@ class ServerGuard
     }
 
     /**
+     * @param array $params
+     *
      * @return string
      */
     protected function signature(array $params)
@@ -326,27 +329,23 @@ class ServerGuard
 
     /**
      * Check the request message safe mode.
+     *
+     * @return bool
      */
     protected function isSafeMode(): bool
     {
+        if ($this->alwaysValidate) {
+            return true;
+        }
+
         return $this->app['request']->get('signature') && 'aes' === $this->app['request']->get('encrypt_type');
     }
 
+    /**
+     * @return bool
+     */
     protected function shouldReturnRawResponse(): bool
     {
         return false;
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function decryptMessage(array $message)
-    {
-        return $message = $this->app['encryptor']->decrypt(
-            $message['Encrypt'],
-            $this->app['request']->get('msg_signature'),
-            $this->app['request']->get('nonce'),
-            $this->app['request']->get('timestamp')
-        );
     }
 }

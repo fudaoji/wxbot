@@ -49,22 +49,14 @@ class HttpFoundationFactory implements HttpFoundationFactoryInterface
 
         if ($uri instanceof UriInterface) {
             $server['SERVER_NAME'] = $uri->getHost();
-            $server['SERVER_PORT'] = $uri->getPort() ?: ('https' === $uri->getScheme() ? 443 : 80);
+            $server['SERVER_PORT'] = $uri->getPort();
             $server['REQUEST_URI'] = $uri->getPath();
             $server['QUERY_STRING'] = $uri->getQuery();
-
-            if ('' !== $server['QUERY_STRING']) {
-                $server['REQUEST_URI'] .= '?'.$server['QUERY_STRING'];
-            }
-
-            if ('https' === $uri->getScheme()) {
-                $server['HTTPS'] = 'on';
-            }
         }
 
         $server['REQUEST_METHOD'] = $psrRequest->getMethod();
 
-        $server = array_replace($psrRequest->getServerParams(), $server);
+        $server = array_replace($server, $psrRequest->getServerParams());
 
         $parsedBody = $psrRequest->getParsedBody();
         $parsedBody = \is_array($parsedBody) ? $parsedBody : [];
@@ -78,7 +70,7 @@ class HttpFoundationFactory implements HttpFoundationFactoryInterface
             $server,
             $streamed ? $psrRequest->getBody()->detach() : $psrRequest->getBody()->__toString()
         );
-        $request->headers->add($psrRequest->getHeaders());
+        $request->headers->replace($psrRequest->getHeaders());
 
         return $request;
     }
@@ -222,7 +214,7 @@ class HttpFoundationFactory implements HttpFoundationFactoryInterface
             isset($cookieDomain) ? $cookieDomain : null,
             isset($cookieSecure),
             isset($cookieHttpOnly),
-            true,
+            false,
             isset($samesite) ? $samesite : null
         );
     }

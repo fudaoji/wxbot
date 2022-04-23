@@ -44,30 +44,16 @@ class Music extends Message
         'format',
     ];
 
-    /**
-     * Aliases of attribute.
-     *
-     * @var array
-     */
-    protected $jsonAliases = [
-        'musicurl' => 'url',
-        'hqmusicurl' => 'hq_url',
-    ];
-
     public function toXmlArray()
     {
-        $music = [
+        return [
             'Music' => [
                 'Title' => $this->get('title'),
                 'Description' => $this->get('description'),
                 'MusicUrl' => $this->get('url'),
                 'HQMusicUrl' => $this->get('hq_url'),
+                'ThumbMediaId' => $this->get('thumb_media_id'),
             ],
         ];
-        if ($thumbMediaId = $this->get('thumb_media_id')) {
-            $music['Music']['ThumbMediaId'] = $thumbMediaId;
-        }
-
-        return $music;
     }
 }

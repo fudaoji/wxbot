@@ -59,7 +59,7 @@ trait FilesystemTrait
 
         foreach ($ids as $id) {
             $file = $this->getFile($id);
-            if (!is_file($file) || !$h = @fopen($file, 'r')) {
+            if (!file_exists($file) || !$h = @fopen($file, 'r')) {
                 continue;
             }
             if (($expiresAt = (int) fgets($h)) && $now >= $expiresAt) {
@@ -81,11 +81,11 @@ trait FilesystemTrait
     /**
      * {@inheritdoc}
      */
-    protected function doHave(string $id)
+    protected function doHave($id)
     {
         $file = $this->getFile($id);
 
-        return is_file($file) && (@filemtime($file) > time() || $this->doFetch([$id]));
+        return file_exists($file) && (@filemtime($file) > time() || $this->doFetch([$id]));
     }
 
     /**

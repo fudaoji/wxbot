@@ -35,6 +35,9 @@ class AccessToken extends BaseAccessToken
      */
     protected $endpointToGetToken = 'cgi-bin/component/api_component_token';
 
+    /**
+     * @return array
+     */
     protected function getCredentials(): array
     {
         return [

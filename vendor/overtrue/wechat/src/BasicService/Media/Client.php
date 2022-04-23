@@ -23,6 +23,11 @@ use EasyWeChat\Kernel\Http\StreamResponse;
 class Client extends BaseClient
 {
     /**
+     * @var string
+     */
+    protected $baseUri = 'https://api.weixin.qq.com/cgi-bin/';
+
+    /**
      * Allow media type.
      *
      * @var array
@@ -32,13 +37,11 @@ class Client extends BaseClient
     /**
      * Upload image.
      *
-     * @param string $path
+     * @param $path
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function uploadImage($path)
     {
@@ -48,13 +51,11 @@ class Client extends BaseClient
     /**
      * Upload video.
      *
-     * @param string $path
+     * @param $path
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function uploadVideo($path)
     {
@@ -67,8 +68,6 @@ class Client extends BaseClient
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function uploadVoice($path)
     {
@@ -76,13 +75,11 @@ class Client extends BaseClient
     }
 
     /**
-     * @param string $path
+     * @param $path
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function uploadThumb($path)
     {
@@ -92,11 +89,12 @@ class Client extends BaseClient
     /**
      * Upload temporary material.
      *
+     * @param string $type
+     * @param string $path
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function upload(string $type, string $path)
     {
@@ -108,20 +106,19 @@ class Client extends BaseClient
             throw new InvalidArgumentException(sprintf("Unsupported media type: '%s'", $type));
         }
 
-        return $this->httpUpload('/cgi-bin/media/upload', ['media' => $path], ['type' => $type]);
+        return $this->httpUpload('media/upload', ['media' => $path], ['type' => $type]);
     }
 
     /**
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $path
+     * @param string $title
+     * @param string $description
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function uploadVideoForBroadcasting(string $path, string $title, string $description)
     {
         $response = $this->uploadVideo($path);
-        /** @var array $arrayResponse */
         $arrayResponse = $this->detectAndCastResponseToType($response, 'array');
 
         if (!empty($arrayResponse['media_id'])) {
@@ -132,14 +129,15 @@ class Client extends BaseClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $mediaId
+     * @param string $title
+     * @param string $description
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function createVideoForBroadcasting(string $mediaId, string $title, string $description)
     {
-        return $this->httpPostJson('/cgi-bin/media/uploadvideo', [
+        return $this->httpPostJson('media/uploadvideo', [
             'media_id' => $mediaId,
             'title' => $title,
             'description' => $description,
@@ -149,44 +147,42 @@ class Client extends BaseClient
     /**
      * Fetch item from WeChat server.
      *
-     * @return \EasyWeChat\Kernel\Http\StreamResponse|\Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $mediaId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \EasyWeChat\Kernel\Http\StreamResponse|\Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function get(string $mediaId)
     {
-        $response = $this->requestRaw('/cgi-bin/media/get', 'GET', [
+        $response = $this->requestRaw('media/get', 'GET', [
             'query' => [
                 'media_id' => $mediaId,
             ],
         ]);
 
-        if (false !== stripos($response->getHeaderLine('Content-disposition'), 'attachment')) {
-            return StreamResponse::buildFromPsrResponse($response);
+        if (false !== stripos($response->getHeaderLine('Content-Type'), 'text/plain')) {
+            return $this->castResponseToType($response, $this->app['config']->get('response_type'));
         }
 
-        return $this->castResponseToType($response, $this->app['config']->get('response_type'));
+        return StreamResponse::buildFromPsrResponse($response);
     }
 
     /**
-     * @return array|\EasyWeChat\Kernel\Http\Response|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $mediaId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Http\Response|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function getJssdkMedia(string $mediaId)
     {
-        $response = $this->requestRaw('/cgi-bin/media/get/jssdk', 'GET', [
+        $response = $this->requestRaw('media/get/jssdk', 'GET', [
             'query' => [
                 'media_id' => $mediaId,
             ],
         ]);
 
-        if (false !== stripos($response->getHeaderLine('Content-disposition'), 'attachment')) {
-            return StreamResponse::buildFromPsrResponse($response);
+        if (false !== stripos($response->getHeaderLine('Content-Type'), 'text/plain')) {
+            return $this->castResponseToType($response, $this->app['config']->get('response_type'));
         }
 
-        return $this->castResponseToType($response, $this->app['config']->get('response_type'));
+        return StreamResponse::buildFromPsrResponse($response);
     }
 }

@@ -93,24 +93,21 @@ class File
      *
      * @param string $stream
      *
-     * @return string|false
+     * @return string
      */
     public static function getStreamExt($stream)
     {
-        $ext = self::getExtBySignature($stream);
-
         try {
-            if (empty($ext) && is_readable($stream)) {
-                $stream = file_get_contents($stream);
-            }
+            $stream = file_get_contents($stream);
         } catch (\Exception $e) {
+            // keep slient...
         }
 
         $fileInfo = new finfo(FILEINFO_MIME);
 
         $mime = strstr($fileInfo->buffer($stream), ';', true);
 
-        return isset(self::$extensionMap[$mime]) ? self::$extensionMap[$mime] : $ext;
+        return isset(self::$extensionMap[$mime]) ? self::$extensionMap[$mime] : self::getExtBySignature($stream);
     }
 
     /**

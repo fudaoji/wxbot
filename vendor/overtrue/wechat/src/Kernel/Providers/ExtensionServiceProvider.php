@@ -32,7 +32,7 @@ class ExtensionServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        !isset($pimple['extension']) && $pimple['extension'] = function ($app) {
+        $pimple['extension'] = function ($app) {
             return new Extension($app);
         };
     }

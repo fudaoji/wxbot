@@ -12,6 +12,7 @@
 namespace EasyWeChat\OfficialAccount\ShakeAround;
 
 use EasyWeChat\Kernel\BaseClient;
+use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 
 /**
  * Class DeviceClient.
@@ -21,10 +22,9 @@ use EasyWeChat\Kernel\BaseClient;
 class DeviceClient extends BaseClient
 {
     /**
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param array $data
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function apply(array $data)
     {
@@ -34,10 +34,9 @@ class DeviceClient extends BaseClient
     /**
      * Get audit status.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param int $applyId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function status(int $applyId)
     {
@@ -51,10 +50,10 @@ class DeviceClient extends BaseClient
     /**
      * Update a device comment.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array  $deviceIdentifier
+     * @param string $comment
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function update(array $deviceIdentifier, string $comment)
     {
@@ -69,10 +68,12 @@ class DeviceClient extends BaseClient
     /**
      * Bind location for device.
      *
+     * @param array $deviceIdentifier
+     * @param int   $poiId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws InvalidArgumentException
      */
     public function bindPoi(array $deviceIdentifier, int $poiId)
     {
@@ -85,10 +86,11 @@ class DeviceClient extends BaseClient
     }
 
     /**
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param array  $deviceIdentifier
+     * @param int    $poiId
+     * @param string $appId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function bindThirdPoi(array $deviceIdentifier, int $poiId, string $appId)
     {
@@ -105,6 +107,8 @@ class DeviceClient extends BaseClient
     /**
      * Fetch batch of devices by deviceIds.
      *
+     * @param array $deviceIdentifiers
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function listByIds(array $deviceIdentifiers)
@@ -119,6 +123,9 @@ class DeviceClient extends BaseClient
 
     /**
      * Pagination to get batch of devices.
+     *
+     * @param int $lastId
+     * @param int $count
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -135,6 +142,10 @@ class DeviceClient extends BaseClient
 
     /**
      * Fetch batch of devices by applyId.
+     *
+     * @param int $applyId
+     * @param int $lastId
+     * @param int $count
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -153,10 +164,9 @@ class DeviceClient extends BaseClient
     /**
      * Fetch batch of devices.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param array $params
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function search(array $params)
     {

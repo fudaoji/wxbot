@@ -20,13 +20,12 @@ namespace EasyWeChat;
  * @method static \EasyWeChat\OfficialAccount\Application    officialAccount(array $config)
  * @method static \EasyWeChat\BasicService\Application       basicService(array $config)
  * @method static \EasyWeChat\Work\Application               work(array $config)
- * @method static \EasyWeChat\OpenWork\Application           openWork(array $config)
- * @method static \EasyWeChat\MicroMerchant\Application      microMerchant(array $config)
  */
 class Factory
 {
     /**
      * @param string $name
+     * @param array  $config
      *
      * @return \EasyWeChat\Kernel\ServiceContainer
      */

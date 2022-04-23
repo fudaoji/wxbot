@@ -48,12 +48,9 @@ class PsrHttpFactory implements HttpMessageFactoryInterface
      */
     public function createRequest(Request $symfonyRequest)
     {
-        $uri = $symfonyRequest->server->get('QUERY_STRING', '');
-        $uri = $symfonyRequest->getSchemeAndHttpHost().$symfonyRequest->getBaseUrl().$symfonyRequest->getPathInfo().('' !== $uri ? '?'.$uri : '');
-
         $request = $this->serverRequestFactory->createServerRequest(
             $symfonyRequest->getMethod(),
-            $uri,
+            $symfonyRequest->getUri(),
             $symfonyRequest->server->all()
         );
 
@@ -89,7 +86,7 @@ class PsrHttpFactory implements HttpMessageFactoryInterface
 
         foreach ($uploadedFiles as $key => $value) {
             if (null === $value) {
-                $files[$key] = $this->uploadedFileFactory->createUploadedFile($this->streamFactory->createStream(), 0, \UPLOAD_ERR_NO_FILE);
+                $files[$key] = $this->uploadedFileFactory->createUploadedFile($this->streamFactory->createStream(), 0, UPLOAD_ERR_NO_FILE);
                 continue;
             }
             if ($value instanceof UploadedFile) {
@@ -127,13 +124,13 @@ class PsrHttpFactory implements HttpMessageFactoryInterface
     {
         $response = $this->responseFactory->createResponse($symfonyResponse->getStatusCode(), Response::$statusTexts[$symfonyResponse->getStatusCode()] ?? '');
 
-        if ($symfonyResponse instanceof BinaryFileResponse && !$symfonyResponse->headers->has('Content-Range')) {
+        if ($symfonyResponse instanceof BinaryFileResponse) {
             $stream = $this->streamFactory->createStreamFromFile(
                 $symfonyResponse->getFile()->getPathname()
             );
         } else {
             $stream = $this->streamFactory->createStreamFromFile('php://temp', 'wb+');
-            if ($symfonyResponse instanceof StreamedResponse || $symfonyResponse instanceof BinaryFileResponse) {
+            if ($symfonyResponse instanceof StreamedResponse) {
                 ob_start(function ($buffer) use ($stream) {
                     $stream->write($buffer);
 

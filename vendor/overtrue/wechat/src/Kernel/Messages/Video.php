@@ -43,6 +43,9 @@ class Video extends Media
 
     /**
      * Video constructor.
+     *
+     * @param string $mediaId
+     * @param array  $attributes
      */
     public function __construct(string $mediaId, array $attributes = [])
     {

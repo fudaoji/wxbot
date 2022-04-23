@@ -26,16 +26,17 @@ class HttpException extends Exception
     public $response;
 
     /**
-     * @var \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string|null
+     * @var \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public $formattedResponse;
 
     /**
      * HttpException constructor.
      *
-     * @param string   $message
-     * @param null     $formattedResponse
-     * @param int|null $code
+     * @param string                                   $message
+     * @param \Psr\Http\Message\ResponseInterface|null $response
+     * @param null                                     $formattedResponse
+     * @param int|null                                 $code
      */
     public function __construct($message, ResponseInterface $response = null, $formattedResponse = null, $code = null)
     {

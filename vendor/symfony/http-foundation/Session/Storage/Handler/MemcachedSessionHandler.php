@@ -38,7 +38,7 @@ class MemcachedSessionHandler extends AbstractSessionHandler
      *
      * List of available options:
      *  * prefix: The prefix to use for the memcached keys in order to avoid collision
-     *  * ttl: The time to live in seconds.
+     *  * expiretime: The time to live in seconds.
      *
      * @throws \InvalidArgumentException When unsupported options are passed
      */
@@ -46,11 +46,11 @@ class MemcachedSessionHandler extends AbstractSessionHandler
     {
         $this->memcached = $memcached;
 
-        if ($diff = array_diff(array_keys($options), ['prefix', 'expiretime', 'ttl'])) {
+        if ($diff = array_diff(array_keys($options), ['prefix', 'expiretime'])) {
             throw new \InvalidArgumentException(sprintf('The following options are not supported "%s".', implode(', ', $diff)));
         }
 
-        $this->ttl = $options['expiretime'] ?? $options['ttl'] ?? null;
+        $this->ttl = isset($options['expiretime']) ? (int) $options['expiretime'] : 86400;
         $this->prefix = $options['prefix'] ?? 'sf2s';
     }
 
@@ -66,7 +66,7 @@ class MemcachedSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    protected function doRead(string $sessionId)
+    protected function doRead($sessionId)
     {
         return $this->memcached->get($this->prefix.$sessionId) ?: '';
     }
@@ -77,7 +77,7 @@ class MemcachedSessionHandler extends AbstractSessionHandler
     #[\ReturnTypeWillChange]
     public function updateTimestamp($sessionId, $data)
     {
-        $this->memcached->touch($this->prefix.$sessionId, time() + (int) ($this->ttl ?? ini_get('session.gc_maxlifetime')));
+        $this->memcached->touch($this->prefix.$sessionId, time() + $this->ttl);
 
         return true;
     }
@@ -85,15 +85,15 @@ class MemcachedSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    protected function doWrite(string $sessionId, string $data)
+    protected function doWrite($sessionId, $data)
     {
-        return $this->memcached->set($this->prefix.$sessionId, $data, time() + (int) ($this->ttl ?? ini_get('session.gc_maxlifetime')));
+        return $this->memcached->set($this->prefix.$sessionId, $data, time() + $this->ttl);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doDestroy(string $sessionId)
+    protected function doDestroy($sessionId)
     {
         $result = $this->memcached->delete($this->prefix.$sessionId);
 

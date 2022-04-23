@@ -11,15 +11,11 @@
 
 namespace Symfony\Component\HttpFoundation\Session\Attribute;
 
-trigger_deprecation('symfony/http-foundation', '5.3', 'The "%s" class is deprecated.', NamespacedAttributeBag::class);
-
 /**
  * This class provides structured storage of session attributes using
  * a name spacing character in the key.
  *
  * @author Drak <drak@zikula.org>
- *
- * @deprecated since Symfony 5.3
  */
 class NamespacedAttributeBag extends AttributeBag
 {
@@ -38,7 +34,7 @@ class NamespacedAttributeBag extends AttributeBag
     /**
      * {@inheritdoc}
      */
-    public function has(string $name)
+    public function has($name)
     {
         // reference mismatch: if fixed, re-introduced in array_key_exists; keep as it is
         $attributes = $this->resolveAttributePath($name);
@@ -54,7 +50,7 @@ class NamespacedAttributeBag extends AttributeBag
     /**
      * {@inheritdoc}
      */
-    public function get(string $name, $default = null)
+    public function get($name, $default = null)
     {
         // reference mismatch: if fixed, re-introduced in array_key_exists; keep as it is
         $attributes = $this->resolveAttributePath($name);
@@ -70,7 +66,7 @@ class NamespacedAttributeBag extends AttributeBag
     /**
      * {@inheritdoc}
      */
-    public function set(string $name, $value)
+    public function set($name, $value)
     {
         $attributes = &$this->resolveAttributePath($name, true);
         $name = $this->resolveKey($name);
@@ -80,7 +76,7 @@ class NamespacedAttributeBag extends AttributeBag
     /**
      * {@inheritdoc}
      */
-    public function remove(string $name)
+    public function remove($name)
     {
         $retval = null;
         $attributes = &$this->resolveAttributePath($name);
@@ -103,7 +99,7 @@ class NamespacedAttributeBag extends AttributeBag
      *
      * @return array|null
      */
-    protected function &resolveAttributePath(string $name, bool $writeContext = false)
+    protected function &resolveAttributePath($name, $writeContext = false)
     {
         $array = &$this->attributes;
         $name = (str_starts_with($name, $this->namespaceCharacter)) ? substr($name, 1) : $name;
@@ -148,9 +144,11 @@ class NamespacedAttributeBag extends AttributeBag
      *
      * This is the last part in a dot separated string.
      *
+     * @param string $name
+     *
      * @return string
      */
-    protected function resolveKey(string $name)
+    protected function resolveKey($name)
     {
         if (false !== $pos = strrpos($name, $this->namespaceCharacter)) {
             $name = substr($name, $pos + 1);

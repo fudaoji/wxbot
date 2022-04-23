@@ -23,10 +23,9 @@ class Client extends BaseClient
     /**
      * 绑定小程序体验者.
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $wechatId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function bind(string $wechatId)
     {
@@ -38,30 +37,14 @@ class Client extends BaseClient
     /**
      * 解绑小程序体验者.
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param string $wechatId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function unbind(string $wechatId)
     {
         return $this->httpPostJson('wxa/unbind_tester', [
             'wechatid' => $wechatId,
-        ]);
-    }
-
-    /**
-     * 获取体验者列表.
-     *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function list()
-    {
-        return $this->httpPostJson('wxa/memberauth', [
-            'action' => 'get_experiencer',
         ]);
     }
 }

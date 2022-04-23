@@ -23,28 +23,34 @@ use EasyWeChat\Kernel\Support\Arr;
 /**
  * Class Client.
  *
- * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string previewTextByName($text, $name);
- * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string previewNewsByName($mediaId, $name);
- * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string previewVoiceByName($mediaId, $name);
- * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string previewImageByName($mediaId, $name);
- * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string previewVideoByName($message, $name);
- * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string previewCardByName($cardId, $name);
+ * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+ *         previewTextByName($text, $name);
+ * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+ *         previewNewsByName($mediaId, $name);
+ * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+ *         previewVoiceByName($mediaId, $name);
+ * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+ *         previewImageByName($mediaId, $name);
+ * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+ *         previewVideoByName($message, $name);
+ * @method \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+ *         previewCardByName($cardId, $name);
  *
  * @author overtrue <i@overtrue.me>
  */
 class Client extends BaseClient
 {
-    public const PREVIEW_BY_OPENID = 'touser';
-    public const PREVIEW_BY_NAME = 'towxname';
+    const PREVIEW_BY_OPENID = 'touser';
+    const PREVIEW_BY_NAME = 'towxname';
 
     /**
      * Send a message.
      *
+     * @param array $message
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function send(array $message)
     {
@@ -60,10 +66,9 @@ class Client extends BaseClient
     /**
      * Preview a message.
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @param array $message
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      */
     public function preview(array $message)
     {
@@ -73,16 +78,14 @@ class Client extends BaseClient
     /**
      * Delete a broadcast.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
-    public function delete(string $msgId, int $index = 0)
+    public function delete(string $msgId)
     {
         $options = [
             'msg_id' => $msgId,
-            'article_idx' => $index,
         ];
 
         return $this->httpPostJson('cgi-bin/message/mass/delete', $options);
@@ -91,10 +94,9 @@ class Client extends BaseClient
     /**
      * Get a broadcast status.
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @param string $msgId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function status(string $msgId)
     {
@@ -108,104 +110,103 @@ class Client extends BaseClient
     /**
      * Send a text message.
      *
-     * @param mixed $reception
+     * @param string $message
+     * @param mixed  $reception
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
-    public function sendText(string $message, $reception = null, array $attributes = [])
+    public function sendText(string $message, $reception = null)
     {
-        return $this->sendMessage(new Text($message), $reception, $attributes);
+        return $this->sendMessage(new Text($message), $reception);
     }
 
     /**
      * Send a news message.
      *
-     * @param mixed $reception
+     * @param string $mediaId
+     * @param mixed  $reception
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
-    public function sendNews(string $mediaId, $reception = null, array $attributes = [])
+    public function sendNews(string $mediaId, $reception = null)
     {
-        return $this->sendMessage(new Media($mediaId, 'mpnews'), $reception, $attributes);
+        return $this->sendMessage(new Media($mediaId, 'mpnews'), $reception);
     }
 
     /**
      * Send a voice message.
      *
-     * @param mixed $reception
+     * @param string $mediaId
+     * @param mixed  $reception
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
-    public function sendVoice(string $mediaId, $reception = null, array $attributes = [])
+    public function sendVoice(string $mediaId, $reception = null)
     {
-        return $this->sendMessage(new Media($mediaId, 'voice'), $reception, $attributes);
+        return $this->sendMessage(new Media($mediaId, 'voice'), $reception);
     }
 
     /**
      * Send a image message.
      *
+     * @param mixed $mediaId
      * @param mixed $reception
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
-    public function sendImage(string $mediaId, $reception = null, array $attributes = [])
+    public function sendImage(string $mediaId, $reception = null)
     {
-        return $this->sendMessage(new Image($mediaId), $reception, $attributes);
+        return $this->sendMessage(new Image($mediaId), $reception);
     }
 
     /**
      * Send a video message.
      *
-     * @param mixed $reception
+     * @param string $mediaId
+     * @param mixed  $reception
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
-    public function sendVideo(string $mediaId, $reception = null, array $attributes = [])
+    public function sendVideo(string $mediaId, $reception = null)
     {
-        return $this->sendMessage(new Media($mediaId, 'mpvideo'), $reception, $attributes);
+        return $this->sendMessage(new Media($mediaId, 'mpvideo'), $reception);
     }
 
     /**
      * Send a card message.
      *
-     * @param mixed $reception
+     * @param string $cardId
+     * @param mixed  $reception
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
-    public function sendCard(string $cardId, $reception = null, array $attributes = [])
+    public function sendCard(string $cardId, $reception = null)
     {
-        return $this->sendMessage(new Card($cardId), $reception, $attributes);
+        return $this->sendMessage(new Card($cardId), $reception);
     }
 
     /**
      * Preview a text message.
      *
-     * @param string $message   message
+     * @param mixed  $message   message
      * @param string $reception
      * @param string $method
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function previewText(string $message, $reception, $method = self::PREVIEW_BY_OPENID)
     {
@@ -215,14 +216,13 @@ class Client extends BaseClient
     /**
      * Preview a news message.
      *
-     * @param string $mediaId   message
+     * @param mixed  $mediaId   message
      * @param string $reception
      * @param string $method
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function previewNews(string $mediaId, $reception, $method = self::PREVIEW_BY_OPENID)
     {
@@ -232,14 +232,13 @@ class Client extends BaseClient
     /**
      * Preview a voice message.
      *
-     * @param string $mediaId   message
+     * @param mixed  $mediaId   message
      * @param string $reception
      * @param string $method
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function previewVoice(string $mediaId, $reception, $method = self::PREVIEW_BY_OPENID)
     {
@@ -249,14 +248,13 @@ class Client extends BaseClient
     /**
      * Preview a image message.
      *
-     * @param string $mediaId   message
+     * @param mixed  $mediaId   message
      * @param string $reception
      * @param string $method
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function previewImage(string $mediaId, $reception, $method = self::PREVIEW_BY_OPENID)
     {
@@ -266,14 +264,13 @@ class Client extends BaseClient
     /**
      * Preview a video message.
      *
-     * @param string $mediaId   message
+     * @param mixed  $mediaId   message
      * @param string $reception
      * @param string $method
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function previewVideo(string $mediaId, $reception, $method = self::PREVIEW_BY_OPENID)
     {
@@ -283,14 +280,13 @@ class Client extends BaseClient
     /**
      * Preview a card message.
      *
-     * @param string $cardId    message
+     * @param mixed  $cardId    message
      * @param string $reception
      * @param string $method
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function previewCard(string $cardId, $reception, $method = self::PREVIEW_BY_OPENID)
     {
@@ -298,12 +294,13 @@ class Client extends BaseClient
     }
 
     /**
-     * @param string $method
+     * @param \EasyWeChat\Kernel\Contracts\MessageInterface $message
+     * @param mixed                                         $reception
+     * @param string                                        $method
      *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function previewMessage(MessageInterface $message, string $reception, $method = self::PREVIEW_BY_OPENID)
     {
@@ -313,17 +310,16 @@ class Client extends BaseClient
     }
 
     /**
-     * @param mixed $reception
-     * @param array $attributes
+     * @param \EasyWeChat\Kernel\Contracts\MessageInterface $message
+     * @param mixed                                         $reception
      *
      * @return mixed
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
-    public function sendMessage(MessageInterface $message, $reception = null, $attributes = [])
+    public function sendMessage(MessageInterface $message, $reception = null)
     {
-        $message = (new MessageBuilder())->message($message)->with($attributes)->toAll();
+        $message = (new MessageBuilder())->message($message)->toAll();
 
         if (\is_int($reception)) {
             $message->toTag($reception);

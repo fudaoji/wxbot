@@ -24,9 +24,6 @@ class Client extends BaseClient
      * 获取草稿箱内的所有临时代码草稿
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getDrafts()
     {
@@ -36,10 +33,9 @@ class Client extends BaseClient
     /**
      * 将草稿箱的草稿选为小程序代码模版.
      *
-     * @return mixed
+     * @param int $draftId
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return mixed
      */
     public function createFromDraft(int $draftId)
     {
@@ -54,9 +50,6 @@ class Client extends BaseClient
      * 获取代码模版库中的所有小程序代码模版.
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function list()
     {
@@ -66,12 +59,9 @@ class Client extends BaseClient
     /**
      * 删除指定小程序代码模版.
      *
-     * @param string $templateId
+     * @param $templateId
      *
      * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function delete($templateId)
     {

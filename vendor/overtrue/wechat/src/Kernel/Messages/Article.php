@@ -53,6 +53,7 @@ class Article extends Message
         'thumb_media_id',
         'title',
         'content',
+        'source_url',
         'show_cover',
     ];
 }

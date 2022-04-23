@@ -22,12 +22,17 @@ class Scanned extends Handler
      */
     protected $alert;
 
+    /**
+     * @param string $message
+     */
     public function alert(string $message)
     {
         $this->alert = $message;
     }
 
     /**
+     * @param \Closure $closure
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \EasyWeChat\Kernel\Exceptions\Exception

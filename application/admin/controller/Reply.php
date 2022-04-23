@@ -114,8 +114,7 @@ class Reply extends Botbase
             }
             $builder->addFormItem('id', 'hidden', 'id', 'id');
         }
-        $builder->addTopButton('addnew', ['title' => '从其他机器人复制', 'href' => url('copy'), 'class' => 'layui-btn layui-btn-sm'])
-            ->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
+        $builder->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
             ->addFormItem('bot_id', 'hidden', 'botid', 'botid')
             ->addFormItem('event', 'hidden', 'event', 'event')
             ->addFormItem('media', 'choose_media', '回复内容', '回复内容', ['types' => \app\constants\Media::types(), 'id' => $reply['media_id'], 'type' => $reply['media_type']], 'required')

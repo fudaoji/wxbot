@@ -49,15 +49,23 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function sendBatch(){
+        //$exist =
         if(count($task_list = model('task')->getAllJoin([
             'alias' => 'bt',
             'join' => [
                 ['bot', 'bot.id=bt.bot_id']
             ],
             'where' => ['bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['elt', time()], 'bt.status' => 1],
-            'field' => ['bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.media_id', 'bt.media_type', 'bt.id']
+            'field' => ['bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.media_id', 'bt.media_type', 'bt.id'],
+            'refresh' => true
         ]))){
+            $redis = get_redis();
             foreach($task_list as $task){
+                $rKey = "task" . $task['id'];
+                if($redis->get($rKey)){
+                    continue;
+                }
+                $redis->setex($rKey, 600, 1);
                 if(!empty($task['wxids'])){
                     $bot_client = model('admin/bot')->getRobotClient($task);
                     model('reply')->botReply($task, $bot_client, $task, $task['wxids']);

@@ -10,6 +10,15 @@
 // +----------------------------------------------------------------------
 
 /**
+ *
+ * @return \Redis
+ * Author: fudaoji<fdj@kuryun.cn>
+ */
+function get_redis(){
+    return controller('common/base', 'event')->getRedis();
+}
+
+/**
  * 执行sql
  * @param string $sql
  * @return bool|string

@@ -92,8 +92,9 @@ class Keyword extends Botbase
     {
         if(request()->isPost()){
             $post_data = input('post.');
+            $exists = $this->model->getField(['keyword'], ['bot_id' => $this->bot['id']]);
             $list = $this->model->getAll([
-                'where' => ['bot_id' => $post_data['bot_id'], 'status' => 1],
+                'where' => ['bot_id' => $post_data['bot_id'], 'status' => 1, 'keyword' => ['notin', count($exists) ? $exists : [0]]],
                 'refresh' => true
             ]);
             foreach ($list as $v){

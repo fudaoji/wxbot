@@ -33,6 +33,41 @@ class Reply extends Botbase
     }
 
     /**
+     *
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function copy()
+    {
+        if(request()->isPost()){
+            $post_data = input('post.');
+            $exists = $this->model->getField(['media_id'], ['bot_id' => $this->bot['id']]);
+            $list = $this->model->getAll([
+                'where' => ['bot_id' => $post_data['bot_id'], 'status' => 1, 'media_id' => ['notin', $exists]],
+                'refresh' => true
+            ]);
+            foreach ($list as $v){
+                unset($v['id']);
+                $v['bot_id'] = $this->bot['id'];
+                $this->model->addOne($v);
+            }
+            $this->success('操作成功');
+        }
+        $bot_list = $this->getBots(['id' => ['neq', $this->bot['id']]]);
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('复制内容')
+            ->setPostUrl(url('copy'))
+            ->addFormItem('bot_id', 'chosen', '机器人', '请选择', $bot_list, 'required');
+
+        return $builder->show();
+    }
+
+    /**
      * 设置
      * @return mixed
      * @throws \think\Exception
@@ -79,7 +114,8 @@ class Reply extends Botbase
             }
             $builder->addFormItem('id', 'hidden', 'id', 'id');
         }
-        $builder->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
+        $builder->addTopButton('addnew', ['title' => '从其他机器人复制', 'href' => url('copy'), 'class' => 'layui-btn layui-btn-sm'])
+            ->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
             ->addFormItem('bot_id', 'hidden', 'botid', 'botid')
             ->addFormItem('event', 'hidden', 'event', 'event')
             ->addFormItem('media', 'choose_media', '回复内容', '回复内容', ['types' => \app\constants\Media::types(), 'id' => $reply['media_id'], 'type' => $reply['media_type']], 'required')

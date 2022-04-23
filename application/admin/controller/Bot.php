@@ -54,11 +54,12 @@ class Bot extends Base
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
+        $bot = model('bot')->getOneByMap(['admin_id' => $this->adminInfo['id'], 'is_current' => 1]);
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '名称|昵称|微信号']
         ])
-            //->setTabNav($this->tabs, 'index')
+            ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
             ->addTopButton('addnew')
             ->addTableColumn(['title' => 'id', 'field' => 'uin', 'minWidth' => 170])
             ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => \app\constants\Bot::protocols(), 'minWidth' => 60])

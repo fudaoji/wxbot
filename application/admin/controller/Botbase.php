@@ -24,7 +24,7 @@ class Botbase extends Bbase
         if(empty($this->bot)){
             $this->error('请选择机器人操作', url('bot/index'));
         }
-        $this->botList = model('bot')->getField(['id','title'], ['status' => 1]);
+        $this->botList = $this->getBots();
         $this->assign['bot_info'] = $this->bot;
         $this->assign['bot_list'] = $this->botList;
     }
@@ -37,5 +37,10 @@ class Botbase extends Bbase
     public function getMembers($where = []){
         $where = array_merge($where, ['uin' => $this->bot['uin']]);
         return model('botMember')->getField('wxid,nickname', $where, true);
+    }
+
+    public function getBots($where = []){
+        $where = array_merge($where, ['status' => 1]);
+        return model('bot')->getField(['id','title'], $where);
     }
 }

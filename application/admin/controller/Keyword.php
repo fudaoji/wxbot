@@ -74,6 +74,7 @@ class Keyword extends Botbase
                 ['type' => 'text', 'name' => 'search_key', 'title' => '关键词']
             ])
             ->addTopButton('addnew')
+            ->addTopButton('addnew', ['title' => '从其他机器人复制', 'href' => url('copy'), 'class' => 'layui layui-btn-sm'])
             ->addTableColumn(['title' => '关键词', 'field' => 'keyword', 'minWidth' => 100])
             ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
             ->addTableColumn(['title' => '回复内容', 'field' => 'media_title', 'minWidth' => 100])
@@ -84,6 +85,30 @@ class Keyword extends Botbase
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('delete');
+        return $builder->show();
+    }
+
+    public function copy()
+    {
+        if(request()->isPost()){
+            $post_data = input('post.');
+            $list = $this->model->getAll([
+                'where' => ['bot_id' => $post_data['bot_id'], 'status' => 1],
+                'refresh' => true
+            ]);
+            foreach ($list as $v){
+                $v['bot_id'] = $this->bot['id'];
+                $this->model->addOne($v->toArray());
+            }
+            $this->success('操作成功');
+        }
+        $bot_list = $this->getBots(['id' => ['neq', $this->bot['id']]]);
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('复制内容')
+            ->setPostUrl(url('copy'))
+            ->addFormItem('bot_id', 'chosen', '机器人', '请选择', $bot_list, 'required');
+
         return $builder->show();
     }
 

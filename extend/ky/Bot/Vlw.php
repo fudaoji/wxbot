@@ -83,6 +83,28 @@ class Vlw extends Base
 
     /**
      * req:
+    robot_wxid (string)  // 机器人ID
+    to_wxid (string)  // 目标wxid
+    msgid (string)  // 消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function forwardMsgToFriends($params = []){
+        $data = $this->buildPostData($params, self::API_FORWARD_MSG);
+        $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $res = $this->request([
+                'data' => $data
+            ]);
+            sleep(rand(1,3));
+        }
+        return $res;
+    }
+
+    /**
+     * req:
         robot_wxid (string)  // 机器人ID
         to_wxid (string)  // 目标wxid
         msgid (string)  // 消息

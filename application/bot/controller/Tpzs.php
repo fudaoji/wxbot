@@ -47,13 +47,10 @@ class Tpzs extends Addon
 
         //一、群发
         //1、判断当前群组是否是某个用户的中央调度群
-        if($group = $this->memberM->getOneJoin([
-            'alias' => 'm',
-            'join' => [
-                ['tpzsGather gather', 'gather.group_id=m.id']
-            ],
-            'where' => ['gather.status' => 1, 'm.wxid' => $group_wxid, 'gather.officer' => ['like', "%".$this->fromWxid."%"], 'm.uin' => $this->botWxid],
-            'field' => ['gather.admin_id', 'm.wxid']
+        if($group = model('common/tpzs/Gather')->getGather([
+            'group_wxid' => $group_wxid,
+            'from_wxid' => $this->fromWxid,
+            'bot_wxid' => $this->botWxid
         ])){
             //2.取出机器人负责的群并转发
             $team = model('common/tpzs/Team')->getOneByMap([

@@ -171,4 +171,27 @@ class Tpzsgather extends Botbase
             ->setFormData($data);
         return $builder->show();
     }
+
+    public function savePost($jump_to = '', $data = [])
+    {
+        $post_data = input('post.');
+        $post_data['admin_id'] = $this->adminInfo['id'];
+        if(empty($post_data[$this->pk])){
+            $res = $this->model->addOne($post_data);
+        }else {
+            $res = $this->model->updateOne($post_data);
+        }
+        if($res){
+            $group = model('BotMember')->getOne($res['group_id']);
+            $this->model->getGather([
+                'group_wxid' => $group['wxid'],
+                'from_wxid' => $res['officer'],
+                'bot_wxid' => $this->bot['uin'],
+                'refresh' => true
+            ]);
+            $this->success('数据保存成功', $jump_to);
+        }else{
+            $this->error('数据保存出错');
+        }
+    }
 }

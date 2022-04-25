@@ -157,7 +157,15 @@ class Tpzs extends Addon
                         }
                         break;
                     default:
-                        $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                        if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
+                            $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                        }else{ //个微
+                            $this->botClient->forwardMsgToFriends([
+                                'robot_wxid' => $this->botWxid,
+                                'to_wxid' => $groups,
+                                'msgid' => $this->content['msg_id']
+                            ]);
+                        }
                         break;
                 }
                 //Logger::error($this->content);

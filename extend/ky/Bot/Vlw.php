@@ -26,6 +26,7 @@ class Vlw extends Base
     const EVENT_LOGIN = 0; //登录
     const EVENT_QUIT = 1; //退出
 
+    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
     const API_GET_DETAIL_BY_WXID = 'GetDetailInfoByWxid'; // 获取某个好友详细
     const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
@@ -78,6 +79,22 @@ class Vlw extends Base
         return array_merge(empty($params['data']) ? $params : $params['data'], [
             'api' => $api,
             'token' => $this->token
+        ]);
+    }
+
+    /**
+     * req:
+    robot_wxid (string)  // 机器人ID
+    group_wxid (string)  // 群ID
+    member_wxid (string)  // 要踢出的群成员ID，多个成员用英文逗号“,”分开
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function removeGroupMember($params = []){
+        $params['member_wxid'] = $params['to_wxid'];
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_REMOVE_GROUP_MEMBER)
         ]);
     }
 

@@ -11,6 +11,7 @@ namespace app\bot\handler\vlw;
 
 use app\admin\model\BotMember;
 use app\bot\controller\Api;
+use app\constants\Rule;
 use ky\Bot\Vlw;
 use ky\Logger;
 
@@ -38,7 +39,8 @@ class EventGroupChat extends Api
     public function basic(){
         switch ($this->content['type']){
             case Vlw::MSG_TEXT:
-                $this->keyword();
+                if($this->keyword()) return;
+                if($this->rmGroupMember()) return;
                 break;
         }
     }
@@ -66,34 +68,61 @@ class EventGroupChat extends Api
 
         if(!empty($keyword['status']) && (empty($keyword['wxids']) || strpos($keyword['wxids'], $this->groupWxid) !== false )){
             model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid, ['nickname' => $this->content['from_name']]);
+            return true;
         }
+        return false;
     }
 
     /**
      * 移出群
+     *
+     * 1.根据昵称找到wxid
+     * 2.过滤白名单
+     * 3.判断是否达到群规设置的次数
+     *
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function rmGroupMember(){
-        if($this->groupWxid == 'R:10951134140940878'){
-            if(($pos1 = strpos($this->content['msg'], "@") !== false)
-                && ($pos2 = strpos($this->content['msg'], "[")) !== false
-                && strpos($this->content['msg'], "[弱]") !== false
-            ){
+        $flag = ($pos1 = strpos($this->content['msg'], "@") !== false)
+            && ($pos2 = strpos($this->content['msg'], "[")) !== false
+            && strpos($this->content['msg'], "[弱]") !== false;
+
+        if($flag){
+            $rule = model('groupRule')->getOneByMap([
+                'bot_id' => $this->bot['id'],
+                'rule' => Rule::RM,
+            ]);
+            if(!empty($rule['status']) && (empty($rule['wxids']) || strpos($rule['wxids'], $this->groupWxid) !== false )){
                 $nickname = trim(substr($this->content['msg'], $pos1, $pos2-1));
                 if(!empty($nickname) && $gm = $this->getGroupMemberByNickname($nickname)){
-                    Logger::error($gm);
-                    /*
-                     * todo
-                     * 1.根据昵称找到wxid
-                     * 2.过滤白名单
-                     * 3.判断是否达到群规设置的次数
-                     * */
-                    if(3){
+                    //判断是否在白名单
+                    $whiteid = model('whiteid')->getOneByMap(['bot_id' => $this->bot['id'], 'group_wxid' => $this->groupWxid]);
+                    if($whiteid && strpos($whiteid['wxids'], $gm['wxid']) !== false){
+                        Logger::error($this->content['from_name']."在白名单上");
+                        return true;
+                    }
+
+                    $redis = get_redis();
+                    $rKey = Rule::RM . $this->groupWxid. $gm['wxid'];
+                    $eKey = Rule::RM . $this->groupWxid. $gm['wxid'] . $this->fromWxid;
+                    $ttl = 600;
+                    if($redis->get($eKey)){ //同一个人不能重复
+                        return true;
+                    }else{
+                        $redis->setex($eKey, $ttl, 1);
+                    }
+                    $num = $redis->get($rKey);
+                    if(!$num){
+                        $num = 0;
+                        $redis->setex($rKey, $ttl, 0);
+                    }
+
+                    if($num+1 >= $rule['value']){
                         $this->botClient->sendTextToFriends(
                             [
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $this->groupWxid,
-                                'msg' => "@".$nickname."你已经被[弱]3次，现将你移出群。"
+                                'msg' => "@".$nickname." 你已经被[弱]{$rule['value']}次，现将你移出群。"
                             ]
                         );
                         //踢出
@@ -107,18 +136,19 @@ class EventGroupChat extends Api
                             Logger::error($this->botClient->getError());
                         }
                     }else{
-                        $this->botClient->sendTextToFriends(
+                        $redis->incr($rKey);
+                        /*$this->botClient->sendTextToFriends(
                             [
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $this->groupWxid,
-                                'msg' => "@".$nickname."你已经被[弱]2次，当达到3次的时候会被移出群。若被误伤，请私聊管理员！！！"
+                                'msg' => "@".$nickname." 你已经被[弱]".($num+1)."次"
                             ]
-                        );
+                        );*/
                     }
                 }
+                return true;
             }
-            //Logger::error(json_encode($this->content, JSON_UNESCAPED_UNICODE));
         }
+        return false;
     }
-
 }

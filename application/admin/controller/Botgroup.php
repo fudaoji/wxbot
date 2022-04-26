@@ -72,9 +72,9 @@ class Botgroup extends Botbase
             ->addTableColumn(['title' => '群名称', 'field' => 'nickname'])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name'])
             ->addTableColumn(['title' => '关联推广位', 'field' => 'title'])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
             ->addRightButton('edit', ['title' => '群成员', 'href' => url('groupmember/index', ['group_id' => '__data_id__'])])
-            ->addRightButton('edit', ['title' => '关联推广位', 'href' => url('bindPos'), 'class' => 'layui-btn layui-btn-xs']);
+            ->addRightButton('edit', ['title' => '设置白名单', 'href' => url('whiteid/index', ['group_id' => '__data_id__'])]);
 
         return $builder->show();
     }

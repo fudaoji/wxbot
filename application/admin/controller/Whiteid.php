@@ -62,6 +62,7 @@ class Whiteid extends Botbase
         $builder->setMetaTitle('设置白名单')
             ->setTip("白名单成员即使触发了踢除机制也不会被移除")
             ->setPostUrl(url('savePost'))
+            ->addFormItem('bot_id', 'hidden', 'bot_id', 'bot_id')
             ->addFormItem('group_wxid', 'hidden', 'group_wxid', 'group_wxid')
             ->addFormItem('wxids', 'chosen_multi', '选择群友', '选择群友', $members, 'required')
             ->setFormData($data);

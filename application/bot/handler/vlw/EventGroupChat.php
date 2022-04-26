@@ -137,13 +137,13 @@ class EventGroupChat extends Api
                         }
                     }else{
                         $redis->incr($rKey);
-                        $this->botClient->sendTextToFriends(
+                        /*$this->botClient->sendTextToFriends(
                             [
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $this->groupWxid,
                                 'msg' => "@".$nickname." 你已经被[弱]".($num+1)."次"
                             ]
-                        );
+                        );*/
                     }
                 }
                 return true;

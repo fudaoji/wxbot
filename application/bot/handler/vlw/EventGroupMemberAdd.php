@@ -55,13 +55,13 @@ class EventGroupMemberAdd extends Api
     {
         $guest = $this->content['guest'];
         $nickname = isset($guest['username']) ? $guest['username'] : $guest['nickname'];
-        /*$nickname && $this->groupMemberM->addMember([
+        $nickname && $this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
             'wxid' => $guest['wxid'],
             'group_id' => $this->group['id'],
             'nickname' => $nickname,
             'group_nickname' => $nickname
-        ]);*/
+        ]);
         //回复消息
         $reply = model('reply')->getOneByMap([
             'bot_id' => $this->bot['id'],

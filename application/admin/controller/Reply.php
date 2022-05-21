@@ -83,6 +83,9 @@ class Reply extends Botbase
         $reply = $this->model->getOneByMap(['event' => $current_name, 'bot_id' => $this->bot['id']], true, true);
         if(request()->isPost()){
             $post_data = input('post.');
+            if(empty($post_data['media_id'])){
+                $this->error('请选择素材');
+            }
             if(empty($reply)){
                 $res = $this->model->addOne($post_data);
             }else{

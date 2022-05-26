@@ -51,6 +51,7 @@ class EventGroupChat extends Api
      */
     public function addon(){
         controller('bot/tpzs')->groupChatHandle(); //推品助手，后期这部分应是动态获取
+        controller('bot/hanzi')->groupChatHandle(); //汉字书写助手
     }
 
     /**

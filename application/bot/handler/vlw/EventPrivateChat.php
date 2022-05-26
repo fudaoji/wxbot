@@ -52,6 +52,7 @@ class EventPrivateChat extends Api
      */
     public function addon(){
         controller('bot/tpzs')->privateChatHandle(); //推品助手，后期这部分应是动态获取
+        controller('bot/hanzi')->privateChatHandle(); //汉字助手
     }
 
     /**

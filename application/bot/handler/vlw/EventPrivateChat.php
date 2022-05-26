@@ -67,9 +67,18 @@ class EventPrivateChat extends Api
             ]);
 
             //回复消息
-            $reply = model('reply')->getOneByMap(['bot_id' => $this->bot['id'], 'event' => Reply::BEADDED]);
-            if(!empty($reply['status']) && (empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false) ){
-                model('reply')->botReply($this->bot, $this->botClient, $reply, $this->fromWxid);
+            $replys = model('reply')->getAll([
+                'order' => ['sort' => 'desc'],
+                'where' => [
+                    'bot_id' => $this->bot['id'],
+                    'event' => Reply::BEADDED,
+                    'status' => 1
+                ]
+            ]);
+            foreach ($replys as $k => $reply){
+                if(empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false){
+                    model('reply')->botReply($this->bot, $this->botClient, $reply, $this->fromWxid);
+                }
             }
         }
     }
@@ -82,13 +91,22 @@ class EventPrivateChat extends Api
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){
-        $keyword = model('keyword')->getOneByMap([
-            'bot_id' => $this->bot['id'],
-            'keyword' => $this->content['msg'],
+        $keywords = model('keyword')->getAll([
+            'order' => ['sort' => 'desc'],
+            'where' => [
+                'bot_id' => $this->bot['id'],
+                'keyword' => $this->content['msg'],
+                'status' => 1
+            ]
         ]);
 
-        if(!empty($keyword['status']) && (empty($keyword['wxids']) || strpos($keyword['wxids'], $this->fromWxid) !== false )){
-            model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);
+        $flag = false;
+        foreach ($keywords as $keyword){
+            if(empty($keyword['wxids']) || strpos($keyword['wxids'], $this->fromWxid) !== false ){
+                model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);
+                $flag = true;
+            }
         }
+        return $flag;
     }
 }

@@ -155,6 +155,7 @@ class Keyword extends Botbase
             ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'required maxlength=30')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types(), 'id' => $data['media_id'], 'type' => $data['media_type']], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
+            ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
             ->setFormData($data);
 
@@ -173,7 +174,15 @@ class Keyword extends Botbase
         }
         if($res){
             //refresh
-            $this->model->getOneByMap(['bot_id' => $this->bot['id'], 'keyword' => $res['keyword']], true, true);
+            $this->model->getAll([
+                'order' => ['sort' => 'desc'],
+                'where' => [
+                    'bot_id' => $this->bot['id'],
+                    'keyword' => $res['keyword'],
+                    'status' => 1
+                ],
+                'refresh' => true
+            ]);
             $this->success('数据保存成功', $jump_to);
         }else{
             $this->error('数据保存出错');

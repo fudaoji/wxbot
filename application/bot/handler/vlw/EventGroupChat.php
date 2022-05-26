@@ -61,16 +61,24 @@ class EventGroupChat extends Api
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){
-        $keyword = model('keyword')->getOneByMap([
-            'bot_id' => $this->bot['id'],
-            'keyword' => $this->content['msg'],
+        $keywords = model('keyword')->getAll([
+            'order' => ['sort' => 'desc'],
+            'where' => [
+                'bot_id' => $this->bot['id'],
+                'keyword' => $this->content['msg'],
+                'status' => 1
+            ]
         ]);
 
-        if(!empty($keyword['status']) && (empty($keyword['wxids']) || strpos($keyword['wxids'], $this->groupWxid) !== false )){
-            model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid, ['nickname' => $this->content['from_name']]);
-            return true;
+        $flag = false;
+        foreach ($keywords as $keyword){
+            if(empty($keyword['wxids']) || strpos($keyword['wxids'], $this->groupWxid) !== false){
+                model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid, ['nickname' => $this->content['from_name']]);
+                $flag = true;
+            }
         }
-        return false;
+
+        return $flag;
     }
 
     /**

@@ -1,0 +1,144 @@
+{extend name="layout:base" /}
+
+{block name="meta_title"}{$meta_title}{/block}
+
+{block name="content"}
+<div>
+    <p class="van-doc-demo-block__title">点击下方文本框可修改内容</p>
+    <van-cell-group>
+        <van-field
+                v-model="text"
+                placeholder="请输入汉字内容"
+                :center="true"
+                :clearable="true"
+                @keyUp="onClickSubmit"
+        ></van-field>
+    </van-cell-group>
+    <br>
+    <!--<van-button type="info"
+                @click="onClickSubmit"
+                size="small"
+    >查看</van-button>-->
+</div>
+
+<div class="result">
+    <van-row>
+        <van-col span="11">{{spell}}</van-col>
+        <van-col span="2">｜</van-col>
+        <van-col span="11">共 {{stroke}} 笔</van-col>
+    </van-row>
+    <van-row>
+        <van-col span="11">繁体: {{trad}}</van-col>
+        <van-col span="2">｜</van-col>
+        <van-col span="11">火星文: {{spark}}</van-col>
+    </van-row>
+    <div>
+        <div id='draw'>加载中...</div>
+        <van-button icon="replay" type="info" size="small"
+            @click="onClickReDraw"
+        >重看</van-button>
+    </div>
+    <van-row>
+        <van-col span="24">
+            <p>分解:</p>
+            <!--<p v-for="item in order">
+                {{item.join(',')}}
+            </p>-->
+            <div id="drawStroke"></div>
+        </van-col>
+    </van-row>
+</div>
+{/block}
+
+{block name="css"}
+<style>
+    body{padding: 10px;padding-top: 20px;text-align: center}
+    .van-field__control{text-align: center; font-size: 20px;}
+    .van-row{height: 30px;}
+    .result{margin-top: 30px;}
+    #draw{margin-top: 20px;}
+    .van-doc-demo-block__title {
+        text-align: left;
+        margin: 0;
+        padding: 32px 16px 16px;
+        color: rgba(69, 90, 100, 0.6);
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 16px;
+    }
+</style>
+{/block}
+
+
+{block name="js"}
+<script src="https://xky.static.kuryun.com/libs/cnchar/cnchar.all.min.js"></script>
+<script>
+    CncharDraw.setResourceBase('https://unpkg.com/cnchar-data/draw/');
+    //cnchar.setResourceBase('https://xky.static.kuryun.com/libs/');
+    //CncharDraw.setResourceBase('https://xky.static.kuryun.com/libs/draw/draw/');
+    //CncharExplain.setResourceBase('https://xky.static.kuryun.com/libs/explanation/');
+</script>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            text: "{$text}",
+            spell: "",
+            stroke:"",
+            trad: "",
+            spark: "",
+            order:""
+        },
+        methods: {
+            handleDrawAni(){
+                cnchar.draw(this.text, {
+                    el: "#draw",
+                    type: cnchar.draw.TYPE.ANIMATION,
+                    style:{
+                        strokeColor : "#f00"
+                    }
+                });
+            },
+            onClickReDraw(){
+                this.handleDrawAni();
+            },
+            onClickSubmit(){
+                this.spell = cnchar.spell(this.text, "tone");
+                this.stroke = cnchar.stroke(this.text);
+                this.trad = cnchar.convert.simpleToTrad(this.text);
+                this.spark = cnchar.convert.simpleToTrad(this.text);
+                //this.order = cnchar.stroke(this.text, 'order', 'shape');
+
+                this.handleDrawAni();
+
+                setTimeout(() => {
+                    cnchar.draw(this.text, {
+                        el: "#drawStroke",
+                        type: cnchar.draw.TYPE.STROKE,
+                        style:{
+                            strokeColor : "#f00"
+                        }
+                    });
+                }, 2000);
+            }
+        },
+
+        mounted(){
+            if(this.text){
+                this.onClickSubmit();
+            }
+        }
+    });
+
+    //alert(cnchar.spell('汉字'));
+    //alert(cnchar.stroke("傅道集")); //得到笔画数量
+    /*cnchar.draw(text, {
+        el: "#drawNormal",
+        type: "animation"
+    }); // options 为可选参数， 在5.2.2 种会详细介绍
+
+    cnchar.voice(text);*/
+    //console.log(cnchar.explain('你好'));;
+</script>
+{/block}

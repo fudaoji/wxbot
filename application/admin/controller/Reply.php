@@ -10,6 +10,7 @@
 
 namespace app\admin\controller;
 use app\common\model\Reply as ReplyM;
+use app\constants\Media;
 use app\constants\Reply as ReplyConst;
 
 class Reply extends Botbase
@@ -79,6 +80,155 @@ class Reply extends Botbase
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function index(){
+        $current_name = input('event', ReplyConst::BEADDED);
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $where = ['bot_id' => $this->bot['id'], 'event' => $current_name];
+            $total = $this->model->total($where, true);
+            if ($total) {
+                $list = $this->model->getList(
+                    [$post_data['page'], $post_data['limit']], $where,
+                    ['sort' => 'desc'], true, true
+                );
+                foreach ($list as $k => $v){
+                    $v = array_merge(model('media_'.$v['media_type'])->getOne(['id' => $v['media_id'], 'admin_id' => $this->adminInfo['id']]), $v);
+                    $list[$k] = $v;
+                }
+            } else {
+                $list = [];
+            }
+            $this->success('success', '', ['total' => $total, 'list' => $list]);
+        }
+
+        $builder = new ListBuilder();
+        $builder->setTabNav($this->tabList, $current_name)
+            ->setDataUrl(url('index', ['event' => $current_name]))
+            ->addTopButton('addnew', ['href' => url('add', ['event' => $current_name])])
+            ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'type' => 'enum','options'=>Media::types(),'minWidth' => 80])
+            ->addTableColumn(['title' => '名称', 'field' => 'title', 'minWidth' => 80]);
+        switch ($current_name){
+            case Media::IMAGE:
+                $builder->addTableColumn(['title' => '图片', 'field' => 'url', 'minWidth' => 100]);
+                break;
+            case Media::FILE:
+                $builder->addTableColumn(['title' => '文件', 'field' => 'url', 'minWidth' => 200]);
+                break;
+            case Media::VIDEO:
+                $builder->addTableColumn(['title' => '视频', 'field' => 'url', 'minWidth' => 200]);
+                break;
+            default:
+                $builder->addTableColumn(['title' => '内容', 'field' => 'content', 'minWidth' => 200]);
+                break;
+        }
+        $builder->addTableColumn(['title' => '优先级', 'field' => 'sort', 'minWidth' => 80])
+            ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 80,'type' => 'enum','options' => [0 => '禁用', 1=> '启用']])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
+            ->addRightButton('edit')
+            ->addRightButton('delete', ['title'=>'移除']);
+
+        return $builder->show();
+    }
+
+    public function savePost($jump_to = '', $data = [])
+    {
+        $post_data = input('post.');
+        if(empty($post_data['media_id'])){
+            $this->error('请选择素材');
+        }
+
+        if(empty($post_data[$this->pk])){
+            $res = $this->model->addOne($post_data);
+        }else {
+            $res = $this->model->updateOne($post_data);
+        }
+
+        if($res){
+            $this->model->getAll([
+                'order' => ['sort' => 'desc'],
+                'where' => [
+                    'bot_id' => $this->bot['id'],
+                    'event' => $res['event'],
+                    'status' => 1
+                ],
+                'refresh' => true
+            ]);
+            $this->success('数据保存成功', $jump_to);
+        }else{
+            $this->error('数据保存出错');
+        }
+    }
+
+    public function edit(){
+        $id = input('id', null);
+        $reply = $this->model->getOneByMap(['id' => $id, 'bot_id' => $this->bot['id']], true, true);
+
+        if (!$reply) {
+            $this->error('参数错误');
+        }
+
+        $material = model('media_' . $reply['media_type'])->getOneByMap([
+            'admin_id' => $reply['admin_id'],
+            'id' => $reply['media_id']
+        ], true, true);
+        if(!empty($reply['wxids'])){
+            $reply['wxids'] = explode(',', $reply['wxids']);
+        }
+
+        $builder = new FormBuilder();
+
+        $builder->setPostUrl(url('savePost'))
+            ->addFormItem('id', 'hidden', 'id', 'id')
+            ->addFormItem('media', 'choose_media', '回复内容', '回复内容', ['types' => \app\constants\Media::types(), 'id' => $reply['media_id'], 'type' => $reply['media_type']], 'required')
+            ->setFormData($reply);
+        switch ($reply['event']){
+            case ReplyConst::FRIEND_IN:
+                $groups = $this->getGroups();
+                $builder->addFormItem('wxids', 'chosen_multi', '指定群', '指定群', $groups, 'required');
+                break;
+        }
+        return $builder->addFormItem('sort', 'number', '排序', '排序', [], 'required min=0')
+            ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')
+            ->show(['material' => $material]);
+    }
+
+    /**
+     * 新增
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function add(){
+        $current_name = input('event', ReplyConst::BEADDED);
+        $builder = new FormBuilder();
+        $material = [];
+
+        $data = [
+            'admin_id' => $this->adminInfo['id'],
+            'bot_id' => $this->bot['id'],
+            'event' => $current_name,
+            'status' => 1
+        ];
+        $builder->setPostUrl(url('savePost'))
+            ->setTip("添加【".ReplyConst::events($current_name)."】回复")
+            ->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
+            ->addFormItem('bot_id', 'hidden', 'botid', 'botid')
+            ->addFormItem('event', 'hidden', 'event', 'event')
+            ->addFormItem('media', 'choose_media', '回复内容', '回复内容', ['types' => \app\constants\Media::types()], 'required');
+        switch ($current_name){
+            case ReplyConst::FRIEND_IN:
+                $groups = $this->getGroups();
+                $builder->addFormItem('wxids', 'chosen_multi', '指定群', '指定群', $groups, 'required');
+                break;
+        }
+        return $builder->addFormItem('sort', 'number', '排序', '排序', [], 'required min=0')
+            ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')
+            ->setFormData($data)
+            ->show(['material' => $material]);
+    }
+
+    public function replyBak(){
         $current_name = input('event', ReplyConst::BEADDED);
         $reply = $this->model->getOneByMap(['event' => $current_name, 'bot_id' => $this->bot['id']], true, true);
         if(request()->isPost()){

@@ -63,12 +63,18 @@ class EventGroupMemberAdd extends Api
             'group_nickname' => $nickname
         ]);
         //回复消息
-        $reply = model('reply')->getOneByMap([
-            'bot_id' => $this->bot['id'],
-            'event' => Reply::FRIEND_IN
+        $replys = model('reply')->getAll([
+            'order' => ['sort' => 'desc'],
+            'where' => [
+                'bot_id' => $this->bot['id'],
+                'event' => Reply::FRIEND_IN,
+                'status' => 1
+            ]
         ]);
-        if(!empty($reply['status']) && (empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false )){
-            model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid, ['nickname' => $nickname]);
+        foreach ($replys as $k => $reply){
+            if(empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false){
+                model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid, ['nickname' => $nickname]);
+            }
         }
     }
 

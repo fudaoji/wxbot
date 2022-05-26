@@ -71,7 +71,7 @@ class Hanzi extends Addon
     private function keyword(){
         $msg = trim($this->content['msg']);
         $arr = explode("的笔顺", $msg);
-        if($this->fromWxid != $this->botWxid && strpos($msg, "\r\r") === false && empty($arr[1])){
+        if(strpos($msg, "的笔顺") !== false && $this->fromWxid != $this->botWxid && strpos($msg, "\r\r") === false && empty($arr[1])){
             $text = trim($arr[0]);
             $reply = '点击链接查看【'.$text . '】的笔画笔顺：' . request()->domain() . url('wap/hanzi/index', ['text' => $text]);
             $this->botClient->sendTextToFriends(['robot_wxid' => $this->content['robot_wxid'], 'to_wxid' => $this->toWxid, 'msg' => $reply]);

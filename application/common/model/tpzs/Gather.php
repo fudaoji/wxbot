@@ -34,7 +34,7 @@ class Gather extends Tpzs
                     ['tpzsGather gather', 'gather.group_id=m.id']
                 ],
                 'where' => ['gather.status' => 1, 'm.wxid' => $group_wxid, 'gather.officer' => ['like', "%".$from_wxid."%"], 'm.uin' => $bot_wxid],
-                'field' => ['gather.admin_id', 'm.wxid'],
+                'field' => ['gather.*', 'm.wxid'],
                 'refresh' => $refresh
             ]);
             cache($cache_key, $data, 7*86400);

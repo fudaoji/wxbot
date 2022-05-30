@@ -53,32 +53,33 @@ class Tpzs extends Addon
             'bot_wxid' => $this->botWxid
         ])){
             //2.取出机器人负责的群并转发
-            $team = model('common/tpzs/Team')->getOneByMap([
+            /*$team = model('common/tpzs/Team')->getOneByMap([
                 'admin_id' => $group['admin_id'],
                 'bot_id' => $this->bot['id']
-            ], ['groups']);
+            ], ['groups']);*/
 
-            if($team){
-                $groups = explode(',', $team['groups']);
-                switch($content['type']){
-                    case Vlw::MSG_TEXT:
-                        if(strpos($content['msg'], 'jd.com') !== false){//jd
-                            /**
-                             * @var $redis \Redis
-                             */
-                            $redis = controller('common/base', 'event')->getRedis();
-                            $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
-                            foreach ($groups as $gid){
-                                if($dest_group = $this->memberM->getOneJoin([
-                                    'alias' => 'm',
-                                    'join' => [
-                                        ['tpzsGrouppos gp', 'gp.group_id=m.id'],
-                                        ['tpzsPosition tp', 'gp.position_id=tp.id'],
-                                        ['tpzsUnion tu', 'tu.id=tp.union_id']
-                                    ],
-                                    'where' => ['m.wxid' => $gid],
-                                    'field' => ['tu.unionid', 'tp.position_id']
-                                ])) {
+            $groups = explode(',', $group['wxids']);
+            switch($content['type']){
+                case Vlw::MSG_TEXT:
+                    if(strpos($content['msg'], 'jd.com') !== false){//jd
+                        /**
+                         * @var $redis \Redis
+                         */
+                        $redis = controller('common/base', 'event')->getRedis();
+                        $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
+                        $reply_content = $content['msg'];
+                        foreach ($groups as $gid){
+                            if($dest_group = $this->memberM->getOneJoin([
+                                'alias' => 'm',
+                                'join' => [
+                                    ['tpzsGrouppos gp', 'gp.group_id=m.id'],
+                                    ['tpzsPosition tp', 'gp.position_id=tp.id'],
+                                    ['tpzsUnion tu', 'tu.id=tp.union_id']
+                                ],
+                                'where' => ['m.wxid' => $gid],
+                                'field' => ['tu.unionid', 'tp.position_id']
+                            ])) {
+                                if($group['universal']){
                                     $rKey = $this->content['msg_id'].$dest_group['position_id'];
                                     if(! $reply_content = $redis->get($rKey)){
                                         $count = 0;
@@ -96,80 +97,79 @@ class Tpzs extends Addon
                                             $redis->setex($rKey, 300, $reply_content);
                                         }
                                     }
-
-                                    $reply_content && $this->botClient->sendTextToFriend([
-                                        'robot_wxid' => $content['robot_wxid'],
-                                        'to_wxid' => $gid,
-                                        'msg' => $reply_content
-                                    ]);
                                 }
+                                $this->botClient->sendTextToFriend([
+                                    'robot_wxid' => $content['robot_wxid'],
+                                    'to_wxid' => $gid,
+                                    'msg' => $reply_content
+                                ]);
                             }
-                        }elseif (strpos($content['msg'], 'ckjr001.com') !== false){ //https://wx74161fcecb84d46c.wx.ckjr001.com/kpv2p/6m5oe8/?1649328453716=#/homePage/course/voice?courseId=2913528&ckFrom=5&extId=-1&refereeId=[推广人]
-                            /**
-                             * @var $redis \Redis
-                             */
-                            $redis = controller('common/base', 'event')->getRedis();
-                            foreach ($groups as $gid){
-                                if($dest_group = $this->memberM->getOneJoin([
-                                    'alias' => 'm',
-                                    'join' => [
-                                        ['tpzsGrouppos gp', 'gp.group_id=m.id'],
-                                        ['tpzsChannel channel', 'channel.id=gp.channel_id']
-                                    ],
-                                    'where' => ['m.wxid' => $gid, 'm.uin' => $this->bot['uin']],
-                                    'field' => ['channel.ckid']
-                                ])) {
-                                    $rKey = $this->content['msg_id'].$dest_group['ckid'];
-                                    if(! $reply_content = $redis->get($rKey)){
-                                        $reply_content = str_replace('[推广人]', $dest_group['ckid'], $this->content['msg']);
-                                        $redis->setex($rKey, 300, $reply_content);
-                                    }
-                                    $this->botClient->sendTextToFriend([
-                                        'robot_wxid' => $content['robot_wxid'],
-                                        'to_wxid' => $gid,
-                                        'msg' => $reply_content
-                                    ]);
+                        }
+                    }elseif (strpos($content['msg'], 'ckjr001.com') !== false){ //https://wx74161fcecb84d46c.wx.ckjr001.com/kpv2p/6m5oe8/?1649328453716=#/homePage/course/voice?courseId=2913528&ckFrom=5&extId=-1&refereeId=[推广人]
+                        /**
+                         * @var $redis \Redis
+                         */
+                        $redis = controller('common/base', 'event')->getRedis();
+                        foreach ($groups as $gid){
+                            if($dest_group = $this->memberM->getOneJoin([
+                                'alias' => 'm',
+                                'join' => [
+                                    ['tpzsGrouppos gp', 'gp.group_id=m.id'],
+                                    ['tpzsChannel channel', 'channel.id=gp.channel_id']
+                                ],
+                                'where' => ['m.wxid' => $gid, 'm.uin' => $this->bot['uin']],
+                                'field' => ['channel.ckid']
+                            ])) {
+                                $rKey = $this->content['msg_id'].$dest_group['ckid'];
+                                if(! $reply_content = $redis->get($rKey)){
+                                    $reply_content = str_replace('[推广人]', $dest_group['ckid'], $this->content['msg']);
+                                    $redis->setex($rKey, 300, $reply_content);
                                 }
+                                $this->botClient->sendTextToFriend([
+                                    'robot_wxid' => $content['robot_wxid'],
+                                    'to_wxid' => $gid,
+                                    'msg' => $reply_content
+                                ]);
                             }
-                        }else{ //basic
-                            $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
                         }
-                        break;
-                    case Vlw::MSG_LINK:
-                        if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
-                            $msg = json_decode($this->content['msg'], true)['Link'][0];
-                            //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']
-                            $url = $msg['url'];
-                            $res = $this->botClient->sendShareLinkToFriends([
-                                'robot_wxid' => $content['robot_wxid'],
-                                'to_wxid' => $groups,
-                                'url' => $url,
-                                'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
-                                'title' => $msg['title'],
-                                'desc' => $msg['desc']
-                            ]);
-                        }else{ //个微
-                            $this->botClient->forwardMsgToFriends([
-                                'robot_wxid' => $this->botWxid,
-                                'to_wxid' => $groups,
-                                'msgid' => $this->content['msg_id']
-                            ]);
-                        }
-                        break;
-                    default:
-                        if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
-                            $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
-                        }else{ //个微
-                            $this->botClient->forwardMsgToFriends([
-                                'robot_wxid' => $this->botWxid,
-                                'to_wxid' => $groups,
-                                'msgid' => $this->content['msg_id']
-                            ]);
-                        }
-                        break;
-                }
-                //Logger::error($this->content);
+                    }else{ //basic
+                        $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                    }
+                    break;
+                case Vlw::MSG_LINK:
+                    if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
+                        $msg = json_decode($this->content['msg'], true)['Link'][0];
+                        //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']
+                        $url = $msg['url'];
+                        $res = $this->botClient->sendShareLinkToFriends([
+                            'robot_wxid' => $content['robot_wxid'],
+                            'to_wxid' => $groups,
+                            'url' => $url,
+                            'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
+                            'title' => $msg['title'],
+                            'desc' => $msg['desc']
+                        ]);
+                    }else{ //个微
+                        $this->botClient->forwardMsgToFriends([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $groups,
+                            'msgid' => $this->content['msg_id']
+                        ]);
+                    }
+                    break;
+                default:
+                    if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
+                        $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                    }else{ //个微
+                        $this->botClient->forwardMsgToFriends([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $groups,
+                            'msgid' => $this->content['msg_id']
+                        ]);
+                    }
+                    break;
             }
+            //Logger::error($this->content);
         }
         //二、关键词
         $this->keyword();

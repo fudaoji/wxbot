@@ -71,7 +71,7 @@ class Tpzsgather extends Botbase
             if ($total) {
                 $list = $this->model->getListJoin(array_merge($params, [
                     'limit' => [$post_data['page'], $post_data['limit']],
-                    'field' => ['g.id','m.nickname as group_title', 'g.officer', 'm.id as group_id','g.status']
+                    'field' => ['g.id','m.nickname as group_title', 'g.officer', 'm.id as group_id','g.status','g.wxids']
                 ]));
                 foreach ($list as $k => $v){
                     $group_members = $this->groupMemberM->getField(['nickname'], ['wxid' => ['in', $v['officer']], 'group_id' => $v['group_id']]);
@@ -86,9 +86,10 @@ class Tpzsgather extends Botbase
         $builder = new ListBuilder();
         $builder->setTabNav($this->tabList, 'index')
             ->setTip("要新增采品群，请点击普通群选项卡")
-                ->addTableColumn(['title' => '序号', 'field' => 'id', 'type' => 'index','width' => 60])
+                ->addTableColumn(['title' => '序号', 'field' => 'id', 'type' => 'index','minWidth' => 70])
                 ->addTableColumn(['title' => '群聊', 'field' => 'group_title', 'minWidth' => 150])
                 ->addTableColumn(['title' => '指挥官', 'field' => 'officer_names', 'minWidth' => 200])
+                ->addTableColumn(['title' => '发送对象', 'field' => 'wxids', 'minWidth' => 200])
                 ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => [0 => '禁用', 1 => '启用'],'minWidth' => 60])
                 ->addTableColumn(['title' => '操作', 'minWidth' => 70, 'type' => 'toolbar'])
                 ->addRightButton('edit');
@@ -149,6 +150,8 @@ class Tpzsgather extends Botbase
             ->addFormItem('bot_id', 'hidden', 'bot_id', 'bot_id')
             ->addFormItem('group_id', 'hidden', '选择调度群', '选择调度群')
             ->addFormItem('officer', 'chosen_multi', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
+            ->addFormItem('wxids', 'chosen_multi', '转发到', '消息接收方', $this->getMembers(), 'required')
+            ->addFormItem('universal', 'radio', '需要转链', '需要转链', [1=>'是', 0 => '否'], 'required')
             ->setFormData($data);
         return $builder->show();
     }
@@ -160,6 +163,7 @@ class Tpzsgather extends Botbase
         if (!$data) {
             $this->error('参数错误');
         }
+        $data['wxids'] = explode(',', $data['wxids']);
         $data['officer'] = explode(',', $data['officer']);
         $members = $this->groupMemberM->getField('wxid,nickname',['group_id' => $data['group_id']], true);
         $builder = new FormBuilder();
@@ -167,6 +171,8 @@ class Tpzsgather extends Botbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('officer', 'chosen_multi', '指挥官', '该微信发表的消息才会被转发', $members, 'required')
+            ->addFormItem('wxids', 'chosen_multi', '转发到', '消息接收方', $this->getMembers(), 'required')
+            ->addFormItem('universal', 'radio', '需要转链', '需要转链', [1=>'是', 0 => '否'], 'required')
             ->addFormItem('status', 'radio', '状态', '状态', [1=>'启用', 0 => '禁用'], 'required')
             ->setFormData($data);
         return $builder->show();

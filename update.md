@@ -5,6 +5,7 @@ v1.2.0
 
 数据库表更新
 * 表tpzs_gather新增wxids、universal 字段
+* 表tpzs_grouppos新增bot_id 字段
 
 2022-05-26
 v1.2.0

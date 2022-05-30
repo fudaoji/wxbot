@@ -40,6 +40,11 @@ class Tpzs extends Addon
      * @throws \think\exception\DbException
      */
     public function groupChatHandle(){
+        $conf = model('common/tpzs/config')->getConf(['admin_id' => $this->bot['admin_id']]);
+        if((!empty($conf['time_on']) && $conf['time_on'] > date('H:i')) ||
+            (!empty($conf['time_off']) && $conf['time_off'] < date('H:i'))){
+            return true;
+        }
         $this->groupWxid = $this->content['from_group'];
 
         $content = Helper::$ajax['content'];

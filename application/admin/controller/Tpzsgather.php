@@ -109,6 +109,7 @@ class Tpzsgather extends Botbase
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = ['m.uin' => $this->bot['uin'], 'm.type' => Bot::GROUP, 'g.officer' => ['eq', null]];
+            !empty($post_data['search_key']) && $where['m.nickname'] = ['like', '%' . $post_data['search_key'] . '%'];
             $params = [
                 'alias' => 'm',
                 'join' => [
@@ -131,6 +132,9 @@ class Tpzsgather extends Botbase
 
         $builder = new ListBuilder();
         $builder->setTabNav($this->tabList, 'group')
+            ->setSearch([
+                ['type' => 'text', 'name' => 'search_key', 'title' => '关键词']
+            ])
             ->addTableColumn(['title' => '序号', 'field' => 'id', 'type' => 'index','width' => 60])
             ->addTableColumn(['title' => '群聊', 'field' => 'group_title', 'minWidth' => 150])
             ->addTableColumn(['title' => '操作', 'minWidth' => 70, 'type' => 'toolbar'])

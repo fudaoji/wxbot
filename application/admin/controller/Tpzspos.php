@@ -93,17 +93,21 @@ class Tpzspos extends Botbase
             $groups = explode(',', $post_data['groups']);
             foreach ($groups as $group_id){
                 if(! $this->groupPosM->total(['position_id' => $post_data['position_id'], 'group_id' => $group_id])){
-                    $this->groupPosM->addOne(['position_id' => $post_data['position_id'], 'group_id' => $group_id]);
+                    $this->groupPosM->addOne([
+                        'position_id' => $post_data['position_id'],
+                        'group_id' => $group_id,
+                        'bot_id' => $this->bot['id']
+                    ]);
                 }
             }
-            $this->groupPosM->delByMap(['position_id' => $post_data['position_id'], 'group_id' => ['notin', $groups]]);
+            $this->groupPosM->delByMap(['bot_id' => $this->bot['id'], 'position_id' => $post_data['position_id'], 'group_id' => ['notin', $groups]]);
             $this->success('操作成功');
         }
         $id = input('id');
         $data = $this->model->getOne($id);
         $data['positionid'] = $data['position_id'];
         $data['position_id'] = $id;
-        if($gp = $this->groupPosM->getField(['group_id'], ['position_id' => $id])){
+        if($gp = $this->groupPosM->getField(['group_id'], ['position_id' => $id, 'bot_id' => $this->bot['id']])){
             $data['groups'] = $gp;
         }else{
             $data['groups'] = [];

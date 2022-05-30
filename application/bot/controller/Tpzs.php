@@ -76,7 +76,7 @@ class Tpzs extends Addon
                                     ['tpzsPosition tp', 'gp.position_id=tp.id'],
                                     ['tpzsUnion tu', 'tu.id=tp.union_id']
                                 ],
-                                'where' => ['m.wxid' => $gid],
+                                'where' => ['m.wxid' => $gid, 'gp.bot_id' => $this->bot['id']],
                                 'field' => ['tu.unionid', 'tp.position_id']
                             ])) {
                                 if($group['universal']){

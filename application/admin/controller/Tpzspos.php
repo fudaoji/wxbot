@@ -92,7 +92,7 @@ class Tpzspos extends Botbase
             $post_data = input('post.');
             $groups = explode(',', $post_data['groups']);
             foreach ($groups as $group_id){
-                if(! $this->groupPosM->total(['position_id' => $post_data['position_id'], 'group_id' => $group_id])){
+                if(! $this->groupPosM->total(['bot_id' => $this->bot['id'], 'position_id' => $post_data['position_id'], 'group_id' => $group_id])){
                     $this->groupPosM->addOne([
                         'position_id' => $post_data['position_id'],
                         'group_id' => $group_id,

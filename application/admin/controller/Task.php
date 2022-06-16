@@ -83,13 +83,21 @@ class Task extends Botbase
                         $v['wxids'] = "--";
                     }
 
-                    if($material = model('media_' . $v['media_type'])->getOneByMap([
-                        'admin_id' => $v['admin_id'],
-                        'id' => $v['media_id']
-                    ], true, true)){
-                        $v['media_title'] = $v['media_type'] == 'text' ? $material['content'] : $material['title'];
+                    if($v['medias']){
+                        $v['medias'] = json_decode($v['medias'], true);
+                        $materials = [];
+                        foreach ($v['medias'] as $item){
+                            if($material = model('media_' . $item['type'])->getOneByMap([
+                                'admin_id' => $v['admin_id'],
+                                'id' => $item['id']
+                            ], true, true)){
+                                $materials[] = $item['type'] == 'text' ? $material['content'] : $material['title'];
+                            }
+                        }
+                        $v['content'] = implode('、', $materials);
+                    }else{
+                        $v['content'] = '';
                     }
-
                     $list[$k] = $v;
                 }
             }else{
@@ -108,8 +116,8 @@ class Task extends Botbase
             ->addTopButton('addnew', ['title' => '新增群发'])
             ->addTableColumn(['title' => '发送顺序', 'field' => 'id', 'type' => 'index', 'minWidth' => 60])
             ->addTableColumn(['title' => '任务名称', 'field' => 'title', 'minWidth' => 60])
-            ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
-            ->addTableColumn(['title' => '回复内容', 'field' => 'media_title', 'minWidth' => 100])
+            //->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
+            ->addTableColumn(['title' => '回复内容', 'field' => 'content', 'minWidth' => 100])
             ->addTableColumn(['title' => '发送对象', 'field' => 'wxids', 'minWidth' => 100])
             ->addTableColumn(['title' => '计划发送时间', 'field' => 'plan_time', 'minWidth' => 180, 'type' => 'datetime']);
         if($name == 'done'){
@@ -173,7 +181,7 @@ class Task extends Botbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('title', 'text', '任务名称', '选填，不超过30字', [], 'maxlength=30')
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间', [], '')
-            ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => Media::types()], 'required')
+            ->addFormItem('media', 'choose_media_multi', '选择素材', '选择素材', ['types' => Media::types()], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members);
 
         return $builder->show(['material' => $material]);
@@ -188,10 +196,18 @@ class Task extends Botbase
             $this->error('参数错误');
         }
         $data['wxids'] = empty($data['wxids']) ? [] : explode(',', $data['wxids']);
-        $material = model('media_' . $data['media_type'])->getOneByMap([
-            'admin_id' => $data['admin_id'],
-            'id' => $data['media_id']
-        ], true, true);
+        $materials = [];
+        if($data['medias']){
+            $data['medias'] = json_decode($data['medias'], true);
+            foreach ($data['medias'] as $item){
+                $m = model('media_' . $item['type'])->getOneByMap([
+                    'admin_id' => $data['admin_id'],
+                    'id' => $item['id']
+                ], true, true);
+                $m['type'] = $item['type'];
+                $materials[] = $m;
+            }
+        }
 
         $members = $this->getMembers();
         // 使用FormBuilder快速建立表单页面
@@ -201,12 +217,12 @@ class Task extends Botbase
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('title', 'text', '任务名称', '选填，不超过30字', [], 'maxlength=30')
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间', [], '')
-            ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => Media::types(), 'id' => $data['media_id'], 'type' => $data['media_type']], 'required')
+            ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
             ->setFormData($data);
 
-        return $builder->show(['material' => $material]);
+        return $builder->show();
     }
 
     public function savePost($jump_to = '', $data = [])
@@ -218,6 +234,17 @@ class Task extends Botbase
             $post_data['plan_time'] = time();
         }else{
             $post_data['plan_time'] = strtotime($post_data['plan_time']);
+        }
+        if(count($post_data['media_id_type']) > 0){
+            $medias = [];
+            foreach ($post_data['media_id_type'] as $id_type){
+                list($id, $type) = explode('_', $id_type);
+                $medias[] = ['id' => $id, 'type' => $type];
+            }
+            $post_data['medias'] = json_encode($medias, JSON_UNESCAPED_UNICODE);
+            unset($post_data['media_id_type']);
+        }else{
+            $this->error('请选择素材');
         }
         if(empty($post_data[$this->pk])){
             $res = $this->model->addOne($post_data);

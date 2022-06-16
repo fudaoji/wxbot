@@ -1,0 +1,165 @@
+<!--控制组件显示隐藏-->
+<div class="layui-form-item media-box" id="media-box-{$form.name}">
+    <style>
+        .media-box .layui-card{padding-top: 30px;}
+        .media-box .box{
+            font-size: 16px;line-height: 80px;text-align: center;width: 90%;border: #e7e7eb 1px solid;margin-bottom: 7px;
+            cursor: pointer;
+        }
+        .media-box .box i{color: #B2B2B2;}
+        .media-box .box:hover{background-color: #f4f6f9; color: var(--green);}
+        .media-box .box:hover i{color: var(--green);}
+        .media-content img{width: 180px;border: #e7e7eb 1px solid;}
+        .media-content .addon-logo{width: 30px;margin-right: 15px;}
+        .media-box video{width: 210px;height: 169px;}
+        .media-box .layui-icon-delete{color: red;}
+    </style>
+    <label class="layui-form-label {$form['extra_class']??''}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <?php foreach($form['options']['types'] as $k => $type):?>
+                    <div class="layui-col-xs6 layui-col-md3">
+                        <div class="box" data-type="{$k}" data-type-title="{$type}">
+                            <i class="fa fa-<?php
+                                $icons=['text'=>'pencil','image'=>'image','file'=>'file-o','video'=>'file-video-o','link'=>'address-card','addon' => 'cube'];
+                                echo $icons[$k];
+                            ?>
+                            "></i>&nbsp;<?= $type;?>
+                        </div>
+                    </div>
+                    <?php endforeach;?>
+
+                    <br><hr><br>
+                    <fieldset class="layui-elem-field">
+                        <legend>内容预览</legend>
+                        <div class="layui-field-box">
+                            <div class="media-content">
+                                {if !empty($form['options']['materials'])}
+                                {foreach $form['options']['materials'] as $material}
+                                <div class="layui-card" id="{$form.name}_{$material.id}_{$material.type}">
+                                    <input type="hidden" name="{$form.name}_id_type[]" value="{$material.id}_{$material.type}">
+                                    <div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_{$material.id}_{$material.type}"></i></div>
+                                    <div class="layui-card-body">
+                                        <!--选中结果-->
+                                        {switch $material.type}
+                                        {case text}<pre>{$material.content}</pre>{/case}
+                                        {case image}<img src="{$material.url}">{/case}
+                                        {case file}<i class="fa fa-file-o"></i> <a href='{$material.url}' target='_blank'>{$material.title}</a>{/case}
+                                        {case link}
+                                        <div class="layui-row">
+                                            <div class="layui-col-xs8">
+                                                <p class="link-title">{$material.title}</p>
+                                                <p class="link-desc" style="color: #a29c9c;">{$material.desc}</p>
+                                            </div>
+                                            <div class="layui-col-xs4">
+                                                <img src="{$material.image_url}" alt="" style="width: 50px;">
+                                            </div>
+                                        </div>
+                                        {/case}
+                                        {case video}
+                                        <video style="width: 210px;height: 169px;" controls>
+                                            <source src="{$material.url}"  type="video/mp4">
+                                            <source src="{$material.url}"  type="video/ogg">
+                                            您的浏览器不支持 HTML5 video 标签。
+                                        </video>
+                                        {/case}
+                                        {/switch}
+                                    </div>
+                                </div>
+                                {/foreach}
+                                {/if}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if(typeof setLinkValue === 'undefined'){
+            var setLinkValue = function(res, field){
+                type = 'link';
+                res.forEach((item) => {
+                    let content = '<div class="layui-row"><div class="layui-col-xs4">' +
+                        '                                    <p class="link-title">'+item.title+'</p>' +
+                        '                                    <p class="link-desc" style="color: #a29c9c;">'+item.desc+'</p>' +
+                        '                                </div><div class="layui-col-xs2">' +
+                        '                                    <img src="'+item.image_url+'" alt="" style="width: 50px;"></div>' +
+                        '                            </div>';
+                    $("#media-box-{$form.name} .media-content").append(('<div class="layui-card"><input type="hidden" name="{$form.name}_id_type[]" value="MEDIAID_MEDIATYPE"><div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_MEDIAID_MEDIATYPE"></i></div><div class="layui-card-body">'
+                        +'CONTENT</div></div>').replace(/MEDIAID/g, item.id).replace(/MEDIATYPE/g, type).replace(/CONTENT/g, content));
+                });
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setVideoValue === 'undefined'){
+            var setVideoValue = function(res, field){
+                type = 'video';
+                res.forEach((item) => {
+                    let content = "<video controls> <source src='"+item.url+"'  type='video/mp4'>您的浏览器不支持 HTML5 video 标签。 </video>";
+                    $("#media-box-{$form.name} .media-content").append(('<div class="layui-card"><input type="hidden" name="{$form.name}_id_type[]" value="MEDIAID_MEDIATYPE"><div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_MEDIAID_MEDIATYPE"></i></div><div class="layui-card-body">'
+                        +'CONTENT</div></div>').replace(/MEDIAID/g, item.id).replace(/MEDIATYPE/g, type).replace(/CONTENT/g, content));
+                });
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setFileValue === 'undefined'){
+            var setFileValue = function(res, field){
+                type = 'file';
+                res.forEach((item) => {
+                    let content = '<a href="'+item.url+'" target="_blank">'+item.title+'</a>';
+                    $("#media-box-{$form.name} .media-content").append(('<div class="layui-card"><input type="hidden" name="{$form.name}_id_type[]" value="MEDIAID_MEDIATYPE"><div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_MEDIAID_MEDIATYPE"></i></div><div class="layui-card-body">'
+                        +'CONTENT</div></div>').replace(/MEDIAID/g, item.id).replace(/MEDIATYPE/g, type).replace(/CONTENT/g, content));
+                });
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setPictureValue === 'undefined'){
+            var setPictureValue = function(res, field){
+                type = 'image';
+                res.forEach((item) => {
+                    $("#media-box-{$form.name} .media-content").append(('<div class="layui-card"><input type="hidden" name="{$form.name}_id_type[]" value="MEDIAID_MEDIATYPE"><div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_MEDIAID_MEDIATYPE"></i></div><div class="layui-card-body">'
+                        +'<img src="'+item.url+'" /></div></div>').replace(/MEDIAID/g, item.id).replace(/MEDIATYPE/g, type));
+                });
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        if(typeof setTextValue === 'undefined'){
+            var setTextValue = function(res, field){
+                type = 'text';
+                res.forEach((item) => {
+                    $("#media-box-{$form.name} .media-content").append(('<div class="layui-card"><input type="hidden" name="{$form.name}_id_type[]" value="MEDIAID_MEDIATYPE"><div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_MEDIAID_MEDIATYPE"></i></div><div class="layui-card-body"><pre>'+item.content+'</pre></div></div>').replace(/MEDIAID/g, item.id).replace(/MEDIATYPE/g, type));
+                });
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
+        //移除
+        $('#media-box-{$form.name}').delegate('.layui-icon-delete', 'click', function() {
+            $(this).closest('.layui-card').remove();
+        });
+
+        $("#media-box-{$form.name}").on('click', '.box', function () {
+            layer.open({
+                type: 2,
+                title: $(this).data('type-title'),
+                shadeClose: false,
+                shade: 0.8,
+                area: ['80%', '80%'],
+                content: ['/admin/media/handle?type=' + $(this).data('type')+'&field=$form["name"]&controller={$controller}'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            });
+        });
+    </script>
+</div>

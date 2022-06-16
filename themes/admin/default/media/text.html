@@ -121,16 +121,15 @@
 
         //点击确认
         clickSure = function () {
-            if($('.id:checked').length < 1){
+            var list = [];
+            $('.id:checked').each(function (i, item) {
+                list.push({id: $(item).val(), content: $(item).data('content')});
+            });
+            if(list.length < 1){
                 layer.alert("请选择文本");
                 return;
             }
-            var $item = $('.id:checked:first-child');
-            var res = {
-                id: $item.val(),
-                content: $item.data('content')
-            };
-            parent.setTextValue(res, "{$field}");
+            parent.setTextValue(list, "{$field}");
             parent.layer.close(parent_index);
         };
 

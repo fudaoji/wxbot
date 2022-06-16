@@ -37,8 +37,8 @@ class Acloud
         $domain = "dysmsapi.aliyuncs.com";   //产品域名
         $region = "cn-hangzhou";   //Region
         $endPointName = "cn-hangzhou";   // 服务结点
-        $this->accessKeyId = empty($accessKeyId) ? 'LTAIVUSQfgrjbNkQ' : $accessKeyId;
-        $this->accessKeySecret = empty($accessKeySecret) ? 'KJI8zDjUUY3niLctiAqOQLAFolcUvA' : $accessKeySecret;
+        $this->accessKeyId = $accessKeyId;
+        $this->accessKeySecret = $accessKeySecret;
 
         //初始化acsClient,暂不支持region化
         $profile = DefaultProfile::getProfile($region, $accessKeyId, $accessKeySecret);

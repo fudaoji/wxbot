@@ -16,9 +16,15 @@ class Qcloud
     private $appId;
     private $appKey;
     private $error;
+
+    /**
+     * Qcloud constructor.
+     * @param string $appid
+     * @param string $appkey
+     */
     function __construct($appid='', $appkey='') {
-        $this->appId = empty($appid) ? '1400039201' : $appid;
-        $this->appKey = empty($appkey) ? 'd4c3e25020211f9e4b5f84e3fb96655f' : $appkey;
+        $this->appId = $appid;
+        $this->appKey = $appkey;
     }
 
     /**

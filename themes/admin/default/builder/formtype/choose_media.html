@@ -123,9 +123,9 @@
 
         if(typeof setTextValue === 'undefined'){
             var setTextValue = function(res, field){
-                $("input[name={$form.name}_id]").val(res.id);
+                $("input[name={$form.name}_id]").val(res[0].id);
                 $("input[name={$form.name}_type]").val("text");
-                $("#media-box-{$form.name} .media-content").html("<pre>"+res.content+"</pre>");
+                $("#media-box-{$form.name} .media-content").html("<pre>"+res[0].content+"</pre>");
                 $("#media-box-{$form.name} hr").show();
             };
         }

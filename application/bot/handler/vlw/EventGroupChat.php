@@ -11,6 +11,8 @@ namespace app\bot\handler\vlw;
 
 use app\admin\model\BotMember;
 use app\bot\controller\Api;
+use app\constants\Addon;
+use app\constants\Bot;
 use app\constants\Rule;
 use ky\Bot\Vlw;
 use ky\Logger;
@@ -37,6 +39,10 @@ class EventGroupChat extends Api
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function basic(){
+        //消息转播
+        $this->forward();
+
+        //其他功能
         switch ($this->content['type']){
             case Vlw::MSG_TEXT:
                 if($this->keyword()) return;
@@ -46,13 +52,79 @@ class EventGroupChat extends Api
     }
 
     /**
+     * 消息转播
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function forward(){
+        if($group = model('common/Forward')->getGather([
+            'group_wxid' => $this->groupWxid,
+            'from_wxid' => $this->fromWxid,
+            'bot_wxid' => $this->botWxid
+        ])) {
+            //2.取出机器人负责的群并转发
+            $groups = explode(',', $group['wxids']);
+            switch ($this->content['type']) {
+                case Vlw::MSG_TEXT:
+                    $this->botClient->sendTextToFriends([
+                        'robot_wxid' => $this->content['robot_wxid'],
+                        'to_wxid' => $groups,
+                        'msg' => $this->content['msg']]);
+                    break;
+                case Vlw::MSG_LINK:
+                    if ($this->bot['protocol'] == Bot::PROTOCOL_WXWORK) {
+                        $msg = json_decode($this->content['msg'], true)['Link'][0];
+                        $url = $msg['url'];
+                        $this->botClient->sendShareLinkToFriends([
+                            'robot_wxid' => $this->content['robot_wxid'],
+                            'to_wxid' => $groups,
+                            'url' => $url,
+                            'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
+                            'title' => $msg['title'],
+                            'desc' => $msg['desc']
+                        ]);
+                    } else { //个微
+                        $this->botClient->forwardMsgToFriends([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $groups,
+                            'msgid' => $this->content['msg_id']
+                        ]);
+                    }
+                    break;
+                default:
+                    if ($this->bot['protocol'] == Bot::PROTOCOL_WXWORK) {
+                        $this->botClient->sendTextToFriends([
+                            'robot_wxid' => $this->content['robot_wxid'],
+                            'to_wxid' => $groups,
+                            'msg' => $this->content['msg']
+                        ]);
+                    } else { //个微
+                        $this->botClient->forwardMsgToFriends([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $groups,
+                            'msgid' => $this->content['msg_id']
+                        ]);
+                    }
+                    break;
+            }
+        }
+    }
+
+    /**
      * 插件处理
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function addon(){
-        controller('bot/tpzs')->groupChatHandle(); //推品助手，后期这部分应是动态获取
-        controller('bot/hanzi')->groupChatHandle(); //汉字书写助手
-        //controller('bot/music')->groupChatHandle(); //音乐助手
+        $addons = Addon::addons();
+        foreach ($addons as $k => $v){
+            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
+            if(class_exists($class_name)){
+                $class = new $class_name();
+                if(method_exists($class, 'groupChatHandle')){
+                    controller('bot/'.$k)->groupChatHandle();
+                }
+            }
+            //controller('bot/'.$k)->groupChatHandle();
+        }
     }
 
     /**
@@ -147,13 +219,6 @@ class EventGroupChat extends Api
                         }
                     }else{
                         $redis->incr($rKey);
-                        /*$this->botClient->sendTextToFriends(
-                            [
-                                'robot_wxid' => $this->botWxid,
-                                'to_wxid' => $this->groupWxid,
-                                'msg' => "@".$nickname." 你已经被[弱]".($num+1)."次"
-                            ]
-                        );*/
                     }
                 }
                 return true;

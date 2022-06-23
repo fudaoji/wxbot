@@ -1,0 +1,46 @@
+<!--文件导入excel、csv、txt-->
+<div class="layui-form-item {$form['extra_class']??''}" id="{$form['name']}-area">
+    <div class="layui-form-label">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </div>
+
+    <div class="layui-form-block">
+        <input type="file" class="layui-btn layui-btn-primary" id="excel-import-{$form.name}">&nbsp;
+        <a href="https://devhhb.images.huihuiba.net/1-62b3c3b837b55.xlsx">下载模板</a>
+    </div>
+
+    <script>
+        layui.use(['jquery', 'excel', 'layer'], function() {
+            var $ = layui.jquery;
+            var excel = layui.excel;
+
+            $(function(){
+                // 监听上传文件的事件
+                $("#excel-import-{$form.name}").change(function(e) {
+                    var files = e.target.files;
+                    try {
+                        // 方式一：先读取数据，后梳理数据
+                        excel.importExcel(files, {}, function(data) {
+                            data = excel.filterImportData(data, {:json_encode($form.options.fields)});
+                            var serverUrl = "{$form.options.url}";
+                            data = data[0]['Sheet1'].slice(1);
+                            var circle = Math.ceil(data.length / 500);
+                            var arr;
+                            for (var i = 0; i < circle; i++){
+                                arr = data.slice(i * 500, i * 500 + 500);
+                                //request server
+                                requestPost(serverUrl, {'list': arr}, null, true);
+                            }
+                            //console.log(dataList);
+                        });
+                    } catch (e) {
+                        layer.alert(e.message);
+                    }
+                });
+            });
+        });
+    </script>
+</div>

@@ -6,9 +6,10 @@
  * Description:
  * Author: fudaoji<fdj@kuryun.cn>
  */
-namespace app\common\model\hanzi;
 
-class Config extends Hanzi
+namespace app\common\model\yhq;
+
+class Config extends Yhq
 {
     protected $isCache = true;
     protected $table = 'config';

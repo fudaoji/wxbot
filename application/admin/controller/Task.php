@@ -11,7 +11,7 @@
 namespace app\admin\controller;
 use app\common\model\Task as TaskM;
 use app\constants\Media;
-use app\constants\Reply as ReplyConst;
+use app\constants\Task as TaskConst;
 
 class Task extends Botbase
 {
@@ -54,22 +54,32 @@ class Task extends Botbase
         $name = input('name', 'todo');
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['admin_id' => $this->adminInfo['id'],'bot_id' => $this->bot['id']];
-            !empty($post_data['search_key']) && $where['title'] = ['like', '%' . $post_data['search_key'] . '%'];
+            $view_table = $this->model->field('id')
+                ->where('admin_id', $this->adminInfo['id'])
+                ->where('bot_id' , $this->bot['id']);
+            !empty($post_data['search_key']) && $view_table = $view_table->where('title', 'like', '%' . $post_data['search_key'] . '%');
             if($name == 'todo'){
-                $where['complete_time'] = 0;
-                $order = ['plan_time' => 'asc'];
+                $view_table = $view_table->where('(complete_time=0 and circle='.TaskConst::CIRCLE_SINGLE . ') or circle='.TaskConst::CIRCLE_DAILY);
+                $order = ['t.plan_time' => 'asc'];
             }else{
-                $where['complete_time'] = ['gt', 0];
-                $order = ['complete_time' => 'desc'];
+                $view_table = $view_table->where('complete_time>0 and circle='.TaskConst::CIRCLE_SINGLE);
+                $order = ['t.complete_time' => 'desc'];
             }
-
-            $total = $this->model->total($where, true);
+            $view_table = $view_table->buildSql();
+            $params = [
+                'alias' => 't',
+                'join' => [
+                    [$view_table . ' t1', 't1.id=t.id']
+                ],
+                'refresh' => true
+            ];
+            $total = $this->model->totalJoin($params);
             if ($total) {
-                $list = $this->model->getList(
-                    [$post_data['page'], $post_data['limit']], $where,
-                    $order, true, true
-                );
+                $list = $this->model->getListJoin(array_merge($params, [
+                    'limit' => [$post_data['page'], $post_data['limit']],
+                    'order' => $order,
+                    'field' => 't.*'
+                ]));
                 foreach ($list as $k => $v){
                     $ids = explode(',', $v['wxids']);
                     if($member = model('botMember')->getOneByMap([
@@ -114,9 +124,9 @@ class Task extends Botbase
             ->setTabNav($this->tabList, $name)
             ->setDataUrl(url('index', ['name' => $name]))
             ->addTopButton('addnew', ['title' => '新增群发'])
-            ->addTableColumn(['title' => '发送顺序', 'field' => 'id', 'type' => 'index', 'minWidth' => 60])
+            ->addTableColumn(['title' => 'ID', 'field' => 'id', 'minWidth' => 60])
             ->addTableColumn(['title' => '任务名称', 'field' => 'title', 'minWidth' => 60])
-            //->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
+            ->addTableColumn(['title' => '发送类型', 'field' => 'circle', 'minWidth' => 100, 'type' => 'enum', 'options' => TaskConst::circles()])
             ->addTableColumn(['title' => '回复内容', 'field' => 'content', 'minWidth' => 100])
             ->addTableColumn(['title' => '发送对象', 'field' => 'wxids', 'minWidth' => 100])
             ->addTableColumn(['title' => '计划发送时间', 'field' => 'plan_time', 'minWidth' => 180, 'type' => 'datetime']);
@@ -180,9 +190,11 @@ class Task extends Botbase
         $builder->setMetaTitle('新增')
             ->setPostUrl(url('savePost'))
             ->addFormItem('title', 'text', '任务名称', '选填，不超过30字', [], 'maxlength=30')
+            ->addFormItem('circle', 'radio', '发送类型', '发送类型', TaskConst::circles())
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间', [], '')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '选择素材', ['types' => Media::types()], 'required')
-            ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members);
+            ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
+        ->setFormData(['plan_time' => date('Y-m-d H:i:s'), 'circle' => TaskConst::CIRCLE_SINGLE]);
 
         return $builder->show(['material' => $material]);
     }
@@ -216,6 +228,7 @@ class Task extends Botbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('title', 'text', '任务名称', '选填，不超过30字', [], 'maxlength=30')
+            ->addFormItem('circle', 'radio', '发送类型', '发送类型', TaskConst::circles())
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间', [], '')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
@@ -235,6 +248,7 @@ class Task extends Botbase
         }else{
             $post_data['plan_time'] = strtotime($post_data['plan_time']);
         }
+        $post_data['plan_hour'] = date('H:i', $post_data['plan_time']);
         if(count($post_data['media_id_type']) > 0){
             $medias = [];
             foreach ($post_data['media_id_type'] as $id_type){

@@ -9,8 +9,8 @@
 
 namespace app\bot\handler\vlw;
 
-
 use app\bot\controller\Api;
+use app\constants\Addon;
 use app\constants\Reply;
 use ky\Logger;
 
@@ -80,5 +80,15 @@ class EventGroupMemberAdd extends Api
 
     private function addon()
     {
+        $addons = Addon::addons();
+        foreach ($addons as $k => $v){
+            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
+            if(class_exists($class_name)){
+                $class = new $class_name();
+                if(method_exists($class, 'groupMemberAddHandle')){
+                    controller('bot/'.$k)->groupMemberAddHandle();
+                }
+            }
+        }
     }
 }

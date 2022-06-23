@@ -168,16 +168,17 @@ window.templets = {
 };
 
 //请求服务端
-window.requestPost = function(url, params, callback){
+window.requestPost = function(url, params, callback, sync = false){
     layui.use(['layer', 'jquery'], function () {
         var $ = layui.jquery
             , layer = layui.layer;
 
+        if(sync) $.ajaxSettings.async = false;
         var loadingIndex = layer.load(1);
         $.post(url, params, function(res){
             if(res.code === 1){
                 layer.msg(res.msg, {time: 1500}, function () {
-                    typeof callback !== 'undefined' && callback(res);
+                    callback && typeof callback !== 'undefined' && callback(res);
                 });
             }else{
                 layer.alert(res.msg);

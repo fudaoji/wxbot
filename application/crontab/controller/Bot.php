@@ -10,6 +10,8 @@
 
 namespace app\crontab\controller;
 
+use app\constants\Task;
+
 class Bot extends Base
 {
 
@@ -49,16 +51,21 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function sendBatch(){
-        //$exist =
+        $view_table = model('task')->where('status', 1)
+            ->whereNotNull('wxids')
+            ->whereNotNull('medias')
+            ->where("(complete_time=0 and circle=".Task::CIRCLE_SINGLE." and plan_time <= ".time().") or (circle=" . Task::CIRCLE_DAILY .
+                " and plan_hour<='".date('H:i:s')."' and complete_time<".strtotime(date('Ymd 00:00')).")")
+            ->field('id')
+            ->buildSql();
         if(count($task_list = model('task')->getAllJoin([
             'alias' => 'bt',
             'join' => [
-                ['bot', 'bot.id=bt.bot_id']
+                ['bot', 'bot.id=bt.bot_id'],
+                [$view_table . ' t1', 't1.id=bt.id']
             ],
-            'where' => ['bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['elt', time()],
-                'bt.status' => 1, 'bt.wxids' => ['neq', ''], 'bt.medias' => ['neq', '']
-            ],
-            'field' => ['bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id'],
+            'where' => ['bot.alive' => 1],
+            'field' => ['bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id','bt.circle','bt.complete_time'],
             'refresh' => true
         ]))){
             $redis = get_redis();

@@ -14,6 +14,7 @@ layui.config({
     base: rootPath + "lay-module/",
     version: true
 }).extend({
+    excel: "excel/excel", //excel 操作  https://gitee.com/wangerzi/layui-excel
     selectN: "selectN/selectN", // 多级联动  https://fly.layui.com/extend/selectN,selectM/
     miniAdmin: "layuimini/miniAdmin", // layuimini后台扩展
     miniMenu: "layuimini/miniMenu", // layuimini菜单扩展

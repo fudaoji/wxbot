@@ -20,6 +20,7 @@
             <input type="hidden" id="__token__" name="__token__" value="{:request()->token()}" />
             {foreach $form_items as $k => $form}
             {switch name="form.type"}
+            {case value="import_file"}{include file="builder/formtype/import_file" /}{/case}
             {case value="choose_media_multi"}{include file="builder/formtype/choose_media_multi" /}{/case}
             {case value="choose_picture"}{include file="builder/formtype/choose_picture" /}{/case}
             {case value="video_detail"}{include file="builder/formtype/video_detail" /}{/case}

@@ -34,7 +34,7 @@ class Yhqcode extends Botbase
             if ($total) {
                 $list = $this->model->getList(
                     [$post_data['page'], $post_data['limit']], $where,
-                    ['id' => 'desc'], true, true
+                    ['id' => 'asc'], true, true
                 );
             } else {
                 $list = [];

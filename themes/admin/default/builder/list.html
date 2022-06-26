@@ -117,7 +117,7 @@
                 case 'enum':
                     var options = item.options;
                     item = Object.assign(item, {templet: function (d) {
-                            return d[item.field] ? options[d[item.field]] : '--';
+                            return options.hasOwnProperty(d[item.field]) ? options[d[item.field]] : '--';
                         }});
                     break;
                 case 'video':

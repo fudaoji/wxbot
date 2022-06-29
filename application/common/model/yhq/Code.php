@@ -32,7 +32,7 @@ class Code extends Yhq
                 ['yhq_coupon coupon', 'coupon.id=code.coupon_id']
             ],
             'field' => ['code.*'],
-            'where' => ['coupon.id' => $coupon_id, 'code.status' => 1],
+            'where' => ['coupon.id' => $coupon_id, 'code.status' => 1, 'send_time' => 0],
             'refresh' => $refresh
         ]);
     }

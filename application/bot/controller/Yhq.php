@@ -10,6 +10,7 @@
 namespace app\bot\controller;
 
 use app\constants\Reply;
+use ky\Logger;
 
 class Yhq extends Addon
 {
@@ -27,9 +28,9 @@ class Yhq extends Addon
         if(empty($this->switch)){
             return false;
         }
-        $this->groupWxid = $this->content['from_group'];
-        $guest = $this->content['guest'];
-        $nickname = isset($guest['username']) ? $guest['username'] : $guest['nickname'];
+        $guest = $this->botClient->getGuest($this->content);
+        $nickname = $guest['nickname'];
+
         //回复消息
         $replys = model('common/yhq/reply')->getAll([
             'where' => [
@@ -40,7 +41,7 @@ class Yhq extends Addon
         ]);
         foreach ($replys as $k => $reply){
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false){
-                $code = model('common/yhq/code')->getCode(['coupon_id' => $reply['coupon_id']]);
+                $code = model('common/yhq/Code')->getCode(['coupon_id' => $reply['coupon_id']]);
                 $msg = str_replace(['[昵称]', '[优惠券码]', '[优惠券链接]'], [$nickname, $code['code'], $code['code_url']], $reply['content']);
                 $this->botClient->sendTextToFriends([
                     'robot_wxid' => $this->botWxid,
@@ -70,7 +71,6 @@ class Yhq extends Addon
      * @throws \think\exception\DbException
      */
     public function groupChatHandle(){
-        $this->groupWxid = $this->content['from_group'];
         if(empty($this->switch)){
             return false;
         }

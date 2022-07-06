@@ -39,7 +39,6 @@ class Music extends Addon
      * @throws \think\exception\DbException
      */
     public function groupChatHandle(){
-        $this->groupWxid = $this->content['from_group'];
         if(empty($this->switch)){
             return false;
         }

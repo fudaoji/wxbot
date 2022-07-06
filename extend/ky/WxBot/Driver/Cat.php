@@ -1,0 +1,360 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * Script Name: Kam.php
+ * Create: 12/20/21 11:42 PM
+ * Description: 可爱猫驱动 https://gitee.com/ikam/http-sdk
+ * Author: fudaoji<fdj@kuryun.cn>
+ */
+
+namespace ky\WxBot\Driver;
+
+use ky\Logger;
+use ky\WxBot\Base;
+
+class Cat extends Base
+{
+    const EVENT_SYS_MSG = 'EventSysMsg'; //系统消息事件
+    const EVENT_GROUP_MEMBER_DEC = 'EventGroupMemberDecrease'; //群成员减少事件（群成员退出）
+    const EVENT_GROUP_MEMBER_ADD = 'EventGroupMemberAdd'; //群成员增加事件（新人进群）
+    const EVENT_CONTACTS_CHANGE = 'EventContactsChange'; //朋友变动事件
+    const EVENT_FRIEND_MSG = 'EventFriendMsg';
+    const EVENT_GROUP_MSG = 'EventGroupMsg';
+    const EVENT_RECEIVE_TRANSFER = 'EventReceivedTransfer'; //收到转账
+    const EVENT_SCAN_CASH_MONEY = 'EventScanCashMoney';
+    const EVENT_FRIEND_VERIFY = 'EventFriendVerify';
+    const EVENT_LOGIN = 'EventLogin'; //账号登录|退出
+
+    const API_GET_ROBOT_LIST = 'GetLoggedAccountList';
+    const API_GET_FRIEND_LIST = 'GetFriendList'; //获取好友列表
+    const API_GET_GROUP_LIST = 'GetGroupList'; //获取群列表
+
+    const API_SEND_TEXT = 'SendTextMsg';
+    const API_SEND_IMG = 'SendImageMsg'; //发送图片
+    const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
+    const API_GET_GROUP_MEMBER_INFO = "GetGroupMemberInfo"; //获取某个群成员信息
+    const API_SEND_VIDEO_MSG = 'SendVideoMsg'; // 发送视频消息，
+    const API_SEND_FILE_MSG = 'SendFileMsg'; // 发送文件消息
+    const API_SEND_MUSIC_MSG = 'SendMusicMsg'; //发送一条可播放的歌曲链接
+    const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
+    const API_SEND_EMOJI_MSG = 'SendEmojiMsg'; //emoji
+    const API_SEND_SHARE_LINK_MSG = 'SendLinkMsg'; //发送图文链接消息，
+
+    const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
+    const API_AGREE_GROUP_INVITE = 'AgreeGroupInvite'; //同意群聊邀请
+    const API_MODIFY_FRIEND_REMARK = 'EditFriendNote'; //修改好友备注
+    const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友
+
+    const API_GET_GROUP_MEMBERS = "GetGroupMemberList"; //获取群成员列表
+
+    const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
+    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMemberEnterprise'; //将好友移除群
+    const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
+    const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
+    const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
+    const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
+
+
+    public function __construct($options = [])
+    {
+        parent::__construct($options);
+    }
+
+    private function doRequest($params = [], $api = ''){
+        $body = array_merge(empty($params['data']) ? $params : $params['data'], [
+            "success" => true,
+            "message" => "successful!",
+            'event' => $api
+        ]);
+        return $this->request([
+            'data' => $body,
+            'headers' => ['Authorization' => $this->appKey]
+        ]);
+    }
+
+    public function dealRes($res)
+    {
+        $res['ori_code'] = $res['code'];
+        if(intval($res['code']) === 0){
+            $res['code'] = 1;
+        }else{
+            $this->errors($res['code']);
+            $res['code'] = 0;
+        }
+        return $res;
+    }
+
+    /**
+     * 同意群聊邀请
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function agreeGroupInvite($params = []){
+        return $this->doRequest($params, self::API_AGREE_GROUP_INVITE);
+    }
+
+    /**
+     * 批量发送文字消息给好友/群聊等
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendTextToFriends($params = []){
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        $data = $params;
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest($data, self::API_SEND_TEXT);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    /**
+     * 获取机器人列表
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getRobotList($params = []){
+        return $this->doRequest($params, self::API_GET_ROBOT_LIST);
+    }
+
+    /**
+     * 发送文本消息给好友
+     * resp:{
+        "success":true,//true时，http-sdk才处理，false直接丢弃
+        "message":"successful!",
+        "event":"SendImageMsg",//告诉它干什么，SendImageMsg是发送图片事件
+        "robot_wxid":"wxid_5hxa04j4z6pg22",//用哪个机器人发
+        "to_wxid":"18900134932@chatroom",//发到哪里？群/好友
+        "member_wxid":"",
+        "member_name":"",
+        "group_wxid":"",
+        "msg": "hi" {//消息内容:发送 图片、视频、文件、动态表情都是这个结构
+    "url":"https:\/\/b3logfile.com\/bing\/20201024.jpg",
+    "name":"20201024.jpg"//带有扩展名的文件名，建议文件md5(尽量别重名，否则会给你发错哦！http-sdk会先检测文件在不在，如果不在才去url下载，再发送，否则直接发送)
+    }
+        }
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendTextToFriend($params = []){
+        return $this->doRequest($params, self::API_SEND_TEXT);
+    }
+
+    private  function  errors($err_no = -1){
+        // 状态 0成功 -1未在白名单 -2token有误 -3api有误 -4参数有误 -97其他错误 -98调用方式有误 -99数据解析失败 -100未知错误 200——299具体含义请参考调用API的注释
+        $list = [
+            -1 => '权限验证失败',
+        ];
+        $this->errMsg = isset($list[$err_no]) ? $list[$err_no] : '未知错误';
+    }
+
+    public function forwardMsg($params = [])
+    {
+        $this->doRequest($params, self::API_FORWARD_MSG);
+    }
+
+    public function sendImgToFriends($params = [])
+    {
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        $data = $params;
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest($data, self::API_SEND_IMG);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    /**
+     *resp:{
+        "success":true,//true时，http-sdk才处理，false直接丢弃
+        "message":"successful!",
+        "event":"SendImageMsg",//告诉它干什么，SendImageMsg是发送图片事件
+        "robot_wxid":"wxid_5hxa04j4z6pg22",//用哪个机器人发
+        "to_wxid":"18900134932@chatroom",//发到哪里？群/好友
+        "member_wxid":"",
+        "member_name":"",
+        "group_wxid":"",
+        "msg": {//消息内容:发送 图片、视频、文件、动态表情都是这个结构
+            "url":"https:\/\/b3logfile.com\/bing\/20201024.jpg",
+            "name":"20201024.jpg"//带有扩展名的文件名，建议文件md5(尽量别重名，否则会给你发错哦！http-sdk会先检测文件在不在，如果不在才去url下载，再发送，否则直接发送)
+        }
+     }
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendImgToFriend($params = [])
+    {
+        return $this->doRequest($params, self::API_SEND_IMG);
+    }
+
+    public function sendVideoToFriends($params = [])
+    {
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        $data = $params;
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest($data, self::API_SEND_VIDEO_MSG);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    public function sendVideoMsg($params = [])
+    {
+        return $this->doRequest($params, self::API_SEND_VIDEO_MSG);
+    }
+
+    public function sendFileToFriends($params = [])
+    {
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        $data = $params;
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest($data, self::API_SEND_FILE_MSG);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    public function sendFileMsg($params = [])
+    {
+        return $this->doRequest($params, self::API_SEND_FILE_MSG);
+    }
+
+    public function sendMusicLinkMsg($params = [])
+    {
+        return $this->doRequest($params, self::API_SEND_MUSIC_MSG);
+    }
+
+    public function sendShareLinkToFriends($params = [])
+    {
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        $data = $params;
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest($data, self::API_SEND_SHARE_LINK_MSG);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    public function sendShareLinkMsg($params = [])
+    {
+        return $this->doRequest($params, self::API_SEND_SHARE_LINK_MSG);
+    }
+
+    public function sendLinkMsg($params = [])
+    {
+        // TODO: Implement sendLinkMsg() method.
+    }
+
+    public function sendCardMsg($params = [])
+    {
+        // TODO: Implement sendCardMsg() method.
+    }
+
+    public function setFriendRemarkName($params = [])
+    {
+        return $this->doRequest($params, self::API_MODIFY_FRIEND_REMARK);
+    }
+
+    public function deleteFriend($params = [])
+    {
+        return $this->doRequest($params, self::API_DELETE_FRIEND);
+    }
+
+    public function agreeFriendVerify($params = [])
+    {
+        return $this->doRequest($params, self::API_AGREE_FRIEND_VERIFY);
+    }
+
+    public function searchAccount($params = [])
+    {
+        // TODO: Implement searchAccount() method.
+    }
+
+    public function addFriendBySearch($params = [])
+    {
+        // TODO: Implement addFriendBySearch() method.
+    }
+
+    /**
+     * resp:{
+            'event':'GetFriendList',
+            'code' : 1,
+            'msg': 'successful',
+            'data':[
+                {
+                 'headimgurl' :'http://wx.qlogo.cn/mmhead/ver_1/hCJJXicBAUbiaZ3EIPZvvmd9DADovGwRpEgO8FibDXNHxjLTHCMGWfT4AFzkAQtRnsqFbibKia32Io8fNpOzVwfviaW6ajjCicDlaXJWJaPKHDibmYc/0',
+                'nickname':'AA凯丽德电钢琴厂家-苏',
+                'note' : '',
+                'sex': 0,
+                'wx_num' : 'suosite666',
+                'wxid' :'wxid_i1xoqpqz57xr12',
+                'robot_wxid' : 'wxid_a98qqf9m4bny22',
+                }
+         * ]
+     * }
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getFriends($params = [])
+    {
+        return $this->doRequest($params, self::API_GET_FRIEND_LIST);
+    }
+
+    public function getGroups($params = [])
+    {
+        return $this->doRequest($params, self::API_GET_GROUP_LIST);
+    }
+
+    public function sendGroupMsgAndAt($params = [])
+    {
+        return $this->doRequest($params, self::API_SEND_GROUP_MSG_AND_AT);
+    }
+
+    public function removeGroupMember($params = [])
+    {
+        // TODO: Implement removeGroupMember() method.
+    }
+
+    public function inviteInGroup($params = [])
+    {
+        // TODO: Implement inviteInGroup() method.
+    }
+
+    public function getGroupMemberInfo($params = [])
+    {
+        return $this->doRequest($params, self::API_GET_GROUP_MEMBER_INFO);
+    }
+
+    public function getGroupMembers($params = [])
+    {
+        return $this->doRequest($params, self::API_GET_GROUP_MEMBERS);
+    }
+
+    public function forwardMsgToFriends($params = [])
+    {
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        $data = $params;
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest($data, self::API_FORWARD_MSG);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    public function getGuest($content = [], $field = '')
+    {
+        $guest = $content['msg']['guest'][0];
+        return isset($guest[$field]) ? $guest[$field] : $guest;
+    }
+}

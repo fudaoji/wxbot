@@ -27,6 +27,10 @@ class Setting extends Base
                 'title' => '平台设置',
                 'href' => url('index', ['name' => 'site'])
             ],
+            'bot' => [
+                'title' => '机器人设置',
+                'href' => url('index', ['name' => 'bot'])
+            ],
             'upload' => [
                 'title' => '附件设置',
                 'href' => url('index', ['name' => 'upload'])
@@ -77,6 +81,9 @@ class Setting extends Base
         }
         $builder = new FormBuilder();
         switch ($current_name){
+            case 'bot':
+                $builder->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒');
+                break;
             case 'site':
                 empty($data) && $data['close'] = 0;
                 $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')

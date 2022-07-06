@@ -4,8 +4,9 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot as BotM;
 use app\constants\Common;
-use ky\Bot\Vlw;
-use ky\Bot\Wx;
+use ky\WxBot\Vlw;
+use ky\WxBot\Wx;
+use ky\Logger;
 
 class Bot extends Base
 {
@@ -29,7 +30,7 @@ class Bot extends Base
     }
 
     /**
-     * xp协议机器人
+     * 机器人
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
@@ -150,14 +151,6 @@ class Bot extends Base
             $this->error('参数错误');
         }
 
-        if($data['protocol'] == \app\constants\Bot::PROTOCOL_WEB){
-            if($data['uuid']) {
-                $bot = new Wx();
-                $res = $bot->setAppKey($data['app_key'])->getCurrentUser(['uuid' => $data['uuid']]);
-            }
-            if(empty($res['code']))
-                $this->error('当前机器人未登录，请先登录', url('login', ['id' => $id]));
-        }
         $this->model->updateByMap(['is_current' => 1, 'admin_id' => $this->adminInfo['id']],
             ['is_current' => 0]
         );
@@ -225,17 +218,20 @@ class Bot extends Base
      */
     public function add()
     {
+        $domain = request()->domain();
+        $tip = "<ul><li>vlw的接口回调地址: {$domain}/bot/vlw</li><li>可爱猫的接口回调地址: {$domain}/bot/cat</li>
+<li>详细接入教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
-            ->setTip("机器人添加教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a>")
+            ->setTip($tip)
             ->setPostUrl(url('savePost'))
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', \app\constants\Bot::protocols())
             ->addFormItem('free', 'radio', '是否免费版', '是否免费', [0 => '否', 1 => '是'])
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
-            ->addFormItem('uin', 'text', 'Wxid', '微信在vlw框架登陆后可获取', [], 'required maxlength=30')
-            ->addFormItem('app_key', 'text', 'AppKey', 'AppKey', [], 'required')
-            ->addFormItem('url', 'text', '接口地址', '接口地址', [], 'required')
+            ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
+            ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
+            ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
             ->setFormData(['protocol' => \app\constants\Bot::PROTOCOL_VLW, 'app_key' => get_rand_char(32), 'free' => 1]);
 
         return $builder->show();
@@ -249,18 +245,21 @@ class Bot extends Base
         if (!$data) {
             $this->error('参数错误');
         }
-
+        $domain = request()->domain();
+        $tip = "<ul><li>vlw的接口回调地址: {$domain}/bot/vlw</li><li>可爱猫的接口回调地址: {$domain}/bot/cat</li>
+<li>详细接入教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑机器人')
+            ->setTip($tip)
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', \app\constants\Bot::protocols())
             ->addFormItem('free', 'radio', '是否免费版', '是否免费', [0 => '否', 1 => '是'])
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
-            ->addFormItem('uin', 'text', 'Wxid', '微信在vlw框架登陆后可获取', [], 'required maxlength=30')
-            ->addFormItem('app_key', 'text', 'AppKey', 'AppKey', [], 'required')
-            ->addFormItem('url', 'text', '接口地址', '接口地址', [], 'required')
+            ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
+            ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
+            ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
             ->setFormData($data);
 
         return $builder->show();

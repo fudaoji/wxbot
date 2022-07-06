@@ -10,7 +10,6 @@
 namespace app\bot\controller;
 
 use app\constants\Bot;
-use ky\Bot\Vlw;
 use ky\Helper;
 use ky\Jtt;
 use ky\Logger;
@@ -45,9 +44,8 @@ class Tpzs extends Addon
             (!empty($conf['time_off']) && $conf['time_off'] < date('H:i'))){
             return true;
         }
-        $this->groupWxid = $this->content['from_group'];
 
-        $content = Helper::$ajax['content'];
+        $content = $this->content;
         $group_wxid = $this->groupWxid;
 
         //一、群发
@@ -58,14 +56,9 @@ class Tpzs extends Addon
             'bot_wxid' => $this->botWxid
         ])){
             //2.取出机器人负责的群并转发
-            /*$team = model('common/tpzs/Team')->getOneByMap([
-                'admin_id' => $group['admin_id'],
-                'bot_id' => $this->bot['id']
-            ], ['groups']);*/
-
             $groups = explode(',', $group['wxids']);
             switch($content['type']){
-                case Vlw::MSG_TEXT:
+                case Bot::MSG_TEXT:
                     if(strpos($content['msg'], 'jd.com') !== false){//jd
                         /**
                          * @var $redis \Redis
@@ -141,7 +134,7 @@ class Tpzs extends Addon
                         $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
                     }
                     break;
-                case Vlw::MSG_LINK:
+                case Bot::MSG_LINK:
                     if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
                         $msg = json_decode($this->content['msg'], true)['Link'][0];
                         //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']

@@ -13,8 +13,7 @@ namespace app\constants;
 class Bot
 {
     const PROTOCOL_WEB = 'web';
-    const PROTOCOL_XP = 'xp';
-    const PROTOCOL_KAM = 'kam';
+    const PROTOCOL_CAT = 'cat';
     const PROTOCOL_VLW = 'vlw';
     const PROTOCOL_WXWORK = 'wxwork'; //企业微信
 
@@ -24,17 +23,29 @@ class Bot
 
     const EVENT_GROUP_MEMBER_ADD = 'EventGroupMemberAdd'; //群人员减少
     const EVENT_GROUP_MEMBER_DEC = 'EventGroupMemberDecrease'; //群人员减少
-    const EVENT_FRIEND_VERIFY = 'EventFrieneVerify'; //好友请求事件
+    const EVENT_FRIEND_VERIFY = 'EventFriendVerify'; //好友请求事件
     const EVENT_DEVICE = "EventDeviceCallback"; //设备回调事件
-    const EVENT_LOGIN = "Login"; //登录、退出
-    const EVENT_GROUPCHAT = "EventGroupChat"; //群聊事件
-    const EVENT_PRIVATECHAT = "EventPrivateChat"; //私聊消息事件
+    const EVENT_LOGIN = "EventLogin"; //登录、退出
+    const EVENT_GROUP_CHAT = "EventGroupChat"; //群聊事件
+    const EVENT_PRIVATE_CHAT = "EventPrivateChat"; //私聊消息事件
+    const EVENT_RECEIVE_TRANSFER = 'EventReceivedTransfer'; //收到转账
+    const EVENT_SCAN_CASH_MONEY = 'EventScanCashMoney'; //面对面付款
+
+    //2004文件消息  1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请
+    const MSG_TEXT = 1;
+    const MSG_IMG = 3;
+    const MSG_VOICE = 34;
+    const MSG_CARD = 42;
+    const MSG_VIDEO = 43;
+    const MSG_FILE = 2004;
+    const MSG_LINK = 49;
 
     const MSGTYPE_TEXT = "text";           // 文本消息
     const MSGTYPE_IMAGE = "image";          // 图片消息
     const MSGTYPE_FILE = "file";          // 文件消息
     const MSGTYPE_VOICE = "voice";          // 语音消息
     const MSGTYPE_VIDEO = "video" ;         // 视频消息
+    const MSGTYPE_LINK = "link";           // 分享链接
     const MSGTYPE_EMOTICON = "emotion" ;       // 表情消息
     const MSGTYPE_VERIFY        = "verify";         // 认证消息
     const MSGTYPE_POSSIBLEFRIEND = "possiblefriend"; // 好友推荐
@@ -58,8 +69,9 @@ class Bot
     public static function protocols($id = null)
     {
         $list = [
-            self::PROTOCOL_VLW => '个微',
-            self::PROTOCOL_WXWORK => '企微',
+            self::PROTOCOL_CAT => '可爱猫个微',
+            self::PROTOCOL_VLW => 'VLW个微',
+            self::PROTOCOL_WXWORK => 'VLW企微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

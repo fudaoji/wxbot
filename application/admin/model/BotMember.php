@@ -9,13 +9,12 @@
 
 namespace app\admin\model;
 
-
 use app\common\model\Base;
 use app\constants\Bot;
-use ky\Bot\Vlw;
-use ky\Bot\Wx;
-use ky\Bot\Wxwork;
 use ky\Logger;
+use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Vlw;
+use ky\WxBot\Driver\Wxwork;
 
 class BotMember extends Base
 {
@@ -31,46 +30,39 @@ class BotMember extends Base
      */
     public function pullGroups($bot){
         /**
-         * @var $client Vlw|Wxwork
+         * @var $client Wxwork|Cat|Vlw
          */
         $client = model('bot')->getRobotClient($bot);
+        $res = $client->getGroups(['data' => ['robot_wxid' => $bot['uin']]]);
         switch ($bot['protocol']) {
-            case Bot::PROTOCOL_WEB:
-                $bot_client = new Wx(['app_key' => $bot['app_key']]);
-                $res = $bot_client->getGroups(['uuid' => $bot['uuid']]);
-
-                if($res['code'] && !empty($res['data']['count'])){
-                    $list = $res['data']['groups'];
+            case Bot::PROTOCOL_CAT:
+                if($res['code'] && count($res['data'])){
+                    $list = $res['data'];
+                    $wxid_arr = [];
                     foreach ($list as $k => $v){
-                        $nickname = filter_emoji($v['nick_name']);
-                        $remark_name = filter_emoji($v['remark_name']);
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'nickname' => $nickname, 'remark_name' => $remark_name])){
+                        $nickname = filter_emoji($v['nickname']);
+                        $wxid = $v['wxid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
-                                'remark_name' => $remark_name,
-                                'username' => $v['user_name'],
-                                'alias' => $v['alias']
                             ]);
                         }else{
                             $this->addOne([
                                 'uin' => $bot['uin'],
                                 'nickname' => $nickname,
-                                'remark_name' => $remark_name,
-                                'username' => $v['user_name'],
-                                'alias' => $v['alias'],
-                                'type' => \app\constants\Bot::GROUP
+                                'wxid' => $wxid,
+                                'type' => Bot::GROUP
                             ]);
                         }
                     }
-                    //删除无效群组
-                    $this->delByMap(['uin' => $bot['uin'], 'type' => \app\constants\Bot::GROUP, 'update_time' => ['lt', time() - 120]]);
+                    //删除无效
+                    $this->delByMap(['uin' => $bot['uin'], 'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
                 }
                 break;
             case Bot::PROTOCOL_WXWORK:
-                $res = $client->getGroups(['data' => ['robot_wxid' => $bot['uin']]]);
-
                 if($res['code'] && !empty($res['ReturnJson']['data'])){
                     $list = $res['ReturnJson']['data'];
                     $wxid_arr = [];
@@ -88,18 +80,16 @@ class BotMember extends Base
                                 'uin' => $bot['uin'],
                                 'nickname' => $nickname,
                                 'wxid' => $wxid,
-                                'type' => \app\constants\Bot::GROUP
+                                'type' => Bot::GROUP
                             ]);
                         }
                     }
                     //删除无效
-                    $this->delByMap(['uin' => $bot['uin'], 'type' => \app\constants\Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
+                    $this->delByMap(['uin' => $bot['uin'], 'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
                 }
                 break;
             default:
-                $res = $client->getGroups(['data' => ['robot_wxid' => $bot['uin'], 'is_refresh' => 1]]);
-
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
@@ -117,12 +107,12 @@ class BotMember extends Base
                                 'uin' => $bot['uin'],
                                 'nickname' => $nickname,
                                 'wxid' => $wxid,
-                                'type' => \app\constants\Bot::GROUP
+                                'type' => Bot::GROUP
                             ]);
                         }
                     }
                     //删除无效
-                    $this->delByMap(['uin' => $bot['uin'], 'type' => \app\constants\Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
+                    $this->delByMap(['uin' => $bot['uin'], 'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
                 }
                 break;
@@ -141,47 +131,45 @@ class BotMember extends Base
      */
     public function pullFriends($bot){
         /**
-         * @var $client Vlw|Wxwork
+         * @var $client Vlw|Wxwork|Cat
          */
         $client = model('bot')->getRobotClient($bot);
+        $res = $client->getFriends(['data' => ['robot_wxid' => $bot['uin'], 'is_refresh' => 1]]);
         switch ($bot['protocol']){
-            case Bot::PROTOCOL_WEB:
-                $bot_client = new Wx(['app_key' => $bot['app_key']]);
-                $res = $bot_client->getFriends(['uuid' => $bot['uuid']]);
-
-                if($res['code'] && !empty($res['data']['count'])){
-                    $list = $res['data']['friends'];
-                    $nickname_arr = [];
+            case Bot::PROTOCOL_CAT:
+                if($res['code'] && count($res['data'])){
+                    $list = $res['data'];
+                    $wxid_arr = [];
                     foreach ($list as $k => $v){
-                        $nickname = filter_emoji($v['nick_name']);
-                        $remark_name = filter_emoji($v['remark_name']);
-                        $nickname_arr[] = $nickname;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'nickname' => $nickname, 'remark_name' => $remark_name])){
+                        $nickname = filter_emoji($v['nickname']);
+                        $remark_name = filter_emoji($v['note']);
+                        $username = $v['wx_num'];
+                        $wxid = $v['wxid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
                                 'remark_name' => $remark_name,
-                                'username' => $v['user_name'],
-                                'alias' => $v['alias']
+                                'username' => $username
                             ]);
                         }else{
                             $this->addOne([
                                 'uin' => $bot['uin'],
                                 'nickname' => $nickname,
                                 'remark_name' => $remark_name,
-                                'username' => $v['user_name'],
-                                'alias' => $v['alias'],
+                                'username' => $username,
+                                'wxid' => $wxid,
                                 'type' => \app\constants\Bot::FRIEND
                             ]);
                         }
                     }
                     //删除无效好友
-                    $this->delByMap(['uin' => $bot['uin'],'type' => \app\constants\Bot::FRIEND, 'update_time' => ['lt', time() - 120]]);
+                    $this->delByMap(['uin' => $bot['uin'],'type' => \app\constants\Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
                 }
-            break;
+                break;
             case Bot::PROTOCOL_WXWORK:
-                $res = $client->getFriends(['data' => ['robot_wxid' => $bot['uin']]]);
                 if($res['code'] && !empty($res['ReturnJson']['data'])){
                     $list = $res['ReturnJson']['data'];
                     $wxid_arr = [];
@@ -218,8 +206,6 @@ class BotMember extends Base
                 }
                 break;
             default:
-                $res = $client->getFriends(['data' => ['robot_wxid' => $bot['uin'], 'is_refresh' => 1]]);
-
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
@@ -272,7 +258,7 @@ class BotMember extends Base
             'nickname' => $params['nickname'],
             'username' => empty($params['username']) ? '' : $params['username'],
             'wxid' => $params['wxid'],
-            'type' => \app\constants\Bot::FRIEND,
+            'type' => Bot::FRIEND,
             'internal' => 1
         ];
         switch ($bot['protocol']){

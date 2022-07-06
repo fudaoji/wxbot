@@ -7,10 +7,11 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace ky\Bot;
+namespace ky\WxBot\Driver;
 
 
 use ky\Logger;
+use ky\WxBot\Base;
 
 class Wxwork extends Base
 {
@@ -205,7 +206,7 @@ class Wxwork extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,3));
+            $this->sleep();
         }
         return $res;
     }
@@ -239,7 +240,7 @@ class Wxwork extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,3));
+            $this->sleep();
         }
         return $res;
     }
@@ -293,7 +294,7 @@ class Wxwork extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,3));
+            $this->sleep();
         }
         return $res;
     }
@@ -427,7 +428,7 @@ class Wxwork extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,4));
+            $this->sleep();
         }
         return $res;
     }
@@ -446,7 +447,7 @@ class Wxwork extends Base
             $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,4));
+            $this->sleep();
         }
         return ['code' => 1];
     }
@@ -490,7 +491,7 @@ class Wxwork extends Base
      * @return bool|mixed
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function getGroupMember($params = []){
+    public function getGroupMembers($params = []){
         return $this->request([
             'data' => $this->buildPostData($params, self::API_GET_GROUP_MEMBER)
         ]);
@@ -683,5 +684,17 @@ class Wxwork extends Base
             299 => '',
         ];
         $this->errMsg = isset($list[$err_no]) ? $list[$err_no] : $list[-100];
+    }
+
+    public function getGuest($content = [], $field = '')
+    {
+        $guest = $content['guest'];
+        $guest['nickname'] = isset($guest['username']) ? $guest['username'] : $guest['nickname'];
+        return isset($guest[$field]) ? $guest[$field] : $guest;
+    }
+
+    public function forwardMsgToFriends($params = [])
+    {
+        // TODO: Implement forwardMsgToFriends() method.
     }
 }

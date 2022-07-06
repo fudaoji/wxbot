@@ -7,7 +7,7 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\bot\handler\vlw;
+namespace app\bot\handler\cat;
 
 use app\bot\controller\Api;
 use app\constants\Addon;
@@ -24,23 +24,30 @@ class EventGroupMemberAdd extends Api
     /**
      *
     {
-        "sdkVer": 5,  // SDK版本号
-        "Event": "EventGroupMemberAdd", // 事件（易语言模板的子程序名）
-        "content": {
-            "robot_wxid": "",  // 机器人账号id
-            "from_group": "",  // 群号
-            "from_group_name": "",  // 群名
-            "guest": [{
-                "wxid": "wxid_e6shncy2hlzm32",
-                "username": "测试"
-            }],  // 新人
-            "inviter": {
-                "wxid": "wxid_6ungmd6wtdh521",
-                "username": "??[奸笑]??"
-            },  // 邀请者
-            "clientid": 0,  // 企业微信可用
-            "robot_type": 0  // 来源微信类型 0 正常微信 / 1 企业微信
-        }
+        'event' => 'EventGroupMemberAdd',
+        'robot_wxid' => 'wxid_a98qqf9m4bny22',
+        'robot_name' => '',
+        'type' => 1010,
+        'from_wxid' => '20849217466@chatroom',
+        'from_name' => '采品群测试',
+        'final_from_wxid' => 'wxid_xokb2ezu1p6t21',
+        'final_from_name' => 'DJ',
+        'to_wxid' => 'wxid_a98qqf9m4bny22',
+        'msgid' => '',
+        'msg' :{
+            'group_headimgurl' : '',
+            'group_name' : '采品群测试',
+            'group_wxid': '20849217466@chatroom',
+            'guest': {
+     *          'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/730J8GQYo0oPJbjxVC5PTUnNz2vq0lhfpREQwoh0BC8iaDM6pfccNGBRvWXfE3aY3jbekhyI5eEezUHv0cTQ4C7gbqCsakHniaFsKEUUuyGrg/132',
+                'nickname' => 'DJ',
+                'wxid' => 'wxid_xokb2ezu1p6t21',
+     *      },
+     *      'inviter':{
+                'nickname' => 'DJ',
+                'wxid' => '25984983174973249@openim',
+     *      }
+     *  }
     }
      * Author: fudaoji<fdj@kuryun.cn>
      */
@@ -52,8 +59,9 @@ class EventGroupMemberAdd extends Api
 
     private function basic()
     {
-        $guest = $this->content['guest'];
-        $nickname = isset($guest['username']) ? $guest['username'] : $guest['nickname'];
+        $guest = $this->botClient->getGuest($this->content);
+        $nickname = $guest['nickname'];
+
         $nickname && $this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
             'wxid' => $guest['wxid'],

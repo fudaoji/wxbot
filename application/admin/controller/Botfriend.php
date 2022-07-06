@@ -11,8 +11,8 @@ namespace app\admin\controller;
 
 
 use app\admin\model\BotMember;
-use ky\Bot\Vlw;
-use ky\Bot\Wx;
+use ky\WxBot\Vlw;
+use ky\WxBot\Wx;
 
 class Botfriend extends Botbase
 {

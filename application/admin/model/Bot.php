@@ -11,27 +11,25 @@ namespace app\admin\model;
 
 
 use app\common\model\Base;
-use ky\Bot\Vlw;
-use ky\Bot\Wxwork;
+
+use ky\WxBot\Client;
+use app\constants\Bot as BotConst;
+use ky\Logger;
+use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Vlw;
+use ky\WxBot\Driver\Wxwork;
 
 class Bot extends Base
 {
     /**
      * 获取机器人客户端
      * @param array $bot
-     * @return Vlw
+     * @return Cat|Vlw|Wxwork
+     * @throws \Exception
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getRobotClient($bot = []){
-        switch ($bot['protocol']){
-            case \app\constants\Bot::PROTOCOL_WXWORK:
-                $client = new Wxwork(['app_key' => $bot['app_key'], 'base_uri' => $bot['url']]);
-                break;
-            default:
-                $client = new Vlw(['app_key' => $bot['app_key'], 'base_uri' => $bot['url']]);
-                break;
-        }
-        return $client;
+        return Client::getInstance(['app_key' => $bot['app_key'], 'base_uri' => $bot['url']], $bot['protocol'])->getBot();
     }
 
     /**
@@ -39,11 +37,28 @@ class Bot extends Base
      * @param array $params
      * @return array|string
      * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \Exception
      */
     public function getRobotInfo($params = []){
-        switch ($params['free']){
-            case 0:
-                $bot_client = new Wxwork(['app_key' => $params['app_key'], 'base_uri' => $params['url']]);
+        /**
+         * @var $bot_client Vlw|Cat|Wxwork
+         */
+        $bot_client = $this->getRobotClient($params);
+        switch ($params['protocol']){
+            case BotConst::PROTOCOL_CAT:
+                $return = $bot_client->getRobotList();
+                if($return['code'] && !empty($return['data'])){
+                    foreach ($return['data'] as $v){
+                        if($v['wxid'] == $params['uin']){
+                            $v['username'] = $v['wx_num'];
+                            return $v;
+                        }
+                    }
+                }else{
+                    return  $bot_client->getError();
+                }
+                break;
+            case BotConst::PROTOCOL_WXWORK:
                 $return = $bot_client->getRobotList();
                 if($return['code'] && !empty($return['ReturnJson'])){
                     foreach ($return['ReturnJson']['data'] as $v){
@@ -59,7 +74,6 @@ class Bot extends Base
                 }
                 break;
             default:
-                $bot_client = new Vlw(['app_key' => $params['app_key'], 'base_uri' => $params['url']]);
                 $return = $bot_client->getCurrentUser(['data' => ['robot_wxid' => $params['uin']]]);
                 if($return['code'] && !empty($return['ReturnJson'])){
                     $info = $return['ReturnJson'];

@@ -9,7 +9,7 @@
 
 namespace tests\cases;
 
-use ky\Bot\Vlw;
+use ky\WxBot\Vlw;
 use tests\TestCase;
 
 class BotVlwTest extends TestCase

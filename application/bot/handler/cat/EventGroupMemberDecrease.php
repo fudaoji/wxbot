@@ -7,7 +7,7 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\bot\handler\vlw;
+namespace app\bot\handler\cat;
 
 
 use app\bot\controller\Api;
@@ -37,6 +37,5 @@ class EventGroupMemberDecrease extends Api
     public function handle(){
         $this->group = $this->memberM->getOneByMap(['uin' => $this->botWxid, 'wxid' => $this->groupWxid]);
         $this->groupMemberM->rmMember(['bot_id' => $this->bot['id'], 'wxid' => $this->content['to_wxid']]);
-        //Logger::error($this->content);
     }
 }

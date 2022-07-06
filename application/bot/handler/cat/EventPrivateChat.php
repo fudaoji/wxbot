@@ -7,15 +7,13 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\bot\handler\vlw;
+namespace app\bot\handler\cat;
 
 
 use app\bot\controller\Api;
 use app\constants\Addon;
 use app\constants\Bot;
 use app\constants\Reply;
-use ky\WxBot\Driver\Vlw;
-use ky\Helper;
 use ky\Logger;
 
 class EventPrivateChat extends Api
@@ -46,7 +44,7 @@ class EventPrivateChat extends Api
         $this->forward();
 
         switch ($this->content['type']){
-            case Vlw::MSG_TEXT:
+            case Bot::MSG_TEXT:
                 $this->keyword();
                 break;
         }
@@ -81,49 +79,11 @@ class EventPrivateChat extends Api
         ])) {
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
-            switch ($this->content['type']) {
-                case Vlw::MSG_TEXT:
-                    $this->botClient->sendTextToFriends([
-                        'robot_wxid' => $this->content['robot_wxid'],
-                        'to_wxid' => $groups,
-                        'msg' => $this->content['msg']]);
-                    break;
-                case Vlw::MSG_LINK:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_WXWORK) {
-                        $msg = json_decode($this->content['msg'], true)['Link'][0];
-                        $url = $msg['url'];
-                        $this->botClient->sendShareLinkToFriends([
-                            'robot_wxid' => $this->content['robot_wxid'],
-                            'to_wxid' => $groups,
-                            'url' => $url,
-                            'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
-                            'title' => $msg['title'],
-                            'desc' => $msg['desc']
-                        ]);
-                    } else { //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
-                    }
-                    break;
-                default:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_WXWORK) {
-                        $this->botClient->sendTextToFriends([
-                            'robot_wxid' => $this->content['robot_wxid'],
-                            'to_wxid' => $groups,
-                            'msg' => $this->content['msg']
-                        ]);
-                    } else { //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
-                    }
-                    break;
-            }
+            $this->botClient->forwardMsgToFriends([
+                'robot_wxid' => $this->botWxid,
+                'to_wxid' => $groups,
+                'msg' => $this->content['msgid']
+            ]);
         }
     }
 

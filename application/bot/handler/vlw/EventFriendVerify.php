@@ -13,7 +13,7 @@ namespace app\bot\handler\vlw;
 use app\bot\controller\Api;
 use ky\Logger;
 
-class EventFrieneVerify extends Api
+class EventFriendVerify extends Api
 {
 
     public function initialize()

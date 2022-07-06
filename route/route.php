@@ -9,11 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+use think\facade\Route;
+
 Route::get('think', function () {
     return 'hello,ThinkPHP5!';
 });
 
-
+Route::rule('bot/:driver','bot/api/index');
 
 return [
 

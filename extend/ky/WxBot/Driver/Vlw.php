@@ -7,10 +7,10 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace ky\Bot;
-
+namespace ky\WxBot\Driver;
 
 use ky\Logger;
+use ky\WxBot\Base;
 
 class Vlw extends Base
 {
@@ -23,8 +23,8 @@ class Vlw extends Base
     const MSG_FILE = 2004;
     const MSG_LINK = 49;
 
-    const EVENT_LOGIN = 0; //登录
-    const EVENT_QUIT = 1; //退出
+    const EVENT_LOGIN = 'Login';
+    const EVENT_FRIEND_VERIFY = 'EventFrieneVerify';
 
     const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
@@ -115,7 +115,7 @@ class Vlw extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,3));
+            $this->sleep();
         }
         return $res;
     }
@@ -242,7 +242,7 @@ class Vlw extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,3));
+            $this->sleep();
         }
         return $res;
     }
@@ -276,7 +276,7 @@ class Vlw extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,3));
+            $this->sleep();
         }
         return $res;
     }
@@ -330,7 +330,7 @@ class Vlw extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            sleep(rand(1,3));
+            $this->sleep();
         }
         return $res;
     }
@@ -464,7 +464,7 @@ class Vlw extends Base
             $this->request([
                 'data' => $data
             ]);
-            sleep(rand(2,4));
+            $this->sleep();
         }
         return ['code' => 1];
     }
@@ -483,7 +483,7 @@ class Vlw extends Base
             $this->request([
                 'data' => $data
             ]);
-            sleep(rand(2,4));
+            $this->sleep();
         }
         return ['code' => 1];
     }
@@ -528,7 +528,7 @@ class Vlw extends Base
      * @return bool|mixed
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function getGroupMember($params = []){
+    public function getGroupMembers($params = []){
         return $this->request([
             'data' => $this->buildPostData($params, self::API_GET_GROUP_MEMBER)
         ]);
@@ -651,5 +651,17 @@ class Vlw extends Base
             299 => '',
         ];
         $this->errMsg = isset($list[$err_no]) ? $list[$err_no] : $list[-100];
+    }
+
+    public function addFriendBySearch($params = [])
+    {
+        // TODO: Implement addFriendBySearch() method.
+    }
+
+    public function getGuest($content = [], $field = '')
+    {
+        $guest = $content['guest'];
+        $guest['nickname'] = isset($guest['username']) ? $guest['username'] : $guest['nickname'];
+        return isset($guest[$field]) ? $guest[$field] : $guest;
     }
 }

@@ -7,25 +7,72 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace ky\Bot;
+namespace ky\WxBot;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 
 Abstract class Base
 {
-    private $client;
     private $options = [];
-    protected $baseUri = '';
     protected $errMsg = '';
     protected $appKey = '';
+    protected $baseUri = '';
+    protected $stepTime = [2, 4];
+
+    /**
+     * @var Client
+     */
+    private $client;
 
     public function __construct($options = [])
     {
+        $this->baseUri = $options['base_uri'];
         $this->options = array_merge($this->options, $options);
         if(!empty($this->options['app_key'])){
             $this->appKey = $this->options['app_key'];
         }
+        !empty($options['step_time']) && $this->stepTime = $options['step_time'];
+    }
+
+    abstract public function getGuest($content = [], $field = '');
+    abstract public function getGroupMembers($params = []);
+    abstract public function forwardMsgToFriends($params = []);
+    abstract public function forwardMsg($params = []);
+    abstract public function sendImgToFriends($params = []);
+    abstract public function sendImgToFriend($params = []);
+    abstract public function sendTextToFriends($params = []);
+    abstract public function sendTextToFriend($params = []);
+    abstract public function sendVideoToFriends($params = []);
+    abstract public function sendVideoMsg($params = []);
+    abstract public function sendFileToFriends($params = []);
+    abstract public function sendFileMsg($params = []);
+    abstract public function sendMusicLinkMsg($params = []);
+    abstract public function sendShareLinkToFriends($params = []);
+    abstract public function sendShareLinkMsg($params = []);
+    abstract public function sendLinkMsg($params = []);
+    abstract public function sendCardMsg($params = []);
+
+    //设置好友备注名
+    abstract public function setFriendRemarkName($params = []);
+    abstract public function deleteFriend($params = []);
+    abstract public function agreeFriendVerify($params = []);
+    abstract public function searchAccount($params = []);
+    abstract public function addFriendBySearch($params = []);
+    abstract public function getFriends($params = []);
+
+    abstract public function getGroups($params = []);
+    abstract public function sendGroupMsgAndAt($params = []);
+    abstract public function removeGroupMember($params = []);
+    abstract public function inviteInGroup($params = []);
+    abstract public function getGroupMemberInfo($params = []);
+
+    /**
+     * 间隔
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sleep(){
+        sleep(rand($this->stepTime[0], $this->stepTime[1]));
     }
 
     public function setAppKey($app_key = ''){
@@ -40,7 +87,7 @@ Abstract class Base
 
     protected function request($params = []){
         $this->client = new Client([
-            'base_uri' => empty($this->options['base_uri']) ? $this->baseUri : $this->options['base_uri'],
+            'base_uri' => $this->baseUri,
             'timeout' => empty($this->options['timeout']) ? 15 : $this->options['timeout']
         ]);
         $url = empty($params['url']) ? '/' : $params['url'];

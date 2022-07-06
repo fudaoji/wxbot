@@ -11,9 +11,10 @@ namespace app\common\model;
 
 
 use app\constants\Media;
-use ky\Bot\Vlw;
-use ky\Bot\Wxwork;
 use ky\Logger;
+use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Vlw;
+use ky\WxBot\Driver\Wxwork;
 
 class Reply extends Base
 {
@@ -22,7 +23,7 @@ class Reply extends Base
     /**
      * 封装素材回复
      * @param $bot
-     * @param $client Vlw|Wxwork
+     * @param $client Vlw|Wxwork|Cat
      * @param $reply
      * @param string $to_wxid
      * @param array $extra

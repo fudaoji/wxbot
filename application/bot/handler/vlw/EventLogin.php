@@ -12,7 +12,7 @@ namespace app\bot\handler\vlw;
 use app\bot\controller\Api;
 use ky\Logger;
 
-class Login extends Api
+class EventLogin extends Api
 {
     public function initialize()
     {

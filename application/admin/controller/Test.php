@@ -10,8 +10,8 @@
 namespace app\admin\controller;
 
 use app\admin\model\Goods;
-use ky\Bot\Wx;
-use ky\Bot\Wxwork;
+use ky\WxBot\Wx;
+use ky\WxBot\Wxwork;
 use ky\Jtt;
 
 class Test extends Base

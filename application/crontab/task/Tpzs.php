@@ -10,8 +10,8 @@
 namespace app\crontab\task;
 
 use app\common\model\tpzs\Task;
-use ky\Bot\Vlw;
-use ky\Bot\Wxwork;
+use ky\WxBot\Vlw;
+use ky\WxBot\Wxwork;
 
 class Tpzs extends Base
 {

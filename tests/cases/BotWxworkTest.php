@@ -9,7 +9,7 @@
 
 namespace tests\cases;
 
-use ky\Bot\Wxwork;
+use ky\WxBot\Wxwork;
 use tests\TestCase;
 
 class BotWxworkTest extends TestCase

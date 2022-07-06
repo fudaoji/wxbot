@@ -13,11 +13,11 @@ namespace app\admin\controller;
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\controller\BaseCtl;
-use ky\Bot\Kam;
-use ky\Bot\Qyk;
-use ky\Bot\Vlw;
-use ky\Bot\Wx;
-use ky\Bot\Xp;
+use ky\WxBot\Cat;
+use ky\WxBot\Qyk;
+use ky\WxBot\Vlw;
+use ky\WxBot\Wx;
+use ky\WxBot\Xp;
 use ky\Helper;
 use ky\Jtt;
 use ky\Logger;
@@ -543,12 +543,12 @@ class Onmessage extends BaseCtl
     /**
      * @param string $driver
      * @param array $options
-     * @return Wx|Xp|Kam|Vlw
+     * @return Wx|Xp|Cat|Vlw
      */
     private function getBotClient($driver = 'web', $options = []){
         switch ($driver){
-            case \app\constants\Bot::PROTOCOL_KAM:
-                $client = new Kam($options);
+            case \app\constants\Bot::PROTOCOL_CAT:
+                $client = new Cat($options);
                 break;
             case \app\constants\Bot::PROTOCOL_VLW:
                 $client = new Vlw($options);

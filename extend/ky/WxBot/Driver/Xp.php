@@ -7,21 +7,25 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace ky\Bot;
+namespace ky\WxBot;
 
 
-class Wx extends Base
+class Xp extends Base
 {
-    protected $baseUri = 'http://116.62.202.87:8889/';
+    const MSG_TEXT = 1;
+    const MSG_IMG= 3;
+    const MSG_APP = 4;
+
+    const EVENT_USER_LIST = 5000;
+    const EVENT_PERSONAL_INFO = 6500;
 
     public function __construct($options = [])
     {
         parent::__construct($options);
     }
 
-    public function setAppKey($app_key = ''){
-        $this->appKey = $app_key;
-        return $this;
+    public function getAppKey(){
+        return $this->appKey;
     }
 
     /**
@@ -193,7 +197,7 @@ class Wx extends Base
     public function sendImgToFriend($params = []){
         $url = '/message/user/img';
         return $this->request([
-            'url' => $url . '?uuid=' . $params['uuid'],
+            'url' => $url,
             'method' => 'post',
             'headers' => ['AppKey' => $this->appKey],
             'data' => $params['data'] //{to: "", content:"", type:"image"}
@@ -225,7 +229,7 @@ class Wx extends Base
     public function sendTextToFriend($params = []){
         $url = '/message/user';
         return $this->request([
-            'url' => $url . '?uuid=' . $params['uuid'],
+            'url' => $url,
             'method' => 'post',
             'headers' => ['AppKey' => $this->appKey],
             'data' => $params['data'] //{to: "", content:"", type:"text"}
@@ -249,21 +253,6 @@ class Wx extends Base
     }
 
     /**
-     * 获取当前用户的群组列表
-     * @param array $params
-     * @return bool|mixed
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function getGroups($params = []){
-        $url = '/user/groups';
-        return $this->request([
-            'url' => $url . '?uuid=' . $params['uuid'],
-            'method' => 'get',
-            'headers' => ['AppKey' => $this->appKey]
-        ]);
-    }
-
-    /**
      * 获取当前用户的好友列表
      * @param array $params
      * @return bool|mixed
@@ -272,7 +261,7 @@ class Wx extends Base
     public function getFriends($params = []){
         $url = '/user/friends';
         return $this->request([
-            'url' => $url . '?uuid=' . $params['uuid'],
+            'url' => $url,
             'method' => 'get',
             'headers' => ['AppKey' => $this->appKey]
         ]);
@@ -287,7 +276,7 @@ class Wx extends Base
     public function getCurrentUser($params = []){
         $url = '/user/info';
         return $this->request([
-            'url' => $url . '?uuid=' . $params['uuid'],
+            'url' => $url,
             'method' => 'get',
             'headers' => ['AppKey' => $this->appKey]
         ]);
@@ -304,7 +293,8 @@ class Wx extends Base
         return $this->request([
             'url' => $url . '?uuid=' . $params['uuid'],
             'method' => 'post',
-            'headers' => ['AppKey' => $this->appKey]
+            'headers' => ['AppKey' => $this->appKey],
+            'data' => $params['data']
         ]);
     }
 
@@ -322,7 +312,117 @@ class Wx extends Base
         ]);
     }
 
+    /**
+     * 优化结果
+     * @param $res
+     * @return mixed
+     */
     public function dealRes($res){
         return $res;
+    }
+
+    public function forwardMsg($params = [])
+    {
+        // TODO: Implement forwardMsg() method.
+    }
+
+    public function sendImgToFriends($params = [])
+    {
+        // TODO: Implement sendImgToFriends() method.
+    }
+
+    public function sendTextToFriends($params = [])
+    {
+        // TODO: Implement sendTextToFriends() method.
+    }
+
+    public function sendVideoToFriends($params = [])
+    {
+        // TODO: Implement sendVideoToFriends() method.
+    }
+
+    public function sendVideoMsg($params = [])
+    {
+        // TODO: Implement sendVideoMsg() method.
+    }
+
+    public function sendFileToFriends($params = [])
+    {
+        // TODO: Implement sendFileToFriends() method.
+    }
+
+    public function sendFileMsg($params = [])
+    {
+        // TODO: Implement sendFileMsg() method.
+    }
+
+    public function sendMusicLinkMsg($params = [])
+    {
+        // TODO: Implement sendMusicLinkMsg() method.
+    }
+
+    public function sendShareLinkToFriends($params = [])
+    {
+        // TODO: Implement sendShareLinkToFriends() method.
+    }
+
+    public function sendShareLinkMsg($params = [])
+    {
+        // TODO: Implement sendShareLinkMsg() method.
+    }
+
+    public function sendLinkMsg($params = [])
+    {
+        // TODO: Implement sendLinkMsg() method.
+    }
+
+    public function sendCardMsg($params = [])
+    {
+        // TODO: Implement sendCardMsg() method.
+    }
+
+    public function deleteFriend($params = [])
+    {
+        // TODO: Implement deleteFriend() method.
+    }
+
+    public function agreeFriendVerify($params = [])
+    {
+        // TODO: Implement agreeFriendVerify() method.
+    }
+
+    public function searchAccount($params = [])
+    {
+        // TODO: Implement searchAccount() method.
+    }
+
+    public function addFriendBySearch($params = [])
+    {
+        // TODO: Implement addFriendBySearch() method.
+    }
+
+    public function getGroups($params = [])
+    {
+        // TODO: Implement getGroups() method.
+    }
+
+    public function sendGroupMsgAndAt($params = [])
+    {
+        // TODO: Implement sendGroupMsgAndAt() method.
+    }
+
+    public function removeGroupMember($params = [])
+    {
+        // TODO: Implement removeGroupMember() method.
+    }
+
+    public function inviteInGroup($params = [])
+    {
+        // TODO: Implement inviteInGroup() method.
+    }
+
+    public function getGroupMemberInfo($params = [])
+    {
+        // TODO: Implement getGroupMemberInfo() method.
     }
 }

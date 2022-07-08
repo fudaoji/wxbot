@@ -4,3 +4,5 @@
 .env
 .DS_Store
 *.txt
+install.lock
+__MACOSX

@@ -1,32 +1,28 @@
 ;安装时把这个文件改成.env，并根据自身情况修改配置值，配置键不许更改
 ;是否开发模式
-app_debug=true
+app_debug=false
 ;平台名称
 app_title=微精灵
 ;平台标识
 app_name=wxbot
-;应用前缀
-app_prefix=ky_
-;应用加密key
-app_key=123456
-;任务队列名称
-queue_name=wxbot
+;缓存类型
+cache_type=[cache_type]
 
 ;数据库配置
 [db]
-hostname=127.0.0.1
-database=
-username=
-password=
-port=3306
-prefix=ky_
+hostname=[hostname]
+database=[database]
+username=[username]
+password=[password]
+port=[port]
+prefix=[prefix]
 
 ;memcache配置
 [memcached]
-host=127.0.0.1
-port=11211
+host=[memcache_host]
+port=[memcache_port]
 
 ;redis配置
 [redis]
-host=127.0.0.1
-port=6379
+host=[redis_host]
+port=[redis_port]

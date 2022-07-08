@@ -11,7 +11,7 @@
 use think\facade\Env;
 return [
     // 数据库类型
-    'type'            => 'mysql',
+    'type'            => Env::get("db.type", "mysql"),
     // 服务器地址
     'hostname'        => Env::get("db.hostname", "localhost"),
     // 数据库名

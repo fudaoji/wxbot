@@ -19,28 +19,28 @@ function get_redis(){
 }
 
 /**
- * 执行sql
- * @param string $sql
+ * 更新包sql执行文件
+ * @param $sql_path
  * @return bool|string
  * @throws \think\db\exception\BindParamException
  * @throws \think\exception\PDOException
  * @author: fudaoji<fdj@kuryun.cn>
  */
-function execute_sql($sql = "")
+function execute_sql($sql_path = '')
 {
+    $sql = file_get_contents($sql_path);
     $sql = str_replace("\r", "\n", $sql);
     $sql = explode(";\n", $sql);
+    $original = '`__PREFIX__';
+    $prefix = '`'.config('database.prefix');
+    $sql = str_replace("{$original}", "{$prefix}", $sql); //替换掉表前缀
 
     foreach ($sql as $k => $value) {
         $value = trim($value, "\n");
-        if(stripos($value, 'drop') !== false){
-            return 'SQL语句包含了DROP TABLE类似的语句';
-        }
         if (!empty($value)) {
             $sql[$k] = $value;
         }
     }
-
     foreach ($sql as $value) {
         if (empty($value) || strlen($value) < 2) { //过滤空行
             continue;

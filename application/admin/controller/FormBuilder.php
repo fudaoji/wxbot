@@ -23,6 +23,8 @@ class FormBuilder extends BaseCtl
     protected $_ajax_submit = true;    // 是否ajax提交
     protected $_template;              // 模版
     protected $_tip = '';              // 提示语
+    protected $_btn_submit = array('show' => 1, 'text' => '提交');              // 提交按钮
+    protected $_btn_reset = array('show' => 1, 'text' => '重置');              // 重置按钮
 
     /**
      * 初始化方法
@@ -30,6 +32,28 @@ class FormBuilder extends BaseCtl
     public function initialize() {
         parent::initialize();
         $this->_template = 'builder/form';
+    }
+
+    /**
+     * 设置表单提交按钮
+     * @param array $params
+     * @return FormBuilder
+     * @author: fudaoji<fdj@kuryun.cn>
+     */
+    public function setBtnSubmit($params = []){
+        $this->_btn_submit = array_merge($this->_btn_submit, $params);
+        return $this;
+    }
+
+    /**
+     * 设置表单重置按钮
+     * @param array $params
+     * @return FormBuilder
+     * @author: fudaoji<fdj@kuryun.cn>
+     */
+    public function setBtnReset($params = []){
+        $this->_btn_reset = array_merge($this->_btn_reset, $params);
+        return $this;
     }
 
     /**
@@ -189,7 +213,9 @@ class FormBuilder extends BaseCtl
             'form_items' =>  $this->_form_items,  //表单项目
             'ajax_submit' => $this->_ajax_submit,  //是否ajax提交
             'extra_html' => $this->_extra_html,    // 额外HTML代码
-            'tip'   => $this->_tip
+            'tip'   => $this->_tip,
+            'btn_submit'   => $this->_btn_submit,
+            'btn_reset'   => $this->_btn_reset
         ], $assign, $this->assign);
         unset($this->_meta_title, $this->_tab_nav,$this->_post_url,$this->_form_items,$this->_ajax_submit,$this->_extra_html, $this->_tip);
         return parent::show($assign, $this->_template);

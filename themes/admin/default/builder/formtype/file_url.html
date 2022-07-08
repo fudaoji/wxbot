@@ -29,7 +29,7 @@
             var upload_index;
             upload.render({
                 elem: '#picker-{$form["name"]}'
-                ,url: '{:addon_url("uploader/filePost")}'
+                ,url: '{:url("uploader/filePost")}'
                 ,multiple: false
                 ,accept: 'file' //允许上传的文件类型
                 ,size: "{$form['options']['size'] ? $form['options']['size'] : (config('system.upload.file_size') ? config('system.upload.file_size')/1000 : 10240)}" //最大允许上传的文件大小

@@ -15,22 +15,13 @@ use ky\WxBot\Base;
 
 class Wxwork extends Base
 {
-    //1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请
-    const MSG_TEXT = 1;
-    const MSG_IMG = 3;
-    const MSG_VOICE = 34;
-    const MSG_CARD = 42;
-    const MSG_VIDEO = 43;
+    const API_GET_INTERNAL_FRIEND_LIST = "GetInternalFriendlistEnterprise"; //获取外部联系人
+    const API_GET_EXTERNAL_FRIEND_LIST = "GetExternalFriendlistEnterprise"; //获取外部联系人
+    const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
+    const API_GET_GROUP_LIST = 'GetGrouplistEnterprise'; //获取群列表
+    const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
 
-    const EVENT_LOGIN = 0; //登录
-    const EVENT_QUIT = 1; //退出
-
-    const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
-    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMemberEnterprise'; //将好友移除群
-    const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
-    const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
-    const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
     const API_SEND_VIDEO_MSG = 'SendVideoMsgEnterprise'; // 发送视频消息，只支持pro版
     const API_SEND_FILE_MSG = 'SendFileMsgEnterprise'; // 发送文件消息，只支持pro版
     const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
@@ -38,18 +29,24 @@ class Wxwork extends Base
     const API_SEND_SHARE_LINK_MSG = 'SendLinkMsgEnterprise'; //发送普通分享链接
     const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
     const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
-    const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
-    const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
-    const API_GET_GROUP_MEMBER_INFO = "GetGroupMemberDetailInfo"; //获取某个群成员信息
-    const API_GET_GROUP_MEMBER = "GetGroupMemberEnterprise"; //获取群成员列表
-    const API_MODIFY_FRIEND_REMARK = 'ModifyFriendNote'; //修改好友备注
-    const API_GET_GROUP_LIST = 'GetGrouplistEnterprise'; //获取群列表
-    const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
     const API_SEND_IMG = 'SendImageMsgEnterprise'; //发送图片
     const API_SEND_TEXT = 'SendTextMsgEnterprise'; //发送文本
-    const API_GET_INTERNAL_FRIEND_LIST = "GetInternalFriendlistEnterprise"; //获取外部联系人
-    const API_GET_EXTERNAL_FRIEND_LIST = "GetExternalFriendlistEnterprise"; //获取外部联系人
-    const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
+
+    const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
+    const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
+    const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
+    const API_MODIFY_FRIEND_REMARK = 'ModifyFriendNote'; //修改好友备注
+    const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
+
+    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMemberEnterprise'; //将好友移除群
+    const API_SET_GROUP_NAME = 'ModifyEnterpriseGroupNameEnterprise'; //
+    const API_SET_GROUP_NOTICE = 'ModifyGroupNotice'; //
+    const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
+    const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
+    const API_GET_GROUP_MEMBER_INFO = "GetGroupMemberDetailInfo"; //获取某个群成员信息
+    const API_GET_GROUP_MEMBER = "GetGroupMemberEnterprise"; //获取群成员列表
+
+
     private $token;
 
     public function __construct($options = [])
@@ -663,6 +660,7 @@ class Wxwork extends Base
             $res['code'] = 1;
         }else{
             $this->errors($res['Code']);
+            $res['errmsg'] = $this->errMsg;
             $res['code'] = 0;
         }
         return $res;
@@ -696,5 +694,19 @@ class Wxwork extends Base
     public function forwardMsgToFriends($params = [])
     {
         // TODO: Implement forwardMsgToFriends() method.
+    }
+
+    public function setGroupName($params = [])
+    {
+        $params['name'] = $params['group_name'];
+        unset($params['group_name']);
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SET_GROUP_NAME)
+        ]);
+    }
+
+    public function setGroupNotice($params = [])
+    {
+        // TODO: Implement setGroupNotice() method.
     }
 }

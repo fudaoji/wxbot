@@ -63,7 +63,7 @@ class Bot extends Base
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
             ->addTopButton('addnew')
             ->addTableColumn(['title' => 'id', 'field' => 'uin', 'minWidth' => 170])
-            ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => \app\constants\Bot::protocols(), 'minWidth' => 60])
+            ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => \app\constants\Bot::protocols(), 'minWidth' => 100])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 120])
             ->addTableColumn(['title' => 'appKey', 'field' => 'app_key', 'minWidth' => 90])

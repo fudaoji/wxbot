@@ -46,10 +46,12 @@ class Cat extends Base
     const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友
 
     const API_GET_GROUP_MEMBERS = "GetGroupMemberList"; //获取群成员列表
+    const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
+    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
+    const API_SET_GROUP_NAME = 'EditGroupName'; //
+    const API_SET_GROUP_NOTICE = 'EditGroupNotice'; //
 
     const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
-    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMemberEnterprise'; //将好友移除群
-    const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
     const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
     const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
     const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
@@ -79,6 +81,7 @@ class Cat extends Base
             $res['code'] = 1;
         }else{
             $this->errors($res['code']);
+            $res['errmsg'] = $this->errMsg;
             $res['code'] = 0;
         }
         return $res;
@@ -160,6 +163,7 @@ class Cat extends Base
 
     public function sendImgToFriends($params = [])
     {
+        $params = $this->dealParams($params);
         $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
         $data = $params;
         foreach($to_wxid as $id){
@@ -168,6 +172,36 @@ class Cat extends Base
             $this->sleep();
         }
         return ['code' => 1];
+    }
+
+    /**
+     * 参数名转换
+     * @param array $params
+     * @param string $type
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function dealParams($params = [], $type = 'img'){
+        switch ($type){
+            case 'share_link':
+                $params['msg'] = [
+                    'title' => $params['title'],
+                    'text' => $params['desc'],
+                    'target_url' => $params['url'],
+                    'pic_url' => $params['image_url'],
+                    'icon_url' => ''
+                ];
+                unset($params['title'], $params['desc'], $params['url'], $params['image_url']);
+                break;
+            default:
+                $params['msg'] = [
+                    'name' => md5($params['path']).basename($params['path']),
+                    'url' => $params['path']
+                ];
+                unset($params['path']);
+                break;
+        }
+        return $params;
     }
 
     /**
@@ -190,11 +224,13 @@ class Cat extends Base
      */
     public function sendImgToFriend($params = [])
     {
+        $params = $this->dealParams($params);
         return $this->doRequest($params, self::API_SEND_IMG);
     }
 
     public function sendVideoToFriends($params = [])
     {
+        $params = $this->dealParams($params);
         $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
         $data = $params;
         foreach($to_wxid as $id){
@@ -207,11 +243,13 @@ class Cat extends Base
 
     public function sendVideoMsg($params = [])
     {
+        $params = $this->dealParams($params);
         return $this->doRequest($params, self::API_SEND_VIDEO_MSG);
     }
 
     public function sendFileToFriends($params = [])
     {
+        $params = $this->dealParams($params);
         $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
         $data = $params;
         foreach($to_wxid as $id){
@@ -224,6 +262,7 @@ class Cat extends Base
 
     public function sendFileMsg($params = [])
     {
+        $params = $this->dealParams($params);
         return $this->doRequest($params, self::API_SEND_FILE_MSG);
     }
 
@@ -234,6 +273,7 @@ class Cat extends Base
 
     public function sendShareLinkToFriends($params = [])
     {
+        $params = $this->dealParams($params, 'share_link');
         $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
         $data = $params;
         foreach($to_wxid as $id){
@@ -244,8 +284,18 @@ class Cat extends Base
         return ['code' => 1];
     }
 
+    /**
+     * 发送分享链接
+     * req:{
+        * robot_wxid, to_wxid(群/好友), msg(title, text, target_url, pic_url, icon_url)
+     * }
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function sendShareLinkMsg($params = [])
     {
+        $params = $this->dealParams($params, 'share_link');
         return $this->doRequest($params, self::API_SEND_SHARE_LINK_MSG);
     }
 
@@ -320,14 +370,27 @@ class Cat extends Base
         return $this->doRequest($params, self::API_SEND_GROUP_MSG_AND_AT);
     }
 
+    /**
+     * 踢出群成员
+     * req: robot_wxid, group_wxid, member_wxid
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return bool
+     */
     public function removeGroupMember($params = [])
     {
-        // TODO: Implement removeGroupMember() method.
+        return $this->doRequest($params, self::API_REMOVE_GROUP_MEMBER);
     }
 
+    /**
+     * req: robot_wxid, group_wxid, to_wxid
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return bool
+     */
     public function inviteInGroup($params = [])
     {
-        // TODO: Implement inviteInGroup() method.
+        return $this->doRequest($params, self::API_INVITE_IN_GROUP);
     }
 
     public function getGroupMemberInfo($params = [])
@@ -356,5 +419,31 @@ class Cat extends Base
     {
         $guest = $content['msg']['guest'][0];
         return isset($guest[$field]) ? $guest[$field] : $guest;
+    }
+
+    /**
+     * 修改群名称 robot_wxid, group_wxid, msg
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return bool
+     */
+    public function setGroupName($params = [])
+    {
+        $params['msg'] = $params['group_name'];
+        unset($params['group_name']);
+        return $this->doRequest($params, self::API_SET_GROUP_NAME);
+    }
+
+    /**
+     * 修改群公告 robot_wxid, group_wxid, msg
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return bool
+     */
+    public function setGroupNotice($params = [])
+    {
+        $params['msg'] = $params['notice'];
+        unset($params['notice']);
+        return $this->doRequest($params, self::API_SET_GROUP_NOTICE);
     }
 }

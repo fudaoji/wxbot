@@ -26,6 +26,7 @@ class TaskQueue extends Base
     /**
      * 任务入队列
      * @param array $params
+     * @throws \Exception
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function push($params = []){

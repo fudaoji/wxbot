@@ -1,0 +1,184 @@
+{extend name="layout/base"/}
+
+{block name="body"}
+<form method="post" id="form">
+	<div class="create-database">
+		<h2>数据库配置</h2>
+		<table class="table-hover table">
+			<tr>
+				<td>
+					<select class="form-control" name="db[type]">
+						<option>mysql</option>
+						<option>Sqlsrv</option>
+						<option>Sqlite</option>
+						<option>Pgsql</option>
+					</select>
+				</td>
+				<td>系统默认使用mysql数据库，如使用Sqlsrv、Sqlite、Pgsql请自行做相关配置</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="db[hostname]" type="text" value="127.0.0.1">
+				</td>
+				<td>
+					<span>数据库服务器，数据库服务器IP，一般为127.0.0.1与localhost</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="db[database]" type="text" value="">
+				</td>
+				<td>
+					<span>数据库名</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="db[username]" type="text" value="">
+				</td>
+				<td>
+					<span>数据库用户名</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="db[password]" type="password" value="">
+				</td>
+				<td>
+					<span>数据库密码</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="db[port]" type="text" value="3306"/>
+				</td>
+				<td>
+					<span>数据库端口，数据库服务连接端口，一般为3306</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="db[prefix]" type="text" value="" class="form-control">
+				</td>
+				<td>
+					<span>数据表前缀，同一个数据库运行多个系统时请修改为不同的前缀</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="create-database">
+		<h2>缓存配置</h2>
+		<table class="table-hover table">
+			<tr>
+				<td>
+					<select class="form-control" name="cache_type">
+						<option value="file">File</option>
+						<option value="memcache">Memcached</option>
+						<option value="redis">Redis</option>
+					</select>
+				</td>
+				<td>若File缓存，则Memcache可不配置</td>
+			</tr>
+		</table>
+	</div>
+	<div class="create-database">
+		<h2>Redis配置</h2>
+		<table class="table-hover table">
+			<tr>
+				<td>
+					<input class="form-control" name="redis[redis_host]" type="text" value="127.0.0.1">
+				</td>
+				<td>
+					<span>Redis主机</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="redis[redis_port]" type="tel" value="6379">
+				</td>
+				<td>
+					<span>Redis端口</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="create-database">
+		<h2>Memcached配置</h2>
+		<table class="table-hover table">
+			<tr>
+				<td>
+					<input class="form-control" name="memcache[memcache_host]" type="text" value="127.0.0.1">
+				</td>
+				<td>
+					<span>Memcached主机</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="memcache[memcache_port]" type="tel" value="11211">
+				</td>
+				<td>
+					<span>Memcached端口</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="create-database">
+		<h2>创始人帐号信息</h2>
+		<table class="table-hover table">
+			<tr>
+				<td>
+					<input class="form-control" name="admin[username]" type="text" value="admin">
+				</td>
+				<td>
+					<span>用户名(<span class="text-danger">英文+数字，严禁中文与特殊字符</span>)</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="admin[password]" type="password" value="">
+				</td>
+				<td>
+					<span>密码</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="form-control" name="admin[repassword]" type="password" value="">
+				</td>
+				<td>
+					<span>确认密码</span>
+				</td>
+			</tr>
+		</table>
+		<div>
+		</div>
+	</div>
+
+	<div class="text-center">
+		<button class="btn btn-primary" id="submit" type="button">
+			下一步
+		</button>
+		<a class="btn btn-default" href="{:url('install/index/check')}">
+			上一步
+		</a>
+	</div>
+</form>
+<script>
+	$(document).ready(function () {
+		$('#submit').on('click', function () {
+			$.post("", $('#form').serializeArray(), function (res) {
+				if(res.code === 1){
+					location.href = res.url;
+				}else{
+					alert(res.msg);
+					return;
+				}
+			});
+		})
+	});
+</script>
+{/block}

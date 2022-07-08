@@ -14,14 +14,8 @@
 // +----------------------------------------------------------------------
 use think\facade\Env;
 
-return [
-    // 使用复合缓存类型
-    'type'  =>  'complex',
-    // 缓存有效期 0表示永久缓存
-    'expire' => 0,
-
-    // 默认使用的缓存
-    'default' => [
+$configs = [
+    'file' => [
         // 驱动方式
         'type' => 'file',
         // 缓存前缀
@@ -29,24 +23,13 @@ return [
         // 设置不同的缓存保存目录
         'path'   => env('runtime_path').'cache/',
     ],
-    // 文件缓存
-    'file'   =>  [
-        // 驱动方式
-        'type' => 'file',
-        // 缓存前缀
-        'prefix' => Env::get('app_prefix', 'ky_'),
-        // 设置不同的缓存保存目录
-        'path'   => env('runtime_path').'cache/',
-    ],
-    // memcache缓存
-    'memcached' =>  [
+    'memcache' => [
         // 缓存前缀
         'prefix' => Env::get('app_prefix', 'ky_'),
         'type'  => 'memcached',
         'host'  => Env::get('memcached.host', 'localhost'),
         'port'  => Env::get('memcached.port', 11211)
     ],
-    // redis缓存
     'redis' => [
         // 缓存前缀
         'prefix' => Env::get('app_prefix', 'ky_'),
@@ -56,4 +39,19 @@ return [
         'host' => Env::get('redis.host', 'localhost'),
         'port' => Env::get('redis.port', '6379')
     ]
+];
+return [
+    // 使用复合缓存类型
+    'type'  =>  'complex',
+    // 缓存有效期 0表示永久缓存
+    'expire' => 0,
+
+    // 默认使用的缓存
+    'default' => $configs[Env::get('cache_type', 'file')],
+    // 文件缓存
+    'file'   =>  $configs['file'],
+    // memcache缓存
+    'memcached' =>  $configs['memcache'],
+    // redis缓存
+    'redis' => $configs['redis']
 ];

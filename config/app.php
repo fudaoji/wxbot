@@ -16,12 +16,11 @@ use think\facade\Env;
 
 return [
     // 应用名称
-    'app_name'               => Env::get('app_name', 'KyPHP'),
-    'app_title'              => Env::get('app_title', 'KyPHP'),
+    'app_name'               => 'WxBot',
+    'app_title'              => Env::get('app_title', '微精灵'),
     'app_prefix'             => Env::get('app_prefix', 'ky_'),
     'app_key'                => Env::get('app_key', '123456'),
-    'queue_name'             => Env::get('queue_name', ''),
-    'version'                => 'v1.0.0',
+    'queue_name'             => Env::get('queue_name', 'wxbot'),
     'theme'                  => 'default',
 
     // 应用地址

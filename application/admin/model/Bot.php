@@ -29,7 +29,9 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getRobotClient($bot = []){
-        return Client::getInstance(['app_key' => $bot['app_key'], 'base_uri' => $bot['url']], $bot['protocol'])->getBot();
+        $options = ['app_key' => $bot['app_key'], 'base_uri' => $bot['url']];
+        config('system.bot.step_time') && $options['step_time'] = explode('-', config('system.bot.step_time'));
+        return Client::getInstance($options, $bot['protocol'])->getBot();
     }
 
     /**

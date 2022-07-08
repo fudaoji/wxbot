@@ -1,0 +1,18 @@
+{extend name="layout/base"/}
+
+{block name="body"}
+<h1 class="text-center">恭喜：安装完成</h1>
+<p style="text-align: center">为了系统更加的安全，我们建议你删除install目录。</p>
+<div class="row">
+	<div class="col-sm-12">
+		<ul class="list-group">
+			<li class="list-group-item"><a href="official_web" target="_blank">{:config('app_name')}官方网站</a></li>
+		</ul>
+	</div>
+</div>
+{/block}
+{block name="footer"}
+<div class="text-center">
+    <a class="btn btn-primary" target="_blank" href="{:url('/admin')}">登录后台</a>
+</div>
+{/block}

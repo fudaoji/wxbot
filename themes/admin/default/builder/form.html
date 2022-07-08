@@ -56,8 +56,12 @@
             {/foreach}
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button class="layui-btn layui-btn-normal" type="submit">提交</button>
-                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    {if $btn_submit['show']}
+                    <button class="layui-btn layui-btn-normal" type="submit">{$btn_submit['text']}</button>
+                    {/if}
+                    {if $btn_reset['show']}
+                    <button type="reset" class="layui-btn layui-btn-primary">{$btn_reset['text']}</button>
+                    {/if}
                 </div>
             </div>
         </form>

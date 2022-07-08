@@ -86,7 +86,8 @@ class Setting extends Base
                 break;
             case 'site':
                 empty($data) && $data['close'] = 0;
-                $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
+                $builder->addFormItem('version', 'text', '系统版本', '系统版本', [], 'readonly')
+                    ->addFormItem('company_title', 'text', '平台名称', '平台名称')
                     ->addFormItem('jdunion', 'legend', '京东开放平台', '京东开放平台')
                     ->addFormItem('jd_appkey', 'text', 'Appkey', '开放平台AppKey')
                     ->addFormItem('jd_appsecret', 'text', 'AppSecret', '开放平台AppSecret')
@@ -104,7 +105,7 @@ class Setting extends Base
                 ];
                 //$data['driver'] = 'qiniu';
                 $builder->addFormItem('driver_title', 'legend', '上传驱动', '上传驱动')
-                    ->addFormItem('driver', 'text', '上传驱动', '上传驱动')
+                    ->addFormItem('driver', 'radio', '上传驱动', '上传驱动', model('upload')->locations())
                     ->addFormItem('qiniu_ak', 'text', '七牛accessKey', '七牛accessKey')
                     ->addFormItem('qiniu_sk', 'text', '七牛secretKey', '七牛secretKey')
                     ->addFormItem('qiniu_bucket', 'text', '七牛bucket', '七牛bucket')

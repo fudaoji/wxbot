@@ -29,6 +29,7 @@ class Botgroup extends Botbase
      */
     public function initialize()
     {
+        $this->needAid = false;
         parent::initialize();
         $this->model = new BotMember();
         $this->groupPosM = new Grouppos();
@@ -73,8 +74,40 @@ class Botgroup extends Botbase
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name'])
             ->addTableColumn(['title' => '关联推广位', 'field' => 'title'])
             ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
-            ->addRightButton('edit', ['title' => '群成员', 'href' => url('groupmember/index', ['group_id' => '__data_id__'])])
-            ->addRightButton('edit', ['title' => '设置白名单', 'href' => url('whiteid/index', ['group_id' => '__data_id__'])]);
+            ->addRightButton('edit', ['title' => '群成员', 'href' => url('groupmember/index', ['group_id' => '__data_id__']), 'class' => 'layui-btn layui-btn-xs'])
+            ->addRightButton('edit', ['title' => '设置白名单', 'href' => url('whiteid/index', ['group_id' => '__data_id__']), 'class' => 'layui-btn layui-btn-xs layui-btn-warm'])
+            ->addRightButton('edit');
+
+        return $builder->show();
+    }
+
+    /**
+     * 编辑
+     */
+    public function edit(){
+        if(request()->isPost()){
+            $post_data = input('post.');
+            $bot_client = model('bot')->getRobotClient($this->bot);
+            $res = $bot_client->setGroupName(['robot_wxid' => $this->bot['uin'], 'group_wxid' => $post_data['wxid'], 'group_name' => $post_data['nickname']]);
+            if($res['code'] != 1){
+                $this->error('群名修改失败：' . $res['errmsg']);
+            }
+            return parent::savePost('', $post_data);
+        }
+        $id = input('id');
+        $data = $this->model->getOne($id);
+        if(! $data){
+            $this->error('数据不存在');
+        }
+
+        //使用FormBuilder快速建立表单页面。
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('编辑')  //设置页面标题
+            ->setPostUrl(url('edit')) //设置表单提交地址
+            ->addFormItem('id', 'hidden', 'id', 'id')
+            ->addFormItem('wxid', 'hidden', 'wxid', 'wxid')
+            ->addFormItem('nickname', 'text', '群名', '1-20位长度', [], 'required minlength="1" maxlength="20"')
+            ->setFormData($data);
 
         return $builder->show();
     }

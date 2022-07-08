@@ -40,6 +40,7 @@ Abstract class Base
     abstract public function forwardMsgToFriends($params = []);
     abstract public function forwardMsg($params = []);
     abstract public function sendImgToFriends($params = []);
+    //req: path
     abstract public function sendImgToFriend($params = []);
     abstract public function sendTextToFriends($params = []);
     abstract public function sendTextToFriend($params = []);
@@ -66,6 +67,10 @@ Abstract class Base
     abstract public function removeGroupMember($params = []);
     abstract public function inviteInGroup($params = []);
     abstract public function getGroupMemberInfo($params = []);
+    //设置群名称 group_name
+    abstract public function setGroupName($params = []);
+    //设置群公告 notice
+    abstract public function setGroupNotice($params = []);
 
     /**
      * 间隔

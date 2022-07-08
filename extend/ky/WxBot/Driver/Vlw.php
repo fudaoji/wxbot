@@ -26,12 +26,9 @@ class Vlw extends Base
     const EVENT_LOGIN = 'Login';
     const EVENT_FRIEND_VERIFY = 'EventFrieneVerify';
 
-    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
+    const API_SEND_IMG = 'SendImageMsg'; //发送图片
+    const API_SEND_TEXT = 'SendTextMsg'; //发送文本
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
-    const API_GET_DETAIL_BY_WXID = 'GetDetailInfoByWxid'; // 获取某个好友详细
-    const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
-    const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
-    const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
     const API_SEND_VIDEO_MSG = 'SendVideoMsg'; // 发送视频消息，只支持pro版
     const API_SEND_FILE_MSG = 'SendFileMsg'; // 发送文件消息，只支持pro版
     const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
@@ -39,15 +36,24 @@ class Vlw extends Base
     const API_SEND_SHARE_LINK_MSG = 'SendShareLinkMsg'; //发送普通分享链接
     const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
     const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
-    const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
+
+    const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
+    const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
+    const API_GET_DETAIL_BY_WXID = 'GetDetailInfoByWxid'; // 获取某个好友详细
     const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
+    const API_MODIFY_FRIEND_REMARK = 'ModifyFriendNote'; //修改好友备注
+
+    const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
+    const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
+    const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
     const API_GET_GROUP_MEMBER_INFO = "GetGroupMemberDetailInfo"; //获取某个群成员信息
     const API_GET_GROUP_MEMBER = "GetGroupMember"; //获取群成员列表
-    const API_MODIFY_FRIEND_REMARK = 'ModifyFriendNote'; //修改好友备注
+    const API_SET_GROUP_NAME = 'ModifyGroupName'; //
+    const API_SET_GROUP_NOTICE = 'ModifyGroupNotice'; //
+
+
     const API_GET_GROUP_LIST = 'GetGrouplist'; //获取群列表
     const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
-    const API_SEND_IMG = 'SendImageMsg'; //发送图片
-    const API_SEND_TEXT = 'SendTextMsg'; //发送文本
     const API_GET_ROBOT_INFO = 'GetRobotInfo'; //获取机器人信息
     private $token;
 
@@ -630,6 +636,7 @@ class Vlw extends Base
             $res['code'] = 1;
         }else{
             $this->errors($res['Code']);
+            $res['errmsg'] = $this->errMsg;
             $res['code'] = 0;
         }
         return $res;
@@ -663,5 +670,35 @@ class Vlw extends Base
         $guest = $content['guest'];
         $guest['nickname'] = isset($guest['username']) ? $guest['username'] : $guest['nickname'];
         return isset($guest[$field]) ? $guest[$field] : $guest;
+    }
+
+    /**
+     *
+     * 修改群名称
+    robot_wxid (string)  // 机器人ID
+    group_wxid (string)  // 群ID
+    group_name (string)  // 新的群名称
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function setGroupName($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SET_GROUP_NAME)
+        ]);
+    }
+
+    /**
+     * 修改群公告
+        robot_wxid (string)  // 机器人ID
+        group_wxid (string)  // 群ID
+        Notice (string)  // 新的群公告
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function setGroupNotice($params = [])
+    {
+        // TODO: Implement setGroupNotice() method.
     }
 }

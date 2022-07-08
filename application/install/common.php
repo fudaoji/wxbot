@@ -225,9 +225,8 @@ function create_tables($db, $prefix = '')
 function register_administrator($db, $prefix, $admin)
 {
     show_msg('开始注册创始人帐号...');
-
     $password = ky_generate_password($admin['password']);
-    $db->table('admin')->insert(['group_id' => 1, 'username' => $admin['username'], 'password' => $password]);
+    $db->table($prefix . 'admin')->insert(['group_id' => 1, 'username' => $admin['username'], 'password' => $password]);
     show_msg('创始人帐号注册完成！');
 }
 

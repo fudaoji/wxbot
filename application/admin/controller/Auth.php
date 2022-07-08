@@ -32,7 +32,7 @@ class Auth extends Base
      */
     public function verify()
     {
-        $captcha = new Captcha(['fontSize' => 15]);
+        $captcha = new Captcha(['fontSize' => 20]);
         return $captcha->entry(2);
     }
 

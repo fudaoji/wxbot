@@ -100,6 +100,7 @@ INSERT INTO `__PREFIX__admin_rule` VALUES ('172', '', '机器人负责群', '7',
 INSERT INTO `__PREFIX__admin_rule` VALUES ('173', '', '发送列表', '7', '', '/admin/tpzstask/index', '_self', '1', '1646839807', '1648439722', '50', '1');
 INSERT INTO `__PREFIX__admin_rule` VALUES ('174', '', '汉字助手', '149', 'fa fa-anchor', '', '_self', '1', '1653556679', '1653556679', '1', '1');
 INSERT INTO `__PREFIX__admin_rule` VALUES ('175', '', '设置', '174', '', '/admin/hanziconfig/index', '_self', '1', '1653556715', '1653556715', '1', '1');
+INSERT INTO `__PREFIX__admin_rule` VALUES ('176', '', '系统升级', '1', 'fa fa-cloud-upload', '/admin/upgrade/index', '_self', '1', '1657205545', '1657205566', '1', '1');
 
 -- ----------------------------
 -- Table structure for ky_bot

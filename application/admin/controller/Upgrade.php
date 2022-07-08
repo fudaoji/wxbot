@@ -18,7 +18,7 @@ class Upgrade extends Base
     private $uKey = 'kyphpToken';
     public $user = []; //开发者信息
     public $token = '';
-    static public $baseUrl = 'http://kyphp_official.fdj.kuryun.cn';//'https://kyphp.kuryun.com';
+    static public $baseUrl = 'https://kyphp.kuryun.com';
     static public $apis = [];
     private $client;
 

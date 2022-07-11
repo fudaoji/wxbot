@@ -14,6 +14,7 @@ use app\bot\controller\Api;
 use app\constants\Addon;
 use app\constants\Bot;
 use app\constants\Rule;
+use app\constants\Task;
 use ky\WxBot\Driver\Vlw;
 use ky\Logger;
 
@@ -123,7 +124,6 @@ class EventGroupChat extends Api
                     controller('bot/'.$k)->groupChatHandle();
                 }
             }
-            //controller('bot/'.$k)->groupChatHandle();
         }
     }
 
@@ -146,7 +146,16 @@ class EventGroupChat extends Api
 
         $flag = false;
         foreach ($keywords as $keyword){
-            if(empty($keyword['wxids']) || strpos($keyword['wxids'], $this->groupWxid) !== false){
+            if(empty($keyword['wxids'])){
+                $where = ['uin' => $this->botWxid];
+                if($keyword['user_type']==Task::USER_TYPE_FRIEND){
+                    $where['type'] = Bot::FRIEND;
+                }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
+                    $where['type'] = Bot::GROUP;
+                }
+                $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
+            }
+            if(strpos($keyword['wxids'], $this->groupWxid) !== false){
                 model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid, ['nickname' => $this->content['from_name']]);
                 $flag = true;
             }

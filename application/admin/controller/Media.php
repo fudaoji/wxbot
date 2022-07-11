@@ -144,7 +144,6 @@ class Media extends Bbase
         $type == 'news' && $where['pid'] = 0;
         $data_list = model('media_' . $type)->page(12, $where, ['id' => 'desc'], true, 1);
         $pager = $data_list->appends(['type' => $type, 'search_key' => $search_key])->render();
-
         $assign = [
             'data_list' => $data_list,
             'type' => $type,
@@ -211,7 +210,7 @@ class Media extends Bbase
         $field = input('field', ''); //目标input框
         $where = ['admin_id' => $this->adminId];
         $data_list = $this->linkM->page(10, $where, ['id' => 'desc'], 'id,title,desc,image_url,url', 1);
-        $pager = $data_list->render();
+        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
         return $this->show($assign, __FUNCTION__);
     }
@@ -227,7 +226,7 @@ class Media extends Bbase
         $where = ['admin_id' => $this->adminId];
 
         $data_list = $this->videoM->page(12, $where, ['id' => 'desc'], 'id,url,title', 1);
-        $pager = $data_list->render();
+        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
         return $this->show($assign, __FUNCTION__);
     }
@@ -243,7 +242,7 @@ class Media extends Bbase
         $where = ['admin_id' => $this->adminId];
 
         $data_list = $this->fileM->page(10, $where, ['id' => 'desc'], 'id,title,url', 1);
-        $pager = $data_list->render();
+        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
         return $this->show($assign, __FUNCTION__);
     }
@@ -267,7 +266,7 @@ class Media extends Bbase
         $field = input('field', ''); //目标input框
         $where = ['admin_id' => $this->adminId];
         $data_list = $this->textM->page(10, $where, ['id' => 'desc'], 'id,content', 1);
-        $pager = $data_list->render();
+        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
         return $this->show($assign, __FUNCTION__);
     }
@@ -282,7 +281,7 @@ class Media extends Bbase
         $field = input('field', ''); //目标input框
         $where = ['admin_id' => $this->adminId];
         $data_list = $this->imageM->page(12, $where, ['id' => 'desc'], 'id,url,title', 1);
-        $pager = $data_list->render();
+        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
         return $this->show($assign, __FUNCTION__);
     }

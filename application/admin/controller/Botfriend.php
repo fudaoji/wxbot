@@ -11,8 +11,6 @@ namespace app\admin\controller;
 
 
 use app\admin\model\BotMember;
-use ky\WxBot\Vlw;
-use ky\WxBot\Wx;
 
 class Botfriend extends Botbase
 {
@@ -59,10 +57,31 @@ class Botfriend extends Botbase
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 90])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name', 'minWidth' => 70])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
-            ->addRightButton('edit', ['title' => '设置备注名']);
+            ->addTableColumn(['title' => '操作', 'minWidth' => 200, 'type' => 'toolbar'])
+            ->addRightButton('edit', ['title' => '设置备注名'])
+            ->addRightButton('delete', ['title' => '删除好友', 'href' => url('deleteFriendPost', ['id' => '__data_id__'])]);
 
         return $builder->show();
+    }
+
+    public function deleteFriendPost(){
+        if($this->bot['protocol'] == \app\constants\Bot::PROTOCOL_WXWORK){
+            $this->error('VLW企微暂时不支持此操作！');
+        }
+        $id = input('post.ids');
+        if(! $friend = $this->model->getOneByMap(['uin' => $this->bot['uin'], 'id' => $id])){
+            $this->error('数据不存在');
+        }
+        $res = model('bot')->getRobotClient($this->bot)->deleteFriend([
+            'robot_wxid' => $this->bot['uin'],
+            'to_wxid' => $friend['wxid']
+        ]);
+        if($res['code']){
+            $this->model->delOne($id);
+            $this->success('操作成功');
+        }else{
+            $this->error($res['errmsg']);
+        }
     }
 
     /**
@@ -85,7 +104,7 @@ class Botfriend extends Botbase
         }
         if(request()->isPost()){
             $post_data = input('post.');
-            $res = Vlw::init(['app_key' => $this->bot['app_key'], 'base_uri' => $this->bot['url']])->setFriendRemarkName([
+            $res = model('bot')->getRobotClient($this->bot)->setFriendRemarkName([
                 'robot_wxid' => $this->bot['uin'],
                 'to_wxid' => $data['wxid'],
                 'note' => $post_data['remark_name']

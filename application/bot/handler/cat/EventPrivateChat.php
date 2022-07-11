@@ -14,6 +14,7 @@ use app\bot\controller\Api;
 use app\constants\Addon;
 use app\constants\Bot;
 use app\constants\Reply;
+use app\constants\Task;
 use ky\Logger;
 
 class EventPrivateChat extends Api
@@ -135,7 +136,16 @@ class EventPrivateChat extends Api
 
         $flag = false;
         foreach ($keywords as $keyword){
-            if(empty($keyword['wxids']) || strpos($keyword['wxids'], $this->fromWxid) !== false ){
+            if(empty($keyword['wxids'])){
+                $where = ['uin' => $this->botWxid];
+                if($keyword['user_type']==Task::USER_TYPE_FRIEND){
+                    $where['type'] = Bot::FRIEND;
+                }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
+                    $where['type'] = Bot::GROUP;
+                }
+                $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
+            }
+            if(strpos($keyword['wxids'], $this->fromWxid) !== false){
                 model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);
                 $flag = true;
             }

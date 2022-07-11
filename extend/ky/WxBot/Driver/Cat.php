@@ -311,6 +311,8 @@ class Cat extends Base
 
     public function setFriendRemarkName($params = [])
     {
+        $params['msg'] = $params['note'];
+        unset($params['note']);
         return $this->doRequest($params, self::API_MODIFY_FRIEND_REMARK);
     }
 

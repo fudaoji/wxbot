@@ -25,6 +25,10 @@
         {/foreach}
         {/notempty}
         </select>
+
+        {if !empty($form['tip'])}
+        <tip class="form-tip">{$form['tip']}</tip>
+        {/if}
     </div>
     <script>
         layui.use(['jquery', 'formSelects'], function(){

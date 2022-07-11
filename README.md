@@ -2,8 +2,10 @@
 
 #### 介绍
 基于thinkphp的多商户多微信号的私域社群web系统。
+
 系统的功能设计架构为：通用功能+插件应用，因此开发者可以基于此系统进行满足自身业务需求的应用开发。
-目前支持VLW（个微和企微）和可爱猫。
+
+系统支持多机器人框架驱动，目前支持了VLW（个微和企微）和可爱猫。
 
 体验链接（请在PC端打开）：
 [http://wxbot.oudewa.cn/](http://wxbot.oudewa.cn/)（账号：test， 密码：123456）
@@ -29,17 +31,9 @@
 - [Vlw](http://a.vlwai.cn/)
 - [Vlw配套接口Xyo](https://www.yuque.com/httpapi/)
 
-#### 安装教程
+#### 安装及使用文档
 
-1.  拉取项目
-2.  在项目根目录下`cp env .env`, 修改.env对应的配置信息
-3.  将项目目录下的install/install.sql导入数据库
-4.  修改项目目录、runtime、public/uploads的读写权限
-5.  默认超管账号：admin 密码：123456
-
-#### 使用文档
-
-开发文档：[http://kyphp.kuryun.com/home/guide/bot](http://kyphp.kuryun.com/home/guide/bot.html)
+开发文档：[https://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html](https://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html)
 
 #### 参与贡献
 

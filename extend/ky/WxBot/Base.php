@@ -54,7 +54,7 @@ Abstract class Base
     abstract public function sendLinkMsg($params = []);
     abstract public function sendCardMsg($params = []);
 
-    //设置好友备注名
+    //设置好友备注名 note
     abstract public function setFriendRemarkName($params = []);
     abstract public function deleteFriend($params = []);
     abstract public function agreeFriendVerify($params = []);

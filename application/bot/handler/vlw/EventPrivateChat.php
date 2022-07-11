@@ -14,6 +14,7 @@ use app\bot\controller\Api;
 use app\constants\Addon;
 use app\constants\Bot;
 use app\constants\Reply;
+use app\constants\Task;
 use ky\WxBot\Driver\Vlw;
 use ky\Helper;
 use ky\Logger;
@@ -164,6 +165,34 @@ class EventPrivateChat extends Api
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){
+        $keywords = model('keyword')->getAll([
+            'order' => ['sort' => 'desc'],
+            'where' => [
+                'bot_id' => $this->bot['id'],
+                'keyword' => $this->content['msg'],
+                'status' => 1
+            ]
+        ]);
+
+        $flag = false;
+        foreach ($keywords as $keyword){
+            if(empty($keyword['wxids'])){
+                $where = ['uin' => $this->botWxid];
+                if($keyword['user_type']==Task::USER_TYPE_FRIEND){
+                    $where['type'] = Bot::FRIEND;
+                }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
+                    $where['type'] = Bot::GROUP;
+                }
+                $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
+            }
+            if(strpos($keyword['wxids'], $this->fromWxid) !== false){
+                model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);
+                $flag = true;
+            }
+        }
+        return $flag;
+    }
+    public function keywordBak(){
         $keywords = model('keyword')->getAll([
             'order' => ['sort' => 'desc'],
             'where' => [

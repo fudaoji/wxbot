@@ -12,6 +12,7 @@ namespace app\bot\controller;
 use app\admin\model\Bot;
 use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
+use app\bot\handler\cat\EventGroupMemberAdd;
 use app\bot\handler\vlw\EventFriendVerify;
 use app\bot\handler\vlw\EventPrivateChat;
 use app\bot\handler\vlw\EventLogin;
@@ -74,7 +75,7 @@ class Api extends BaseCtl
             exit(0);
         }
         /**
-         * @var $handler EventLogin|EventFriendVerify|EventPrivateChat
+         * @var $handler EventLogin|EventFriendVerify|EventPrivateChat|EventGroupMemberAdd
          */
         $handler = new $class();
         $handler->initData();

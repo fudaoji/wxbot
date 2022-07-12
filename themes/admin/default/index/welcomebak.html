@@ -1,0 +1,31 @@
+<div class="layui-row">
+    <div class="layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header"><i class="fa fa-fire icon"></i>欢迎回来，{$admin.username}</div>
+            <div class="layui-card-body layui-text">
+                <table class="layui-table">
+                    <colgroup>
+                        <col width="150">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <!--<tr>
+                        <td>部门</td>
+                        <td>
+                            财务部
+                        </td>
+                    </tr>-->
+                    <tr>
+                        <td>最近登录时间</td>
+                        <td>{:date('Y-m-d H:i:s', $admin.last_time)}</td>
+                    </tr>
+                    <tr>
+                        <td>登录IP</td>
+                        <td>{$admin.ip}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

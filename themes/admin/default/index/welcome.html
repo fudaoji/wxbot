@@ -1,31 +1,259 @@
-<div class="layui-row">
-    <div class="layui-col-md6">
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-md12">
         <div class="layui-card">
             <div class="layui-card-header"><i class="fa fa-fire icon"></i>欢迎回来，{$admin.username}</div>
-            <div class="layui-card-body layui-text">
-                <table class="layui-table">
-                    <colgroup>
-                        <col width="150">
-                        <col>
-                    </colgroup>
-                    <tbody>
-                    <!--<tr>
-                        <td>部门</td>
-                        <td>
-                            财务部
-                        </td>
-                    </tr>-->
-                    <tr>
-                        <td>最近登录时间</td>
-                        <td>{:date('Y-m-d H:i:s', $admin.last_time)}</td>
-                    </tr>
-                    <tr>
-                        <td>登录IP</td>
-                        <td>{$admin.ip}</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="layui-card-body">
+                <div class="welcome-module">
+                    <div class="layui-row layui-col-space10">
+                        <div class="layui-col-xs6">
+                            <div class="panel layui-bg-number">
+                                <div class="panel-body">
+                                    <div class="panel-title">
+                                        <h5>机器人总数</h5>
+                                    </div>
+                                    <div class="panel-content">
+                                        <h1 class="no-margins">{$bot_num}</h1>
+                                        <p><small>&nbsp;</small></p>
+                                        <p><small>&nbsp;</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <div class="panel layui-bg-number">
+                                <div class="panel-body">
+                                    <div class="panel-title">
+                                        <h5>好友总数</h5>
+                                    </div>
+                                    <div class="panel-content">
+                                        <h1 class="no-margins">{$member_num.total}</h1>
+                                        <p><small>今日新增：{$member_num.today}</small></p>
+                                        <p><small>&nbsp;</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <div class="panel layui-bg-number">
+                                <div class="panel-body">
+                                    <div class="panel-title">
+                                        <h5>群聊总数</h5>
+                                    </div>
+                                    <div class="panel-content">
+                                        <h1 class="no-margins">{$group_num.total}</h1>
+                                        <p><small>今日新增：{$group_num.today}</small></p>
+                                        <p><small>&nbsp;</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <div class="panel layui-bg-number">
+                                <div class="panel-body">
+                                    <div class="panel-title">
+                                        <h5>群员总数</h5>
+                                    </div>
+                                    <div class="panel-content">
+                                        <h1 class="no-margins">{$group_member.total}</h1>
+                                        <p><small>今日进群：{$group_member.today_add}</small></p>
+                                        <p><small>今日退群：{$group_member.today_decr}</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>30天好友新增</div>
+            <div class="layui-card-body">
+                <div id="echarts-records" style="width: 100%; min-height: 500px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>30天群员变化</div>
+            <div class="layui-card-body">
+                <div class="layui-form-item">
+                    <form class="layui-form" lay-filter="groupForm">
+                        <label class="layui-form-label">选择机器人</label>
+                        <div class="layui-input-block">
+                            {foreach $bot_list as $bot}
+                            <input type="checkbox"
+                                   name="botid[]"
+                                   title="{$bot.title}"
+                                   checked
+                                   lay-filter="botid"
+                                   value="{$bot.id}"
+                            />
+                            {/foreach}
+                        </div>
+                    </form>
+                </div>
+                <div id="echarts-groups" style="width: 100%; min-height: 500px;"></div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    layui.use(['form', 'echarts', 'element', 'miniTab'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            element = layui.element,
+            miniTab = layui.miniTab,
+            echarts = layui.echarts;
+
+        miniTab.listen();
+
+        var showChart = (params) => {
+            //params.xData = ['周一','周二','周三','周四','周五','周六','周日'];
+            //params.numData = [120, 132, 101, 134, 90, 230, 210];
+            //params.moneyData = [220, 182, 191, 234, 290, 330, 310];
+            var legends = params.legends;
+            var series = [];
+
+            params.series.forEach((item) => {
+                series.push(Object.assign(item, {type:'line'}));
+            });
+            /**
+             * 报表功能
+             */
+            var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+            var optionRecords = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: legends
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: params.xData
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: series
+            };
+            echartsRecords.setOption(optionRecords);
+
+            // echarts 窗口缩放自适应
+            window.onresize = function(){
+                echartsRecords.resize();
+            };
+        };
+
+        var showGroupChart = (params) => {
+            //params.xData = ['周一','周二','周三','周四','周五','周六','周日'];
+            //params.numData = [120, 132, 101, 134, 90, 230, 210];
+            //params.moneyData = [220, 182, 191, 234, 290, 330, 310];
+            var legends = params.legends;
+            var series = params.series;
+
+            params.series.forEach((item) => {
+                series.push(Object.assign(item, {type:'line'}));
+            });
+            /**
+             * 报表功能
+             */
+            var echartsGroups = echarts.init(document.getElementById('echarts-groups'), 'walden');
+            var optionRecords = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: legends
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: params.xData
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: series
+            };
+            echartsGroups.setOption(optionRecords);
+
+            // echarts 窗口缩放自适应
+            window.onresize = function(){
+                echartsGroups.resize();
+            };
+        };
+
+        var getData = (params = {}) => {
+            requestPost("{:url('index/welcome')}", params, (res) => {
+                showChart(res.data.member_data);
+            });
+        };
+
+        getData();
+
+        var getGroupData = (params = {}) => {
+            var formData = form.val("groupForm");
+            requestPost("{:url('index/getgroupData')}", formData, (res) => {
+                showGroupChart(res.data);
+            });
+        };
+        getGroupData();
+
+        form.on('checkbox(botid)', function(data){
+            getGroupData();
+        });
+    });
+</script>
+<style>
+
+    .layui-card {border:1px solid #f2f2f2;border-radius:5px;}
+    .icon {margin-right:10px;color:#1aa094;}
+    .icon-cray {color:#ffb800!important;}
+    .icon-blue {color:#1e9fff!important;}
+    .icon-tip {color:#ff5722!important;}
+    .layuimini-qiuck-module {text-align:center;margin-top: 10px}
+    .layuimini-qiuck-module a i {display:inline-block;width:100%;height:60px;line-height:60px;text-align:center;border-radius:2px;font-size:30px;background-color:#F8F8F8;color:#333;transition:all .3s;-webkit-transition:all .3s;}
+    .layuimini-qiuck-module a cite {position:relative;top:2px;display:block;color:#666;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;}
+    .welcome-module {width:100%;height:256px;}
+    .panel {background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+    .panel-body {padding:10px}
+    .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
+    .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+    .layui-red {color:red}
+    .main_btn > p {height:40px;}
+    .layui-bg-number {background-color:#F8F8F8;}
+    .layuimini-notice:hover {background:#f6f6f6;}
+    .layuimini-notice {padding:7px 16px;clear:both;font-size:12px !important;cursor:pointer;position:relative;transition:background 0.2s ease-in-out;}
+    .layuimini-notice-title,.layuimini-notice-label {
+        padding-right: 70px !important;text-overflow:ellipsis!important;overflow:hidden!important;white-space:nowrap!important;}
+    .layuimini-notice-title {line-height:28px;font-size:14px;}
+    .layuimini-notice-extra {position:absolute;top:50%;margin-top:-8px;right:16px;display:inline-block;height:16px;color:#999;}
+</style>

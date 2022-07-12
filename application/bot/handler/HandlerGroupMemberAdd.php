@@ -7,16 +7,14 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\bot\handler\cat;
+namespace app\bot\handler;
 
 use app\bot\controller\Api;
-use app\bot\handler\HandlerGroupMemberAdd;
 use app\constants\Addon;
-use app\constants\Bot;
 use app\constants\Reply;
 use ky\Logger;
 
-class EventGroupMemberAdd extends HandlerGroupMemberAdd
+class HandlerGroupMemberAdd extends Api
 {
     public function initialize()
     {
@@ -41,11 +39,9 @@ class EventGroupMemberAdd extends HandlerGroupMemberAdd
             'group_name' : '采品群测试',
             'group_wxid': '20849217466@chatroom',
             'guest': {
-     *          0:{
-                    'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/730J8GQYo0oPJbjxVC5PTUnNz2vq0lhfpREQwoh0BC8iaDM6pfccNGBRvWXfE3aY3jbekhyI5eEezUHv0cTQ4C7gbqCsakHniaFsKEUUuyGrg/132',
-                    'nickname' => 'DJ',
-                    'wxid' => 'wxid_xokb2ezu1p6t21',
-     *          }
+     *          'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/730J8GQYo0oPJbjxVC5PTUnNz2vq0lhfpREQwoh0BC8iaDM6pfccNGBRvWXfE3aY3jbekhyI5eEezUHv0cTQ4C7gbqCsakHniaFsKEUUuyGrg/132',
+                'nickname' => 'DJ',
+                'wxid' => 'wxid_xokb2ezu1p6t21',
      *      },
      *      'inviter':{
                 'nickname' => 'DJ',
@@ -57,21 +53,13 @@ class EventGroupMemberAdd extends HandlerGroupMemberAdd
      */
     public function handle(){
         $this->group = $this->memberM->getOneByMap(['uin' => $this->botWxid, 'wxid' => $this->groupWxid]);
-        if(empty($this->group)){
-            $this->group = $this->memberM->addOne([
-                'uin' => $this->botWxid,
-                'type' => Bot::GROUP,
-                'wxid' => $this->groupWxid,
-                'nickname' => $this->content['msg']['group_name'],
-                'headimgurl' => $this->content['msg']['group_headimgurl']
-            ]);
-        }
-        Logger::error($this->group);
+        Logger::error($this->groupWxid);
+        Logger::error($this->content);
         $this->basic();
         $this->addon();
     }
 
-    /*private function basic()
+    protected function basic()
     {
         $guest = $this->botClient->getGuest($this->content);
         $nickname = $guest['nickname'];
@@ -99,7 +87,7 @@ class EventGroupMemberAdd extends HandlerGroupMemberAdd
         }
     }
 
-    private function addon()
+    protected function addon()
     {
         $addons = Addon::addons();
         foreach ($addons as $k => $v){
@@ -111,5 +99,5 @@ class EventGroupMemberAdd extends HandlerGroupMemberAdd
                 }
             }
         }
-    }*/
+    }
 }

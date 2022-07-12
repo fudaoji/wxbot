@@ -76,9 +76,30 @@ class Botgroup extends Botbase
             ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
             ->addRightButton('edit', ['title' => '群成员', 'href' => url('groupmember/index', ['group_id' => '__data_id__']), 'class' => 'layui-btn layui-btn-xs'])
             ->addRightButton('edit', ['title' => '设置白名单', 'href' => url('whiteid/index', ['group_id' => '__data_id__']), 'class' => 'layui-btn layui-btn-xs layui-btn-warm'])
-            ->addRightButton('edit');
+            ->addRightButton('edit')
+            ->addRightButton('self',['title' => '退群', 'href' => url('quitGroupPost', ['id' => '__data_id__']), 'class' => 'layui-btn layui-btn-xs layui-btn-danger', 'data-ajax' => 1, 'data-confirm' => 1]);
 
         return $builder->show();
+    }
+
+    public function quitGroupPost()
+    {
+        $id = input('id', null);
+        $data = $this->model->getOneByMap(['id' => $id, 'uin' => $this->bot['uin']], true, true);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $res = model('bot')->getRobotClient($this->bot)->quitGroup([
+            'robot_wxid' => $this->bot['uin'],
+            'group_wxid' => $data['wxid']
+        ]);
+        if($res['code']){
+            $this->model->delOne($id);
+            $this->success('操作成功');
+        }else{
+            $this->error($res['errmsg']);
+        }
     }
 
     /**

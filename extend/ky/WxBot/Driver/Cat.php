@@ -50,6 +50,7 @@ class Cat extends Base
     const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
     const API_SET_GROUP_NAME = 'EditGroupName'; //
     const API_SET_GROUP_NOTICE = 'EditGroupNotice'; //
+    const API_QUIT_GROUP = 'QuitGroup'; // 退群
 
     const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
     const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
@@ -447,5 +448,18 @@ class Cat extends Base
         $params['msg'] = $params['notice'];
         unset($params['notice']);
         return $this->doRequest($params, self::API_SET_GROUP_NOTICE);
+    }
+
+    /**
+     * req:
+     *  robot_wxid (string)  // 机器人ID
+     *  group_wxid (string)  // 群ID
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function quitGroup($params = [])
+    {
+        return $this->doRequest($params, self::API_QUIT_GROUP);
     }
 }

@@ -177,9 +177,13 @@ window.requestPost = function(url, params, callback, sync = false){
         var loadingIndex = layer.load(1);
         $.post(url, params, function(res){
             if(res.code === 1){
-                layer.msg(res.msg, {time: 1500}, function () {
+                if(res.msg){
+                    layer.msg(res.msg, {time: 1500}, function () {
+                        callback && typeof callback !== 'undefined' && callback(res);
+                    });
+                }else{
                     callback && typeof callback !== 'undefined' && callback(res);
-                });
+                }
             }else{
                 layer.alert(res.msg);
             }

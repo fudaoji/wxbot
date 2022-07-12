@@ -30,7 +30,17 @@ class BotGroupmember extends Base
     public function addMember($params = []){
         if(!$gm = $this->getOneByMap(['bot_id' => $params['bot_id'], 'group_id' => $params['group_id'],'wxid' => $params['wxid']])){
             $this->addOne($params);
-            //todo 记录进群统计数据
+            //记录进群统计数据
+            controller('common/TaskQueue', 'event')->push([
+                'delay' => 10,
+                'params' => [
+                    'do' => ['\\app\\common\\event\\Bot', 'tjGroup'],
+                    'bot_id' => $params['bot_id'],
+                    'day' => date('Y-m-d'),
+                    'group_id' => $params['group_id'],
+                    'type' => 'add'
+                ]
+            ]);
         }else{
             $params['id'] = $gm['id'];
             $this->updateOne($params);
@@ -46,7 +56,17 @@ class BotGroupmember extends Base
      */
     public function rmMember($params = []){
         $this->delByMap(['bot_id' => $params['bot_id'], 'wxid' => $params['wxid']]);
-        //todo 记录退群统计数据
+        //记录退群统计数据
+        controller('common/TaskQueue', 'event')->push([
+            'delay' => 10,
+            'params' => [
+                'do' => ['\\app\\common\\event\\Bot', 'tjGroup'],
+                'bot_id' => $params['bot_id'],
+                'day' => date('Y-m-d'),
+                'group_id' => $params['group_id'],
+                'type' => 'decr'
+            ]
+        ]);
     }
 
     /**

@@ -10,6 +10,7 @@
 namespace app\admin\controller;
 
 use think\facade\Cache;
+use app\constants\Bot;
 
 class Index extends Base
 {
@@ -30,7 +31,100 @@ class Index extends Base
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function welcome(){
-        return $this->show();
+        if(request()->isPost()){
+            $bot_list = model('bot')->getAll([
+                'where' => ['admin_id' => $this->adminInfo['id']],
+                'field' => 'id,title,uin'
+            ]);
+            $end = strtotime(date('Ymd 00:00:00'));
+            $begin = $end - 29 * 86400;
+            $x_data = [];
+            for($i = $begin; $i <= $end; $i+=86400){
+                $x_data[] = date('m-d', $i);
+            }
+            //好友数据
+            $legends = [];
+            $series = [];
+            $member_where = ['type' => Bot::FRIEND];
+            foreach ($bot_list as $bot){
+                $legends[] = $bot['title'];
+                $temp = [
+                    'name' => $bot['title'],
+                    'data' => []
+                ];
+                $member_where['uin'] = $bot['uin'];
+                for($i = $begin; $i <= $end; $i+=86400){
+                    $member_where['create_time'] = ['between', [$i, $i + 86399]];
+                    $temp['data'][] = model('botMember')->total($member_where);
+                }
+                $series[] = $temp;
+            }
+            //群员数据
+
+            $return = [
+                'member_data' => ['xData' => $x_data, 'legends' => $legends, 'series' => $series]
+            ];
+            $this->success('', null, $return);
+        }
+        $bots = model('bot')->getField('id,uin', ['admin_id' => $this->adminInfo['id']]);
+        $bot_ids = array_keys($bots);
+        $bot_wxids = array_values($bots);
+        $where_member = ['uin' => ['in', $bot_wxids ? $bot_wxids : [0]], 'type' => Bot::FRIEND];
+        $where_group = array_merge($where_member, ['type' => Bot::GROUP]);
+        $where_today = ['create_time' => ['>', strtotime(date('Ymd 00:00:00'))]];
+        $today_tj = model('tjGroup')->getOneByMap(['day' => date('Y-m-d'), 'admin_id' => $this->adminInfo['id']], true, true);
+
+        $bot_list = model('bot')->getAll([
+            'where' => ['admin_id' => $this->adminInfo['id']],
+            'field' => 'id,title,uin'
+        ]);
+        $assign = [
+            'bot_num' => count($bot_ids),
+            'member_num' => [
+                'total' => model('botMember')->total($where_member),
+                'today' => model('botMember')->total(array_merge($where_member, $where_today))
+            ],
+            'group_num' => [
+                'total' => model('botMember')->total($where_group),
+                'today' => model('botMember')->total(array_merge($where_group, $where_today))
+            ],
+            'group_member' => [
+                'total' => model('botGroupmember')->total(['bot_id' => ['in', $bot_ids ? $bot_ids : [0]]]),
+                'today_add' => empty($today_tj) ? 0:$today_tj['add_num'],
+                'today_decr' => empty($today_tj) ? 0:$today_tj['decr_num']
+            ],
+            'bot_list' => $bot_list
+        ];
+        return $this->show($assign);
+    }
+
+    public function getGroupData(){
+        if(request()->isPost()){
+            $bot_ids = input('post.botid');
+            if(empty($bot_ids)){
+                $this->error('至少选择一个机器人');
+            }
+            $end = strtotime(date('Ymd 00:00:00'));
+            $begin = $end - 29 * 86400;
+            $x_data = [];
+
+            //好友数据
+            $legends = ["进群人数", "退群人数"];
+
+            $add_data = ['name' => '进群人数', 'data' => []];
+            $decr_data = ['name' => '退群人数', 'data' => []];
+            $where = ['admin_id' => $this->adminInfo['id'], 'bot_id' => ['in', $bot_ids]];
+            for($i = $begin; $i <= $end; $i+=86400){
+                $x_data[] = date('m-d', $i);
+                $where['day'] = date('Y-m-d', $i);
+                $add_data['data'][] = model('tjGroup')->sums('add_num', $where);
+                $decr_data['data'][] = model('tjGroup')->sums('decr_num', $where);
+            }
+            $series = [$add_data, $decr_data];
+
+            $return = ['xData' => $x_data, 'legends' => $legends, 'series' => $series];
+            $this->success('', null, $return);
+        }
     }
 
     /**

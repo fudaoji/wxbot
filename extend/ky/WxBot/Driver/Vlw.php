@@ -50,7 +50,7 @@ class Vlw extends Base
     const API_GET_GROUP_MEMBER = "GetGroupMember"; //获取群成员列表
     const API_SET_GROUP_NAME = 'ModifyGroupName'; //
     const API_SET_GROUP_NOTICE = 'ModifyGroupNotice'; //
-
+    const API_QUIT_GROUP = 'QuitGroup'; // 退群
 
     const API_GET_GROUP_LIST = 'GetGrouplist'; //获取群列表
     const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
@@ -700,5 +700,20 @@ class Vlw extends Base
     public function setGroupNotice($params = [])
     {
         // TODO: Implement setGroupNotice() method.
+    }
+
+    /**
+     * req:
+     *  robot_wxid (string)  // 机器人ID
+     *  group_wxid (string)  // 群ID
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function quitGroup($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_QUIT_GROUP)
+        ]);
     }
 }

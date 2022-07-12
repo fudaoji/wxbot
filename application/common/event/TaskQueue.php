@@ -44,6 +44,14 @@ class TaskQueue extends Base
 
     /**
      * 任务队列测试消费者
+     * e.g:
+     * controller('common/TaskQueue', 'event')->push([
+        'delay' => 10,
+        'params' => [
+            'do' => ['\\app\\common\\event\\TaskQueue', 'testTask'],
+            'id' => $order_info['id']
+        ]
+    ]);
      * @param $data
      * @author: fudaoji<fdj@kuryun.cn>
      */

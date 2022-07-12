@@ -67,6 +67,8 @@ Abstract class Base
     abstract public function removeGroupMember($params = []);
     abstract public function inviteInGroup($params = []);
     abstract public function getGroupMemberInfo($params = []);
+    abstract public function quitGroup($params = []);
+
     //设置群名称 group_name
     abstract public function setGroupName($params = []);
     //设置群公告 notice

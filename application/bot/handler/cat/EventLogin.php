@@ -9,10 +9,10 @@
 
 namespace app\bot\handler\cat;
 
-use app\bot\controller\Api;
+use app\bot\handler\HandlerLogin;
 use ky\Logger;
 
-class EventLogin extends Api
+class EventLogin extends HandlerLogin
 {
     public function initialize()
     {
@@ -35,11 +35,11 @@ class EventLogin extends Api
     }
 
      */
-    public function handle(){
+    /*public function handle(){
         $this->botM->updateOne([
             'id' => $this->bot['id'],
             'alive' => $this->content['type'] ? 0 : 1
         ]);
-    }
+    }*/
 
 }

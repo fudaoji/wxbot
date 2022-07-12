@@ -9,11 +9,11 @@
 
 namespace app\bot\handler\cat;
 
-
 use app\bot\controller\Api;
+use app\bot\handler\HandlerGroupMemberDecrease;
 use ky\Logger;
 
-class EventGroupMemberDecrease extends Api
+class EventGroupMemberDecrease extends HandlerGroupMemberDecrease
 {
     public function initialize()
     {
@@ -34,8 +34,8 @@ class EventGroupMemberDecrease extends Api
     )
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function handle(){
+    /*public function handle(){
         $this->group = $this->memberM->getOneByMap(['uin' => $this->botWxid, 'wxid' => $this->groupWxid]);
-        $this->groupMemberM->rmMember(['bot_id' => $this->bot['id'], 'wxid' => $this->content['to_wxid']]);
-    }
+        $this->groupMemberM->rmMember(['bot_id' => $this->bot['id'], 'wxid' => $this->content['to_wxid'], 'group_id' => $this->group['id']]);
+    }*/
 }

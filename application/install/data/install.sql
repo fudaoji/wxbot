@@ -4962,7 +4962,7 @@ CREATE TABLE `__PREFIX__setting` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='站点配置';
 
-INSERT INTO `__PREFIX__setting` VALUES ('1', 'site', '站点信息', '{\"version\":\"1.5.0\",\"company_title\":\"微精灵\",\"jd_appkey\":\"\",\"jd_appsecret\":\"\",\"jtt_appid\":\"\",\"jtt_appkey\":\"\"}', '1590290640', '1649899288'), ('2', 'upload', '附件设置', '{\"driver\":\"local\",\"qiniu_ak\":\"\",\"qiniu_sk\":\"\",\"qiniu_bucket\":\"\",\"qiniu_domain\":\"\",\"image_size\":\"3148000\",\"image_ext\":\"jpg,gif,png,jpeg\",\"file_size\":\"53000000\",\"file_ext\":\"jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf\",\"voice_size\":\"2048000\",\"voice_ext\":\"mp3,wma,wav,amr\",\"video_size\":\"50240000\",\"video_ext\":\"mp4,flv,mov\"}', '1590292316', '1646835370');
+INSERT INTO `__PREFIX__setting` VALUES ('1', 'site', '站点信息', '{\"version\":\"1.5.1\",\"company_title\":\"微精灵\",\"jd_appkey\":\"\",\"jd_appsecret\":\"\",\"jtt_appid\":\"\",\"jtt_appkey\":\"\"}', '1590290640', '1649899288'), ('2', 'upload', '附件设置', '{\"driver\":\"local\",\"qiniu_ak\":\"\",\"qiniu_sk\":\"\",\"qiniu_bucket\":\"\",\"qiniu_domain\":\"\",\"image_size\":\"3148000\",\"image_ext\":\"jpg,gif,png,jpeg\",\"file_size\":\"53000000\",\"file_ext\":\"jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf\",\"voice_size\":\"2048000\",\"voice_ext\":\"mp3,wma,wav,amr\",\"video_size\":\"50240000\",\"video_ext\":\"mp4,flv,mov\"}', '1590292316', '1646835370');
 
 ---v1.5.1---
 ALTER TABLE `bot`.`ky_keyword` ADD COLUMN `user_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0不用 1好友 2群聊' AFTER `sort`;

@@ -1,3 +1,12 @@
+2022-07-15
+v1.5.2
+功能更新
+* 新增web机器人
+
+数据库表更新
+* bot_member修改wxid为varchar(100)
+* bot_groupmember修改wxid为varchar(100)
+
 2022-07-11
 v1.5.1
 功能更新

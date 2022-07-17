@@ -106,7 +106,7 @@ class Keyword extends Botbase
                 $v['wxids'] = '';
                 $this->model->addOne($v);
             }
-            $this->success('操作成功');
+            $this->success('操作成功', '/undefined');
         }
         $bot_list = $this->getBots(['id' => ['neq', $this->bot['id']]]);
         // 使用FormBuilder快速建立表单页面
@@ -167,7 +167,7 @@ class Keyword extends Botbase
         return $builder->show(['material' => $material]);
     }
 
-    public function savePost($jump_to = '', $data = [])
+    public function savePost($jump_to = '/undefined', $data = [])
     {
         $post_data = input('post.');
         $post_data['admin_id'] = $this->adminInfo['id'];

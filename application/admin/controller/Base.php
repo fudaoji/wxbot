@@ -110,7 +110,7 @@ class Base extends BaseCtl
      * @param array $data
      * @return mixed
      */
-    public function savePost($jump_to = '', $data=[]){
+    public function savePost($jump_to = '/undefined', $data=[]){
         $post_data = $data ? $data : input('post.');
         if(empty($post_data[$this->pk])){
             $res = $this->model->addOne($post_data);

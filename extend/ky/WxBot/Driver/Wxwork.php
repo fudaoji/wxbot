@@ -34,7 +34,7 @@ class Wxwork extends Base
 
     const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
     const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
-    const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
+    const API_DELETE_FRIEND = 'DeleteFriendEnterprise'; // 删除好友，只支持pro版
     const API_MODIFY_FRIEND_REMARK = 'ModifyFriendNoteEnterprise'; //修改好友备注
     const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
 
@@ -162,10 +162,11 @@ class Wxwork extends Base
     robot_wxid (string)  // 机器人ID
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function deleteFriend($params = []){
+        return  $this->apiUnSupport();
         return $this->request([
             'data' => $this->buildPostData($params, self::API_DELETE_FRIEND)
         ]);

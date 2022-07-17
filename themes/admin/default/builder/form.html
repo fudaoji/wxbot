@@ -110,15 +110,15 @@
                     success : function(res) {
                         if(res.code === 1 ) {
                             layer.msg(res.msg, {time: 1500}, function(){
-                                if(parent_index){ //表单页为内页的情况
-                                    parent.layer.close(parent_index);
-                                    parent.location.reload();
-                                }else{
-                                    if(typeof res.url !== 'undefined' && res.url){
-                                        location.href = res.url;
+                                if(res.url == '/undefined'){
+                                    if(parent_index){ //表单页为内页的情况
+                                        parent.layer.close(parent_index);
+                                        parent.location.reload();
                                     }else{
                                         miniTab.deleteCurrentByIframe();
                                     }
+                                }else if(res.url){
+                                    location.href = res.url;
                                 }
                             });
                         } else{

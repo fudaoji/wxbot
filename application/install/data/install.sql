@@ -4977,3 +4977,7 @@ CREATE TABLE `__PREFIX__tj_group` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `group_id_day` (`group_id`,`day`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT='群员数量统计';
+
+#---v1.6.0---#
+ALTER TABLE `__PREFIX__bot_member` CHANGE COLUMN `wxid` `wxid` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '微信id';
+ALTER TABLE `__PREFIX__bot_groupmember` CHANGE COLUMN `wxid` `wxid` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '成员wxid';

@@ -12,7 +12,7 @@ namespace app\constants;
 
 class Bot
 {
-    const PROTOCOL_WEB = 'web';
+    const PROTOCOL_WEB = 'webgo';
     const PROTOCOL_CAT = 'cat';
     const PROTOCOL_VLW = 'vlw';
     const PROTOCOL_WXWORK = 'wxwork'; //企业微信
@@ -37,8 +37,17 @@ class Bot
     const MSG_VOICE = 34;
     const MSG_CARD = 42;
     const MSG_VIDEO = 43;
-    const MSG_FILE = 2004;
     const MSG_LINK = 49;
+    const MSG_EMOTICON = 47;   // 表情消息
+    const MSG_LOCATION= 48;    // 地理位置消息
+    const MSG_TRANSFER = 2000;  //转账消息
+    const MSG_RED = 2001;  //红包消息
+    const MSG_APP = 2002;  // 小程序消息
+    const MSG_GROUPINVITE = 2003;  //群邀请
+    const MSG_RECEIVEFILE = 2004;  //接收文件
+    const MSG_VERIFY = 37;    // 好友验证
+    const MSG_SYS = 10000; // 系统消息
+    const MSG_RECALLED = 2005;  // 消息撤回
 
     const MSGTYPE_TEXT = "text";           // 文本消息
     const MSGTYPE_IMAGE = "image";          // 图片消息
@@ -69,9 +78,24 @@ class Bot
     public static function protocols($id = null)
     {
         $list = [
+            self::PROTOCOL_WEB => '网页版',
             self::PROTOCOL_CAT => '可爱猫个微',
             self::PROTOCOL_VLW => 'VLW个微',
             self::PROTOCOL_WXWORK => 'VLW企微',
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
+    /**
+     * 机器人协议
+     * @param null $id
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function webs($id = null)
+    {
+        $list = [
+            self::PROTOCOL_WEB => 'go-wxbot',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

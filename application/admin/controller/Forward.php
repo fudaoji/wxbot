@@ -161,7 +161,7 @@ class Forward extends Botbase
         return $builder->show();
     }
 
-    public function savePost($jump_to = '', $data = [])
+    public function savePost($jump_to = '/undefined', $data = [])
     {
         $post_data = input('post.');
         $post_data['admin_id'] = $this->adminInfo['id'];

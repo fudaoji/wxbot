@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 
 use app\admin\model\BotMember;
+use app\constants\Bot;
 
 class Botfriend extends Botbase
 {
@@ -32,7 +33,7 @@ class Botfriend extends Botbase
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['type' => \app\constants\Bot::FRIEND, 'uin' => $this->bot['uin']];
+            $where = ['type' => Bot::FRIEND, 'uin' => $this->bot['uin']];
             !empty($post_data['search_key']) && $where['nickname|remark_name|username|wxid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
@@ -47,11 +48,12 @@ class Botfriend extends Botbase
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
+        $tip = "<ul><li>注意：</li><li>当前的备注名称就是您对该好友的微信备注</li></ul>";
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => 'wxid、微信号、昵称、备注名称']
         ])
-            ->setTip("注意：当前的备注名称就是您对该好友的微信备注")
+            ->setTip($tip)
             ->addTopButton('self', ['title'=>'拉取最新好友', 'href' => url('syncFriends'), 'data-ajax' => 1])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'wxid', 'minWidth' => 90])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 90])
@@ -65,9 +67,6 @@ class Botfriend extends Botbase
     }
 
     public function deleteFriendPost(){
-        if($this->bot['protocol'] == \app\constants\Bot::PROTOCOL_WXWORK){
-            $this->error('VLW企微暂时不支持此操作！');
-        }
         $id = input('post.ids');
         if(! $friend = $this->model->getOneByMap(['uin' => $this->bot['uin'], 'id' => $id])){
             $this->error('数据不存在');
@@ -111,9 +110,9 @@ class Botfriend extends Botbase
             ]);
             if($res['code']){
                 $this->model->updateOne(['id' => $id, 'remark_name' => $post_data['remark_name']]);
-                $this->success('设置成功');
+                $this->success('设置成功', '/undefined');
             }
-            $this->error($res['msg']);
+            $this->error($res['errmsg']);
         }
 
         // 使用FormBuilder快速建立表单页面

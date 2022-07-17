@@ -75,9 +75,35 @@ class Groupmember extends Botbase
             ->addTableColumn(['title' => '群内昵称', 'field' => 'group_nickname'])
             ->addTableColumn(['title' => '微信号', 'field' => 'username'])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
-            ->addRightButton('edit', ['title' => '设置备注名']);
+            ->addRightButton('edit', ['title' => '设置备注名'])
+            ->addRightButton('self', ['title' => '移出群聊','href' => url('removeMemberPost', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-danger','data-ajax' => 1, 'data-confirm' => 1]);
 
         return $builder->show();
+    }
+
+    public function removeMemberPost(){
+        $id = input('post.id');
+        if(! $friend = $this->model->getOneJoin([
+            'alias' => 'm',
+            'join' => [
+                ['bot_member g', 'g.id=m.group_id']
+            ],
+            'where' => ['m.bot_id' => $this->bot['id'], 'm.id' => $id, 'g.type'=>\app\constants\Bot::GROUP],
+            'field' => ['g.wxid as group_wxid', 'm.*']
+        ])){
+            $this->error('数据不存在');
+        }
+        $res = model('bot')->getRobotClient($this->bot)->removeGroupMember([
+            'robot_wxid' => $this->bot['uin'],
+            'group_wxid' => $friend['group_wxid'],
+            'to_wxid' => $friend['wxid']
+        ]);
+        if($res['code']){
+            $this->model->delOne($id);
+            $this->success('操作成功');
+        }else{
+            $this->error($res['errmsg']);
+        }
     }
 
     /**

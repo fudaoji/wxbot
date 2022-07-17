@@ -19,6 +19,7 @@ use app\bot\handler\vlw\EventLogin;
 use app\constants\Bot as BotConst;
 use app\common\controller\BaseCtl;
 use ky\WxBot\Driver\Vlw;
+use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
 use ky\WxBot\Driver\Cat;
 use ky\Helper;
@@ -41,7 +42,7 @@ class Api extends BaseCtl
     protected $groupMemberM;
     protected $bot;
     /**
-     * @var Vlw|Wxwork|Cat
+     * @var Vlw|Wxwork|Cat|Webgo
      */
     protected $botClient;
     protected $fromWxid = '';
@@ -91,6 +92,10 @@ class Api extends BaseCtl
     protected function initData(){
         if(request()->isPost()) {
             switch ($this->driver){
+                case BotConst::PROTOCOL_WEB:
+                    $this->botWxid = $this->content['robot_wxid'];
+                    $this->fromWxid = empty($this->content['from_wxid']) ? $this->botWxid : $this->content['from_wxid'];
+                    break;
                 case BotConst::PROTOCOL_CAT:
                     $this->botWxid = $this->content['robot_wxid'];
                     $this->fromWxid = empty($this->content['final_from_wxid']) ? $this->botWxid : $this->content['final_from_wxid'];
@@ -116,6 +121,14 @@ class Api extends BaseCtl
 
     private function checkEvent(){
         switch ($this->driver){
+            case BotConst::PROTOCOL_WEB:
+                $this->content = Helper::$ajax;
+                $this->event = Helper::$ajax['event'];
+
+                if($this->isGroupEvent()){
+                    $this->groupWxid = $this->content['from_group'];
+                }
+                break;
             case BotConst::PROTOCOL_CAT:
                 $this->content = Helper::$ajax;
                 $map = [

@@ -393,6 +393,7 @@ class Cat extends Base
      */
     public function inviteInGroup($params = [])
     {
+        $params['to_wxid'] = $params['friend_wxid'];
         return $this->doRequest($params, self::API_INVITE_IN_GROUP);
     }
 

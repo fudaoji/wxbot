@@ -63,11 +63,12 @@ class Botgroup extends Botbase
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
+        $tip = "<ul><li>注意：</li><li>当前的备注名称就是指实际微信通讯录当中您对该群的备注</li></ul>";
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '群名称、备注名称、wxid']
         ])
-            ->setTip("注意：当前的备注名称就是指实际微信通讯录当中您对该群的备注")
+            ->setTip($tip)
             ->addTopButton('self', ['title'=>'拉取最新群组', 'href' => url('syncGroups'), 'data-ajax' => 1])
             ->addTableColumn(['title' => '群id', 'field' => 'wxid'])
             ->addTableColumn(['title' => '群名称', 'field' => 'nickname'])

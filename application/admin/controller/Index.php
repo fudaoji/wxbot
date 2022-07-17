@@ -109,18 +109,21 @@ class Index extends Base
             $x_data = [];
 
             //好友数据
-            $legends = ["进群人数", "退群人数"];
+            $legends = ["进群人数", "退群人数", "净增人数"];
 
             $add_data = ['name' => '进群人数', 'data' => []];
             $decr_data = ['name' => '退群人数', 'data' => []];
+            $netinc_data = ['name' => '净增人数', 'data' => []];
             $where = ['admin_id' => $this->adminInfo['id'], 'bot_id' => ['in', $bot_ids]];
             for($i = $begin; $i <= $end; $i+=86400){
                 $x_data[] = date('m-d', $i);
                 $where['day'] = date('Y-m-d', $i);
                 $add_data['data'][] = model('tjGroup')->sums('add_num', $where);
                 $decr_data['data'][] = model('tjGroup')->sums('decr_num', $where);
+                $index = count($add_data['data']) - 1;
+                $netinc_data['data'][] = $add_data['data'][$index] - $decr_data['data'][$index];
             }
-            $series = [$add_data, $decr_data];
+            $series = [$add_data, $decr_data, $netinc_data];
 
             $return = ['xData' => $x_data, 'legends' => $legends, 'series' => $series];
             $this->success('', null, $return);

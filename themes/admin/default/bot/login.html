@@ -12,10 +12,16 @@
                  src="{$code}"
                  alt="二维码">
 
-            <button class="layui-btn layui-btn-sm"
-                    id="btn-login"
-                    style="margin-bottom: 50px;"
-            >已扫码并点击登录</button>
+            <div class="layui-btn-group" style="margin-bottom: 50px;">
+                <button class="layui-btn layui-btn-sm"
+                        id="btn-login"
+                >已扫码并点击登录</button>
+
+                <a class="layui-btn layui-btn-sm layui-btn-primary"
+                   href="javascript:location.reload();"
+                ><i class="layui-icon layui-icon-refresh"></i>刷新</a>
+            </div>
+
         </div>
     </div>
 </div>
@@ -29,8 +35,8 @@
         $('#btn-login').on('click', () => {
             var loadingIndex = layer.load();
             $.post("{:url('login')}", {id: "{$id}", uuid: "{$uuid}"}, (res) => {
+                layer.close(loadingIndex);
                 if(res.code === 1){
-                    layer.close(loadingIndex);
                     layer.msg(res.msg, {time: 1000}, () => {
                         parent.location.reload();
                         miniTab.deleteCurrentByIframe();

@@ -40,9 +40,10 @@ Abstract class Base
     abstract public function forwardMsgToFriends($params = []);
     abstract public function forwardMsg($params = []);
     abstract public function sendImgToFriends($params = []);
-    //req: path
+    //req: robot_wxid  to_wxid  path
     abstract public function sendImgToFriend($params = []);
     abstract public function sendTextToFriends($params = []);
+    //req: robot_wxid  to_wxid  msg
     abstract public function sendTextToFriend($params = []);
     abstract public function sendVideoToFriends($params = []);
     abstract public function sendVideoMsg($params = []);
@@ -64,7 +65,9 @@ Abstract class Base
 
     abstract public function getGroups($params = []);
     abstract public function sendGroupMsgAndAt($params = []);
+    //移除群聊 robot_wxid group_wxid to_wxid
     abstract public function removeGroupMember($params = []);
+    //邀请好友入群 robot_wxid, group_wxid, friend_wxid
     abstract public function inviteInGroup($params = []);
     abstract public function getGroupMemberInfo($params = []);
     abstract public function quitGroup($params = []);
@@ -95,7 +98,7 @@ Abstract class Base
     protected function request($params = []){
         $this->client = new Client([
             'base_uri' => $this->baseUri,
-            'timeout' => empty($this->options['timeout']) ? 15 : $this->options['timeout']
+            'timeout' => empty($this->options['timeout']) ? 0 : $this->options['timeout']
         ]);
         $url = empty($params['url']) ? '/' : $params['url'];
         $method = empty($params['method']) ? 'post' : $params['method'];
@@ -151,4 +154,12 @@ Abstract class Base
 
     abstract public function dealRes($res);
 
+    /**
+     * 接口暂未开放
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function apiUnSupport(){
+        return ['code' => 0, 'errmsg' => '此接口暂不支持'];
+    }
 }

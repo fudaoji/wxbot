@@ -147,9 +147,10 @@ function write_config()
         $conf = str_replace("[{$name}]", $value, $conf);
     }
     //替换memcache
-    $memcache = session('memcache_config');
-    foreach ($memcache as $name => $value) {
-        $conf = str_replace("[{$name}]", $value, $conf);
+    if($memcache = (array)session('memcache_config')){
+        foreach ($memcache as $name => $value) {
+            $conf = str_replace("[{$name}]", $value, $conf);
+        }
     }
 
     //写入应用配置文件

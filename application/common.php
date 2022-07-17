@@ -35,6 +35,8 @@ function execute_sql($sql_path = '')
     $prefix = '`'.config('database.prefix');
     $sql = str_replace("{$original}", "{$prefix}", $sql); //替换掉表前缀
 
+    \think\Db::execute($sql);
+    return  true;
     foreach ($sql as $k => $value) {
         $value = trim($value, "\n");
         if (!empty($value)) {

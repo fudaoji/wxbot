@@ -4966,6 +4966,7 @@ INSERT INTO `__PREFIX__setting` VALUES ('1', 'site', '站点信息', '{\"version
 
 #---v1.5.1---#
 ALTER TABLE `__PREFIX__keyword` ADD COLUMN `user_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0不用 1好友 2群聊' AFTER `sort`;
+DROP TABLE IF EXISTS `__PREFIX__tj_group`;
 CREATE TABLE `__PREFIX__tj_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `group_id` int(10) unsigned NOT NULL DEFAULT '0',

@@ -5,7 +5,7 @@
 
 系统的功能设计架构为：通用功能+插件应用，因此开发者可以基于此系统进行满足自身业务需求的应用开发。
 
-系统支持多机器人框架驱动，目前支持了VLW（个微和企微）和可爱猫。
+系统支持多机器人框架驱动，目前支持了VLW（个微和企微）、可爱猫、Web微信。
 
 体验链接（请在PC端打开）：
 [http://wxbot.oudewa.cn/](http://wxbot.oudewa.cn/)（账号：test， 密码：123456）
@@ -30,6 +30,7 @@
 - [Layui](https://www.layui.com/)
 - [Vlw](http://a.vlwai.cn/)
 - [Vlw配套接口Xyo](https://www.yuque.com/httpapi/)
+- [Web微信(Go-wxbot)](https://gitee.com/fudaoji/go-wxbot)
 
 #### 安装及使用文档
 
@@ -43,6 +44,8 @@
 4.  新建 Pull Request
 
 #### 交流
+如果对您有帮助，麻烦star走一波，感谢！
+
 QQ交流群：
 726177820
 

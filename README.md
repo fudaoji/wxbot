@@ -27,7 +27,8 @@
 - [ThinkPHP5.1](https://www.kancloud.cn/manual/thinkphp5_1/)
 - Mysql
 - Memcached & Redis
-- [Layui](https://www.layui.com/)
+- [Layui](https://www.layui.com/) 
+- [Layuimini](http://layuimini.99php.cn/)
 - [Vlw](http://a.vlwai.cn/)
 - [Vlw配套接口Xyo](https://www.yuque.com/httpapi/)
 - [Web微信(Go-wxbot)](https://gitee.com/fudaoji/go-wxbot)

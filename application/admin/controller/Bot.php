@@ -159,7 +159,7 @@ class Bot extends Base
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm'])
             ->addRightButton('edit', ['title' => '登录', 'href' => url('login', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs'])
-            ->addRightButton('edit');
+            ->addRightButton('edit', ['href' => url('webEdit', ['id' => '__data_id__'])]);
 
         return $builder->show();
     }
@@ -192,6 +192,38 @@ class Bot extends Base
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '接口地址', [], 'required')
             ->setFormData(['protocol' => \app\constants\Bot::PROTOCOL_WEB]);
+
+        return $builder->show();
+    }
+
+    public function webEdit()
+    {
+        $id = input('id', null);
+        $data = $this->model->getOne($id);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        if(request()->isPost()){
+            $post_data = input('post.');
+            if($this->model->total(['id' => ['<>', $id], 'protocol' => BotConst::PROTOCOL_WEB, 'app_key' => $post_data['app_key']])){
+                $this->error('Appkey已被占用，请更换');
+            }
+            $this->model->updateOne($post_data);
+            $this->success('保存成功', '/undefined');
+        }
+
+        $tip = "请先从对应驱动的服务端获取appkey和接口地址";
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('编辑web微信机器人')
+            ->setTip($tip)
+            ->setPostUrl(url('webEdit'))
+            ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
+            ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
+            ->addFormItem('url', 'text', '接口地址', '接口地址', [], 'required')
+            ->setFormData($data);
 
         return $builder->show();
     }

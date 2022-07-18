@@ -79,13 +79,17 @@ class Forward extends Botbase
                         $v['officer_names'] = implode(',', $group_members);
                     }else{
                         $v['group_title'] = '---';
-                        $v['officer_names'] = $this->memberM->getOneByMap(['wxid' => $v['officer']],['nickname'])['nickname'];
+                        if($officer = $this->memberM->getOneByMap(['wxid' => $v['officer']],['nickname'])){
+                            $v['officer_names'] = $officer['nickname'];
+                        }else{
+                            $v['officer_names'] = '---';
+                        }
                     }
                     $members = $this->memberM->getField(['nickname'], ['wxid' => ['in', $v['wxids']], 'uin' => $this->bot['uin']]);
                     if(($count = count($members)) > 1){
                         $v['wxids'] = $members[0] . '等'.$count.'个';
                     }else{
-                        $v['wxids'] = $members[0];
+                        $v['wxids'] = empty($members[0]) ? "---" : $members[0];
                     }
                     $list[$k] = $v;
                 }

@@ -130,35 +130,41 @@ class Tpzs extends Addon
                     }
                     break;
                 case Bot::MSG_LINK:
-                    if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
-                        $msg = json_decode($this->content['msg'], true)['Link'][0];
-                        //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']
-                        $url = $msg['url'];
-                        $res = $this->botClient->sendShareLinkToFriends([
-                            'robot_wxid' => $content['robot_wxid'],
-                            'to_wxid' => $groups,
-                            'url' => $url,
-                            'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
-                            'title' => $msg['title'],
-                            'desc' => $msg['desc']
-                        ]);
-                    }else{ //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
+                    switch ($this->bot['protocol']){
+                        case Bot::PROTOCOL_WXWORK:
+                        case Bot::PROTOCOL_MYCOM:
+                            $msg = json_decode($this->content['msg'], true)['Link'][0];
+                            //$url = strpos($content['msg'], 'ckjr001.com') !== false ? $msg['url'] : $msg['url']
+                            $url = $msg['url'];
+                            $res = $this->botClient->sendShareLinkToFriends([
+                                'robot_wxid' => $content['robot_wxid'],
+                                'to_wxid' => $groups,
+                                'url' => $url,
+                                'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
+                                'title' => $msg['title'],
+                                'desc' => $msg['desc']
+                            ]);
+                            break;
+                        default:
+                            $this->botClient->forwardMsgToFriends([
+                                'robot_wxid' => $this->botWxid,
+                                'to_wxid' => $groups,
+                                'msgid' => $this->content['msg_id']
+                            ]);
                     }
                     break;
                 default:
-                    if($this->bot['protocol'] == Bot::PROTOCOL_WXWORK){
-                        $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
-                    }else{ //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
+                    switch ($this->bot['protocol']){
+                        case Bot::PROTOCOL_WXWORK:
+                        case Bot::PROTOCOL_MYCOM:
+                            $this->botClient->sendTextToFriends(['robot_wxid' => $content['robot_wxid'], 'to_wxid' => $groups, 'msg' => $content['msg']]);
+                            break;
+                        default:
+                            $this->botClient->forwardMsgToFriends([
+                                'robot_wxid' => $this->botWxid,
+                                'to_wxid' => $groups,
+                                'msgid' => $this->content['msg_id']
+                            ]);
                     }
                     break;
             }

@@ -10,14 +10,17 @@
 namespace ky\WxBot;
 
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\My;
+use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Vlw;
+use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
 
 class Client
 {
     private static $instance;
     /**
-     * @var $bot Vlw|Cat|Wxwork
+     * @var $bot Vlw|Cat|Wxwork|My|Mycom|Webgo
      */
     private $bot;
     private $driver;

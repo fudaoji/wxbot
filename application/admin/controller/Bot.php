@@ -15,6 +15,10 @@ class Bot extends Base
     protected $model;
     protected $insertAdminId = true;
     private $tabs = [];
+    /**
+     * @var string
+     */
+    private $tip;
 
     /**
      * 初始化
@@ -27,6 +31,8 @@ class Bot extends Base
             'index' => ['title' => 'PC机器人', 'href' => url('index')],
             'web' => ['title' => 'Web机器人', 'href' => url('web')]
         ];
+        $this->tip = "<ul><li>vlw的接口回调地址: ".request()->domain()."/bot/vlw</li><li>可爱猫的接口回调地址: ".request()->domain()."/bot/cat</li>
+<li>详细接入教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
     }
 
     /**
@@ -289,15 +295,12 @@ class Bot extends Base
      */
     public function add()
     {
-        $domain = request()->domain();
-        $tip = "<ul><li>vlw的接口回调地址: {$domain}/bot/vlw</li><li>可爱猫的接口回调地址: {$domain}/bot/cat</li>
-<li>详细接入教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
-            ->setTip($tip)
+            ->setTip($this->tip)
             ->setPostUrl(url('savePost'))
-            ->addFormItem('protocol', 'radio', '类型', '机器人类型', \app\constants\Bot::protocols())
+            ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
@@ -315,16 +318,13 @@ class Bot extends Base
         if (!$data) {
             $this->error('参数错误');
         }
-        $domain = request()->domain();
-        $tip = "<ul><li>vlw的接口回调地址: {$domain}/bot/vlw</li><li>可爱猫的接口回调地址: {$domain}/bot/cat</li>
-<li>详细接入教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑机器人')
-            ->setTip($tip)
+            ->setTip($this->tip)
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('protocol', 'radio', '类型', '机器人类型', \app\constants\Bot::protocols())
+            ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
@@ -334,7 +334,7 @@ class Bot extends Base
         return $builder->show();
     }
 
-    public function savePost($jump_to = "", $data = []){
+    public function savePost($jump_to = "/undefined", $data = []){
         $post_data = input('post.');
         $post_data['admin_id'] = $this->adminInfo['id'];
         if (empty($post_data[$this->pk])) {

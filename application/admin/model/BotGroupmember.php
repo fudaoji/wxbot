@@ -161,6 +161,7 @@ class BotGroupmember extends Base
                 }
                 break;
             case Bot::PROTOCOL_WXWORK:
+            case Bot::PROTOCOL_MYCOM:
                 if($res['code'] && !empty($res['ReturnJson']['data']['member_list'])) {
                     $list = $res['ReturnJson']['data']['member_list'];
                     $wxid_arr = [];

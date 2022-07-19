@@ -62,6 +62,7 @@ class Bot extends Base
                 }
                 break;
             case BotConst::PROTOCOL_WXWORK:
+            case BotConst::PROTOCOL_MYCOM:
                 $return = $bot_client->getRobotList();
                 if($return['code'] && !empty($return['ReturnJson'])){
                     foreach ($return['ReturnJson']['data'] as $v){

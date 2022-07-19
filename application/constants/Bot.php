@@ -16,6 +16,8 @@ class Bot
     const PROTOCOL_CAT = 'cat';
     const PROTOCOL_VLW = 'vlw';
     const PROTOCOL_WXWORK = 'wxwork'; //企业微信
+    const PROTOCOL_MY = 'my'; //我的个微
+    const PROTOCOL_MYCOM = 'mycom'; //我的企微
 
     const FRIEND = 'friend';
     const GROUP = 'group';
@@ -79,6 +81,8 @@ class Bot
     {
         $list = [
             self::PROTOCOL_WEB => '网页版',
+            self::PROTOCOL_MY => '我的个微',
+            self::PROTOCOL_MYCOM => '我的企微',
             self::PROTOCOL_CAT => '可爱猫个微',
             self::PROTOCOL_VLW => 'VLW个微',
             self::PROTOCOL_WXWORK => 'VLW企微',
@@ -96,6 +100,24 @@ class Bot
     {
         $list = [
             self::PROTOCOL_WEB => 'go-wxbot',
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
+    /**
+     * 机器人hook协议
+     * @param null $id
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function hooks($id = null)
+    {
+        $list = [
+            self::PROTOCOL_MY => '我的个微',
+            self::PROTOCOL_MYCOM => '我的企微',
+            self::PROTOCOL_CAT => '可爱猫个微',
+            self::PROTOCOL_VLW => 'VLW个微',
+            self::PROTOCOL_WXWORK => 'VLW企微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

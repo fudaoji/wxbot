@@ -98,4 +98,14 @@ abstract class BaseController
         return $v->failException(true)->check($data);
     }
 
+    /**
+     * 模板变量赋值
+     * @access protected
+     * @param  mixed $name  要显示的模板变量
+     * @param  mixed $value 变量的值
+     */
+    protected function assign($name, $value = '')
+    {
+        $this->assign[$name] = $value;
+    }
 }

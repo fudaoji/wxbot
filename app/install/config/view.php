@@ -4,12 +4,6 @@
 // +----------------------------------------------------------------------
 
 return [
-    // 模板目录名
-    'view_dir_name' => 'default',
-
-    'layout_on'     =>  true,
-    'layout_name'   =>  'layout/base',
-
     // 视图中使用的常量
     'tpl_replace_string'  =>  [
         '__STATIC__' => '/static/',

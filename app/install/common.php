@@ -2,6 +2,10 @@
 // 检测环境是否支持可写
 define('IS_WRITE', true);
 
+function lockFile(){
+    file_put_contents(app()->getRootPath() . '/install.lock', 'ok');
+}
+
 /**
  * 系统环境检测
  * @return array 系统环境数据
@@ -54,7 +58,7 @@ function check_dirfile()
     $root_path = app()->getRootPath();
     $items = array(
         array('dir', '可写', 'success', '/'),
-        array('dir', '可写', 'success', 'application'),
+        array('dir', '可写', 'success', 'app'),
         array('dir', '可写', 'success', 'config'),
         array('dir', '可写', 'success', 'extend'),
         array('dir', '可写', 'success', 'public/uploads'),
@@ -130,7 +134,7 @@ function check_func()
  */
 function write_config()
 {
-    show_msg('开始写入配置文件...');
+    //show_msg('开始写入配置文件...');
     $root_path = app()->getRootPath();
     //读取配置内容
     $conf = file_get_contents($root_path . 'env');
@@ -156,8 +160,7 @@ function write_config()
     //写入应用配置文件
     file_put_contents($root_path . '.env', $conf);
     @chmod($root_path . '.env', 0777);
-    file_put_contents($root_path . '/install.lock', 'ok');
-    show_msg('配置文件写入成功！');
+    //show_msg('配置文件写入成功！');
     return '';
 }
 
@@ -171,7 +174,7 @@ function write_config()
 function create_tables($db, $prefix = '')
 {
     show_msg('开始创建数据表...');
-    $install_path = app()->getAppPath() . '/install/';
+    $install_path = app()->getAppPath();
     $sql_file = $install_path . 'data/install.sql';
     //读取SQL文件
     if(!is_file($sql_file)){

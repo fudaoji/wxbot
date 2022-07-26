@@ -107,7 +107,7 @@ trait Jump
         } else {
             $response = Response::create($result, $type)->header($header);
         }
-        
+
         throw new HttpResponseException($response);
     }
 

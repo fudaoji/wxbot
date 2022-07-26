@@ -32,7 +32,7 @@ class Tpzsunion extends Base
             }
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
-        $this->error('sss');
+
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词搜索', 'placeholder' => '名称或联盟ID'],

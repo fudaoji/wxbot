@@ -1,28 +1,34 @@
 ;安装时把这个文件改成.env，并根据自身情况修改配置值，配置键不许更改
 ;是否开发模式
-app_debug=false
-;平台名称
-app_title=微精灵
-;平台标识
-app_name=wxbot
-;缓存类型
-cache_type=[cache_type]
+APP_DEBUG = false
+APP_TITLE=微精灵
+APP_NAME = wxbot
+CACHE_TYPE=[cache_type]
+
+[APP]
+DEFAULT_TIMEZONE = Asia/Shanghai
 
 ;数据库配置
-[db]
-hostname=[hostname]
-database=[database]
-username=[username]
-password=[password]
-port=[port]
-prefix=[prefix]
-
-;memcache配置
-[memcached]
-host=[memcache_host]
-port=[memcache_port]
+[DATABASE]
+TYPE = mysql
+HOSTNAME = [hostname]
+DATABASE = [database]
+USERNAME = [username]
+PASSWORD = [password]
+HOSTPORT = [port]
+CHARSET = utf8mb4
+PREFIX = [prefix]
+DEBUG = false
 
 ;redis配置
-[redis]
-host=[redis_host]
-port=[redis_port]
+[REDIS]
+HOST=[redis_host]
+PORT=[redis_port]
+
+;memcache配置
+[MEMCACHED]
+HOST=[memcache_host]
+PORT=[memcache_port]
+
+[LANG]
+DEFAULT_LANG = zh-cn

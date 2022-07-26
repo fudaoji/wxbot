@@ -1,8 +1,7 @@
 <?php
 namespace app\install\controller;
 
-use think\facade\Env;
-use think\facade\Request;
+use think\facade\Db;
 use think\facade\View;
 
 class Index extends Base
@@ -88,19 +87,6 @@ class Index extends Base
 			} else {
 				//缓存数据库配置
 				session('db_config', $db);
-
-				//创建数据库
-				$dbname = $db['database'];
-				unset($db['database']);
-				$conn  = \think\Db::connect($db);
-                try {
-                    if(! $conn->query("SHOW DATABASES LIKE '{$dbname}'")){
-                        $sql = "CREATE DATABASE IF NOT EXISTS `{$dbname}` DEFAULT CHARACTER SET utf8mb4";
-                        $conn->execute($sql);
-                    }
-                }catch (\Exception $e){
-                    $this->error('创建数据库失败:' . $e->getMessage());
-                }
 			}
 			if(empty($post_data['cache_type'])){
                 $this->error('请选择缓存类型');
@@ -121,6 +107,9 @@ class Index extends Base
                 session('redis_config', $redis);
             }
 
+            //创建配置文件
+            $conf = write_config();
+            session('config_file', $conf);
             $this->success('success', url('sql'));
 		}
         $this->status['index']  = 'success';
@@ -145,21 +134,30 @@ class Index extends Base
 		$this->status['config'] = 'success';
 		$this->status['sql']    = 'primary';
 		$this->assign('status', $this->status);
-		echo $this->fetch()->getContent();
+		$this->assign('app_name', config('app.app_name'));
+		echo View::fetch('', $this->assign);
 
         //连接数据库
         $dbconfig = session('db_config');
-        $db       = \think\Db::connect($dbconfig);
+        $db       = Db::connect();
+        //创建数据库
+        $dbname = $dbconfig['database'];
+        try {
+            if(! $db->query("SHOW DATABASES LIKE '{$dbname}'")){
+                $sql = "CREATE DATABASE IF NOT EXISTS `{$dbname}` DEFAULT CHARACTER SET utf8mb4";
+                $db->execute($sql);
+            }
+        }catch (\Exception $e){
+            $this->error('创建数据库失败:' . $e->getMessage());
+        }
+
         //创建数据表
         create_tables($db, $dbconfig['prefix']);
         //注册创始人帐号
         $admin = session('admin_info');
         register_administrator($db, $dbconfig['prefix'], $admin);
 
-        //创建配置文件
-        $conf = write_config($dbconfig);
-        session('config_file', $conf);
-
+        lockFile();
 		if (session('error')) {
 			show_msg('安装失败-_-!');
 		} else {

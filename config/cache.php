@@ -12,46 +12,48 @@
 // +----------------------------------------------------------------------
 // | 缓存设置
 // +----------------------------------------------------------------------
-use think\facade\Env;
+
 
 $configs = [
     'file' => [
         // 驱动方式
-        'type' => 'file',
+        'type'       => 'File',
         // 缓存前缀
-        'prefix' => Env::get('app_prefix', 'ky_'),
+        'prefix' => env('app_prefix', 'ky_'),
         // 设置不同的缓存保存目录
         'path'   => env('runtime_path').'cache/',
+        // 缓存有效期 0表示永久缓存
+        'expire'     => 0,
+        // 缓存标签前缀
+        'tag_prefix' => 'tag:',
+        // 序列化机制 例如 ['serialize', 'unserialize']
+        'serialize'  => [],
     ],
-    'memcache' => [
-        // 缓存前缀
-        'prefix' => Env::get('app_prefix', 'ky_'),
-        'type'  => 'memcached',
-        'host'  => Env::get('memcached.host', 'localhost'),
-        'port'  => Env::get('memcached.port', 11211)
-    ],
+    // 更多的缓存连接
+    // redis缓存
     'redis' => [
         // 缓存前缀
-        'prefix' => Env::get('app_prefix', 'ky_'),
+        'prefix' => env('app_name', ''),
         // 驱动方式
         'type' => 'redis',
         // 服务器地址
-        'host' => Env::get('redis.host', 'localhost'),
-        'port' => Env::get('redis.port', '6379')
-    ]
+        'host' => env('redis.host', 'localhost'),
+        'port' => env('redis.port', '6379')
+    ],
+    'memcache' => [
+        'type'  => 'memcached',
+        // 缓存前缀
+        'prefix' => env('app_prefix', 'ky_'),
+        'host'  => env('memcached.host', 'localhost'),
+        'port'  => env('memcached.port', 11211)
+    ],
 ];
-return [
-    // 使用复合缓存类型
-    'type'  =>  'complex',
-    // 缓存有效期 0表示永久缓存
-    'expire' => 0,
 
-    // 默认使用的缓存
-    'default' => $configs[Env::get('cache_type', 'file')],
-    // 文件缓存
-    'file'   =>  $configs['file'],
-    // memcache缓存
-    'memcached' =>  $configs['memcache'],
-    // redis缓存
-    'redis' => $configs['redis']
+
+return [
+    // 默认缓存驱动
+    'default' => env('cache_type', 'file'),
+
+    // 缓存连接方式配置
+    'stores'  => $configs
 ];

@@ -11,39 +11,55 @@
 
 namespace think;
 
-use think\helper\Str;
 use think\queue\Connector;
+use think\queue\connector\Database;
+use think\queue\connector\Redis;
 
 /**
  * Class Queue
  * @package think\queue
  *
- * @method static push($job, $data = '', $queue = null)
- * @method static later($delay, $job, $data = '', $queue = null)
- * @method static pop($queue = null)
- * @method static marshal()
+ * @mixin Database
+ * @mixin Redis
  */
-class Queue
+class Queue extends Manager
 {
-    /** @var Connector */
-    protected static $connector;
+    protected $namespace = '\\think\\queue\\connector\\';
 
-    private static function buildConnector()
+    protected function resolveType(string $name)
     {
-        $options = \think\facade\Config::pull('queue');
-        $type    = !empty($options['connector']) ? $options['connector'] : 'Sync';
-
-        if (!isset(self::$connector)) {
-
-            $class = false !== strpos($type, '\\') ? $type : '\\think\\queue\\connector\\' . Str::studly($type);
-
-            self::$connector = new $class($options);
-        }
-        return self::$connector;
+        return $this->app->config->get("queue.connections.{$name}.type", 'sync');
     }
 
-    public static function __callStatic($name, $arguments)
+    protected function resolveConfig(string $name)
     {
-        return call_user_func_array([self::buildConnector(), $name], $arguments);
+        return $this->app->config->get("queue.connections.{$name}");
+    }
+
+    protected function createDriver(string $name)
+    {
+        /** @var Connector $driver */
+        $driver = parent::createDriver($name);
+
+        return $driver->setApp($this->app)
+            ->setConnection($name);
+    }
+
+    /**
+     * @param null|string $name
+     * @return Connector
+     */
+    public function connection($name = null)
+    {
+        return $this->driver($name);
+    }
+
+    /**
+     * 默认驱动
+     * @return string
+     */
+    public function getDefaultDriver()
+    {
+        return $this->app->config->get('queue.default');
     }
 }

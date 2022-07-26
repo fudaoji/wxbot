@@ -20,7 +20,7 @@ class ErWeiCode
 {
     private $error;
     private $config = [
-        'savePath' => UPLOAD_PATH . 'qrcode/',
+        'savePath' => './uploads/qrcode/',
         'rootPath' => '',
     ];
 

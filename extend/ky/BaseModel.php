@@ -9,15 +9,15 @@
 
 /**
  * Created by PhpStorm.
- * Script Name: ${FILE_NAME}
+ * Script Name: BaseModel.php
  * Create: 2020/2/29 下午11:37
- * Description: 
+ * Description:
  * Author: Doogie<461960962@qq.com>
  */
 
 namespace ky;
-use think\Db;
-use think\db\Where;
+use think\db\exception\DbException;
+use think\facade\Db;
 use think\Model;
 
 class BaseModel extends Model
@@ -54,7 +54,7 @@ class BaseModel extends Model
      */
     protected $expire = 3600;
     /**
-     * 水平分表规则
+     * 分表规则
      * @var array
      */
     protected $rule = [];
@@ -63,26 +63,157 @@ class BaseModel extends Model
      * @var string
      */
     protected $key = '';
+    /**
+     * 是否分区
+     * @var array
+     */
+    protected $isPartition = false;
+
+    protected $cachePrefix;
 
     public function __construct($data = [])
     {
         parent::__construct($data);
+        $this->cachePrefix = env('database.hostname') . env('database.database');
+    }
+
+    public function getTablePrefix(){
+        return config('database.connections')[config('database.default')]['prefix'];
+    }
+
+    /**
+     * 获取分组统计数据
+     * @param array $params
+     * @return mixed
+     * e.g: model('activity')->totalGroup([
+     * 'where' => ['a.id' => ['gt', 300]],
+     * 'group' => 'activity.id',
+     * 'having' => 'activity.id > 100',
+     * 'refresh' => 1
+     * ]);
+     * @throws DbException
+     * @author fudaoji<fdj@kuryun.cn>
+     */
+    public function totalGroupJoin($params = []){
+        ksort($params);
+        $where = empty($params['where']) ? [] : $params['where'];
+        $having = empty($params['having']) ? '' : $params['having'];
+        $group_field = empty($params['group']) ? '' : $params['group'];
+        $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
+        unset($params['refresh']);
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $refresh && cache($cache_key, null);
+        $selector = $this->getBuilder($where);
+        if($this->isCache){
+            $selector->cache($cache_key, $this->expire);
+        }
+        if($having){
+            $selector->having($having);
+        }
+        if(!empty($params['join'])){
+            $this->buildJoin($selector, $params['join']);
+        }
+        $this->_where($selector, $where);
+        return $selector->group($group_field)->count();
+    }
+
+    /**
+     * sum join
+     * @param array $params
+     * @return float|Base
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sumsJoin($params = []){
+        ksort($params);
+        $where = empty($params['where']) ? [] : $params['where'];
+        $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
+        $field = $params['field'];
+        unset($params['refresh']);
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $refresh && cache($cache_key, null);
+        $selector = $this->getBuilder($where);
+        if($this->isCache){
+            $selector->cache($cache_key, $this->expire, $this->getTrueTable($where));
+        }
+        if(!empty($params['alias'])){
+            $selector->alias($params['alias']);
+        }
+        if(!empty($params['join'])){
+            $this->buildJoin($selector, $params['join']);
+        }
+        $this->_where($selector, $where);
+        return $selector->sum($field);
+    }
+
+    /**
+     *
+     * @param array $params
+     * @return array
+     * @Author  Doogie<461960962@qq.com>
+     */
+    public function getFieldByOrder($params){
+        ksort($params);
+        $where = empty($params['where']) ? [] : $params['where'];
+        $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
+        $field = empty($params['field']) ? true : $params['field'];
+        $order = empty($params['order']) ? [] : $params['order'];
+        unset($params['refresh']);
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $refresh && cache($cache_key, null);
+
+        $selector = $this->getBuilder($where);
+        $this->_where($selector, $where);
+        if($this->isCache){
+            $selector->cache($cache_key, $this->expire, $this->getTrueTable($where));
+        }
+        return $selector->order($order)->column($field);
+    }
+
+    /**
+     * 关联查询获取字段
+     * @param array $params
+     * @return array
+     * @Author  Doogie<461960962@qq.com>
+     */
+    public function getFieldJoin($params){
+        ksort($params);
+        $where = empty($params['where']) ? [] : $params['where'];
+        $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
+        $field = empty($params['field']) ? true : $params['field'];
+        $order = empty($params['order']) ? [] : $params['order'];
+        unset($params['refresh']);
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $refresh && cache($cache_key, null);
+
+        $selector = $this->getBuilder($where);
+        if(!empty($params['alias'])){
+            $selector->alias($params['alias']);
+        }
+        if(!empty($params['join'])){
+            $this->buildJoin($selector, $params['join']);
+        }
+        $this->_where($selector, $where);
+        if($this->isCache){
+            $selector->cache($cache_key, $this->expire, $this->getTrueTable($where));
+        }
+        return $selector->order($order)->column($field);
     }
 
     /**
      * 根据条件和排序获取单条数据
      * @param array $params
      * @return array|false|\PDOStatement|string|Model
-     * @throws \think\exception\DbException
+     * @throws DbException
      * @Author: fudaoji <fdj@kuryun.cn>
      */
     public function getOneByOrder($params = []){
+        ksort($params);
         $where = empty($params['where']) ? [] : $params['where'];
         $order = empty($params['order']) ? [] : $params['order'];
         $field = empty($params['field']) ? true : $params['field'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         if($this->isCache){
@@ -125,6 +256,7 @@ class BaseModel extends Model
      * @throws \Exception
      */
     public function totalByTime($params = []){
+        ksort($params);
         if(empty($params['timeFields']) || !is_array($params['timeFields'])){
             exception('timeFields数据格式错误', 10006);
         }
@@ -132,7 +264,7 @@ class BaseModel extends Model
         $where = empty($params['where']) ? [] : $params['where'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where);
         $this->_where($selector, $where);
@@ -152,12 +284,13 @@ class BaseModel extends Model
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws DbException
+     * @throws \think\db\exception\DbException
      * @Author  Doogie<461960962@qq.com>
      */
     public function getOne($pk = 0, $refresh = 0){
         $id = $this->getId($pk);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($pk) . $id);
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($pk) . $id);
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($pk)->field(true);
 
@@ -172,8 +305,7 @@ class BaseModel extends Model
     /**
      * 新增单条数据
      * @param array $data
-     * @return bool|mixed
-     * @throws \think\Exception
+     * @return array
      * @Author  Doogie<461960962@qq.com>
      */
     public function addOne($data = []){
@@ -182,17 +314,8 @@ class BaseModel extends Model
             $this->updateTime && empty($data[$this->updateTime]) && $data[$this->updateTime] = time();
         }
         unset($data['__token__']);
-        $res = $this->getBuilder($data)->insert($data);
-        if($res){
-            if(empty($data[$this->pk])){
-                $res = $this->getBuilder($data)->getLastInsID(); //坑爹只能返回自增ID
-            }else{
-                $res = $data[$this->pk];
-            }
-            $pk = $this->key ? [$this->key=>$data[$this->key], $this->pk => $res] : $res;
-            return $this->getOne($pk);
-        }
-        return false;
+        $data[$this->pk] = $this->getBuilder($data)->insertGetId($data);
+        return  $data;
     }
 
     /**
@@ -203,11 +326,13 @@ class BaseModel extends Model
      * @throws \think\Exception
      */
     public function addBatch($arr = []){
-        $count = 0;
-        foreach($arr as $data){
-            $this->addOne($data) && $count++;
+        foreach ($arr as &$data){
+            if($this->autoWriteTimestamp){
+                $this->createTime && empty($data[$this->createTime]) && $data[$this->createTime] = time();
+                $this->updateTime && empty($data[$this->updateTime]) && $data[$this->updateTime] = time();
+            }
         }
-        return $count == count($arr);
+        return $this->getBuilder($arr[0])->insertAll($arr);
     }
 
     /**
@@ -235,7 +360,7 @@ class BaseModel extends Model
     }
 
     /**
-     * 根据条件更新单条数据
+     * 根据条件更新数据
      * @param array $where
      * @param array $data
      * @return bool|mixed
@@ -254,21 +379,6 @@ class BaseModel extends Model
     }
 
     /**
-     * 批量修改数据
-     * @param $arr
-     * @return bool
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
-     */
-    public function updateBatch($arr){
-        $count = 0;
-        foreach($arr as $data){
-            $this->updateOne($data) && $count++;
-        }
-        return $count == count($arr);
-    }
-
-    /**
      * 根据主键删除单个数据
      * @param int $pk
      * @return bool
@@ -277,30 +387,7 @@ class BaseModel extends Model
      */
     public function delOne($pk=0){
         $id = $this->getId($pk);
-        if($this->getBuilder($pk)->delete($id)){
-            if($this->isCache){
-                $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($pk) . $id);
-                cache($cache_key, null);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 批量删除
-     * @param array $pk_arr
-     * @return bool
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
-     */
-    public function delBatch($pk_arr=[]){
-        $pk_arr = array_unique($pk_arr);
-        $count = 0;
-        foreach($pk_arr as $id){
-            $this->delOne($id) && $count++;
-        }
-        return $count == count($pk_arr);
+        return  $this->getBuilder($pk)->delete($id);
     }
 
     /**
@@ -312,11 +399,11 @@ class BaseModel extends Model
      * @param $refresh
      * @return mixed
      * @auth Doogie<461960962@qq.com>
-     * @throws \think\exception\DbException
+     * @throws DbException
      */
     public function page($page_size=10, $where=[], $order=[], $field = true, $refresh=0){
         $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ .$current_page. $page_size . serialize($where) . serialize($order));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ .$current_page. $page_size . serialize($where) . serialize($order));
         $refresh && cache($cache_key, null);
         $data = cache($cache_key);
         if(empty($data)){
@@ -339,15 +426,15 @@ class BaseModel extends Model
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws DbException
      * @Author  Doogie<461960962@qq.com>
      */
     public function getList($limit = [], $where = [], $order = [], $field = true, $refresh = 0){
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($limit) . serialize($where) . serialize($order));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($limit) . serialize($where) . serialize($order));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         if($this->isCache){
-            $selector->cache($cache_key, $this->expire);
+            $selector->cache($cache_key, $this->expire, $this->getTrueTable($where));
         }
         $this->_where($selector, $where);
         return $selector->order($order)->page($limit[0], $limit[1])->select();
@@ -359,9 +446,10 @@ class BaseModel extends Model
      * @param int $refresh
      * @return mixed
      * @Author  Doogie<461960962@qq.com>
+     * @throws DbException
      */
     public function total($where = [], $refresh = 0){
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($where));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($where));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where);
         $this->_where($selector, $where);
@@ -380,34 +468,93 @@ class BaseModel extends Model
      * @Author  Doogie<461960962@qq.com>
      */
     public function getField($field = '', $query = [],$refresh = 0){
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($query) . __FUNCTION__ . serialize($field).':'.serialize($query));
+        is_string($field) && $field = explode(',', $field);
+        $key = '';
+        if(count($field) == 2){
+            $key = $field[0];
+            unset($field[0]);
+        }elseif(count($field) > 2){
+            $key = $field[0];
+        }
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($query) . __FUNCTION__ . serialize($field).':'.serialize($query));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($query);
         $this->_where($selector, $query);
         if($this->isCache){
-            $selector->cache($cache_key, $this->expire);
+            $selector->cache($cache_key, $this->expire, $this->getTrueTable($query));
         }
-        return $selector->column($field);
+        $res = $selector->column($field, $key);
+        return $key ? $res : array_values($res);
     }
 
     /**
      * 条件链接器
      * @param $self
-     * @param array $where 两种情况[id=>1]或[[id=>1], ['name' => ['like', '%ddd%']]]
+     * @param array $where
+     * eg1.
+     * $map1 = [
+    ['name', 'like', 'thinkphp%'],
+    ['title', 'like', '%thinkphp'],
+    ];
+
+    $map2 = [
+    ['name', 'like', 'kancloud%'],
+    ['title', 'like', '%kancloud'],
+    ];
+
+    Db::table('think_user')
+    ->whereOr([ $map1, $map2 ])
+    ->select();
+     *
+     * eg2.
+     * // 传入关联数组作为查询条件
+    Db::table('think_user')->where([
+    'name'	=>	'thinkphp',
+    'status'=>	1
+    ])->select();
+     *
+     * eg3.
+     * // 传入索引数组作为查询条件
+    Db::table('think_user')->where([
+    ['name','=','thinkphp'],
+    ['status','=',1]
+    ])->select();
+     *
+     * eg4.
+     * 使用字符串条件直接查询和操作，例如：
+    Db::table('think_user')->whereRaw('type=1 AND status=1')->select();
      * @Author: Doogie <461960962@qq.com>
-     * @return BaseModel
+     * @return self
      */
     private function _where(&$self, $where=[]){
         if($where){
-            foreach($where as $k => $w){
-                if(! is_int($k)){
-                    $self->where(new Where($where));
-                    break;
-                }
-                if(is_array($w) && count($w) >= 3){
-                    $self->where($w[0], $w[1], $w[2]);  //[['name', 'like', '%ddd%']]
+            if(isset($where['or'])){
+                //高级查询: https://www.kancloud.cn/manual/thinkphp6_0/1037566
+                $self->whereOr($where['or']);
+                return  $self;
+            }
+            if(isset($where['sql'], $where['bind'])){
+                $self->whereRaw($where['sql'], $where['bind']);
+                return  $self;
+            }
+            foreach ($where as $k => $v){
+                if(is_string($k)){
+                    if(is_array($v)){ //['age' => ['in', [1,2,3]]]
+                        switch (count($v)){
+                            case 3:
+                                $self->where($k, $v[0], $v[1], $v[2]);
+                                break;
+                            default:
+                                $self->where($k, $v[0], $v[1]);
+                                break;
+                        }
+
+                    }else{//[id=>1, name=>'sss']
+                        $self->where($k, '=', $v);
+                    }
                 }else{
-                    $self->where($w);   //[[id=>1], ['name' => ['like', '%ddd%']]]
+                    $self->where($where); //[['id', '=', 1], ['name', '=', 'sss']]
+                    break;
                 }
             }
         }
@@ -417,16 +564,18 @@ class BaseModel extends Model
     /**
      * 根据条件获取数据
      * @param array $where
-     * @param $field
+     * @param bool $field
      * @param int $refresh
      * @param array $order 排序获取
      * @return array|false|\PDOStatement|string|Model
-     * @throws \think\exception\DbException
+     * @throws DbException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
      * @Author: fudaoji <fdj@kuryun.cn>
      */
     public function getOneByMap($where=[], $field = true, $refresh = 0, $order = []){
         ksort($where);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($where) . serialize($order));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($where) . serialize($order));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         $this->_where($selector, $where);
@@ -442,15 +591,73 @@ class BaseModel extends Model
     /**
      * 获取builder,兼容分表
      * @param array $query
-     * @return $this|\think\db\Query
+     * @return Db
      * @Author: Doogie <461960962@qq.com>
      */
     public function getBuilder($query = []){
         if($this->rule && $this->key){
-            return Db::table($this->getTable())->partition($query, $this->key, $this->rule);
+            return Db::table($this->getPartitionTableName($query, $this->key, $this->rule));
+        }elseif($this->isPartition){
+            return Db::table($this->getTable())->partition($this->getPartition($query, $this->key, $this->rule));
         }else{
             return Db::table($this->getTable());
         }
+    }
+
+    /**
+     * 得到分表的的数据表名
+     * @access public
+     * @param  array  $data  操作的数据
+     * @param  string $field 分表依据的字段
+     * @param  array  $rule  分表规则
+     * @return string
+     */
+    public function getPartitionTableName($data, $field, $rule = [])
+    {
+        // 对数据表进行分区
+        if ($field && isset($data[$field])) {
+            $value = $data[$field];
+            $type  = $rule['type'];
+            switch ($type) {
+                case 'id':
+                    // 按照id范围分表
+                    $step = $rule['expr'];
+                    $seq  = floor($value / $step) + 1;
+                    break;
+                case 'year':
+                    // 按照年份分表
+                    if (!is_numeric($value)) {
+                        $value = strtotime($value);
+                    }
+                    $seq = date('Y', $value) - $rule['expr'] + 1;
+                    break;
+                case 'mod':
+                    // 按照id的模数分表
+                    $seq = ($value % $rule['num']) + 1;
+                    break;
+                case 'md5':
+                    // 按照md5的序列分表
+                    $seq = (ord(substr(md5($value), 0, 1)) % $rule['num']) + 1;
+                    break;
+                default:
+                    if (function_exists($type)) {
+                        // 支持指定函数哈希
+                        $value = $type($value);
+                    }
+
+                    $seq = (ord(substr($value, 0, 1)) % $rule['num']) + 1;
+            }
+
+            return $this->getTable() . '_' . $seq;
+        }
+        // 当设置的分表字段不在查询条件或者数据中
+        // 进行联合查询，必须设定 partition['num']
+        $tableName = [];
+        for ($i = 0; $i < $rule['num']; $i++) {
+            $tableName[] = 'SELECT * FROM ' . $this->getTable() . '_' . ($i + 1);
+        }
+
+        return '( ' . implode(" UNION ", $tableName) . ' ) as ' . $this->name;
     }
 
     /**
@@ -461,7 +668,7 @@ class BaseModel extends Model
      */
     public function getTrueTable($query = []){
         if($this->key && !empty($query[$this->key])){
-            return Db::table($this->getTable())->getPartitionTableName([$this->key => $query[$this->key]], $this->key, $this->rule);
+            return $this->getPartitionTableName([$this->key => $query[$this->key]], $this->key, $this->rule);
         }else{
             return $this->getTable();
         }
@@ -487,16 +694,17 @@ class BaseModel extends Model
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws DbException
      * @author: Doogie<461960962@qq.com>
      */
     public function getAll($params){
+        ksort($params);
         $where = empty($params['where']) ? [] : $params['where'];
         $order = empty($params['order']) ? [] : $params['order'];
         $field = empty($params['field']) ? true : $params['field'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         $this->_where($selector, $where);
@@ -515,7 +723,7 @@ class BaseModel extends Model
      * @Author  Doogie<461960962@qq.com>
      */
     public function distinctField($field = '', $where = [], $refresh = 0){
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($field) . serialize($where));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($field) . serialize($where));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where);
         $this->_where($selector, $where);
@@ -532,11 +740,12 @@ class BaseModel extends Model
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
+     * @throws DbException
      * @author: Doogie<461960962@qq.com>
      */
     public function getGroupList($params = []){
         if(empty($params['group_field'])){
-            exception("缺少group_filed字段", 10006);
+            abort(10006, "缺少group_filed字段");
         }
         $group_field = $params['where'];
         $field = empty($params['field']) ? true : $params['field'];
@@ -546,7 +755,7 @@ class BaseModel extends Model
         $having = empty($params['having']) ? '' : $params['having'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) .__FUNCTION__. serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) .__FUNCTION__. serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         if($this->isCache){
@@ -569,7 +778,7 @@ class BaseModel extends Model
      * @author Jason<1589856452@qq.com>
      */
     public function sums($field = '', $where = [], $refresh = 0) {
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . $field . serialize($where));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . $field . serialize($where));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where);
         $this->_where($selector, $where);
@@ -594,6 +803,7 @@ class BaseModel extends Model
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
+     * @throws DbException
      * @Author  Doogie<461960962@qq.com>
      */
     public function getListJoin($params = []){
@@ -603,7 +813,7 @@ class BaseModel extends Model
         $field = empty($params['field']) ? true : $params['field'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         if($this->isCache){
@@ -613,7 +823,7 @@ class BaseModel extends Model
             $selector->alias($params['alias']);
         }
         if(!empty($params['join'])){
-            $selector->join($params['join']);
+            $this->buildJoin($selector, $params['join']);
         }
         $this->_where($selector, $where);
         return $selector->order($order)->page($limit[0], $limit[1])->select();
@@ -633,6 +843,7 @@ class BaseModel extends Model
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
+     * @throws DbException
      * @author Jason<dcq@kuryun.cn>
      */
     public function getAllJoin($params = []){
@@ -641,7 +852,7 @@ class BaseModel extends Model
         $field = empty($params['field']) ? true : $params['field'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         if($this->isCache){
@@ -651,7 +862,7 @@ class BaseModel extends Model
             $selector->alias($params['alias']);
         }
         if(!empty($params['join'])){
-            $selector->join($params['join']);
+            $this->buildJoin($selector, $params['join']);
         }
         $this->_where($selector, $where);
         return $selector->order($order)->select();
@@ -662,17 +873,21 @@ class BaseModel extends Model
      * @param array $params
      * @return mixed
      * e.g: model('activity')->totalJoin([
-    'alias' => 'a',
-    'join' => [[config('database.prefix').'user u', 'a.user_id=u.id', 'left']],
-    'where' => ['a.id' => ['gt', 300]]
-    ]);
+     * 'alias' => 'a',
+     * 'join' => [[config('database.prefix').'user u', 'a.user_id=u.id', 'left']],
+     * 'where' => ['a.id' => ['gt', 300]]
+     * ]);
+     * @throws DbException
      * @author Jason<dcq@kuryun.cn>
      */
     public function totalJoin($params = []){
+        ksort($params);
         $where = empty($params['where']) ? [] : $params['where'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
+        $having = empty($params['having']) ? '' : $params['having'];
+        $group_field = empty($params['group']) ? '' : $params['group'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where);
         if($this->isCache){
@@ -682,10 +897,32 @@ class BaseModel extends Model
             $selector->alias($params['alias']);
         }
         if(!empty($params['join'])){
-            $selector->join($params['join']);
+            $this->buildJoin($selector, $params['join']);
+        }
+        if($having){
+            $selector->having($having);
+        }
+        if($group_field){
+            $selector->group($group_field);
         }
         $this->_where($selector, $where);
         return $selector->count();
+    }
+
+    /**
+     * @param $self
+     * @param $join
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function buildJoin(&$self, $join){
+        // 如果为组数，则循环调用join
+        foreach ($join as $key => $value) {
+            if (is_array($value) && 2 <= count($value)) {
+                $self->join($value[0], $value[1], isset($value[2]) ? $value[2] : 'INNER');
+            }
+        }
+        return $self;
     }
 
     /**
@@ -701,7 +938,7 @@ class BaseModel extends Model
      * 'order' => ['a.id' => 'desc']
      * ]);
      * @Author  Doogie<461960962@qq.com>
-     * @throws \think\exception\DbException
+     * @throws DbException
      */
     public function pageJoin($params = []){
         $page_size = $params['page_size'];
@@ -710,7 +947,7 @@ class BaseModel extends Model
         $field = empty($params['field']) ? true : $params['field'];
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) .__FUNCTION__. serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) .__FUNCTION__. serialize($params));
         $refresh && cache($cache_key, null);
         $data = cache($cache_key);
         if(empty($data)){
@@ -719,7 +956,7 @@ class BaseModel extends Model
                 $selector->alias($params['alias']);
             }
             if(!empty($params['join'])){
-                $selector->join($params['join']);
+                $this->buildJoin($selector, $params['join']);
             }
             $this->_where($selector, $where);
             $data = $selector->order($order)->paginate($page_size);
@@ -733,7 +970,7 @@ class BaseModel extends Model
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws DbException
      * @author: Doogie<461960962@qq.com>
      */
     public function getGroupAll($params = []){
@@ -744,7 +981,7 @@ class BaseModel extends Model
         $having = empty($params['having']) ? '' : $params['having'];
         $group_field = empty($params['group']) ? '' : $params['group'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
 
         $selector = $this->getBuilder($where)->field($field);
@@ -769,7 +1006,7 @@ class BaseModel extends Model
      * ]);
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws DbException
      * @author fudaoji<fdj@kuryun.cn>
      */
     public function getOneJoin($params = []){
@@ -777,7 +1014,7 @@ class BaseModel extends Model
         $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
         $field = empty($params['field']) ? true : $params['field'];
         unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
         $selector = $this->getBuilder($where)->field($field);
         if($this->isCache){
@@ -787,37 +1024,9 @@ class BaseModel extends Model
             $selector->alias($params['alias']);
         }
         if(!empty($params['join'])){
-            $selector->join($params['join']);
+            $this->buildJoin($selector, $params['join']);
         }
         $this->_where($selector, $where);
         return $selector->find();
-    }
-
-    /**
-     * 关联查询获取字段
-     * @param array $params
-     * @return array
-     * @Author  Doogie<461960962@qq.com>
-     */
-    public function getFieldJoin($params){
-        $where = empty($params['where']) ? [] : $params['where'];
-        $refresh = empty($params['refresh']) ? 0 : $params['refresh'];
-        $field = empty($params['field']) ? true : $params['field'];
-        unset($params['refresh']);
-        $cache_key = md5(config('database.hostname') . config('database.database') . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
-        $refresh && cache($cache_key, null);
-
-        $selector = $this->getBuilder($where);
-        if(!empty($params['alias'])){
-            $selector->alias($params['alias']);
-        }
-        if(!empty($params['join'])){
-            $selector->join($params['join']);
-        }
-        $this->_where($selector, $where);
-        if($this->isCache){
-            $selector->cache($cache_key, $this->expire, $this->getTrueTable($where));
-        }
-        return $selector->column($field);
     }
 }

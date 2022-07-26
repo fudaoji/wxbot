@@ -13,6 +13,10 @@ use think\facade\Log;
 
 class Logger extends Log
 {
+    public static function error($msg = ''){
+        Log::write($msg, 'error');
+    }
+
     /**
      * 抛出异常, 记录错误日志
      * @param string $msg

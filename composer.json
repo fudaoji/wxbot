@@ -55,6 +55,6 @@
       "@php think service:discover",
       "@php think vendor:publish"
     ],
-    "test": "phpunit -c phpunit.xml --colors=always"
+    "test": "./vendor/bin/phpunit -c phpunit.xml --colors=always"
   }
 }

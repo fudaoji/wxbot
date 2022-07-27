@@ -9,9 +9,9 @@
 
 namespace tests\cases;
 use ky\Ovooa;
-use tests\TestCase;
+use tests\UnitTestCase;
 
-class OvooaTest extends TestCase
+class OvooaTest extends UnitTestCase
 {
     /**
      * @var Ovooa

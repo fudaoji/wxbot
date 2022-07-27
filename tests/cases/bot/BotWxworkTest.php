@@ -10,9 +10,9 @@
 namespace tests\cases;
 
 use ky\WxBot\Driver\Wxwork;
-use tests\TestCase;
+use tests\cases\bot\BotTest;
 
-class BotWxworkTest extends TestCase
+class BotWxworkTest extends BotTest
 {
     private $bot;
     private $robotFdj = 'wxid_xokb2ezu1p6t21';

@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '46b7ff2bd75d5befa683c50c656d2ffaa1c15e5d',
+    'reference' => 'e54f9a26077e4ce4e1a4a5de983f7616f4b237bc',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -563,7 +563,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '46b7ff2bd75d5befa683c50c656d2ffaa1c15e5d',
+      'reference' => 'e54f9a26077e4ce4e1a4a5de983f7616f4b237bc',
     ),
     'topthink/think-captcha' => 
     array (

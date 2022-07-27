@@ -21,7 +21,7 @@ class Forward extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      */
     public function getGather($params = []){
         $group_wxid = $params['group_wxid'];

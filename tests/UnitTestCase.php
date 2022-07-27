@@ -8,10 +8,11 @@
 // +----------------------------------------------------------------------
 // | Author: yunwuxin <448901948@qq.com>
 // +----------------------------------------------------------------------
+declare (strict_types = 1);
 namespace tests;
 
-class TestCase extends \think\testing\TestCase
+class UnitTestCase extends \PHPUnit\Framework\TestCase
 {
-    protected $baseUrl = 'http://sttx.dcq.kuryun.cn';
-    protected $codeArr = [0, 1, -4];
+    protected $baseUrl = 'http://wxbot.oudewa.cn';
+    protected $codeArr = [1, 911, 2003, 2001];
 }

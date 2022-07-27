@@ -65,7 +65,7 @@ class EventPrivateChat extends HandlerPrivateChat
                         'msg' => $this->content['msg']]);
                     break;
                 case My::MSG_LINK:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_Mycom) {
+                    if ($this->bot['protocol'] == Bot::PROTOCOL_MYCOM) {
                         $msg = json_decode($this->content['msg'], true)['Link'][0];
                         $url = $msg['url'];
                         $this->botClient->sendShareLinkToFriends([
@@ -85,7 +85,7 @@ class EventPrivateChat extends HandlerPrivateChat
                     }
                     break;
                 default:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_Mycom) {
+                    if ($this->bot['protocol'] == Bot::PROTOCOL_MYCOM) {
                         $this->botClient->sendTextToFriends([
                             'robot_wxid' => $this->content['robot_wxid'],
                             'to_wxid' => $groups,
@@ -136,7 +136,7 @@ class EventPrivateChat extends HandlerPrivateChat
      * 关键词回复
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){

@@ -7,12 +7,11 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace tests\cases;
+namespace tests\cases\bot;
 
 use ky\WxBot\Driver\Vlw;
-use tests\TestCase;
 
-class BotVlwTest extends TestCase
+class BotVlwTest extends BotTest
 {
     private $bot;
     private $robotWxid = 'wxid_xokb2ezu1p6t21';

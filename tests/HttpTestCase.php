@@ -12,9 +12,11 @@ namespace tests;
 use GuzzleHttp\Client;
 use think\facade\Log;
 
-class HttpTestCase extends TestCase
+class HttpTestCase extends UnitTestCase
 {
     protected $client;
+    protected $tokenKey = 'fdj_text';
+    protected $openid_fdj = 'oUcHy5LOrkjDoZtHqGFsiKJlLcQs';
 
     /**
      * 初始化
@@ -40,7 +42,7 @@ class HttpTestCase extends TestCase
             'sign' => $this->calcuSign($params)
         ];
         if($auth) {
-            $auth_token = json_decode(controller('common/base', 'event')->getRedis()->get('dcq_test'), true);
+            $auth_token = json_decode(get_redis()->get($this->tokenKey), true);
             if(!empty($auth_token)) {
                 $headers['token'] = $auth_token['token'];
             }else {
@@ -78,10 +80,8 @@ class HttpTestCase extends TestCase
             $params_str = trim($params_str, "&");
         }
         //签名步骤二：在string后加入KEY
-        $params_str .= config('app_key');
+        $params_str .= config('app.app_key');
         //签名步骤三：MD5加密
-        $sign = md5($params_str);
-
-        return $sign;
+        return md5($params_str);
     }
 }

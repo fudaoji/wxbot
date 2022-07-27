@@ -18,6 +18,7 @@
 namespace ky;
 use think\db\exception\DbException;
 use think\facade\Db;
+use think\facade\Env;
 use think\Model;
 
 class BaseModel extends Model
@@ -74,7 +75,7 @@ class BaseModel extends Model
     public function __construct($data = [])
     {
         parent::__construct($data);
-        $this->cachePrefix = env('database.hostname') . env('database.database');
+        $this->cachePrefix = Env::get('database.hostname') . Env::get('database.database');
     }
 
     public function getTablePrefix(){

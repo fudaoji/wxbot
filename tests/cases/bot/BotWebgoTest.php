@@ -7,12 +7,12 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace tests\cases;
+namespace tests\bot\cases;
 
 use ky\WxBot\Driver\Webgo;
-use tests\TestCase;
+use tests\cases\bot\BotTest;
 
-class BotWebgoTest extends TestCase
+class BotWebgoTest extends BotTest
 {
     private $bot;
     /**
@@ -28,8 +28,8 @@ class BotWebgoTest extends TestCase
      */
     public function __construct() {
         parent::__construct();
-        $this->bot = model('admin/bot')->getOne(14);
-        $this->client = model('admin/bot')->getRobotClient($this->bot);
+        $this->bot = $this->botM->getOne(14);
+        $this->client = $this->botM->getRobotClient($this->bot);
     }
 
     /**

@@ -24,7 +24,7 @@
 ![输入图片说明](6.png)
 
 #### 软件架构
-- [ThinkPHP5.1](https://www.kancloud.cn/manual/thinkphp5_1/)
+- [ThinkPHP6](https://www.kancloud.cn/manual/thinkphp6_0/)
 - Mysql
 - Memcached & Redis
 - [Layui](https://www.layui.com/) 

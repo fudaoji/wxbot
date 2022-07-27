@@ -30,7 +30,7 @@ class Base extends BaseController
     public function initialize()
     {
         if (request()->action() != 'complete' && is_file(app()->getRootPath() . '/install.lock')) {
-            $this->redirect('admin/index/index');
+            $this->redirect(url('admin/index/index'));
         }
     }
 

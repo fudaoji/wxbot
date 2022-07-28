@@ -168,7 +168,8 @@
 	</div>
 </form>
 <script>
-	$(document).ready(function () {
+	layui.use(['layer'], function () {
+		var layer = layui.layer;
 		$('#submit').on('click', function () {
 			var loading_index = layer.load(2, {content: "导入数据库需要些时间，请勿关闭浏览器!"});
 			$.post("", $('#form').serializeArray(), function (res) {
@@ -180,7 +181,7 @@
 					return;
 				}
 			});
-		})
+		});
 	});
 </script>
 {/block}

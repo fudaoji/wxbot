@@ -27,6 +27,12 @@ class Index extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
 	public function index() {
+        if(is_dir(app()->getRuntimePath())){
+            if(! is_writable(app()->getRuntimePath())){
+                exit("请将runtime目录设置成可写");
+            }
+        }
+
 		$this->status['index'] = 'primary';
 		return $this->show(['status' => $this->status]);
 	}

@@ -170,11 +170,13 @@
 <script>
 	$(document).ready(function () {
 		$('#submit').on('click', function () {
+			var loading_index = layer.load(2, {content: "导入数据库需要些时间，请勿关闭浏览器!"});
 			$.post("", $('#form').serializeArray(), function (res) {
+				layer.close(loading_index);
 				if(res.code === 1){
 					location.href = res.url;
 				}else{
-					alert(res.msg);
+					layer.alert(res.msg);
 					return;
 				}
 			});

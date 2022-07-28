@@ -170,7 +170,6 @@ function write_config()
  * @param $db
  * @param string $prefix
  * Author: fudaoji<fdj@kuryun.cn>
- * @return string
  */
 function create_tables($db, $prefix = '')
 {

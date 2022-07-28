@@ -132,15 +132,6 @@ class Index extends Base
      */
     public function sql() {
         if(request()->isPost()){
-            show_msg("11111", 'error');
-            sleep(2);
-            show_msg("22222");
-            sleep(2);
-            show_msg("33333");
-            sleep(2);
-            show_msg("44444");
-            sleep(2);
-
             try {
                 //连接数据库
                 $dbconfig = session('db_config');

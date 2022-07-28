@@ -64,7 +64,7 @@
                 id: "<?php echo $data['id']?>",
                 rules: rules_ids.join(',')
             };
-            console.log(postData);
+
             $.ajax({
                 url : "/admin/admingroup/auth",//后台数据请求地址
                 dataType : 'json',
@@ -73,16 +73,10 @@
                 data: postData,
                 success: function(res) {
                     if (res.code === 1) {
-                        if (parent_index) { //表单页为内页的情况
+                        layer.msg(res.msg, {time: 1500}, function(){
                             parent.layer.close(parent_index);
                             parent.location.reload();
-                        } else {
-                            if (typeof res.url !== 'undefined' && res.url) {
-                                location.href = res.url;
-                            } else {
-                                miniTab.deleteCurrentByIframe();
-                            }
-                        }
+                        });
                     } else {
                         layer.alert(res.msg);
                     }

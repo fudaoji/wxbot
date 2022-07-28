@@ -126,6 +126,21 @@ window.tools = {
 };
 
 /**
+ * 打开emoji弹窗
+ * @param string/array img src字符串或src数组
+ */
+window.chooseEmoji = function () {
+    layer.open({
+        type: 2,
+        title: "选择Emoji",
+        shadeClose: false,
+        shade: 0.8,
+        area: ['80%', '80%'],
+        content: ["/admin/emoji/index"] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+    });
+};
+
+/**
  * 预览图片
  * @param string/array img src字符串或src数组
  */

@@ -203,7 +203,6 @@ class Media extends Bbase
      * 链接
      * @return mixed
      * @throws \think\Exception
-     * @throws \think\exception\DbException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function link(){
@@ -212,13 +211,13 @@ class Media extends Bbase
         $data_list = $this->linkM->page(10, $where, ['id' => 'desc'], 'id,title,desc,image_url,url', 1);
         $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, __FUNCTION__);
+        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
     }
 
     /**
      * 视频
      * @return mixed
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function video(){
@@ -228,13 +227,13 @@ class Media extends Bbase
         $data_list = $this->videoM->page(12, $where, ['id' => 'desc'], 'id,url,title', 1);
         $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, __FUNCTION__);
+        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
     }
 
     /**
      * 文件
      * @return mixed
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function file(){
@@ -244,14 +243,13 @@ class Media extends Bbase
         $data_list = $this->fileM->page(10, $where, ['id' => 'desc'], 'id,title,url', 1);
         $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, __FUNCTION__);
+        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
     }
 
     /**
      * 文本
      * @return mixed
      * @throws \think\Exception
-     * @throws \think\exception\DbException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function text(){
@@ -268,13 +266,13 @@ class Media extends Bbase
         $data_list = $this->textM->page(10, $where, ['id' => 'desc'], 'id,content', 1);
         $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, __FUNCTION__);
+        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
     }
 
     /**
      * 图片
      * @return mixed
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function image(){
@@ -283,6 +281,6 @@ class Media extends Bbase
         $data_list = $this->imageM->page(12, $where, ['id' => 'desc'], 'id,url,title', 1);
         $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, __FUNCTION__);
+        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
     }
 }

@@ -14,8 +14,13 @@ use ky\Tree;
 
 class Admingroup extends Base
 {
-    protected $ruleM;
+    /**
+     * @var \app\admin\model\AdminRule
+     */
+    private $ruleM;
+
     public function initialize(){
+        parent::initialize();
         $this->model = new \app\admin\model\AdminGroup();
         $this->ruleM = new \app\admin\model\AdminRule();
     }
@@ -23,6 +28,9 @@ class Admingroup extends Base
     /**
      * 分组列表
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index(){
         if(request()->isPost()){
@@ -54,7 +62,7 @@ class Admingroup extends Base
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => [1 => '启用', 0 => '禁用']])
             ->addTableColumn(['title' => '操作', 'width' => 120, 'type' => 'toolbar'])
             ->addRightButton('edit')
-            ->addRightButton('self', ['title' => '授权','class' => 'layui-btn layui-btn-success layui-btn-xs','lay-event' => 'auth', 'href' => url('admingroup/auth', '', '') . '?group_id=__data_id__']);
+            ->addRightButton('self', ['title' => '授权','class' => 'layui-btn layui-btn-success layui-btn-xs','lay-event' => 'auth', 'href' => url('admingroup/auth', ['group_id' => '__data_id__'])]);
         //超管拥有删除权限
         if($this->adminInfo['group_id'] == 1) {
             $builder->addRightButton('delete');
@@ -113,7 +121,7 @@ class Admingroup extends Base
             ];
             $result = $this->model->updateOne($update_data);
             if($result) {
-                $this->success('授权成功', '/admin/admingroup/index', ['result' => $result]);
+                $this->success('授权成功', url('index'), ['result' => $result]);
             }else {
                 $this->error('授权失败');
             }
@@ -157,7 +165,6 @@ class Admingroup extends Base
                     $item['checked'] = false;
                 }
             }
-
             $Tree = new Tree();
             $rules_tree = $Tree->listToTree($rules);
             $this->success('success', '', ['rules_tree' => $rules_tree]);

@@ -38,19 +38,19 @@ class BaseCtl extends BaseController
      * @Author  fudaoji<fdj@kuryun.cn>
      */
     public function show($assign = [], $view = ''){
-        View::config(['view_path' => app()->getRootPath().'themes/' . $this->module.'/'.config('view.view_dir_name'). '/']);
-
+        //View::config(['view_path' => app()->getRootPath().config('view.view_dir_name').'/' . $this->module.'/'.config('view.theme'). '/']);
         $assign['module'] = $this->module;
         $assign['controller'] = $this->controller;
         $assign['action'] = $this->action;
         $assign['static_version'] = config("app.app_debug") ? time() : 1;
+        $assign['theme'] = config('view.theme');
 
         $this->assign = array_merge($this->assign, $assign);
 
         if (!$view) {
-            $view = $assign['action'];
+            $view = $assign['controller']. DIRECTORY_SEPARATOR.$assign['action'];
         }
-        return View::fetch($view, $this->assign);
+        return View::fetch(config('view.theme').DIRECTORY_SEPARATOR.$view, $this->assign);
     }
 
     /**

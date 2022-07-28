@@ -1,0 +1,26 @@
+<div class="layui-form-item {$form['extra_class']??''}">
+    <label class="layui-form-label " for="{$form['name']}">
+        {if condition="isset($form['extra_attr']) and is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <div class="layui-input-block">
+        <a class="layui-btn layui-btn-xs"
+                style="float: right;"
+                onclick="window.chooseEmoji()"
+        >选择emoji</a>
+        <textarea
+                style="width: 90%;"
+                class="layui-textarea"
+                placeholder="{$form['tip'] ?? ('请输入'.$form['title'])}"
+                name="{$form['name']}"
+                id="{$form['name']}"
+                {$form['extra_attr']}
+        >{$form['value'] ?? ''}</textarea>
+
+        {if !empty($form['tip'])}
+        <tip class="form-tip">{$form['tip']}</tip>
+        {/if}
+    </div>
+</div>

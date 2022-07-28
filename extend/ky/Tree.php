@@ -67,31 +67,31 @@ class Tree {
     public function listToTree($list, $pk='id', $pid = 'pid', $child = 'children', $root = 0, $strict = true) {
         // 创建Tree
         $tree = array();
-        if (is_array($list)) {
-            // 创建基于主键的数组引用
-            $refer = array();
-            foreach ($list as $key => $data) {
-                $refer[$data[$pk]] =& $list[$key];
-            }
+        if(is_object($list)){
+            $list = $list->toArray();
+        }
+        // 创建基于主键的数组引用
+        $refer = array();
+        foreach ($list as $key => $data) {
+            $refer[$data[$pk]] =& $list[$key];
+        }
 
-            foreach ($list as $key => $data) {
-                // 判断是否存在parent
-                $parent_id = $data[$pid];
+        foreach ($list as $key => $data) {
+            // 判断是否存在parent
+            $parent_id = $data[$pid];
 
-                if ($parent_id === null || $root == $parent_id) {
-                    $tree[] =& $list[$key];
+            if ($parent_id === null || $root == $parent_id) {
+                $tree[] =& $list[$key];
+            } else {
+                if(isset($refer[$parent_id])){
+                    $parent =& $refer[$parent_id];
+                    $parent[$child][] =& $list[$key];
                 } else {
-                    if(isset($refer[$parent_id])){
-                        $parent =& $refer[$parent_id];
-                        $parent[$child][] =& $list[$key];
-                    } else {
-                        if($strict === false){
-                            $tree[] =& $list[$key];
-                        }
+                    if($strict === false){
+                        $tree[] =& $list[$key];
                     }
                 }
             }
-
         }
         return $tree;
     }

@@ -68,7 +68,7 @@ class Mediatext extends Bbase
         $builder->setMetaTitle('新增文本')
             ->setPostUrl(url('savePost'))
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textarea', '文本内容', '1000字内', [], 'required maxlength=10000');
+            ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000');
 
         return $builder->show();
     }
@@ -88,7 +88,7 @@ class Mediatext extends Bbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textarea', '文本内容', '1000字内', [], 'required maxlength=10000')
+            ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000')
             ->setFormData($data);
 
         return $builder->show();

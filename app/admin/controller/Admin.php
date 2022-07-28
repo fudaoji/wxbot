@@ -65,7 +65,7 @@ class Admin extends Base
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => [0 => '禁用', 1 => '启用']])
             ->addTableColumn(['title' => '操作', 'width' => 220, 'type' => 'toolbar'])
             ->addRightButton('edit')
-            ->addRightButton('self', ['title' => '修改密码','class' => 'layui-btn layui-btn-warm layui-btn-xs','href' => url('admin/setPassword', '', '') . '?id=__data_id__'])
+            ->addRightButton('self', ['title' => '修改密码','class' => 'layui-btn layui-btn-warm layui-btn-xs','href' => url('admin/setPassword', ['id' => '__data_id__'])])
             ->addRightButton('delete');
         return $builder->show();
     }

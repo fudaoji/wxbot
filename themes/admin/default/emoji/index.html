@@ -1,0 +1,48 @@
+<div class="layui-row">
+    <div class="layui-col-sm7">
+        <!--预留搜索-->
+    </div>
+</div>
+<blockquote class="layui-elem-quote">点击表情复制可发送微信的emoji文本</blockquote>
+<br>
+<div class="layui-row">
+    {volist name="data_list" id="item"}
+    <div class="layui-col-xs1 layui-col-space5" style="text-align: center;margin-bottom: 5px;">
+        <p title="点击复制"
+           class="emoji-box js-zclip"
+           data-text="{$item.softb_unicode}">{$item.image|raw}</p>
+        <!--<div class="layui-btn layui-btn-xs">复制</div>-->
+    </div>
+    {/volist}
+</div>
+<div id="page">
+    {$pager|raw}
+</div>
+
+{block name="css"}
+<link rel="stylesheet" href="__LIB__/emoji/emoji.css" />
+<style>
+.emoji-outer:hover{cursor: pointer;}
+</style>
+{/block}
+
+{block name="js"}
+{js href='__LIB__/clipboard/clipboard.min.js' /}
+<script>
+    layui.use(['jquery'],function(){
+        var clipboard = new ClipboardJS('.js-zclip', {
+            text: function(trigger) {
+                return '[emoji=' + trigger.getAttribute('data-text') +']';
+            }
+        });
+        clipboard.on('success', function (e) {
+            layer.msg("已复制！");
+            e.clearSelection();
+        });
+        clipboard.on('error', function (e) {
+            console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+        });
+    });
+</script>
+{/block}

@@ -21,38 +21,39 @@
 
             {foreach $form_items as $k => $form}
             {switch name="form.type"}
-            {case value="import_file"}{include file="builder/formtype/import_file" /}{/case}
-            {case value="choose_media_multi"}{include file="builder/formtype/choose_media_multi" /}{/case}
-            {case value="choose_picture"}{include file="builder/formtype/choose_picture" /}{/case}
-            {case value="video_detail"}{include file="builder/formtype/video_detail" /}{/case}
-            {case value="file_detail"}{include file="builder/formtype/file_detail" /}{/case}
-            {case value="picture_detail"}{include file="builder/formtype/picture_detail" /}{/case}
-            {case value="datetime_range"}{include file="builder/formtype/datetime_range" /}{/case}
-            {case value="map_qq"}{include file="builder/formtype/map_qq" /}{/case}
-            {case value="layarea"}{include file="builder/formtype/layarea" /}{/case}
-            {case value="choose_addon"}{include file="builder/formtype/choose_addon" /}{/case}
-            {case value="file_to_root"}{include file="builder/formtype/file_to_root" /}{/case}
-            {case value="ueditor"}{include file="builder/formtype/ueditor" /}{/case}
-            {case value="static"}{include file="builder/formtype/static" /}{/case}
-            {case value="chosen_multi"}{include file="builder/formtype/chosen_multi" /}{/case}
-            {case value="chosen"}{include file="builder/formtype/chosen" /}{/case}
-            {case value="time"}{include file="builder/formtype/time" /}{/case}
-            {case value="date"}{include file="builder/formtype/date" /}{/case}
-            {case value="datetime"}{include file="builder/formtype/datetime" /}{/case}
-            {case value="toggle_radio"}{include file="builder/formtype/toggle_radio" /}{/case}
-            {case value="legend"}{include file="builder/formtype/legend" /}{/case}
-            {case value="media_text"}{include file="builder/formtype/media_text" /}{/case}
-            {case value="choose_media"}{include file="builder/formtype/choose_media" /}{/case}
-            {case value="media_image"}{include file="builder/formtype/media_image" /}{/case}
-            {case value="picture_url"}{include file="builder/formtype/picture_url" /}{/case}
-            {case value="pictures_url"}{include file="builder/formtype/pictures_url" /}{/case}
-            {case value="linkage"}{include file="builder/formtype/linkage" /}{/case}
-            {case value="textarea"}{include file="builder/formtype/textarea" /}{/case}
-            {case value="select"}{include file="builder/formtype/select" /}{/case}
-            {case value="radio"}{include file="builder/formtype/radio" /}{/case}
-            {case value="hidden"}{include file="builder/formtype/hidden" /}{/case}
-            {case value="icon"}{include file="builder/formtype/icon" /}{/case}
-            {default /}{include file="builder/formtype/text" /}
+            {case value="textwithemoji"}{include file="default/builder/formtype/textwithemoji" /}{/case}
+            {case value="import_file"}{include file="default/builder/formtype/import_file" /}{/case}
+            {case value="choose_media_multi"}{include file="default/builder/formtype/choose_media_multi" /}{/case}
+            {case value="choose_picture"}{include file="default/builder/formtype/choose_picture" /}{/case}
+            {case value="video_detail"}{include file="default/builder/formtype/video_detail" /}{/case}
+            {case value="file_detail"}{include file="default/builder/formtype/file_detail" /}{/case}
+            {case value="picture_detail"}{include file="default/builder/formtype/picture_detail" /}{/case}
+            {case value="datetime_range"}{include file="default/builder/formtype/datetime_range" /}{/case}
+            {case value="map_qq"}{include file="default/builder/formtype/map_qq" /}{/case}
+            {case value="layarea"}{include file="default/builder/formtype/layarea" /}{/case}
+            {case value="choose_addon"}{include file="default/builder/formtype/choose_addon" /}{/case}
+            {case value="file_to_root"}{include file="default/builder/formtype/file_to_root" /}{/case}
+            {case value="ueditor"}{include file="default/builder/formtype/ueditor" /}{/case}
+            {case value="static"}{include file="default/builder/formtype/static" /}{/case}
+            {case value="chosen_multi"}{include file="default/builder/formtype/chosen_multi" /}{/case}
+            {case value="chosen"}{include file="default/builder/formtype/chosen" /}{/case}
+            {case value="time"}{include file="default/builder/formtype/time" /}{/case}
+            {case value="date"}{include file="default/builder/formtype/date" /}{/case}
+            {case value="datetime"}{include file="default/builder/formtype/datetime" /}{/case}
+            {case value="toggle_radio"}{include file="default/builder/formtype/toggle_radio" /}{/case}
+            {case value="legend"}{include file="default/builder/formtype/legend" /}{/case}
+            {case value="media_text"}{include file="default/builder/formtype/media_text" /}{/case}
+            {case value="choose_media"}{include file="default/builder/formtype/choose_media" /}{/case}
+            {case value="media_image"}{include file="default/builder/formtype/media_image" /}{/case}
+            {case value="picture_url"}{include file="default/builder/formtype/picture_url" /}{/case}
+            {case value="pictures_url"}{include file="default/builder/formtype/pictures_url" /}{/case}
+            {case value="linkage"}{include file="default/builder/formtype/linkage" /}{/case}
+            {case value="textarea"}{include file="default/builder/formtype/textarea" /}{/case}
+            {case value="select"}{include file="default/builder/formtype/select" /}{/case}
+            {case value="radio"}{include file="default/builder/formtype/radio" /}{/case}
+            {case value="hidden"}{include file="default/builder/formtype/hidden" /}{/case}
+            {case value="icon"}{include file="default/builder/formtype/icon" /}{/case}
+            {default /}{include file="default/builder/formtype/text" /}
             {/switch}
             {/foreach}
             <div class="layui-form-item">

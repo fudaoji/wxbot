@@ -2,17 +2,59 @@
 
 {block name="body"}
 <h1 class="text-center">安装数据库</h1>
+<br>
+<h4 class="text-center">导入数据库需要些时间，请勿关闭浏览器...</h4>
+
 <div id="show-list" class="install-database list-group" style="height:250px; overflow-y:auto; ">
 </div>
 <script type="text/javascript">
-	var list   = document.getElementById('show-list');
+	var list = document.getElementById('show-list');
 	function showmsg(msg, classname){
-		var li = document.createElement('p'); 
+		var li = document.createElement('p');
 		li.innerHTML = msg;
 		classname && li.setAttribute('class', 'list-group-item text-' + classname);
 		list.appendChild(li);
 		document.scrollTop += 30;
 	}
+
+	layui.use(['jquery', 'layer'], function () {
+		var $ = layui.jquery
+				, layer = layui.layer;
+		var loading_index = layer.load(1)
+				, err = false;
+
+		var request = function(){
+			$.post("", {}, function (res) {
+				if(res.code === 1){
+					location.href = res.url;
+				}else{
+					err = true;
+					layer.close(loading_index);
+					layer.alert(res.msg);
+					return;
+				}
+			});
+		};
+
+		var getMsg = function(){
+			if(err === true){
+				clearInterval(interval);
+			}else{
+				$.post("getMsg", {}, function (res) {
+					if(res.code === 1){
+						res.data.msg_list.forEach((item) =>{
+							showmsg(item.msg, item.class);
+						});
+					}
+				});
+			}
+		};
+
+		request();
+		getMsg();
+		var interval = setInterval(getMsg, 1500);
+	});
+
 </script>
 {/block}
 {block name="footer"}

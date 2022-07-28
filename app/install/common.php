@@ -4,6 +4,7 @@ define('IS_WRITE', true);
 
 function lockFile(){
     file_put_contents(app()->getRootPath() . '/install.lock', 'ok');
+    show_msg("安装完成");
 }
 
 /**
@@ -241,6 +242,12 @@ function register_administrator($db, $prefix, $admin)
  * Author: fudaoji<fdj@kuryun.cn>
  */
 function show_msg($msg, $class = 'primary')
+{
+    $msg_list = (array)session('install_msg');
+    array_push($msg_list, ['msg' => $msg, 'class' => $class]);
+    session('install_msg', $msg_list);
+}
+function show_msgBak($msg, $class = 'primary')
 {
     echo str_repeat(" ", 1024)."<script type=\"text/javascript\">showmsg(\"{$msg}\", \"{$class}\")</script>";
 }

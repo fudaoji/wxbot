@@ -130,8 +130,55 @@ class Index extends Base
      * @throws \think\Exception
      * Author: fudaoji<fdj@kuryun.cn>
      */
-	public function sql() {
-        set_time_limit(0);
+    public function sql() {
+        if(request()->isPost()){
+            show_msg("11111", 'error');
+            sleep(2);
+            show_msg("22222");
+            sleep(2);
+            show_msg("33333");
+            sleep(2);
+            show_msg("44444");
+            sleep(2);
+
+            try {
+                //连接数据库
+                $dbconfig = session('db_config');
+                $db       = Db::connect();
+                //创建数据库
+                $dbname = $dbconfig['database'];
+                if(! $db->query("SHOW DATABASES LIKE '{$dbname}'")){
+                    $sql = "CREATE DATABASE IF NOT EXISTS `{$dbname}` DEFAULT CHARACTER SET utf8mb4";
+                    $db->execute($sql);
+                }
+                show_msg("数据库创建成功");
+
+                //创建数据表
+                create_tables($db, $dbconfig['prefix']);
+                //注册创始人帐号
+                $admin = session('admin_info');
+                register_administrator($db, $dbconfig['prefix'], $admin);
+                lockFile();
+            }catch (\Exception $e){
+                show_msg("安装异常：" . $e->getMessage(), 'danger');
+                session("error", true);
+            }
+            if(session('error')){
+                $this->error('安装失败！');
+            }
+            $this->success('安装成功', url('complete'));
+        }else{
+            //session('install_msg', []);
+            $this->status['index']  = 'success';
+            $this->status['check']  = 'success';
+            $this->status['config'] = 'success';
+            $this->status['sql']    = 'primary';
+            $this->assign('status', $this->status);
+
+            return $this->show();
+        }
+    }
+	public function sqlBak() {
         ob_end_clean();
         ob_implicit_flush(1);
 		session('error', false);
@@ -170,6 +217,14 @@ class Index extends Base
 			echo '<script type="text/javascript">location.href = "'.url('complete').'";</script>';
 		}
 	}
+
+	public function getMsg(){
+        if(request()->isPost()){
+            $msg_list = (array)session('install_msg');
+            session('install_msg', []);
+            $this->success('success', '/undefined', ['msg_list' => $msg_list]);
+        }
+    }
 
     /**
      * 创建完成

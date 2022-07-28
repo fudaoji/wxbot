@@ -133,6 +133,7 @@ class Index extends Base
     public function sql() {
         if(request()->isPost()){
             try {
+                session('install_msg', []);
                 //连接数据库
                 $dbconfig = session('db_config');
                 $db       = Db::connect();

@@ -159,7 +159,7 @@ class Index extends Base
             }
             $this->success('安装成功', url('complete'));
         }else{
-            session('install_msg', null);
+            cache('install_msg', []);
             $this->status['index']  = 'success';
             $this->status['check']  = 'success';
             $this->status['config'] = 'success';
@@ -172,8 +172,8 @@ class Index extends Base
 
 	public function getMsg(){
         if(request()->isPost()){
-            $msg_list = (array)session('install_msg');
-            session('install_msg', []);
+            $msg_list = (array)cache('install_msg');
+            cache('install_msg', []);
             $this->success('success', '/undefined', ['msg_list' => $msg_list]);
         }
     }

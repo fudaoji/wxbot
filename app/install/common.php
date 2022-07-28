@@ -242,9 +242,9 @@ function register_administrator($db, $prefix, $admin)
  */
 function show_msg($msg, $class = 'primary')
 {
-    $msg_list = (array)session('install_msg');
+    $msg_list = (array)cache('install_msg');
     array_push($msg_list, ['msg' => $msg, 'class' => $class]);
-    session('install_msg', $msg_list);
+    cache('install_msg', $msg_list);
 }
 function show_msgBak($msg, $class = 'primary')
 {

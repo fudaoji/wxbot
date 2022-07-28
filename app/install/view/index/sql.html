@@ -21,15 +21,15 @@
 		var $ = layui.jquery
 				, layer = layui.layer;
 		var  err = false;
-		//, loading_index = layer.load(1);
 
 		var request = function(){
 			$.post("", {}, function (res) {
 				if(res.code === 1){
-					location.href = res.url;
+					layer.msg(res.msg, {timeout: 1500}, () => {
+						location.href = res.url;
+					});
 				}else{
 					err = true;
-					//layer.close(loading_index);
 					layer.alert(res.msg);
 					return;
 				}

@@ -155,9 +155,9 @@ class Index extends Base
                 session("error", true);
             }
             if(session('error')){
-                $this->error('安装失败！');
+                $this->error('数据库安装失败！');
             }
-            $this->success('安装成功', url('complete'));
+            $this->success('数据库安装成功', url('complete'));
         }else{
             cache('install_msg', []);
             $this->status['index']  = 'success';

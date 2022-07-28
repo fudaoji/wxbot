@@ -133,7 +133,6 @@ class Index extends Base
     public function sql() {
         if(request()->isPost()){
             try {
-                session('install_msg', []);
                 //连接数据库
                 $dbconfig = session('db_config');
                 $db       = Db::connect();
@@ -160,7 +159,7 @@ class Index extends Base
             }
             $this->success('安装成功', url('complete'));
         }else{
-            //session('install_msg', []);
+            session('install_msg', null);
             $this->status['index']  = 'success';
             $this->status['check']  = 'success';
             $this->status['config'] = 'success';
@@ -170,45 +169,6 @@ class Index extends Base
             return $this->show();
         }
     }
-	public function sqlBak() {
-        ob_end_clean();
-        ob_implicit_flush(1);
-		session('error', false);
-		$this->status['index']  = 'success';
-		$this->status['check']  = 'success';
-		$this->status['config'] = 'success';
-		$this->status['sql']    = 'primary';
-		$this->assign('status', $this->status);
-		$this->assign('app_name', config('app.app_name'));
-		echo View::fetch('', $this->assign);
-
-        //连接数据库
-        $dbconfig = session('db_config');
-        $db       = Db::connect();
-        //创建数据库
-        $dbname = $dbconfig['database'];
-        try {
-            if(! $db->query("SHOW DATABASES LIKE '{$dbname}'")){
-                $sql = "CREATE DATABASE IF NOT EXISTS `{$dbname}` DEFAULT CHARACTER SET utf8mb4";
-                $db->execute($sql);
-            }
-        }catch (\Exception $e){
-            $this->error('创建数据库失败:' . $e->getMessage());
-        }
-
-        //创建数据表
-        create_tables($db, $dbconfig['prefix']);
-        //注册创始人帐号
-        $admin = session('admin_info');
-        register_administrator($db, $dbconfig['prefix'], $admin);
-
-        lockFile();
-		if (session('error')) {
-			show_msg('安装失败-_-!');
-		} else {
-			echo '<script type="text/javascript">location.href = "'.url('complete').'";</script>';
-		}
-	}
 
 	public function getMsg(){
         if(request()->isPost()){

@@ -18,6 +18,8 @@ use app\bot\handler\vlw\EventPrivateChat;
 use app\bot\handler\vlw\EventLogin;
 use app\common\controller\BaseCtl;
 use app\constants\Bot as BotConst;
+use ky\WxBot\Driver\My;
+use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
@@ -40,7 +42,7 @@ class Handler extends BaseCtl
     protected $groupMemberM;
     protected $bot;
     /**
-     * @var Vlw|Wxwork|Cat|Webgo
+     * @var Vlw|Wxwork|Cat|Webgo|My|Mycom
      */
     protected $botClient;
     protected $fromWxid = '';

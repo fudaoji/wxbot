@@ -42,10 +42,10 @@ class EventPrivateChat extends HandlerPrivateChat
             case Bot::MSG_TEXT:
                 $this->keyword();
                 break;
-            case Bot::MSG_IMG:
-                Logger::error($this->content);
-                break;
         }
+
+        //针对消息事件的特殊响应
+        $this->eventReply();
     }
 
     /**
@@ -126,7 +126,7 @@ class EventPrivateChat extends HandlerPrivateChat
      * 关键词回复
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){

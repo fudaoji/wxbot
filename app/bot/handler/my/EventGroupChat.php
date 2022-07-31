@@ -33,7 +33,6 @@ class EventGroupChat extends HandlerGroupChat
     public function basic(){
         //消息转播
         $this->forward();
-
         //其他功能
         switch ($this->content['type']){
             case My::MSG_TEXT:
@@ -41,6 +40,9 @@ class EventGroupChat extends HandlerGroupChat
                 if($this->rmGroupMember()) return;
                 break;
         }
+
+        //针对消息事件的特殊响应
+        $this->eventReply();
     }
 
     /**

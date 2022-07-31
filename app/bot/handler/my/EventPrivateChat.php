@@ -13,7 +13,6 @@ use app\bot\handler\HandlerPrivateChat;
 use app\constants\Bot;
 use app\constants\Reply;
 use app\constants\Task;
-use ky\WxBot\Driver\My;
 
 class EventPrivateChat extends HandlerPrivateChat
 {
@@ -39,10 +38,13 @@ class EventPrivateChat extends HandlerPrivateChat
         $this->forward();
 
         switch ($this->content['type']){
-            case My::MSG_TEXT:
+            case Bot::MSG_TEXT:
                 $this->keyword();
                 break;
         }
+
+        //针对消息事件的特殊响应
+        $this->eventReply();
     }
 
     /**
@@ -58,13 +60,13 @@ class EventPrivateChat extends HandlerPrivateChat
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
             switch ($this->content['type']) {
-                case My::MSG_TEXT:
+                case Bot::MSG_TEXT:
                     $this->botClient->sendTextToFriends([
                         'robot_wxid' => $this->content['robot_wxid'],
                         'to_wxid' => $groups,
                         'msg' => $this->content['msg']]);
                     break;
-                case My::MSG_LINK:
+                case Bot::MSG_LINK:
                     if ($this->bot['protocol'] == Bot::PROTOCOL_MYCOM) {
                         $msg = json_decode($this->content['msg'], true)['Link'][0];
                         $url = $msg['url'];

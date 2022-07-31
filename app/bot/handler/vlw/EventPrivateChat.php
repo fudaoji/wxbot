@@ -43,6 +43,9 @@ class EventPrivateChat extends HandlerPrivateChat
                 $this->keyword();
                 break;
         }
+
+        //针对消息事件的特殊响应
+        $this->eventReply();
     }
 
     /**

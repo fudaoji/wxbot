@@ -38,7 +38,7 @@ class Tpzs extends Base
             'join' => [
                 ['bot', 'bot.id=bt.bot_id']
             ],
-            'where' => ['bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['elt', time()]],
+            'where' => ['bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['<=', time()]],
             'field' => ['uuid','bot.uin as wxid', 'bot.app_key', 'bot.url', 'bot.protocol','bt.members', 'bt.img', 'bt.content', 'bt.id']
         ]))){
             foreach($task_list as $task){

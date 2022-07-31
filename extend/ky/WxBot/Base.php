@@ -64,14 +64,16 @@ Abstract class Base
     abstract public function getFriends($params = []);
 
     abstract public function getGroups($params = []);
+    //at  robot_wxid group_wxid member_wxid msg
     abstract public function sendGroupMsgAndAt($params = []);
+    //at  robot_wxid group_wxid msg
+    abstract public function sendMsgAtAll($params = []);
     //移除群聊 robot_wxid group_wxid to_wxid
     abstract public function removeGroupMember($params = []);
     //邀请好友入群 robot_wxid, group_wxid, friend_wxid
     abstract public function inviteInGroup($params = []);
     abstract public function getGroupMemberInfo($params = []);
     abstract public function quitGroup($params = []);
-
     //设置群名称 group_name
     abstract public function setGroupName($params = []);
     //设置群公告 notice

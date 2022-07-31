@@ -11,13 +11,20 @@
 namespace app\crontab\controller;
 
 use app\constants\Task;
+use ky\Logger;
 
 class Bot extends Base
 {
 
+    /**
+     * @var \app\common\model\Task
+     */
+    private $taskM;
+
     public function initialize()
     {
         parent::initialize();
+        $this->taskM = new \app\common\model\Task();
     }
 
     /**
@@ -26,7 +33,7 @@ class Bot extends Base
     public function addonMinute()
     {
         //推品助手
-        controller('tpzs', 'task')->minuteTask();
+        invoke('\app\crontab\task\Tpzs')->minuteTask();
     }
 
     /**
@@ -51,21 +58,22 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function sendBatch(){
-        $view_table = model('task')->where('status', 1)
+        $view_table = $this->taskM->where('status', 1)
             ->whereNotNull('wxids')
             ->whereNotNull('medias')
             ->where("(complete_time=0 and circle=".Task::CIRCLE_SINGLE." and plan_time <= ".time().") or (circle=" . Task::CIRCLE_DAILY .
                 " and plan_hour<='".date('H:i:s')."' and complete_time<".strtotime(date('Ymd 00:00')).")")
             ->field('id')
             ->buildSql();
-        if(count($task_list = model('task')->getAllJoin([
+
+        if(count($task_list = $this->taskM->getAllJoin([
             'alias' => 'bt',
             'join' => [
                 ['bot', 'bot.id=bt.bot_id'],
                 [$view_table . ' t1', 't1.id=bt.id']
             ],
             'where' => ['bot.alive' => 1],
-            'field' => ['bot.uuid', 'bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id','bt.circle','bt.complete_time'],
+            'field' => ['bot.uuid', 'bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id','bt.circle','bt.complete_time','bt.atall'],
             'refresh' => true
         ]))){
             $redis = get_redis();
@@ -82,9 +90,10 @@ class Bot extends Base
                     foreach ($medias as $media){
                         $task['media_type'] = $media['type'];
                         $task['media_id'] = $media['id'];
-                        model('reply')->botReply($task, $bot_client, $task, $task['wxids']);
+                        $extra = ['atall' => $task['atall']];
+                        model('reply')->botReply($task, $bot_client, $task, $task['wxids'], $extra);
                     }
-                    $task = model('task')->updateOne(['id' => $task['id'], 'complete_time' => time()]);
+                    $task = $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
                     dump($task);
                 }
             }

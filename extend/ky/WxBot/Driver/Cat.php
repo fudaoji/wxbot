@@ -36,7 +36,6 @@ class Cat extends Base
     const API_SEND_VIDEO_MSG = 'SendVideoMsg'; // 发送视频消息，
     const API_SEND_FILE_MSG = 'SendFileMsg'; // 发送文件消息
     const API_SEND_MUSIC_MSG = 'SendMusicMsg'; //发送一条可播放的歌曲链接
-    const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
     const API_SEND_EMOJI_MSG = 'SendEmojiMsg'; //emoji
     const API_SEND_SHARE_LINK_MSG = 'SendLinkMsg'; //发送图文链接消息，
 
@@ -51,6 +50,8 @@ class Cat extends Base
     const API_SET_GROUP_NAME = 'EditGroupName'; //
     const API_SET_GROUP_NOTICE = 'EditGroupNotice'; //
     const API_QUIT_GROUP = 'QuitGroup'; // 退群
+    const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
+    const API_SEND_MSG_AT_ALL = 'SendMsgAtAll'; //艾特群员
 
     const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearchEnterprise'; //通过手机号去添加企业微信好友,不可频繁调用。失败返回0 成功返回1 好友返回2 企业账号离线返回3 频繁返回-1
     const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
@@ -462,5 +463,10 @@ class Cat extends Base
     public function quitGroup($params = [])
     {
         return $this->doRequest($params, self::API_QUIT_GROUP);
+    }
+
+    public function sendMsgAtAll($params = [])
+    {
+        return $this->apiUnSupport();
     }
 }

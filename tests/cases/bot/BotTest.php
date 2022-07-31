@@ -16,6 +16,10 @@ use tests\UnitTestCase;
 class BotTest extends UnitTestCase
 {
     protected $botM;
+    protected $robotJane = 'wxid_a98qqf9m4bny22';
+    protected $robotComDj = '1688854317341474';
+    protected $wxidDj = 'wxid_xokb2ezu1p6t21';
+    protected $group51 = '22972226702@chatroom';
 
     public function __construct($name = null, array $data = array(), $dataName = '')
     {

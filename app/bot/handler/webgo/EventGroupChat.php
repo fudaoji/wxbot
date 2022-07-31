@@ -41,6 +41,9 @@ class EventGroupChat extends HandlerGroupChat
                 if($this->rmGroupMember()) return;
                 break;
         }
+
+        //针对消息事件的特殊响应
+        $this->eventReply();
     }
 
     /**

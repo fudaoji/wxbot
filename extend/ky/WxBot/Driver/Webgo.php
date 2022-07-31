@@ -354,4 +354,9 @@ class Webgo extends Base
     {
         // TODO: Implement getGuest() method.
     }
+
+    public function sendMsgAtAll($params = [])
+    {
+        return $this->apiUnSupport();
+    }
 }

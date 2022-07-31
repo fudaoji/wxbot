@@ -19,7 +19,7 @@ class BotWebgoTest extends BotTest
      * @var Webgo
      */
     private $client;
-    private $wxidDj = '@e395a5245b20e7888cad96991e36e0d5fc85b496450e59604fd98589e6e29f8d';
+    protected $wxidDj = '@e395a5245b20e7888cad96991e36e0d5fc85b496450e59604fd98589e6e29f8d';
     private $wxidJane = '@a0f7bf23f82168160b49c37378311bb97a6c73a38f89ef67bf613235ce0ec9af';
 
     /**

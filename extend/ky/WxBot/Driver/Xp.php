@@ -425,4 +425,39 @@ class Xp extends Base
     {
         // TODO: Implement getGroupMemberInfo() method.
     }
+
+    public function getGuest($content = [], $field = '')
+    {
+        // TODO: Implement getGuest() method.
+    }
+
+    public function getGroupMembers($params = [])
+    {
+        // TODO: Implement getGroupMembers() method.
+    }
+
+    public function forwardMsgToFriends($params = [])
+    {
+        // TODO: Implement forwardMsgToFriends() method.
+    }
+
+    public function sendMsgAtAll($params = [])
+    {
+        // TODO: Implement sendMsgAtAll() method.
+    }
+
+    public function quitGroup($params = [])
+    {
+        // TODO: Implement quitGroup() method.
+    }
+
+    public function setGroupName($params = [])
+    {
+        // TODO: Implement setGroupName() method.
+    }
+
+    public function setGroupNotice($params = [])
+    {
+        // TODO: Implement setGroupNotice() method.
+    }
 }

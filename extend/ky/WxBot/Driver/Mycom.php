@@ -44,6 +44,7 @@ class Mycom extends Base
     const API_GET_GROUP_MEMBER_INFO = "GetGroupMemberDetailInfo"; //获取某个群成员信息
     const API_GET_GROUP_MEMBER = "GetGroupMemberEnterprise"; //获取群成员列表
     const API_QUIT_GROUP = 'QuitGroupEnterprise'; // 退群
+    const API_SEND_MSG_AT_ALL = 'SendMsgAtAll_Enterprise'; //艾特群员
 
 
     private $token;
@@ -349,7 +350,6 @@ class Mycom extends Base
     robot_wxid (string)  // 机器人ID
     group_wxid (string)  // 群ID
     member_wxid (string)  // 要艾特的群成员ID，艾特多人用英文逗号“,”分开
-    member_name (string)  // 要艾特的群成员昵称，可空 会自动读取
     msg (string)
      * @param array $params
      * @return bool
@@ -722,6 +722,22 @@ class Mycom extends Base
     {
         return $this->request([
             'data' => $this->buildPostData($params, self::API_QUIT_GROUP)
+        ]);
+    }
+
+    /**
+     * req:
+     *  robot_wxid (string)  // 机器人ID
+     *  group_wxid (string)  // 群ID
+     *  msg                     //文本内容
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMsgAtAll($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_MSG_AT_ALL)
         ]);
     }
 }

@@ -183,6 +183,11 @@ class Task extends Botbase
 
     public function add()
     {
+        $default = [
+            'plan_time' => date('Y-m-d H:i:s'),
+            'circle' => TaskConst::CIRCLE_SINGLE,
+            'atall' => 0
+        ];
         $material = [];
         $members = $this->getMembers();
         // 使用FormBuilder快速建立表单页面
@@ -194,7 +199,8 @@ class Task extends Botbase
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间', [], '')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '选择素材', ['types' => Media::types()], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
-        ->setFormData(['plan_time' => date('Y-m-d H:i:s'), 'circle' => TaskConst::CIRCLE_SINGLE]);
+            ->addFormItem('atall', 'radio', '艾特全体', '艾特全体', [0 => '否', 1 => '是'], 'required')
+        ->setFormData($default);
 
         return $builder->show(['material' => $material]);
     }
@@ -232,6 +238,7 @@ class Task extends Botbase
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间', [], '')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
+            ->addFormItem('atall', 'radio', '艾特全体', '艾特全体', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
             ->setFormData($data);
 

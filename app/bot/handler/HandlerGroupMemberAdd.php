@@ -55,6 +55,7 @@ class HandlerGroupMemberAdd extends Handler
     {
         $guest = $this->botClient->getGuest($this->content);
         $nickname = $guest['nickname'];
+        $member_wxid = empty($guest['wxid']) ? '' : $guest['wxid'];
 
         $nickname && $this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
@@ -74,7 +75,10 @@ class HandlerGroupMemberAdd extends Handler
         ]);
         foreach ($replys as $k => $reply){
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false){
-                model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid, ['nickname' => $nickname]);
+                model('reply')->botReply(
+                    $this->bot, $this->botClient, $reply, $this->groupWxid,
+                    ['nickname' => $nickname, 'need_at' => $reply['need_at'], 'member_wxid' => $member_wxid]
+                );
             }
         }
     }

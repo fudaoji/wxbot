@@ -40,6 +40,9 @@ class EventGroupChat extends HandlerGroupChat
                 if($this->rmGroupMember()) return;
                 break;
         }
+
+        //针对消息事件的特殊响应
+        $this->eventReply();
     }
 
     /**
@@ -66,7 +69,7 @@ class EventGroupChat extends HandlerGroupChat
      * 关键词回复
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){

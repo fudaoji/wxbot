@@ -45,6 +45,7 @@ class My extends Base
     const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
     const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
     const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
+    const API_SEND_MSG_AT_ALL = 'SendMsgAtAll'; //艾特群员
     const API_GET_GROUP_MEMBER_INFO = "GetGroupMemberDetailInfo"; //获取某个群成员信息
     const API_GET_GROUP_MEMBER = "GetGroupMember"; //获取群成员列表
     const API_SET_GROUP_NAME = 'ModifyGroupName'; //
@@ -726,6 +727,22 @@ class My extends Base
     {
         return $this->request([
             'data' => $this->buildPostData($params, self::API_QUIT_GROUP)
+        ]);
+    }
+
+    /**
+     * req:
+     *  robot_wxid (string)  // 机器人ID
+     *  group_wxid (string)  // 群ID
+     *  msg                     //文本内容
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMsgAtAll($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_MSG_AT_ALL)
         ]);
     }
 }

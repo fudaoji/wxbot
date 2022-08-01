@@ -1,4 +1,20 @@
 -- ----------------------------
+-- Table structure for setting
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__setting`;
+CREATE TABLE `__PREFIX__setting` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) NOT NULL DEFAULT '' COMMENT '标识',
+  `title` varchar(30) NOT NULL DEFAULT '' COMMENT '名称',
+  `value` text COMMENT '配置值',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='站点配置';
+
+INSERT INTO `__PREFIX__setting` VALUES ('1', 'site', '站点信息', '{\"version\":\"2.0.1\",\"company_title\":\"微精灵\",\"jd_appkey\":\"\",\"jd_appsecret\":\"\",\"jtt_appid\":\"\",\"jtt_appkey\":\"\"}', '1590290640', '1649899288'), ('2', 'upload', '附件设置', '{\"driver\":\"local\",\"qiniu_ak\":\"\",\"qiniu_sk\":\"\",\"qiniu_bucket\":\"\",\"qiniu_domain\":\"\",\"image_size\":\"3148000\",\"image_ext\":\"jpg,gif,png,jpeg\",\"file_size\":\"53000000\",\"file_ext\":\"jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf\",\"voice_size\":\"2048000\",\"voice_ext\":\"mp3,wma,wav,amr\",\"video_size\":\"50240000\",\"video_ext\":\"mp4,flv,mov\"}', '1590292316', '1646835370');
+
+-- ----------------------------
 -- Table structure for ky_admin
 -- ----------------------------
 DROP TABLE IF EXISTS `__PREFIX__admin`;
@@ -4948,21 +4964,6 @@ CREATE TABLE `__PREFIX__yhq_reply` (
   KEY `unique` (`event`,`bot_id`,`status`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT COMMENT='被动回复';
 
--- ----------------------------
--- Table structure for setting
--- ----------------------------
-DROP TABLE IF EXISTS `__PREFIX__setting`;
-CREATE TABLE `__PREFIX__setting` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) NOT NULL DEFAULT '' COMMENT '标识',
-  `title` varchar(30) NOT NULL DEFAULT '' COMMENT '名称',
-  `value` text COMMENT '配置值',
-  `create_time` int(10) unsigned NOT NULL DEFAULT '0',
-  `update_time` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='站点配置';
-
-INSERT INTO `__PREFIX__setting` VALUES ('1', 'site', '站点信息', '{\"version\":\"2.0.1\",\"company_title\":\"微精灵\",\"jd_appkey\":\"\",\"jd_appsecret\":\"\",\"jtt_appid\":\"\",\"jtt_appkey\":\"\"}', '1590290640', '1649899288'), ('2', 'upload', '附件设置', '{\"driver\":\"local\",\"qiniu_ak\":\"\",\"qiniu_sk\":\"\",\"qiniu_bucket\":\"\",\"qiniu_domain\":\"\",\"image_size\":\"3148000\",\"image_ext\":\"jpg,gif,png,jpeg\",\"file_size\":\"53000000\",\"file_ext\":\"jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf\",\"voice_size\":\"2048000\",\"voice_ext\":\"mp3,wma,wav,amr\",\"video_size\":\"50240000\",\"video_ext\":\"mp4,flv,mov\"}', '1590292316', '1646835370');
 
 #---v1.5.1---#
 ALTER TABLE `__PREFIX__keyword` ADD COLUMN `user_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0不用 1好友 2群聊' AFTER `sort`;
@@ -5011,3 +5012,16 @@ ALTER TABLE `__PREFIX__reply` ADD COLUMN `need_at` tinyint(1) UNSIGNED NOT NULL 
 ALTER TABLE `__PREFIX__task` ADD COLUMN `need_at` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否艾特所有人' AFTER `plan_hour`;
 ALTER TABLE `__PREFIX__reply` ADD COLUMN `handle_type` varchar(20) NOT NULL DEFAULT 'msg' COMMENT '响应类型：msg回复消息  rm移出群  del删除好友' AFTER `need_at`;
 ALTER TABLE `__PREFIX__reply` ADD COLUMN `msg_type` smallint(6) NOT NULL DEFAULT 1 COMMENT '消息类型' AFTER `handle_type`;
+
+DROP TABLE IF EXISTS `__PREFIX__ai_config`;
+CREATE TABLE `__PREFIX__ai_config` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `bot_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `key` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `value` text COLLATE utf8mb4_unicode_ci,
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `bot_id` (`bot_id`,`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='openai配置表';

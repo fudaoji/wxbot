@@ -10,6 +10,7 @@
 
 namespace app\crontab\controller;
 
+use app\constants\Addon;
 use app\constants\Task;
 use ky\Logger;
 
@@ -32,8 +33,18 @@ class Bot extends Base
      */
     public function addonMinute()
     {
+        $addons = Addon::addons();
+        foreach ($addons as $k => $v){
+            $class_name = '\\app\\crontab\\task\\' . ucfirst($k);
+            if(class_exists($class_name)){
+                $class = new $class_name();
+                if(method_exists($class, 'minuteTask')){
+                    $class->minuteTask();
+                }
+            }
+        }
         //推品助手
-        invoke('\app\crontab\task\Tpzs')->minuteTask();
+        //invoke('\app\crontab\task\Tpzs')->minuteTask();
     }
 
     /**

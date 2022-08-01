@@ -28,8 +28,6 @@ class Tpzs extends Base
      * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     * @throws \think\exception\PDOException
      */
     public function minuteTask(){
         $task_m = new Task();

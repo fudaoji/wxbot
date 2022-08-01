@@ -200,8 +200,8 @@ class BotVlwTest extends BotTest
      */
     public function testSendLinkMsg() {
         $res = $this->bot->sendLinkMsg([
-            'robot_wxid' => $this->robotWxid,
-            'to_wxid' => 'wxid_u5201kiugya612',
+            'robot_wxid' => $this->robotJane,
+            'to_wxid' => $this->wxidDj,
             'xml' => "<xml><Title><![CDATA[标题]]></Title><Description><![CDATA[描述]]></Description><Url><![CDATA[http://www.baidu.com]]></Url></xml>",
         ]);
         dump($res);

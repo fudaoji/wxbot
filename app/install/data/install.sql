@@ -5009,9 +5009,9 @@ INSERT INTO `__PREFIX__emoji_code` VALUES ('656', 'emoji1f4ac', 'speech balloon'
 
 #---v2.0.2---#
 ALTER TABLE `__PREFIX__reply` ADD COLUMN `need_at` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否需要at' AFTER `sort`;
-ALTER TABLE `__PREFIX__task` ADD COLUMN `need_at` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否艾特所有人' AFTER `plan_hour`;
 ALTER TABLE `__PREFIX__reply` ADD COLUMN `handle_type` varchar(20) NOT NULL DEFAULT 'msg' COMMENT '响应类型：msg回复消息  rm移出群  del删除好友' AFTER `need_at`;
 ALTER TABLE `__PREFIX__reply` ADD COLUMN `msg_type` smallint(6) NOT NULL DEFAULT 1 COMMENT '消息类型' AFTER `handle_type`;
+ALTER TABLE `__PREFIX__task` ADD COLUMN `atall` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否艾特所有人' AFTER `plan_hour`;
 
 DROP TABLE IF EXISTS `__PREFIX__ai_config`;
 CREATE TABLE `__PREFIX__ai_config` (

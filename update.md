@@ -1,3 +1,15 @@
+2022-08-02
+v2.0.2
+功能更新
+* 新增艾特功能
+* 接入微信智能对话应用：https://openai.weixin.qq.com/
+* 修复部分bugs
+
+数据库表更新
+* 新增ai_config表
+* 表reply新增need_at、msg_type、handle_type 字段
+* 表task新增atall字段
+
 2022-07-28
 v2.0.1
 功能更新

@@ -152,7 +152,7 @@ class Reply extends Botbase
                 'event' => $res['event'],
                 'status' => 1
             ];
-            $res['handle_type'] == ReplyConst::HANDLE_MSG && $where['msg_type'] = $res['msg_type'];
+            isset($res['msg_type']) && $where['msg_type'] = $res['msg_type'];
             $this->model->getAll([
                 'order' => ['sort' => 'desc'],
                 'where' => $where,
@@ -231,13 +231,15 @@ class Reply extends Botbase
             'admin_id' => $this->adminInfo['id'],
             'bot_id' => $this->bot['id'],
             'event' => $current_name,
-            'status' => 1
+            'status' => 1,
+            'handle_type' => ReplyConst::HANDLE_MSG
         ];
         $builder->setPostUrl(url('savePost'))
             ->setTip("添加【".ReplyConst::events($current_name)."】回复")
             ->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
             ->addFormItem('bot_id', 'hidden', 'botid', 'botid')
-            ->addFormItem('event', 'hidden', 'event', 'event');
+            ->addFormItem('event', 'hidden', 'event', 'event')
+            ->addFormItem('handle_type', 'hidden', 'handle_type', 'handle_type');
 
         switch ($current_name){
             case ReplyConst::FRIEND_IN:
@@ -247,10 +249,8 @@ class Reply extends Botbase
                     ->addFormItem('need_at', 'radio', '艾特新人', '艾特新人', [0 => '否', 1 => '是'], 'required');
                 break;
             case ReplyConst::MSG:
-                $data['handle_type'] = ReplyConst::HANDLE_MSG;
                 $builder->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
-                    ->addFormItem('wxids', 'chosen_multi', '指定对象', '指定对象', $this->getMembers(), 'required')
-                    ->addFormItem('handle_type', 'hidden', 'handle_type', 'handle_type');
+                    ->addFormItem('wxids', 'chosen_multi', '指定对象', '指定对象', $this->getMembers(), 'required');
                 break;
         }
         return $builder->addFormItem('media', 'choose_media', '回复内容', '回复内容', ['types' => \app\constants\Media::types()], 'required')

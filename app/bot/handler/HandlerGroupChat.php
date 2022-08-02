@@ -10,8 +10,10 @@
 namespace app\bot\handler;
 
 use app\constants\Addon;
+use app\constants\Bot;
 use app\constants\Reply;
 use app\constants\Rule;
+use app\constants\Task;
 use ky\Logger;
 
 class HandlerGroupChat extends Handler
@@ -135,5 +137,44 @@ class HandlerGroupChat extends Handler
             }
         }
         return false;
+    }
+
+    /**
+     * 关键词回复
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function keyword(){
+        $keywords = model('keyword')->getAll([
+            'order' => ['sort' => 'desc'],
+            'where' => [
+                'bot_id' => $this->bot['id'],
+                'keyword' => $this->content['msg'],
+                'status' => 1
+            ]
+        ]);
+
+        $flag = false;
+        foreach ($keywords as $keyword){
+            if(empty($keyword['wxids'])){
+                $where = ['uin' => $this->botWxid];
+                if($keyword['user_type']==Task::USER_TYPE_FRIEND){
+                    $where['type'] = Bot::FRIEND;
+                }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
+                    $where['type'] = Bot::GROUP;
+                }
+                $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
+            }
+            if(strpos($keyword['wxids'], $this->groupWxid) !== false){
+                model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid,
+                    ['nickname' => $this->content['from_name'], 'need_at' => $keyword['need_at'], 'member_wxid' => $this->fromWxid]
+                );
+                $flag = true;
+            }
+        }
+
+        return $flag;
     }
 }

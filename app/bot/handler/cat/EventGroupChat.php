@@ -72,7 +72,7 @@ class EventGroupChat extends HandlerGroupChat
      * @throws \think\db\exception\DbException
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function keyword(){
+    /*public function keyword(){
         $keywords = model('keyword')->getAll([
             'order' => ['sort' => 'desc'],
             'where' => [
@@ -101,5 +101,5 @@ class EventGroupChat extends HandlerGroupChat
         }
 
         return $flag;
-    }
+    }*/
 }

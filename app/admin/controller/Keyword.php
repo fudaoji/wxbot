@@ -128,9 +128,11 @@ class Keyword extends Botbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'required maxlength=30')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types()], 'required')
+            ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
             ->addFormItem('user_type', 'radio', '批量选择', '批量选择', \app\constants\Task::userTypes())
-            ->addFormItem('wxids', 'chosen_multi', '自由选择', '此处若填写，会覆盖批量选择的值', $members);
+            ->addFormItem('wxids', 'chosen_multi', '自由选择', '此处若填写，会覆盖批量选择的值', $members)
+            ->setFormData(['need_at' => 0]);
 
         return $builder->show(['material' => $material]);
     }
@@ -157,6 +159,7 @@ class Keyword extends Botbase
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'required maxlength=30')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types(), 'id' => $data['media_id'], 'type' => $data['media_type']], 'required')
+            ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
             ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')

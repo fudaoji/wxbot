@@ -54,6 +54,7 @@ class Handler extends BaseCtl
     protected $event;
     protected $ajaxData;
     protected $addonOptions;
+    protected $groupName = '';
 
     /**
      * 入口
@@ -125,6 +126,7 @@ class Handler extends BaseCtl
                 $this->event = $this->ajaxData['event'];
                 if($this->isGroupEvent()){
                     $this->groupWxid = $this->content['from_group'];
+                    $this->groupName = $this->content['from_group_name'];
                 }
                 break;
             case BotConst::PROTOCOL_CAT:
@@ -139,6 +141,7 @@ class Handler extends BaseCtl
                 $this->event = isset($map[$this->ajaxData['event']]) ? $map[$this->ajaxData['event']] : $this->ajaxData['event'];
                 if($this->isGroupEvent()){
                     $this->groupWxid = $this->content['from_wxid'];
+                    $this->groupName = $this->content['from_name'];
                 }
                 break;
             default:
@@ -151,6 +154,7 @@ class Handler extends BaseCtl
 
                 if($this->isGroupEvent()){
                     $this->groupWxid = $this->content['from_group'];
+                    $this->groupName = $this->content['from_group_name'];
                 }
                 break;
         }

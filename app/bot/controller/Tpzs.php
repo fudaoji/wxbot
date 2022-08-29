@@ -27,8 +27,10 @@ class Tpzs extends Addon
      * @var Team
      */
     private $teamM;
+    /**
+     * @var Gather
+     */
     private $gatherM;
-
 
     public function init($options = [])
     {
@@ -66,6 +68,7 @@ class Tpzs extends Addon
         $content = $this->content;
         $group_wxid = $this->groupWxid;
 
+        Logger::error($content);
         //一、群发
         //1、判断当前群组是否是某个用户的中央调度群
         if($group = $this->gatherM->getGather([
@@ -73,6 +76,7 @@ class Tpzs extends Addon
             'from_wxid' => $this->fromWxid,
             'bot_wxid' => $this->botWxid
         ])){
+            Logger::error($group);
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
             /**

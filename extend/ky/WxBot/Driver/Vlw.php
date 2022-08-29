@@ -55,6 +55,7 @@ class Vlw extends Base
 
     const API_GET_GROUP_LIST = 'GetGrouplist'; //获取群列表
     const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
+    const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
     const API_GET_ROBOT_INFO = 'GetRobotInfo'; //获取机器人信息
     private $token;
 
@@ -612,6 +613,18 @@ class Vlw extends Base
     public function sendTextToFriend($params = []){
         return $this->request([
             'data' => $this->buildPostData($params, self::API_SEND_TEXT)
+        ]);
+    }
+
+    /**
+     * 获取机器人列表
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getRobotList($params = []){
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_GET_ROBOT_LIST)
         ]);
     }
 

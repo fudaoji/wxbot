@@ -9,6 +9,7 @@
 
 namespace app\bot\controller;
 
+use app\admin\model\BotMember;
 use app\common\model\tpzs\Config;
 use app\common\model\tpzs\Gather;
 use app\common\model\tpzs\Team;
@@ -38,6 +39,7 @@ class Tpzs extends Addon
         $this->configM = new Config();
         $this->teamM = new Team();
         $this->gatherM = new Gather();
+        $this->memberM = new BotMember();
         return $this;
     }
 

@@ -132,11 +132,10 @@
             </div>
         </div>
         <script>
-            layui.use(['jquery', 'layer', 'miniAdmin','miniTongji'], function () {
+            layui.use(['jquery', 'layer', 'miniAdmin'], function () {
                 var $ = layui.jquery,
                         layer = layui.layer,
-                        miniAdmin = layui.miniAdmin,
-                        miniTongji = layui.miniTongji;
+                        miniAdmin = layui.miniAdmin;
 
                 var options = {
                     iniUrl: "{:url('getSystemInit')}",    // 初始化接口
@@ -150,14 +149,6 @@
                     maxTabNum: 20,              // 最大的tab打开数量
                 };
                 miniAdmin.render(options);
-
-                // 百度统计代码，只统计指定域名
-                miniTongji.render({
-                    specific: true,
-                    domains: [
-                        'kyphp.kuryun.com',
-                    ],
-                });
             });
         </script>
 

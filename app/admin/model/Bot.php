@@ -62,9 +62,7 @@ class Bot extends Base
                     return  $bot_client->getError();
                 }
                 break;
-            case BotConst::PROTOCOL_WXWORK:
-            case BotConst::PROTOCOL_MYCOM:
-            case BotConst::PROTOCOL_MY:
+            default:
                 $return = $bot_client->getRobotList();
                 if($return['code'] && !empty($return['ReturnJson'])){
                     foreach ($return['ReturnJson']['data'] as $v){
@@ -79,7 +77,7 @@ class Bot extends Base
                     return  $bot_client->getError();
                 }
                 break;
-            default:
+            /*default:
                 $return = $bot_client->getCurrentUser(['data' => ['robot_wxid' => $params['uin']]]);
                 if($return['code'] && !empty($return['ReturnJson'])){
                     $info = $return['ReturnJson'];
@@ -88,7 +86,7 @@ class Bot extends Base
                 }else{
                     return  $bot_client->getError();
                 }
-                break;
+                break;*/
         }
         return [];
     }

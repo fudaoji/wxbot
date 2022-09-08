@@ -14,5 +14,5 @@ namespace tests;
 class UnitTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $baseUrl = 'http://wxbot.oudewa.cn';
-    protected $codeArr = [1, 911, 2003, 2001];
+    protected $codeArr = [1, 911, 2003, 2001, 0];
 }

@@ -19,7 +19,6 @@ class Tpzs extends Base
 {
     public function __construct(){
         parent::__construct();
-        set_time_limit(0);
     }
 
     /**

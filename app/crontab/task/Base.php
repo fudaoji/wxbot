@@ -14,6 +14,7 @@ class Base
 {
     public function __construct()
     {
+        set_time_limit(0);
         model('common/setting')->settings();
     }
 }

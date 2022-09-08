@@ -469,4 +469,9 @@ class Cat extends Base
     {
         return $this->apiUnSupport();
     }
+
+    public function getMemberInfo($params = [])
+    {
+        // TODO: Implement getMemberInfo() method.
+    }
 }

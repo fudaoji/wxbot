@@ -15,6 +15,7 @@ use ky\Logger;
 use ky\WxBot\Driver\Cat;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
+use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Wxwork;
 
@@ -25,7 +26,7 @@ class Reply extends Base
     /**
      * 封装素材回复
      * @param $bot
-     * @param $client Vlw|Wxwork|Cat|My|Mycom
+     * @param $client Vlw|Wxwork|Cat|My|Mycom|Qianxun
      * @param $reply
      * @param string $to_wxid
      * @param array $extra

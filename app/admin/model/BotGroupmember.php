@@ -194,7 +194,8 @@ class BotGroupmember extends Base
                     Logger::error("pullGroupMembers:" . json_encode($res, JSON_UNESCAPED_UNICODE));
                 }
                 break;
-            default:
+            case Bot::PROTOCOL_MY:
+            case Bot::PROTOCOL_VLW:
                 if($res['code'] && count($res['ReturnJson'])) {
                     $list = $res['ReturnJson']['member_list'];
                     $wxid_arr = [];
@@ -211,6 +212,45 @@ class BotGroupmember extends Base
                                 'group_nickname' => $group_nickname,
                                 'username' => $username
                             ]);
+                        }else{
+                            $this->addOne([
+                                'bot_id' => $bot['id'],
+                                'group_id' => $group['id'],
+                                'nickname' => $nickname,
+                                'group_nickname' => $group_nickname,
+                                'username' => $username,
+                                'wxid' => $wxid
+                            ]);
+                        }
+                    }
+                    //删除无效数据
+                    $this->delByMap(['group_id' => $group['id'], 'wxid' => ['notin', $wxid_arr]]);
+                    return count($list);
+                } else{
+                    Logger::error("pullGroupMembers:" . json_encode($res, JSON_UNESCAPED_UNICODE));
+                }
+                break;
+            default:
+                if($res['code'] && count($res['data'])) {
+                    $list = $res['data'];
+                    $wxid_arr = [];
+                    foreach ($list as $k => $v){
+                        $nickname = empty($v['nickname']) ? '' : filter_emoji($v['nickname']);
+                        $group_nickname = empty($v['group_nickname']) ? $nickname : filter_emoji($v['group_nickname']);
+                        $username = empty($v['username']) ? '' : $v['username'];
+                        $wxid = $v['wxid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['group_id' => $group['id'], 'wxid' => $wxid], ['id'])){
+                            $update = [
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'group_nickname' => $group_nickname,
+                                'username' => $username
+                            ];
+                            $nickname && $update['nickname'] = $nickname;
+                            $group_nickname && $update['group_nickname'] = $group_nickname;
+                            $username && $update['username'] = $username;
+                            $this->updateOne($update);
                         }else{
                             $this->addOne([
                                 'bot_id' => $bot['id'],

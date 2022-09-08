@@ -18,6 +18,7 @@ use app\bot\handler\vlw\EventPrivateChat;
 use app\bot\handler\vlw\EventLogin;
 use app\common\controller\BaseCtl;
 use app\constants\Bot as BotConst;
+use ky\Helper;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Vlw;
@@ -25,6 +26,7 @@ use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
 use ky\WxBot\Driver\Cat;
 use ky\Logger;
+use ky\WxBot\Driver\Qianxun;
 
 class Handler extends BaseCtl
 {
@@ -55,6 +57,7 @@ class Handler extends BaseCtl
     protected $ajaxData;
     protected $addonOptions;
     protected $groupName = '';
+    protected $isNewFriend = false;
 
     /**
      * 入口
@@ -84,6 +87,9 @@ class Handler extends BaseCtl
         $handler = new $class();
         $handler->initData($options);
         $handler->handle();
+
+        //response
+        $this->response();
     }
 
     /**
@@ -101,6 +107,12 @@ class Handler extends BaseCtl
 
         $this->checkEvent();
         switch ($this->driver){
+            case BotConst::PROTOCOL_QXUN:
+                $this->botWxid = $this->ajaxData['wxid'];
+                $this->fromWxid = empty($this->content['finalFromWxid']) ? (
+                empty($this->content['fromWxid']) ? $this->botWxid : $this->content['fromWxid']
+                ) : $this->content['finalFromWxid'];
+                break;
             case BotConst::PROTOCOL_WEB:
                 $this->botWxid = $this->content['robot_wxid'];
                 $this->fromWxid = empty($this->content['from_wxid']) ? $this->botWxid : $this->content['from_wxid'];
@@ -121,6 +133,19 @@ class Handler extends BaseCtl
 
     public function checkEvent(){
         switch ($this->driver){
+            case BotConst::PROTOCOL_QXUN:
+                $this->content = empty($this->ajaxData['data']['data']) ? $this->ajaxData['data'] : $this->ajaxData['data']['data'];
+                !empty($this->content['msgType']) && $this->content['type'] = $this->content['msgType'];
+                $map = [
+                    Qianxun::EVENT_LOGIN => BotConst::EVENT_LOGIN,
+                    Qianxun::EVENT_PRIVATE_CHAT => BotConst::EVENT_PRIVATE_CHAT,
+                    Qianxun::EVENT_GROUP_CHAT => BotConst::EVENT_GROUP_CHAT,
+                ];
+                $this->event = isset($map[$this->ajaxData['event']]) ? $map[$this->ajaxData['event']] : $this->ajaxData['event'];
+                if($this->isGroupEvent()){
+                    $this->groupWxid = $this->content['fromWxid'];
+                }
+                break;
             case BotConst::PROTOCOL_WEB:
                 $this->content = $this->ajaxData;
                 $this->event = $this->ajaxData['event'];
@@ -213,6 +238,15 @@ class Handler extends BaseCtl
         $this->addonOptions['event'] = $this->event;
         $this->addonOptions['group'] = $this->group;
         $this->addonOptions['content'] = $this->content;
+        $this->addonOptions['is_new_friend'] = $this->isNewFriend;
         return $this->addonOptions;
+    }
+
+    private function response()
+    {
+        switch ($this->driver){
+            case BotConst::PROTOCOL_QXUN:
+                return Qianxun::response();
+        }
     }
 }

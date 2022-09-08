@@ -7,7 +7,7 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\bot\handler\My;
+namespace app\bot\handler\my;
 
 use app\bot\handler\HandlerGroupChat;
 use app\constants\Bot;

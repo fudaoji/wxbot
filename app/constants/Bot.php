@@ -18,6 +18,7 @@ class Bot
     const PROTOCOL_WXWORK = 'wxwork'; //企业微信
     const PROTOCOL_MY = 'my'; //我的个微
     const PROTOCOL_MYCOM = 'mycom'; //我的企微
+    const PROTOCOL_QXUN = 'qianxun'; //千寻个微
 
     const FRIEND = 'friend';
     const GROUP = 'group';
@@ -50,6 +51,16 @@ class Bot
     const MSG_SYS = 10000; // 系统消息
     const MSG_RECALLED = 2005;  // 消息撤回
     const MSG_OTHER = 0; // 其他消息
+
+    //添加好友场景值
+    const SCENE_WXNUM = 3; //微xin号搜索
+    const SCENE_QQ = 12;  //QQ号搜索
+    const SCENE_GROUP = 14; //群聊
+    const SCENE_CONTACT = 15; //手机通讯录
+    const SCENE_CARD = 17; //名片分享
+    const SCENE_NEAR = 18; //附近人
+    const SCENE_SHAKE = 29; //摇一摇
+    const SCENE_SCAN = 30; //扫一扫
 
     /**
      * 消息类型
@@ -88,6 +99,7 @@ class Bot
     public static function protocols($id = null)
     {
         $list = [
+            self::PROTOCOL_QXUN => '千寻个微',
             self::PROTOCOL_WEB => '网页版',
             self::PROTOCOL_MY => '我的个微',
             self::PROTOCOL_MYCOM => '我的企微',
@@ -121,6 +133,7 @@ class Bot
     public static function hooks($id = null)
     {
         $list = [
+            //self::PROTOCOL_QXUN => '千寻个微',
             self::PROTOCOL_MY => '我的个微',
             self::PROTOCOL_MYCOM => '我的企微',
             self::PROTOCOL_CAT => '可爱猫个微',

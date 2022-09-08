@@ -93,7 +93,7 @@ class Yhqcode extends Botbase
                 $this->error('请重新上传文件');
             }
             //$this->error('eee', '', $list);
-            $code_exist = $this->model->getField('code', ['coupon_id' => $post_data['coupon_id']], true);
+            $code_exist = $this->model->getField('code', ['coupon_id' => $post_data['coupon_id'],'admin_id' => $this->adminInfo['id']], true);
             $insert = [];
             foreach ($list as $v){
                 !in_array($v['code'], $code_exist) && $insert[] = [
@@ -102,16 +102,17 @@ class Yhqcode extends Botbase
                     'create_time' => time()
                 ];
             }
-            $this->model->insertAll($insert);
             cache('import' . $post_data['coupon_id'], null);
-            $this->success('保存成功');
+            $this->model->insertAll($insert);
+            $this->success('保存成功', '/undefined');
         }
         $coupon_id = input('coupon_id', 0);
 
         $import_options = [
             'fields' => ['code' => 'A' ,'code_url' =>  'B'],
             'start_row' => 2,
-            'url' => url('importPost', ['coupon_id' => $coupon_id])
+            'url' => url('importPost', ['coupon_id' => $coupon_id]),
+            'template' => 'https://devhhb.images.huihuiba.net/1-62b3c3b837b55.xlsx'
         ];
         $builder = new FormBuilder();
         $builder->setPostUrl(url('add', ['coupon_id' => $coupon_id]))

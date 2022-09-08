@@ -51,6 +51,7 @@ Abstract class Base
     abstract public function sendFileMsg($params = []);
     abstract public function sendMusicLinkMsg($params = []);
     abstract public function sendShareLinkToFriends($params = []);
+    //{title:'', desc:'', image_url:'', url:''}
     abstract public function sendShareLinkMsg($params = []);
     abstract public function sendLinkMsg($params = []);
     abstract public function sendCardMsg($params = []);
@@ -59,10 +60,16 @@ Abstract class Base
     abstract public function setFriendRemarkName($params = []);
     abstract public function deleteFriend($params = []);
     abstract public function agreeFriendVerify($params = []);
+    //{robot_wxid:'',  content:'手机号、QQ或微信号'}
     abstract public function searchAccount($params = []);
+    //{data:{robot_wxid: '', v1:'', msg:'', type: 1|2}}
     abstract public function addFriendBySearch($params = []);
+    //{data:{robot_wxid: '', is_refresh:1|0}}
     abstract public function getFriends($params = []);
+    //{robot_wxid: '', to_wxid: ''}
+    abstract public function getMemberInfo($params = []);
 
+    //{data:{robot_wxid: '', is_refresh:1|0}}
     abstract public function getGroups($params = []);
     //at  robot_wxid group_wxid member_wxid msg
     abstract public function sendGroupMsgAndAt($params = []);

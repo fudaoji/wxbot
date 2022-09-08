@@ -10,6 +10,7 @@
 namespace tests\cases\bot;
 
 
+use app\constants\Bot;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 
@@ -26,6 +27,60 @@ class MyTest extends BotTest
         parent::__construct();
         $this->botClient = new My(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
         $this->botComClient = new Mycom(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
+    }
+
+    /**
+     * 获取登录二维码
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testGetLoginCode() {
+        $res = $this->botClient->getLoginCode();
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 分享群链接邀请好友入群
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testInviteInGroupByLink() {
+        $res = $this->botClient->inviteInGroupByLink([
+            'robot_wxid' => $this->robotJane,
+            'group_wxid' => $this->group51,
+            'friend_wxid' => $this->wxidDj
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 搜索好友
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testAddFriendBySearch() {
+        $res = $this->botClient->addFriendBySearch([
+            'robot_wxid' => $this->robotJane,
+            'v1' => 'wxid_xokb2ezu1p6t21',
+            'msg' => '我是Jane',
+            'scene' => Bot::SCENE_WXNUM,
+            'type' => 1
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 搜索好友
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSearchAccount() {
+        $res = $this->botClient->searchAccount([
+            'robot_wxid' => $this->robotJane,
+            'content' => 'doogiefu'
+            //'content' => 'i75123888'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
     }
 
     /**

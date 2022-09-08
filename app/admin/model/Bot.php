@@ -17,6 +17,8 @@ use app\constants\Bot as BotConst;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
 use ky\WxBot\Driver\My;
+use ky\WxBot\Driver\Mycom;
+use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
@@ -26,7 +28,7 @@ class Bot extends Base
     /**
      * 获取机器人客户端
      * @param array $bot
-     * @return Cat|Vlw|Wxwork|Webgo
+     * @return Cat|Vlw|Wxwork|Webgo|Qianxun|My|Mycom
      * @throws \Exception
      * Author: fudaoji<fdj@kuryun.cn>
      */
@@ -45,10 +47,18 @@ class Bot extends Base
      */
     public function getRobotInfo($params = []){
         /**
-         * @var $bot_client Vlw|Cat|Wxwork|My
+         * @var $bot_client Vlw|Cat|Wxwork|My|Qianxun
          */
         $bot_client = $this->getRobotClient($params);
         switch ($params['protocol']){
+            case BotConst::PROTOCOL_QXUN:
+                $return = $bot_client->getRobotInfo(['robot_wxid' => $params['uin']]);
+                if($return['code'] && !empty($return['data'])){
+                    return $return['data'];
+                }else{
+                    return  $bot_client->getError();
+                }
+                break;
             case BotConst::PROTOCOL_CAT:
                 $return = $bot_client->getRobotList();
                 if($return['code'] && !empty($return['data'])){
@@ -77,16 +87,6 @@ class Bot extends Base
                     return  $bot_client->getError();
                 }
                 break;
-            /*default:
-                $return = $bot_client->getCurrentUser(['data' => ['robot_wxid' => $params['uin']]]);
-                if($return['code'] && !empty($return['ReturnJson'])){
-                    $info = $return['ReturnJson'];
-                    $info['username'] = $info['wx_num'];
-                    return $info;
-                }else{
-                    return  $bot_client->getError();
-                }
-                break;*/
         }
         return [];
     }

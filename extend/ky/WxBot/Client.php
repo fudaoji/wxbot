@@ -20,7 +20,7 @@ class Client
 {
     private static $instance;
     /**
-     * @var $bot Vlw|Cat|Wxwork|My|Mycom|Webgo
+     * @var $bot Vlw|Cat|Wxwork|My|Mycom|Webgo|Qianxun
      */
     private $bot;
     private $driver;

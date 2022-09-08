@@ -31,7 +31,11 @@ class Bot extends Base
             'index' => ['title' => 'PC机器人', 'href' => url('index')],
             'web' => ['title' => 'Web机器人', 'href' => url('web')]
         ];
-        $this->tip = "<ul><li>我的框架的接口回调地址: ".request()->domain()."/bot/my</li><li>vlw的接口回调地址: ".request()->domain()."/bot/vlw</li><li>可爱猫的接口回调地址: ".request()->domain()."/bot/cat</li>
+        $this->tip = "<p>若选择扫码登陆，请先在服务器上完成框架设置</p> 
+<ul><li>我的框架的接口回调地址: ".request()->domain()."/bot/api/my</li> 
+<li>vlw的接口回调地址: ".request()->domain()."/bot/api/vlw</li> 
+<li>可爱猫的接口回调地址: ".request()->domain()."/bot/api/cat</li>
+<li>千寻的接口回调地址: ".request()->domain()."/bot/api/qianxun</li>
 <li>详细接入教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
     }
 
@@ -40,7 +44,7 @@ class Bot extends Base
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function index()
@@ -91,8 +95,6 @@ class Bot extends Base
      * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     * @throws \think\exception\PDOException
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function console(){
@@ -115,7 +117,7 @@ class Bot extends Base
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws \think\db\exception\DbException
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function web()
@@ -240,7 +242,6 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      * @throws \think\Exception
      */
     public function login(){
@@ -268,7 +269,7 @@ class Bot extends Base
                     'alive' => 1
                 ]);
                 //同步好友任务
-                controller('common/TaskQueue', 'event')->push([
+                invoke('\\app\\common\\event\\TaskQueue')->push([
                     'delay' => 3,
                     'params' => [
                         'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
@@ -295,6 +296,11 @@ class Bot extends Base
      */
     public function add()
     {
+        $data = [
+            'login_code' => 0,
+            'protocol' => \app\constants\Bot::PROTOCOL_VLW,
+            'app_key' => get_rand_char(32)
+        ];
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
@@ -305,7 +311,7 @@ class Bot extends Base
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
-            ->setFormData(['protocol' => \app\constants\Bot::PROTOCOL_VLW, 'app_key' => get_rand_char(32), 'free' => 1]);
+            ->setFormData($data);
 
         return $builder->show();
     }
@@ -318,6 +324,7 @@ class Bot extends Base
         if (!$data) {
             $this->error('参数错误');
         }
+        $data['login_code'] = 0;
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑机器人')
@@ -329,6 +336,7 @@ class Bot extends Base
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
+            ->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
             ->setFormData($data);
 
         return $builder->show();
@@ -337,12 +345,18 @@ class Bot extends Base
     public function savePost($jump_to = "/undefined", $data = []){
         $post_data = input('post.');
         $post_data['admin_id'] = $this->adminInfo['id'];
+        $login_code = $post_data['login_code'];
+        unset($post_data['login_code']);
         if (empty($post_data[$this->pk])) {
             $res = $this->model->addOne($post_data);
         } else {
             $res = $this->model->updateOne($post_data);
         }
         if ($res) {
+            if($login_code){
+                $this->success('保存成功，请继续扫码登录', url('loginmy', ['id' => $res['id']]));
+            }
+
             $msg = '数据保存成功';
             try{
                 $info = $this->model->getRobotInfo($res);
@@ -367,5 +381,55 @@ class Bot extends Base
         } else {
             $this->error('数据保存出错');
         }
+    }
+
+    /**
+     * My扫码登录
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\Exception
+     */
+    public function loginMy(){
+        $id = input('id', null);
+        $data = $this->model->getOne($id);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            if($data['alive']){
+                //获取机器人信息
+                $info = $this->model->getRobotInfo($data);
+                Logger::error($info);
+                if(!empty($info) && !is_string($info)){
+                    $this->model->updateOne([
+                        'id' => $data['id'],
+                        'uuid' => $info['username'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl']
+                    ]);
+                }
+
+                //同步好友任务
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                        'bot' => $data
+                    ]
+                ]);
+                $this->success('登录成功');
+            }
+        }
+
+        $res = $bot_client->getLoginCode();
+        if($res['code'] == 0){
+            $this->error($res['errmsg']);
+        }
+        $data['code'] = base64_to_pic($res['data']);
+        return $this->show($data);
     }
 }

@@ -13,6 +13,9 @@ use app\common\model\Base;
 use app\constants\Bot;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\My;
+use ky\WxBot\Driver\Mycom;
+use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
@@ -26,16 +29,15 @@ class BotMember extends Base
      * @param $bot
      * @return int
      * @throws \think\Exception
-     * @throws \think\exception\DbException
-     * @throws \think\exception\PDOException Author: fudaoji<fdj@kuryun.cn>
+     * Author: fudaoji<fdj@kuryun.cn>
      */
     public function pullGroups($bot){
         /**
-         * @var $client Wxwork|Cat|Vlw|Webgo
+         * @var $client Wxwork|Cat|Vlw|Webgo|My|Mycom|Qianxun
          */
         $client = model('admin/bot')->getRobotClient($bot);
-        $res = $client->getGroups(['data' => ['robot_wxid' => $bot['uin']]]);
-        Logger::error($res);
+        $res = $client->getGroups(['data' => ['robot_wxid' => $bot['uin'], 'is_refresh' => 1]]);
+
         switch ($bot['protocol']) {
             case Bot::PROTOCOL_WEB:
                 if($res['code'] && !empty($res['data']['total'])){
@@ -127,7 +129,8 @@ class BotMember extends Base
                     return count($list);
                 }
                 break;
-            default:
+            case Bot::PROTOCOL_MY:
+            case Bot::PROTOCOL_VLW:
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
@@ -154,6 +157,33 @@ class BotMember extends Base
                     return count($list);
                 }
                 break;
+            default:
+                if($res['code'] && count($res['data'])){
+                    $list = $res['data'];
+                    $wxid_arr = [];
+                    foreach ($list as $k => $v){
+                        $nickname = filter_emoji($v['nickname']);
+                        $wxid = $v['wxid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'uin' => $bot['uin'],
+                                'nickname' => $nickname,
+                                'wxid' => $wxid,
+                                'type' => Bot::GROUP
+                            ]);
+                        }
+                    }
+                    //删除无效群聊
+                    $this->delByMap(['uin' => $bot['uin'],'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
+                    return count($list);
+                }
+                break;
         }
         return 0;
     }
@@ -162,14 +192,15 @@ class BotMember extends Base
      * 拉取好友
      * @param $bot
      * @return int
-     * @throws \think\Exception
-     * @throws \think\exception\DbException
-     * @throws \think\exception\PDOException
      * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function pullFriends($bot){
         /**
-         * @var $client Vlw|Wxwork|Cat|Webgo
+         * @var $client Vlw|Wxwork|Cat|Webgo|Qianxun|My|Mycom
          */
         $client = model('admin/bot')->getRobotClient($bot);
         $res = $client->getFriends(['data' => ['robot_wxid' => $bot['uin'], 'is_refresh' => 1]]);
@@ -282,7 +313,8 @@ class BotMember extends Base
                     return count($list);
                 }
                 break;
-            default:
+            case Bot::PROTOCOL_MY:
+            case Bot::PROTOCOL_VLW:
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
@@ -312,6 +344,39 @@ class BotMember extends Base
                     }
                     //删除无效好友
                     $this->delByMap(['uin' => $bot['uin'],'type' => \app\constants\Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
+                    return count($list);
+                }
+                break;
+            default:
+                if($res['code'] && count($res['data'])){
+                    $list = $res['data'];
+                    $wxid_arr = [];
+                    foreach ($list as $k => $v){
+                        $nickname = filter_emoji($v['nickname']);
+                        $remark_name = filter_emoji($v['remark_name']);
+                        $username = $v['username'];
+                        $wxid = $v['wxid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'remark_name' => $remark_name,
+                                'username' => $username
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'uin' => $bot['uin'],
+                                'nickname' => $nickname,
+                                'remark_name' => $remark_name,
+                                'username' => $username,
+                                'wxid' => $wxid,
+                                'type' => \app\constants\Bot::FRIEND
+                            ]);
+                        }
+                    }
+                    //删除无效好友
+                    $this->delByMap(['uin' => $bot['uin'],'type' => Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
                 }
                 break;

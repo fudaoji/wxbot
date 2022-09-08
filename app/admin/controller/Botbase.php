@@ -30,17 +30,17 @@ class Botbase extends Bbase
     }
 
     public function getGroups($where = []){
-        $where = array_merge($where, ['uin' => $this->bot['uin'], 'type' => Bot::GROUP]);
+        $where = array_merge(['uin' => $this->bot['uin'], 'type' => Bot::GROUP], $where);
         return model('admin/botMember')->getField('wxid,nickname', $where, true);
     }
 
     public function getMembers($where = []){
-        $where = array_merge($where, ['uin' => $this->bot['uin']]);
+        $where = array_merge(['uin' => $this->bot['uin'], $where]);
         return model('admin/botMember')->getField('wxid,nickname', $where, true);
     }
 
     public function getBots($where = []){
-        $where = array_merge($where, ['status' => 1]);
+        $where = array_merge(['status' => 1, 'admin_id' => $this->adminInfo['id']], $where);
         return model('admin/bot')->getField(['id','title'], $where);
     }
 }

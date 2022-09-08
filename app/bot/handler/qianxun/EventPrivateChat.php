@@ -7,7 +7,7 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\bot\handler\my;
+namespace app\bot\handler\qianxun;
 
 use app\bot\handler\HandlerPrivateChat;
 use app\constants\Bot;
@@ -67,39 +67,16 @@ class EventPrivateChat extends HandlerPrivateChat
                         'msg' => $this->content['msg']]);
                     break;
                 case Bot::MSG_LINK:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_MYCOM) {
-                        $msg = json_decode($this->content['msg'], true)['Link'][0];
-                        $url = $msg['url'];
-                        $this->botClient->sendShareLinkToFriends([
-                            'robot_wxid' => $this->content['robot_wxid'],
-                            'to_wxid' => $groups,
-                            'url' => $url,
-                            'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
-                            'title' => $msg['title'],
-                            'desc' => $msg['desc']
-                        ]);
-                    } else { //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
-                    }
-                    break;
-                default:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_MYCOM) {
-                        $this->botClient->sendTextToFriends([
-                            'robot_wxid' => $this->content['robot_wxid'],
-                            'to_wxid' => $groups,
-                            'msg' => $this->content['msg']
-                        ]);
-                    } else { //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
-                    }
+                    $msg = json_decode($this->content['msg'], true)['Link'][0];
+                    $url = $msg['url'];
+                    $this->botClient->sendShareLinkToFriends([
+                        'robot_wxid' => $this->content['robot_wxid'],
+                        'to_wxid' => $groups,
+                        'url' => $url,
+                        'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
+                        'title' => $msg['title'],
+                        'desc' => $msg['desc']
+                    ]);
                     break;
             }
         }
@@ -111,7 +88,6 @@ class EventPrivateChat extends HandlerPrivateChat
      */
     private function beAdded(){
         if(empty($this->friend)){
-            $this->isNewFriend = true;
             $this->friend = $this->memberM->addFriend([
                 'bot' => $this->bot,
                 'nickname' => filter_emoji($this->content['from_name']),

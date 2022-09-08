@@ -11,7 +11,6 @@ namespace app\admin\controller;
 
 use app\admin\model\BotMember;
 use app\common\model\tpzs\Grouppos;
-use ky\WxBot\Wx;
 
 class Botgroup extends Botbase
 {

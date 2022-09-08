@@ -9,6 +9,12 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+if(! function_exists('base64_to_pic')){
+    function base64_to_pic($base64 = '', $content_type = 'image/jpeg'){
+        return "data:{$content_type};base64,{$base64}";
+    }
+}
+
 if(! function_exists('model')){
     /**
      * @param string $model

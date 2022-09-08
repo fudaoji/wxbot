@@ -23,7 +23,10 @@ class Api extends BaseCtl
         if(request()->isPost()) {
             set_time_limit(0);
             Helper::$ajax = $this->getAjax();
-            $this->driver = input('driver', BotConst::PROTOCOL_MY);
+            $this->driver = strtolower(input('driver', BotConst::PROTOCOL_MY));
+            if($this->driver == 'my'){
+                //Logger::error(Helper::$ajax);
+            }
         }else{
             Logger::error('Request invalid!');
             exit(0);

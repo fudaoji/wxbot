@@ -746,4 +746,9 @@ class Vlw extends Base
             'data' => $this->buildPostData($params, self::API_SEND_MSG_AT_ALL)
         ]);
     }
+
+    public function getMemberInfo($params = [])
+    {
+        // TODO: Implement getMemberInfo() method.
+    }
 }

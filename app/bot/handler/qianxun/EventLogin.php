@@ -1,13 +1,13 @@
 <?php
 /**
  * Created by PhpStorm.
- * Script Name: EventLoginHandle.php
- * Create: 3/19/22 10:59 PM
+ * Script Name: EventLogin.php
+ * Create: 2022/9/1 10:08
  * Description:
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
-namespace app\bot\handler\my;
+namespace app\bot\handler\qianxun;
 
 use app\bot\handler\HandlerLogin;
 use ky\Logger;
@@ -16,7 +16,15 @@ class EventLogin extends HandlerLogin
 {
     /**
      *  登录、退出事件处理器
-     *  {"sdkVer":5,"Event":"Login","content":{"type":1,"Wxid":"wxid_xokb2ezu1p6t21","robot_type":0}}
+     *  {
+        "event": 10014,
+        "wxid": "wxid_3sq4tklb6c3121",
+        "data": {
+            "type": 1,  //1登录 0退出
+            "wxid": "wxid_3sq4tklb6c3121",
+            "port": 7335
+            }
+        }
      */
     /*public function handle(){
         $this->botM->updateOne([

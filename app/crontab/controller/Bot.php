@@ -43,8 +43,6 @@ class Bot extends Base
                 }
             }
         }
-        //推品助手
-        //invoke('\app\crontab\task\Tpzs')->minuteTask();
     }
 
     /**

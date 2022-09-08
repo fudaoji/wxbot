@@ -41,8 +41,10 @@ class My extends Base
     const API_GET_DETAIL_BY_WXID = 'GetDetailInfoByWxid'; // 获取某个好友详细
     const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
     const API_MODIFY_FRIEND_REMARK = 'ModifyFriendNote'; //修改好友备注
+    const API_ADD_FRIEND_BY_SEARCH = 'AddFriendBySearch';
 
     const API_REMOVE_GROUP_MEMBER = 'RemoveGroupMember'; //将好友移除群
+    const API_INVITE_IN_GROUP_BY_LINK = 'InviteInGroupByLink'; // 通过群链接邀请好友入群
     const API_INVITE_IN_GROUP = 'InviteInGroup'; // 邀请好友入群
     const API_SEND_GROUP_MSG_AND_AT = "SendGroupMsgAndAt"; //发送群消息并艾特成员
     const API_SEND_MSG_AT_ALL = 'SendMsgAtAll'; //艾特群员
@@ -56,6 +58,12 @@ class My extends Base
     const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
     const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
     const API_GET_ROBOT_INFO = 'GetRobotInfo'; //获取机器人信息
+    const API_GET_LOGIN_CODE = 'StartWeChat';
+
+    const FIELD_MAP = [
+        "wxid" => "wxid"
+    ];
+
     private $token;
 
     public function __construct($options = [])
@@ -80,6 +88,19 @@ class My extends Base
 
     public function getToken(){
         return $this->token;
+    }
+
+    /**
+     * 映射结果字段
+     * @param $data
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function dealResField($data){
+        foreach (self::FIELD_MAP as $k => $v){
+            isset($data[$k]) && $data[$v] = $data[$k];
+        }
+        return $data;
     }
 
     private function buildPostData($params = [], $api = ''){
@@ -168,6 +189,22 @@ class My extends Base
     public function getDetailInfoByWxid($params = []){
         return $this->request([
             'data' => $this->buildPostData($params, self::API_GET_DETAIL_BY_WXID)
+        ]);
+    }
+
+    /**
+    res:
+    robot_wxid (string)  // 机器人ID
+    group_wxid (string)  // 群ID
+    friend_wxid (string|array)  // 好友ID
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function inviteInGroupByLink($params = []){
+        $params['friendArr'] = is_string($params['friend_wxid']) ? explode(',', $params['friend_wxid']) : $params['friend_wxid'];
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_INVITE_IN_GROUP_BY_LINK)
         ]);
     }
 
@@ -408,6 +445,26 @@ class My extends Base
     }
 
     /**
+     * req:{
+     * robot_wxid (string)  // 机器人ID
+     * v1 (string)  // 陌生人信息中的v1（可通过搜索或取详细信息）
+     * v2 (string)  // 陌生人信息中的v2（可通过搜索或取详细信息）
+     * msg (string)  // 打招呼的内容
+     * sance (int)  // 添加类型  请参考常量表
+     * }
+     * @param array $params
+     * @return array|bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function addFriendBySearch($params = [])
+    {
+        $params['sance'] = $params['scene'];
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_ADD_FRIEND_BY_SEARCH)
+        ]);
+    }
+
+    /**
      * 搜索好友
      * req:
         robot_wxid (string)  // 机器人ID
@@ -436,9 +493,18 @@ class My extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function searchAccount($params = []){
-        return $this->request([
+        $res = $this->request([
             'data' => $this->buildPostData($params, self::API_SEARCH_ACCOUNT)
         ]);
+        if($res['code']){
+            $data = $res['ReturnJson'];
+            $data = array_merge($data, [
+                'wxid' => $data['from_wxid'],
+                'nickname' => $data['from_nickname'],
+            ]);
+            $res['data'] = $data;
+        }
+        return  $res;
     }
 
     /**
@@ -571,7 +637,7 @@ class My extends Base
     }]
     }
      * @param array $params
-     * @return bool
+     * @return array|bool
      */
     public function getGroups($params = []){
         return $this->request([
@@ -595,7 +661,7 @@ class My extends Base
     }]
     }
      * @param array $params
-     * @return bool
+     * @return array|bool
      */
     public function getFriends($params = []){
         return $this->request([
@@ -640,9 +706,24 @@ class My extends Base
     }
 
     /**
+     * 获取登录二维码
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getLoginCode(){
+        $res = $this->request([
+            'data' => $this->buildPostData([], self::API_GET_LOGIN_CODE)
+        ]);
+        if($res['code']){
+            $res['data'] = $res['ReturnStr'];
+        }
+        return  $res;
+    }
+
+    /**
      * 优化结果
      * @param $res
-     * @return mixed
+     * @return array
      */
     public function dealRes($res){
         if(intval($res['Code']) === 0){
@@ -671,11 +752,6 @@ class My extends Base
             299 => '',
         ];
         $this->errMsg = isset($list[$err_no]) ? $list[$err_no] : $list[-100];
-    }
-
-    public function addFriendBySearch($params = [])
-    {
-        // TODO: Implement addFriendBySearch() method.
     }
 
     public function getGuest($content = [], $field = '')
@@ -744,5 +820,10 @@ class My extends Base
         return $this->request([
             'data' => $this->buildPostData($params, self::API_SEND_MSG_AT_ALL)
         ]);
+    }
+
+    public function getMemberInfo($params = [])
+    {
+        // TODO: Implement getMemberInfo() method.
     }
 }

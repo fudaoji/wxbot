@@ -311,6 +311,7 @@ class Bot extends Base
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
+            ->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
             ->setFormData($data);
 
         return $builder->show();
@@ -356,7 +357,6 @@ class Bot extends Base
             if($login_code){
                 $this->success('保存成功，请继续扫码登录', url('loginmy', ['id' => $res['id']]));
             }
-
             $msg = '数据保存成功';
             try{
                 $info = $this->model->getRobotInfo($res);

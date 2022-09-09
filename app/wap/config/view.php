@@ -5,5 +5,15 @@
 
 return [
     // 模板目录名
-    'view_dir_name' => 'default'
+    'view_dir_name' => 'themes',
+    'theme' => 'default',
+
+    // 视图中使用的常量
+    'tpl_replace_string'  =>  [
+        '__STATIC__' => '/static/',
+        '__LIB__' => '/static/libs/',
+        '__CSS__' => '/static/css/',
+        '__JS__' => '/static/js/',
+        '__IMG__' => '/static/imgs/'
+    ],
 ];

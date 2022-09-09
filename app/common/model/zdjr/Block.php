@@ -22,7 +22,7 @@ class Block extends Zdjr
      */
     public function getSaveBots($params = []){
         $refresh = isset($params['refresh']) ? $params['refresh'] : false;
-        $bots = is_string($params['bots']) ? explode(',', $params['bots']) : $params['bots'];
+        $bots = is_string($params['bots']) ? explode(',', str_replace('i', '', $params['bots'])) : $params['bots'];
         $blocks = $this->getField(['bot_id'], ['admin_id' => $params['admin_id'], 'bot_id' => ['in', $bots], 'status' => 1], $refresh);
         return array_diff($bots, $blocks);
     }

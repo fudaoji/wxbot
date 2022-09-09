@@ -46,10 +46,12 @@ class Rule extends Zdjr
     public function canRun(array $params)
     {
         $log_m = new Log();
-        $data = $log_m->getOneByOrder([
+        if($data = $log_m->getOneByOrder([
             'where' => ['rule_id' => $params['rule_id']],
             'order' => ['id' => 'desc']
-        ]);
-        return (time() - $data['create_time']) >= ($params['time_round'] * 60);
+        ])){
+            return (time() - $data['create_time']) >= ($params['time_round'] * 60);
+        }
+        return  true;
     }
 }

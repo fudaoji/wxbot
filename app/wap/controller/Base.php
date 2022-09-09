@@ -14,6 +14,5 @@ use app\common\controller\BaseCtl;
 
 class Base extends BaseCtl
 {
-
     protected $module = 'wap';
 }

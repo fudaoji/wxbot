@@ -43,7 +43,7 @@ class Zdjr extends Addon
         $this->memberM = new BotMember();
         $this->groupMemberM = new BotGroupmember();
         $this->task = $this->ruleM->getOneByMap([
-            'bots' => ['like', '%'.$this->bot['id'].'%'], 'status' => 1
+            'bots' => ['like', '%'.$this->bot['id'].'i%'], 'status' => 1
         ],true, true);
         return $this;
     }

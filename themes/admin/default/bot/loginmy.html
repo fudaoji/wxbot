@@ -28,11 +28,10 @@
 <script>
     layui.use(['layer', 'miniTab'], function() {
         var $ = layui.jquery,
-                layer = layui.layer,
                 miniTab = layui.miniTab;
 
         $('#btn-login').on('click', () => {
-            requestPost("{:url('loginmy')}", {id: "{$id}"}, () => {
+            requestPost("{:url('loginmy')}", {}, () => {
                 parent.location.reload();
                 miniTab.deleteCurrentByIframe();
             });

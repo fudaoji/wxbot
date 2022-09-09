@@ -35,7 +35,7 @@ class Botbase extends Bbase
     }
 
     public function getMembers($where = []){
-        $where = array_merge(['uin' => $this->bot['uin'], $where]);
+        $where = array_merge(['uin' => $this->bot['uin']], $where);
         return model('admin/botMember')->getField('wxid,nickname', $where, true);
     }
 

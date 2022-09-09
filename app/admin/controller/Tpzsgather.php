@@ -146,7 +146,7 @@ class Tpzsgather extends Botbase
     public function add(){
         $group_id = input('group_id', 0);
         $group = $this->memberM->getOne($group_id);
-        $this->groupMemberM->pullMembers($this->bot, $group);
+        //$this->groupMemberM->pullMembers($this->bot, $group);
         $data = ['bot_id' => $this->bot['id'], 'group_id' => $group_id];
         $members = $this->groupMemberM->getField('wxid,nickname',['group_id' => $group_id], true);
         $builder = new FormBuilder();

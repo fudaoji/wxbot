@@ -30,11 +30,24 @@ class MyTest extends BotTest
     }
 
     /**
-     * 获取登录二维码
+     * 获取所有好友
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function testGetLoginCode() {
-        $res = $this->botClient->getLoginCode();
+    public function testGetFriends() {
+        $res = $this->botClient->getFriends([
+            'robot_wxid' => $this->robotJane,
+            'refresh' => 1
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 获取所有机器人
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testGetRobotList() {
+        $res = $this->botClient->getRobotList([]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
     }

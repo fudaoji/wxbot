@@ -5018,6 +5018,82 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "install-path": "../webmozart/assert"
+        },
+        {
+            "name": "yeardley/easytbk",
+            "version": "1.2.2",
+            "version_normalized": "1.2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yeardley/easytbk.git",
+                "reference": "1f08028f8793f3ac0c32315ef2901199a00d97e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yeardley/easytbk/zipball/1f08028f8793f3ac0c32315ef2901199a00d97e6",
+                "reference": "1f08028f8793f3ac0c32315ef2901199a00d97e6",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-simplexml": "*",
+                "php": ">=7.0.0"
+            },
+            "time": "2020-10-30T05:44:43+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "src/helper.php"
+                ],
+                "psr-4": {
+                    "YearDley\\EasyTBK\\": "src/",
+                    "YearDley\\EasyTBK\\Vip\\": "src/vip",
+                    "YearDley\\EasyTBK\\SuNing\\": "src/suning",
+                    "YearDley\\EasyTBK\\TaoBao\\": "src/taobao",
+                    "YearDley\\EasyTBK\\JingDong\\": "src/jingdong",
+                    "YearDley\\EasyTBK\\PinDuoDuo\\": "src/pinduoduo"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "yeardley",
+                    "email": "510865496@qq.com"
+                }
+            ],
+            "description": "淘客六合一SDK，支持淘宝联盟、京东联盟、多多进宝、唯品会、苏宁、蘑菇街. 改自 <https://github.com/niugengyun/easytbk>",
+            "homepage": "https://github.com/yeardley/easytbk",
+            "keywords": [
+                "京东SDK",
+                "京东联盟",
+                "唯品会",
+                "唯品会SDK",
+                "多多进宝",
+                "拼多多",
+                "拼多多SDK",
+                "拼多多联盟",
+                "淘宝客",
+                "淘宝客SDK",
+                "苏宁",
+                "苏宁SDK"
+            ],
+            "support": {
+                "source": "https://github.com/yeardley/easytbk/tree/1.2.2"
+            },
+            "install-path": "../yeardley/easytbk"
         }
     ],
     "dev": true

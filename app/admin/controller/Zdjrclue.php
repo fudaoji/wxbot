@@ -34,16 +34,27 @@ class Zdjrclue extends Botbase
     public function index(){
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['admin_id' => $this->adminInfo['id']];
+            $where = ['clue.admin_id' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['content|title'] = ['like', '%' . $post_data['search_key'] . '%'];
             isset($post_data['step']) && $post_data['step'] != -1 && $where['step'] = $post_data['step'];
+            !empty($post_data['project_id']) && $where['project_id'] = $post_data['project_id'];
 
-            $total = $this->model->total($where, true);
+            $params = [
+                'alias' => 'clue',
+                'join' => [
+                    ['bot', 'bot.id=clue.bot_id'],
+                    ['bot_member member', 'member.wxid=clue.wxid and member.uin=bot.uin', 'left'],
+                ],
+                'where' => $where,
+                'refresh' => true
+            ];
+            $total = $this->model->totalJoin($params);
             if ($total) {
-                $list = $this->model->getList(
-                    [$post_data['page'], $post_data['limit']], $where,
-                    ['id' => 'asc'], true, true
-                );
+                $list = $this->model->getListJoin(array_merge($params, [
+                    'field' => ['clue.*', 'member.headimgurl', 'member.nickname', 'member.username'],
+                    'limit' => [$post_data['page'], $post_data['limit']],
+                    'order' => ['clue.id' => 'desc']
+                ]));
             } else {
                 $list = [];
             }
@@ -54,15 +65,19 @@ class Zdjrclue extends Botbase
         $builder->addTopButton('addnew')
             ->setSearch([
                 ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '名称|账号'],
+                ['type' => 'select', 'name' => 'project_id', 'title' => '项目组', 'options' => [0 => '全部'] + $this->projectM->getProjects(['admin_id' => $this->adminInfo['id']])],
                 ['type' => 'select', 'name' => 'step', 'title' => '进度', 'options' => [-1 => '全部'] + Clue::steps()]
             ])
             ->addTopButton('addnew', ['title' => '导入线索', 'href' => url('import')])
             ->addTableColumn(['title' => '所属项目', 'field' => 'project_id', 'minWidth' => 90,'type' => 'enum', 'options' => $this->projectM->getProjects()])
-            ->addTableColumn(['title' => '名称', 'field' => 'title', 'minWidth' => 100])
-            ->addTableColumn(['title' => '账号', 'field' => 'content', 'minWidth' => 200])
+            ->addTableColumn(['title' => '名称', 'field' => 'title', 'minWidth' => 80])
+            ->addTableColumn(['title' => '账号', 'field' => 'content', 'minWidth' => 80])
+            ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture', 'minWidth' => 100])
+            ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 80])
+            ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 80])
             ->addTableColumn(['title' => '类型', 'field' => 'type', 'minWidth' => 80,'type' => 'enum','options' => Clue::types()])
             ->addTableColumn(['title' => '加友进度', 'field' => 'step', 'minWidth' => 80,'type' => 'enum','options' => Clue::steps()])
-            ->addTableColumn(['title' => '录入时间', 'field' => 'create_time', 'minWidth' => 120,'type' => 'datetime'])
+            ->addTableColumn(['title' => '录入时间', 'field' => 'create_time', 'minWidth' => 170,'type' => 'datetime'])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 80,'type' => 'enum','options' => [0 => '禁用', 1=> '启用']])
             ->addTableColumn(['title' => '操作', 'minWidth' => 200, 'type' => 'toolbar'])
             ->addRightButton('edit')

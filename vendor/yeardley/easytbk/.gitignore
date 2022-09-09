@@ -1,0 +1,10 @@
+vendor
+composer.phar
+composer.lock
+test.php
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace

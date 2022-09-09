@@ -13,6 +13,8 @@ namespace app\admin\model;
 use app\common\model\Base;
 use app\constants\Bot;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\My;
+use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Wx;
@@ -81,7 +83,7 @@ class BotGroupmember extends Base
      */
     public function pullMembers($bot, $group){
         /**
-         * @var $bot_client Vlw|Wxwork|Cat|Webgo
+         * @var $bot_client Vlw|Wxwork|Cat|Webgo|My|Mycom
          */
         $bot_client = model('admin/bot')->getRobotClient($bot);
         $res = $bot_client->getGroupMembers([

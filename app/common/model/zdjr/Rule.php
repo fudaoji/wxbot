@@ -17,6 +17,21 @@ class Rule extends Zdjr
     const INVITE_DIRECT = 'direct';
     const INVITE_LINK = 'link';
 
+    public static function ruleFields($id = null){
+        $list = [
+            'speed' => '每次添加个数',
+            'time_add' => '添加间隔时间/s',
+            'time_round' => '每轮间隔时间/min',
+            'add_msg' => '验证消息',
+            'remark_name' => '备注名称',
+            'groups' => '自动拉群',
+            'invite_way' => '拉群方式',
+            'group_person_limit' => '群自动切换临界值',
+            'busy_stop' => '账号频繁不再添加'
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
     public static function inviteWays($id = null){
         $list = [
             self::INVITE_DIRECT=> '直接拉',

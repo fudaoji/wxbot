@@ -688,9 +688,20 @@ class My extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getRobotList($params = []){
-        return $this->request([
+        $res = $this->request([
             'data' => $this->buildPostData($params, self::API_GET_ROBOT_LIST)
         ]);
+        if(!empty($res['code'])){
+            $data = [];
+            foreach ($res['ReturnJson']['data'] as $v){
+                $v['nickname'] = $v['username'];
+                $v['username'] = $v['wx_num'];
+                $v['headimgurl'] = $v['wx_headimgurl'];
+                $data[] = $v;
+            }
+            $res['data'] = $data;
+        }
+        return  $res;
     }
 
     /**

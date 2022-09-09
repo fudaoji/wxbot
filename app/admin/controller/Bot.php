@@ -72,14 +72,14 @@ class Bot extends Base
         ])
             ->setTabNav($this->tabs, 'index')
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
-            ->addTopButton('addnew')
-            //->addTopButton('addnew', ['title' => '新增Web机器', 'href' => url('webadd')])
-            ->addTableColumn(['title' => 'id', 'field' => 'uin', 'minWidth' => 170])
+            ->addTopButton('addnew', ['title' => '扫码登录', 'href' => url('hookadd')])
+            ->addTopButton('addnew', ['title' => '手动添加'])
+            ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 190])
             ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => \app\constants\Bot::protocols(), 'minWidth' => 100])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 120])
             ->addTableColumn(['title' => 'appKey', 'field' => 'app_key', 'minWidth' => 90])
-            ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 120])
+            ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 100])
             ->addTableColumn(['title' => '操作中', 'field' => 'is_current', 'type' => 'enum', 'options' => Common::yesOrNo(), 'minWidth' => 70])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
@@ -298,7 +298,7 @@ class Bot extends Base
     {
         $data = [
             'login_code' => 0,
-            'protocol' => \app\constants\Bot::PROTOCOL_VLW,
+            'protocol' => \app\constants\Bot::PROTOCOL_MY,
             'app_key' => get_rand_char(32)
         ];
         // 使用FormBuilder快速建立表单页面
@@ -355,7 +355,7 @@ class Bot extends Base
         }
         if ($res) {
             if($login_code){
-                $this->success('保存成功，请继续扫码登录', url('loginmy', ['id' => $res['id']]));
+                $this->success('保存成功，请继续扫码登录', url('reloginmy', ['id' => $res['id']]));
             }
             $msg = '数据保存成功';
             try{
@@ -384,6 +384,32 @@ class Bot extends Base
     }
 
     /**
+     * 添加
+     * @return mixed
+     */
+    public function hookAdd()
+    {
+        if(request()->isPost()){
+            cache('botadd' . $this->adminInfo['id'], input('post.'));
+            $this->success('请打开微信扫码登录', url('loginmy', input('post.')));
+        }
+        $data = [
+            'protocol' => BotConst::PROTOCOL_MY,
+            'app_key' => get_rand_char(32)
+        ];
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('新增机器人')
+            ->setTip($this->tip)
+            ->setPostUrl(url('hookAdd'))
+            ->addFormItem('protocol', 'radio', '类型', '机器人类型', [BotConst::PROTOCOL_MY => '我的个微'])
+            ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
+            ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
+            ->setFormData($data);
+        return $builder->show();
+    }
+
+    /**
      * My扫码登录
      * @return mixed
      * Author: fudaoji<fdj@kuryun.cn>
@@ -392,6 +418,56 @@ class Bot extends Base
      * @throws \think\Exception
      */
     public function loginMy(){
+        $data = cache('botadd' . $this->adminInfo['id']);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $data['uuid'] = '';
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            $return = $bot_client->getRobotList();
+            if($return['code'] && !empty($return['data'])){
+                foreach ($return['data'] as $v){
+                    if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'admin_id' => $this->adminInfo['id']])){
+                        $this->model->updateOne([
+                            'id' => $bot['id'],
+                            'uuid' => $v['username'],
+                            'nickname' => $v['nickname'],
+                            'headimgurl' => $v['headimgurl'],
+                            'alive' => 1
+                        ]);
+                    }else{
+                        $this->model->addOne([
+                            'uin' => $v['wxid'],
+                            'admin_id' => $this->adminInfo['id'],
+                            'title' => $v['nickname'],
+                            'uuid' => $v['username'],
+                            'app_key' => $data['app_key'],
+                            'nickname' => $v['nickname'],
+                            'headimgurl' => $v['headimgurl'],
+                            'protocol' => $data['protocol'],
+                            'url' => $data['url'],
+                            'alive' => 1
+                        ]);
+                    }
+                }
+                $this->success('登录成功');
+            }else{
+                $this->success('登录失败：' . $bot_client->getError());
+            }
+        }
+
+        $res = $bot_client->getLoginCode();
+        if($res['code'] == 0){
+            $this->error($res['errmsg']);
+        }
+        $data['code'] = base64_to_pic($res['data']);
+        return $this->show($data);
+    }
+
+
+    public function reLoginMy(){
         $id = input('id', null);
         $data = $this->model->getOne($id);
 
@@ -403,7 +479,6 @@ class Bot extends Base
             if($data['alive']){
                 //获取机器人信息
                 $info = $this->model->getRobotInfo($data);
-                Logger::error($info);
                 if(!empty($info) && !is_string($info)){
                     $this->model->updateOne([
                         'id' => $data['id'],

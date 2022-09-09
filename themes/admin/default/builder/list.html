@@ -104,6 +104,11 @@
         var list_limit = table_data_page == null ? 15 : table_data_page.limit;
         cols = cols.map((item, i) => {
             switch(item.type){
+                case 'article':
+                    item = Object.assign(item, {templet: function (d) {
+                            return templets.article(d[item.field]);
+                        }});
+                    break;
                 case 'pre':
                     item = Object.assign(item, {templet: function (d) {
                             return "<pre>"+d[item.field]+"</pre>";

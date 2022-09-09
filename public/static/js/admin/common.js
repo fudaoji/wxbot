@@ -140,6 +140,18 @@ window.chooseEmoji = function () {
     });
 };
 
+window.viewArticle = function (html = '') {
+    html = "<div style='margin: 20px;line-height: 2em;'>" + html + '</div>';
+    layer.open({
+        type: 1,
+        title: "内容查看",
+        content: html,
+        shadeClose: false,
+        shade: 0.8,
+        area: ['80%', '80%'],
+    });
+};
+
 /**
  * 预览图片
  * @param string/array img src字符串或src数组
@@ -180,6 +192,9 @@ window.templets = {
     , video : function (src = '') {
         return '<a href="'+src+'" class="layui-btn layui-btn-xs" target="_blank">预览</a>';
     }
+    , article : function (html = '') {
+        return '<a onclick="viewArticle(\''+html+'\');" class="layui-btn layui-btn-xs">点击查看</a>';
+    }
 };
 
 //请求服务端
@@ -209,10 +224,3 @@ window.requestPost = function(url, params, callback, sync = false){
         });
     });
 };
-
-layui.use(['layer', 'jquery'], function () {
-    var layer = layui.layer
-        ,$ = layui.jquery;
-
-
-});

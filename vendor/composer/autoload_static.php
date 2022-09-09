@@ -26,6 +26,7 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
         'cc56288302d9df745d97c934d6a6e5f0' => __DIR__ . '/..' . '/topthink/think-queue/src/common.php',
+        'f5abec83138583a91d834fe8f4e61ad2' => __DIR__ . '/..' . '/yeardley/easytbk/src/helper.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -49,6 +50,15 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'a' => 
         array (
             'app\\' => 4,
+        ),
+        'Y' => 
+        array (
+            'YearDley\\EasyTBK\\Vip\\' => 21,
+            'YearDley\\EasyTBK\\TaoBao\\' => 24,
+            'YearDley\\EasyTBK\\SuNing\\' => 24,
+            'YearDley\\EasyTBK\\PinDuoDuo\\' => 27,
+            'YearDley\\EasyTBK\\JingDong\\' => 26,
+            'YearDley\\EasyTBK\\' => 17,
         ),
         'W' => 
         array (
@@ -150,6 +160,30 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+        'YearDley\\EasyTBK\\Vip\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/vip',
+        ),
+        'YearDley\\EasyTBK\\TaoBao\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/taobao',
+        ),
+        'YearDley\\EasyTBK\\SuNing\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/suning',
+        ),
+        'YearDley\\EasyTBK\\PinDuoDuo\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/pinduoduo',
+        ),
+        'YearDley\\EasyTBK\\JingDong\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/jingdong',
+        ),
+        'YearDley\\EasyTBK\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yeardley/easytbk/src',
         ),
         'Webmozart\\Assert\\' => 
         array (

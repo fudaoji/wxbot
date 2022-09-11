@@ -12,7 +12,7 @@ CREATE TABLE `__PREFIX__setting` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='站点配置';
 
-INSERT INTO `__PREFIX__setting` VALUES ('1', 'site', '站点信息', '{\"version\":\"2.0.2\",\"company_title\":\"微精灵\",\"jd_appkey\":\"\",\"jd_appsecret\":\"\",\"jtt_appid\":\"\",\"jtt_appkey\":\"\"}', '1590290640', '1649899288'), ('2', 'upload', '附件设置', '{\"driver\":\"local\",\"qiniu_ak\":\"\",\"qiniu_sk\":\"\",\"qiniu_bucket\":\"\",\"qiniu_domain\":\"\",\"image_size\":\"3148000\",\"image_ext\":\"jpg,gif,png,jpeg\",\"file_size\":\"53000000\",\"file_ext\":\"jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf\",\"voice_size\":\"2048000\",\"voice_ext\":\"mp3,wma,wav,amr\",\"video_size\":\"50240000\",\"video_ext\":\"mp4,flv,mov\"}', '1590292316', '1646835370');
+INSERT INTO `__PREFIX__setting` VALUES ('1', 'site', '站点信息', '{\"version\":\"2.0.4\",\"company_title\":\"微精灵\",\"jd_appkey\":\"\",\"jd_appsecret\":\"\",\"jtt_appid\":\"\",\"jtt_appkey\":\"\"}', '1590290640', '1649899288'), ('2', 'upload', '附件设置', '{\"driver\":\"local\",\"qiniu_ak\":\"\",\"qiniu_sk\":\"\",\"qiniu_bucket\":\"\",\"qiniu_domain\":\"\",\"image_size\":\"3148000\",\"image_ext\":\"jpg,gif,png,jpeg\",\"file_size\":\"53000000\",\"file_ext\":\"jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf\",\"voice_size\":\"2048000\",\"voice_ext\":\"mp3,wma,wav,amr\",\"video_size\":\"50240000\",\"video_ext\":\"mp4,flv,mov\"}', '1590292316', '1646835370');
 
 -- ----------------------------
 -- Table structure for ky_admin
@@ -5025,3 +5025,124 @@ CREATE TABLE `__PREFIX__ai_config` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `bot_id` (`bot_id`,`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='openai配置表';
+
+#---v2.0.4---#
+ALTER TABLE `__PREFIX__keyword` ADD COLUMN `need_at` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '艾特提问者' AFTER `user_type`;
+
+-- ----------------------------
+-- Table structure for ky_zdjr_block
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__zdjr_block`;
+CREATE TABLE `__PREFIX__zdjr_block`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `bot_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '机器人id',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否被锁，1被锁 0释放',
+  `create_time` int(10) UNSIGNED NOT NULL,
+  `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `bot_id`(`bot_id`) USING BTREE,
+  INDEX `admin_id`(`admin_id`, `bot_id`, `status`) USING BTREE
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '请求频繁机器人名单' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for ky_zdjr_clue
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__zdjr_clue`;
+CREATE TABLE `__PREFIX__zdjr_clue`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `bot_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '执行加人操作的机器人',
+  `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `content` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'QQ微信号手机号wxid',
+  `type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'qq|wxnum|mobile|wxid',
+  `step` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '加人进度,0 未申请 1 已申请 2已通过',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1,
+  `create_time` int(10) UNSIGNED NOT NULL,
+  `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `wxid` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `project_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `admin_id`(`admin_id`, `content`, `type`) USING BTREE,
+  INDEX `todo`(`admin_id`, `step`, `status`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '线索表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for ky_zdjr_config
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__zdjr_config`;
+CREATE TABLE `__PREFIX__zdjr_config`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `bot_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `key` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+  `create_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `admin_key`(`admin_id`, `key`) USING BTREE
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '配置表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for ky_zdjr_log
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__zdjr_log`;
+CREATE TABLE `__PREFIX__zdjr_log`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `bot_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '执行加人操作的机器人',
+  `rule_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `clue_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '线索ID',
+  `res` tinyint(1) NOT NULL DEFAULT 0 COMMENT '搜索结果',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1,
+  `create_time` int(10) UNSIGNED NOT NULL,
+  `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '线索表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for ky_zdjr_project
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__zdjr_project`;
+CREATE TABLE `__PREFIX__zdjr_project`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否启用',
+  `create_time` int(10) UNSIGNED NOT NULL,
+  `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '项目表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for ky_zdjr_project_bot
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__zdjr_project_bot`;
+CREATE TABLE `__PREFIX__zdjr_project_bot`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `bot_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `project_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否启用',
+  `create_time` int(10) UNSIGNED NOT NULL,
+  `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '项目-机器人关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for ky_zdjr_rule
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__zdjr_rule`;
+CREATE TABLE `__PREFIX__zdjr_rule`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `bots` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '参与任务的机器人',
+  `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `rules` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '规则内容',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否启用',
+  `create_time` int(10) UNSIGNED NOT NULL,
+  `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `project_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `status`(`status`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '策略表' ROW_FORMAT = Dynamic;

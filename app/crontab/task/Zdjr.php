@@ -82,7 +82,7 @@ class Zdjr extends Base
                     // 状态码 -1: 未知内容 0: 搜索成功 1: 找不到相关帐号 2: 对方已隐藏账号 3: 操作频繁 4: 用户不存在 5: 用户异常
                     $res_se = $bot_client->searchAccount([
                         'robot_wxid' => $bot['uin'],
-                        'content' => 'doogiefu'
+                        'content' => $clue['content']
                     ]);
                     dump("================查找结果=========");
                     dump($res_se);

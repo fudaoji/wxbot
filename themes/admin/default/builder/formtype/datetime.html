@@ -15,6 +15,9 @@
                 class="layui-input"
                 {$form['extra_attr']??''}
         ／>
+        {if !empty($form['tip'])}
+        <tip class="form-tip">{$form['tip']}</tip>
+        {/if}
     </div>
     <script>
         layui.use('laydate', function(){

@@ -15,6 +15,9 @@
                 class="layui-input"
                 {$form['extra_attr']??''}
         ／>
+        {if !empty($form['tip'])}
+        <tip class="form-tip">{$form['tip']}</tip>
+        {/if}
         <input type="hidden" name="{$form['name']}_from_date" value="{:isset($form['value']) ? (is_string($form['value'][0]) ? $form['value'][0] : date('Y-m-d H:i:s', $form['value'][0])) : ''}">
         <input type="hidden" name="{$form['name']}_to_date" value="{:isset($form['value']) ? (is_string($form['value'][1]) ? $form['value'][1] : date('Y-m-d H:i:s', $form['value'][1])) : ''}">
     </div>

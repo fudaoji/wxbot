@@ -2,9 +2,10 @@
 
 namespace app\admin\controller;
 
-use app\common\model\ai\Config;
+use app\common\model\zdjr\Config;
+use app\constants\Bot;
 
-class Aiconfig extends Botbase
+class Zdjrconfig extends Botbase
 {
     /**
      * @var Config
@@ -31,21 +32,11 @@ class Aiconfig extends Botbase
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function index(){
-        $settings = $this->model->getConf(['bot_id' => $this->bot['id']]);
-        if(!empty($settings['wxids'])){
-            $settings['wxids'] = explode(',', $settings['wxids']);
-        }
-
+        $settings = $this->model->getConf(['admin_id' => $this->adminInfo['id']], '', true);
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
-            ->addFormItem('basic_legend', 'legend', '基础配置','基础配置' )
-            ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('switch', 'radio', '开启', '是否开启', [1=>'是', 0 => '否'])
-            ->addFormItem('wxids', 'chosen_multi', '作用对象', '指定的作用对象才会生效', $this->getMembers(), 'required')
-            ->addFormItem('weixin_legend', 'legend', '微信智能对话','微信智能对话' )
-            ->addFormItem('wx_appid', 'text', 'Appid', '微信智能对话的Appid')
-            ->addFormItem('wx_token', 'text', 'Token', '微信智能对话的Token')
-            ->addFormItem('wx_encoding_aes_key', 'text', 'EncodingAesKey', '微信智能对话的EncodingAesKey')
+            //->addFormItem('basic_legend', 'legend', '基础配置','基础配置' )
+            ->addFormItem('apply_perday', 'number', '每天加友上限', '每个机器人每天加好友上限，为安全起见，建议不超过10', [], 'required min=1 max=20')
             ->setFormData($settings);
         return $builder->show();
     }
@@ -61,12 +52,12 @@ class Aiconfig extends Botbase
             }else{
                 $this->model->addOne([
                     'admin_id' => $this->adminInfo['id'],
-                    'bot_id' => $this->bot['id'],
+                    //'bot_id' => $this->bot['id'],
                     'key' => $k,
                     'value'=> $v
                 ]);
             }
-            $this->model->getConf(['bot_id' => $this->bot['id']], $k, true);
+            $this->model->getConf(['admin_id' => $this->adminInfo['id']], $k, true);
         }
         $this->success('数据保存成功', $jump_to);
     }

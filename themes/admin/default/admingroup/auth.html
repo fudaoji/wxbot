@@ -18,12 +18,11 @@
     </div>
 </form>
 <script>
-    layui.use(['layer', 'tree', 'form', 'miniTab'], function() {
+    layui.use(['layer', 'tree', 'form'], function() {
         var $ = layui.jquery,
             layer = layui.layer,
             tree = layui.tree,
-            form = layui.form,
-            miniTab = layui.miniTab;
+            form = layui.form;
 
         var parent_index = parent.layer.getFrameIndex(window.name);
         //树形组件复选框

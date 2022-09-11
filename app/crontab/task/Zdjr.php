@@ -79,6 +79,10 @@ class Zdjr extends Base
                 $bot = $this->botM->getOne($bot_id);
                 $bot_client = $this->botM->getRobotClient($bot);
                 foreach ($clues as $clue){
+                    //判断是否触发每日好友申请上限
+                    if(! $this->logM->checkLimit(['bot_id' => $bot['id'], 'admin_id' => $bot['admin_id']])){
+                        break; //切换下个机器人
+                    }
                     // 状态码 -1: 未知内容 0: 搜索成功 1: 找不到相关帐号 2: 对方已隐藏账号 3: 操作频繁 4: 用户不存在 5: 用户异常
                     $res_se = $bot_client->searchAccount([
                         'robot_wxid' => $bot['uin'],

@@ -9,8 +9,27 @@
 
 namespace app\common\model\zdjr;
 
-
 class Log extends Zdjr
 {
     protected $table = 'log';
+    protected $isCache = false;
+
+    /**
+     * 判断每日加友次数是否达到上限
+     * @param array $params
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function checkLimit(array $params)
+    {
+        $config_m = new Config();
+        $limit = max(10, intval($config_m->getConf(['admin_id' => $params['admin_id']], 'apply_perday')));
+        return $limit > $this->total([
+            'bot_id' => $params['bot_id'],
+            'create_time' => ['between', [strtotime(date('Y-m-d')), time()]]
+        ]);
+    }
 }

@@ -153,7 +153,7 @@ class Admingroup extends Base
             $group_rules = explode(',', $group['rules']);
 
             //插入layui展开参数
-            foreach ($rules as &$item) {
+            foreach ($rules as $k => &$item) {
                 $item['spread'] = true;
                 if($item['href']) {
                     $item['title'] = $item['title'] . '【' . $item['href'] . '】';
@@ -165,6 +165,7 @@ class Admingroup extends Base
                 }else {
                     $item['checked'] = false;
                 }
+                $rules[$k] = $item;
             }
             $Tree = new Tree();
             $rules_tree = $Tree->listToTree($rules);

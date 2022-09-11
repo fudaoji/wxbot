@@ -63,7 +63,8 @@ class Rule extends Zdjr
         $log_m = new Log();
         if($data = $log_m->getOneByOrder([
             'where' => ['rule_id' => $params['rule_id']],
-            'order' => ['id' => 'desc']
+            'order' => ['id' => 'desc'],
+            'field' => ['create_time']
         ])){
             return (time() - $data['create_time']) >= ($params['time_round'] * 60);
         }

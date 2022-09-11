@@ -135,7 +135,7 @@ class Zdjrproject extends Botbase
                 }
             }
             $this->projectBotM->delByMap(['project_id' => $post_data['project_id'], 'bot_id' => ['notin', $bots]]);
-            $this->success('操作成功!');
+            $this->success('操作成功!', '/undefined');
         }
         $project_id = input('project_id', 0);
         if(! $data = $this->model->getOne($project_id)){

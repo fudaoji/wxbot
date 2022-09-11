@@ -57,7 +57,8 @@ class Admingroup extends Base
         if($this->adminInfo['group_id'] == 1) {
             $builder->addTopButton('addnew');
         }
-            $builder->addTableColumn(['title' => '权限名称', 'field' => 'title'])
+            $builder->addTableColumn(['title' => 'ID', 'field' => 'id'])
+                ->addTableColumn(['title' => '权限名称', 'field' => 'title'])
             ->addTableColumn(['title' => '备注信息', 'field' => 'remark'])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => [1 => '启用', 0 => '禁用']])
             ->addTableColumn(['title' => '操作', 'width' => 120, 'type' => 'toolbar'])

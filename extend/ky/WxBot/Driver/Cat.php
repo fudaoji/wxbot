@@ -477,6 +477,6 @@ class Cat extends Base
 
     public function cleanChatHistory($params = [])
     {
-        // TODO: Implement cleanChatHistory() method.
+        return $this->apiUnSupport();
     }
 }

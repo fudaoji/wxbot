@@ -15,7 +15,10 @@ class Admin extends Base
      * @var \app\admin\model\Admin
      */
     protected $model;
-    protected $groupM;
+    /**
+     * @var \app\admin\model\AdminGroup
+     */
+    private $groupM;
 
     public function initialize(){
         parent::initialize();
@@ -58,7 +61,7 @@ class Admin extends Base
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '序号', 'type' => 'index'])
             ->addTableColumn(['title' => '账号', 'field' => 'username'])
-            ->addTableColumn(['title' => '邮箱', 'field' => 'email'])
+            //->addTableColumn(['title' => '邮箱', 'field' => 'email'])
             ->addTableColumn(['title' => '手机号', 'field' => 'mobile'])
             ->addTableColumn(['title' => '姓名', 'field' => 'realname'])
             ->addTableColumn(['title' => '角色', 'field' => 'group_id', 'type' => 'enum', 'options' => $group_list])
@@ -75,18 +78,18 @@ class Admin extends Base
      */
     public function add(){
         if($this->adminInfo['group_id'] == 1) {
-            $groups = $this->groupM->getField('id, title', ['status' => 1]);
+            $groups = $this->groupM->getField('id,title', ['status' => 1]);
         }else {
-            $groups = $this->groupM->getField('id, title', ['status' => 1, 'id' => ['gt', 1]]);
+            $groups = $this->groupM->getField('id,title', ['status' => 1, 'id' => ['>', 1]]);
         }
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')  //设置页面标题
-        ->setPostUrl(url('savepost')) //设置表单提交地址
-        ->addFormItem('group_id', 'select', '角色', '角色', $groups, 'required')
+            ->setPostUrl(url('savepost')) //设置表单提交地址
+            ->addFormItem('group_id', 'select', '角色', '角色', $groups, 'required')
             ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength="4" maxlength="20"')
             ->addFormItem('password', 'password', '密码', '6-20位', [], 'required')
-            ->addFormItem('email', 'text', '邮箱', '邮箱')
+            //->addFormItem('email', 'text', '邮箱', '邮箱')
             ->addFormItem('mobile', 'text', '手机', '手机')
             ->addFormItem('realname', 'text', '姓名', '姓名');
 
@@ -103,9 +106,9 @@ class Admin extends Base
             $this->error('id参数错误');
         }
         if($this->adminInfo['group_id'] == 1) {
-            $groups = $this->groupM->getField('id, title', ['status' => 1]);
+            $groups = $this->groupM->getField('id,title', ['status' => 1]);
         }else {
-            $groups = $this->groupM->getField('id, title', ['status' => 1, 'id' => ['gt', 1]]);
+            $groups = $this->groupM->getField('id,title', ['status' => 1, 'id' => ['>', 1]]);
         }
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
@@ -114,7 +117,7 @@ class Admin extends Base
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('group_id', 'select', '角色', '角色', $groups, 'required')
             ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength="4" maxlength="20"')
-            ->addFormItem('email', 'text', '邮箱', '邮箱')
+            //->addFormItem('email', 'text', '邮箱', '邮箱')
             ->addFormItem('mobile', 'text', '手机', '手机')
             ->addFormItem('realname', 'text', '姓名', '姓名')
             ->setFormData($data);
@@ -149,13 +152,14 @@ class Admin extends Base
      * @param array $data
      * @return mixed
      * @Author  Doogie<461960962@qq.com>
+     * @throws \think\Exception
      */
-    public function savePost($url='', $data=[]){
+    public function savePost($url='/undefined', $data=[]){
         $post_data = input('post.');
         if(!empty($post_data['password'])){
             $post_data['password'] = ky_generate_password($post_data['password']);
         }
-        return parent::savePost(url('index'), $post_data);
+        return parent::savePost($url, $post_data);
     }
 
     /**
@@ -163,8 +167,6 @@ class Admin extends Base
      * @return mixed
      * Author: Doogie<fdj@kuryun.cn>
      * @throws \think\Exception
-     * @throws \think\exception\DbException
-     * @throws \think\exception\PDOException
      */
     public function setPersonPw(){
         if(request()->isPost()){

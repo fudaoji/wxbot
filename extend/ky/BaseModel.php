@@ -469,7 +469,7 @@ class BaseModel extends Model
      * @Author  Doogie<461960962@qq.com>
      */
     public function getField($field = '', $query = [],$refresh = 0){
-        is_string($field) && $field = explode(',', $field);
+        is_string($field) && $field = explode(',', str_replace(' ', '', $field));
         $key = '';
         if(count($field) == 2){
             $key = $field[0];

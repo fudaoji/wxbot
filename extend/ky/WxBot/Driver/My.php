@@ -54,6 +54,7 @@ class My extends Base
     const API_SET_GROUP_NOTICE = 'ModifyGroupNotice'; //
     const API_QUIT_GROUP = 'QuitGroup'; // 退群
 
+    const API_CLEAN_CHAT_HISTORY = 'CleanChathistory'; //清空聊天记录
     const API_GET_GROUP_LIST = 'GetGrouplist'; //获取群列表
     const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
     const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
@@ -836,5 +837,12 @@ class My extends Base
     public function getMemberInfo($params = [])
     {
         // TODO: Implement getMemberInfo() method.
+    }
+
+    public function cleanChatHistory($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_CLEAN_CHAT_HISTORY)
+        ]);
     }
 }

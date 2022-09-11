@@ -490,4 +490,9 @@ class Qianxun extends Base
     {
         // TODO: Implement setFriendRemarkName() method.
     }
+
+    public function cleanChatHistory($params = [])
+    {
+        // TODO: Implement cleanChatHistory() method.
+    }
 }

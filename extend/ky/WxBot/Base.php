@@ -85,6 +85,8 @@ Abstract class Base
     abstract public function setGroupName($params = []);
     //设置群公告 notice
     abstract public function setGroupNotice($params = []);
+    //清空聊天记录
+    abstract public function cleanChatHistory($params = []);
 
     /**
      * 间隔

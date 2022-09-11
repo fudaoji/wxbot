@@ -24,6 +24,7 @@ class Bot
     const GROUP = 'group';
     const MP = 'mp';
 
+    const EVENT_GROUP_ESTABLISH = 'EventGroupEstablish'; //创建新群
     const EVENT_GROUP_MEMBER_ADD = 'EventGroupMemberAdd'; //群人员减少
     const EVENT_GROUP_MEMBER_DEC = 'EventGroupMemberDecrease'; //群人员减少
     const EVENT_FRIEND_VERIFY = 'EventFriendVerify'; //好友请求事件

@@ -83,9 +83,10 @@ class Bot extends Base
             ->addTableColumn(['title' => '操作中', 'field' => 'is_current', 'type' => 'enum', 'options' => Common::yesOrNo(), 'minWidth' => 70])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 180, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120])
-            ->addRightButton('edit');
+            ->addRightButton('edit')
+            ->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1]);
 
         return $builder->show();
     }
@@ -506,5 +507,28 @@ class Bot extends Base
         }
         $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);
+    }
+
+    /**
+     * 清空聊天记录
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function cleanChatPost()
+    {
+        $id = input('id', null);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']], true, true);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $client = $this->model->getRobotClient($data);
+        $res = $client->cleanChatHistory(['robot_wxid' => $data['uin']]);
+        if($res['code']){
+            $this->success('操作成功');
+        }
+        $this->error('操作失败：' . $res['errmsg']);
     }
 }

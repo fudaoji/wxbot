@@ -364,4 +364,9 @@ class Webgo extends Base
     {
         // TODO: Implement getMemberInfo() method.
     }
+
+    public function cleanChatHistory($params = [])
+    {
+        return $this->apiUnSupport();
+    }
 }

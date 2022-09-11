@@ -745,4 +745,9 @@ class Mycom extends Base
     {
         // TODO: Implement getMemberInfo() method.
     }
+
+    public function cleanChatHistory($params = [])
+    {
+        // TODO: Implement cleanChatHistory() method.
+    }
 }

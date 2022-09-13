@@ -83,10 +83,11 @@ class Bot extends Base
             ->addTableColumn(['title' => '操作中', 'field' => 'is_current', 'type' => 'enum', 'options' => Common::yesOrNo(), 'minWidth' => 70])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 180, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 240, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120])
             ->addRightButton('edit')
-            ->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1]);
+            ->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1])
+            ->addRightButton('delete');
 
         return $builder->show();
     }
@@ -427,6 +428,7 @@ class Bot extends Base
         $data['uuid'] = '';
         $bot_client = $this->model->getRobotClient($data);
         if(request()->isPost()){
+            sleep(1);
             $return = $bot_client->getRobotList();
             if($return['code'] && !empty($return['data'])){
                 foreach ($return['data'] as $v){

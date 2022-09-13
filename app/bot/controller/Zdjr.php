@@ -92,7 +92,7 @@ class Zdjr extends Addon
         $rules = json_decode($this->task['rules'], true);
         if($this->isNewFriend){
             //修改状态
-            $this->clueM->updateOne(['id' => $this->clue['id'], 'step' => Clue::STEP_ADDED]);
+            $this->clueM->updateOne(['id' => $this->clue['id'], 'step' => Clue::STEP_ADDED, 'wxid' => $this->fromWxid]);
 
             //备注名称
             if(!empty($rules['remark_name'])){
@@ -144,9 +144,14 @@ class Zdjr extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function isClue(){
-        return ($this->task
-            && ($this->clue = $this->clueM->getOneByMap(['admin_id' => $this->bot['admin_id'], 'wxid' => $this->fromWxid], true, true))
+        $flag = ($this->task
+            && (
+            ($this->clue = $this->clueM->getOneByMap(['admin_id' => $this->bot['admin_id'], 'wxid' => $this->fromWxid], true, true))
+                || ($this->clue = $this->clueM->getOneByMap(['admin_id' => $this->bot['admin_id'], 'nickname' => filter_emoji($this->content['from_name'])], true, true))
+            )
         );
+        //Logger::error($this->clue);
+        return $flag;
     }
 
     /**

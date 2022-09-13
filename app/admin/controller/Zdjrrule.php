@@ -166,7 +166,7 @@ class Zdjrrule extends Botbase
             $bots = $this->getFreeBots(0, $project_id);
             $builder->setPostUrl(url('savePost'))
                 ->setTip("文本内容遵循以下替换规则：<ul><li>[名称]：最终会被替换为名单中的名称</li></ul>")
-                ->addFormItem('project_id', 'chosen', '选择项目', '选择项目', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id']]), 'disabled')
+                ->addFormItem('project_id', 'chosen', '选择项目', '选择项目', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id'], 'id' => $project_id]))
                 ->addFormItem('title', 'text', '任务名称', '50字内', [], 'required maxlength=50')
                 ->addFormItem('bots', 'chosen_multi', '执行机器人', '请选择执行机器人', $bots, 'required')
                 ->addFormItem('add_legend', 'legend', '加人策略', '加人策略')

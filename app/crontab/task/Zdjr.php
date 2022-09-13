@@ -62,6 +62,7 @@ class Zdjr extends Base
         dump($tasks);
         foreach ($tasks as $task){
             $rules = json_decode($task['rules'], true);
+
             if(! $flag = $this->ruleM->canRun(['rule_id' => $task['id'], 'time_round' => $rules['time_round']])){
                 continue; //每轮休息期间
             }
@@ -71,7 +72,7 @@ class Zdjr extends Base
             }
             foreach ($bots as $bot_id){
                 if(! $clues = $this->clueM->getList([1, $rules['speed']],
-                    ['admin_id' => $task['admin_id'], 'status' => 1, 'step' => Clue::STEP_NOT]
+                    ['admin_id' => $task['admin_id'], 'status' => 1, 'step' => Clue::STEP_NOT, 'project_id' => $task['project_id']]
                 )){
                     break; //无线索
                 }
@@ -88,8 +89,15 @@ class Zdjr extends Base
                         'robot_wxid' => $bot['uin'],
                         'content' => $clue['content']
                     ]);
+
                     dump("================查找结果=========");
                     dump($res_se);
+
+                    $clue_update = [
+                        'id' => $clue['id'],
+                        'bot_id' => $bot['id'],
+                        'step' => Clue::STEP_FAILED
+                    ];
                     if($res_se['code']){
                         //record log
                         $this->logM->addOne([
@@ -100,10 +108,6 @@ class Zdjr extends Base
                             'res' => $res_se['data']['status']
                         ]);
 
-                        $clue_update = [
-                            'id' => $clue['id'],
-                            'bot_id' => $bot['id']
-                        ];
                         switch ($res_se['data']['status']){
                             case 3:
                                 $this->blockM->blockBot([
@@ -111,9 +115,14 @@ class Zdjr extends Base
                                     'bots' => $task['bots'],
                                     'bot_id' => $bot['id']
                                 ]);
+                                $clue_update['step'] = Clue::STEP_NOT;
                                 break;
                             case 0:
+                                $clue_update['wxid'] = $res_se['data']['wxid'];
+                                $clue_update['nickname'] = filter_emoji($res_se['data']['nickname']);
+
                                 $add_msg = str_replace('[名称]', $clue['title'], $rules['add_msg']);
+                                
                                 $res_add = $bot_client->addFriendBySearch([
                                     'robot_wxid' => $bot['uin'],
                                     'v1' => $res_se['data']['v1'],
@@ -125,17 +134,24 @@ class Zdjr extends Base
                                     $clue_update['step'] = Clue::STEP_APPLIED;
                                     dump("================添加结果=========");
                                     dump($res_add);
+
+                                    //添加日志
+                                    $this->logM->addOne([
+                                        'admin_id' => $task['admin_id'],
+                                        'bot_id' => $bot['id'],
+                                        'rule_id' => $task['id'],
+                                        'clue_id' => $clue['id'],
+                                        'res' => $res_se['data']['status'],
+                                        'type' => 2
+                                    ]);
                                 }
                                 break;
-                            default:
-                                $clue_update['step'] = Clue::STEP_FAILED;
-                                break;
                         }
-                        //update clue
-                        $clue = $this->clueM->updateOne($clue_update);
-                        dump("================线索更新=========");
-                        dump($clue);
                     }
+                    //update clue
+                    $clue = $this->clueM->updateOne($clue_update);
+                    dump("================线索更新=========");
+                    dump($clue);
                     //sleep
                     $this->ruleM->sleep($rules);
                 }

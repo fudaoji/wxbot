@@ -14,6 +14,19 @@ class Log extends Zdjr
     protected $table = 'log';
     protected $isCache = false;
 
+    public static function statusList($id = null){
+        $list = [
+            -1 => '未知内容',
+            0 => '成功',
+            1 => '找不到相关账号',
+            2 => '对方已隐藏账号',
+            3 => '操作频繁',
+            4 => '用户不存在',
+            5 => '用户异常'
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
     /**
      * 判断每日加友次数是否达到上限
      * @param array $params
@@ -31,5 +44,13 @@ class Log extends Zdjr
             'bot_id' => $params['bot_id'],
             'create_time' => ['between', [strtotime(date('Y-m-d')), time()]]
         ]);
+    }
+
+    public static function types($id = null){
+        $list = [
+            1 => '搜索账号',
+            2 => '添加'
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
     }
 }

@@ -59,7 +59,7 @@ class Reply extends Botbase
             }
             $this->success('操作成功');
         }
-        $bot_list = $this->getBots(['id' => ['neq', $this->bot['id']]]);
+        $bot_list = $this->getBots(['id' => ['<>', $this->bot['id']]]);
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('复制内容')

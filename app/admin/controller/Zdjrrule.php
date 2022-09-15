@@ -76,7 +76,7 @@ class Zdjrrule extends Botbase
 
         $builder = new ListBuilder();
         $builder->addTopButton('addnew')
-            ->setTip("同一时间只能执行一个任务")
+            //->setTip("同一时间只能执行一个任务")
             ->addTableColumn(['title' => '任务名称', 'field' => 'title', 'minWidth' => 90])
             ->addTableColumn(['title' => '所属项目', 'field' => 'project_id', 'minWidth' => 90,'type' => 'enum', 'options' => $this->projectM->getProjects()])
             ->addTableColumn(['title' => '执行机器人', 'field' => 'bots', 'minWidth' => 200])
@@ -111,7 +111,7 @@ class Zdjrrule extends Botbase
         $bots = $this->getFreeBots($id, $data['project_id']);
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
-            ->setTip("文本内容遵循以下替换规则：<ul><li>[名称]：最终会被替换为名单中的名称</li></ul>")
+            ->setTip("文本内容遵循以下替换规则：<ul><li>[名称]：最终会被替换为名单中的名称</li><li>[电话]：最终会被替换为名单中的电话</li></ul>")
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('project_id', 'chosen', '选择项目', '选择项目', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id']]))
             ->addFormItem('title', 'text', '任务名称', '50字内', [], 'required maxlength=50')
@@ -165,7 +165,7 @@ class Zdjrrule extends Botbase
             $groups = model('admin/botMember')->getField(['wxid','nickname'], ['type' => Bot::GROUP]);
             $bots = $this->getFreeBots(0, $project_id);
             $builder->setPostUrl(url('savePost'))
-                ->setTip("文本内容遵循以下替换规则：<ul><li>[名称]：最终会被替换为名单中的名称</li></ul>")
+                ->setTip("文本内容遵循以下替换规则：<ul><li>[名称]：最终会被替换为名单中的名称</li><li>[电话]：最终会被替换为名单中的电话</li></ul>")
                 ->addFormItem('project_id', 'chosen', '选择项目', '选择项目', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id'], 'id' => $project_id]))
                 ->addFormItem('title', 'text', '任务名称', '50字内', [], 'required maxlength=50')
                 ->addFormItem('bots', 'chosen_multi', '执行机器人', '请选择执行机器人', $bots, 'required')
@@ -174,6 +174,7 @@ class Zdjrrule extends Botbase
                 ->addFormItem('time_add', 'text', '添加间隔时长/秒', '相邻两次请求的间隔时间，请填写时间段，例如：10-15，单位秒', [], 'required')
                 ->addFormItem('time_round', 'number', '每轮间隔时长/分', '所有机器人执行一次为一轮，单位分，建议10分钟以上', [], 'required min=1')
                 ->addFormItem('add_msg', 'text', '验证消息', '请求添加验证消息，内容中可填入[名称]，最终会被替换为名单中的名称', [], 'maxlength=200')
+                ->addFormItem('add_type', 'chosen', '添加类型', '添加类型', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id'], 'id' => $project_id]))
                 ->addFormItem('after_legend', 'legend', '通过后策略', '通过后策略')
                 ->addFormItem('remark_name', 'text', '备注名称', '留空则不自动备注', [], 'maxlength=50')
                 ->addFormItem('groups', 'chosen_multi', '自动拉群', '留空则不自动拉群', $groups)

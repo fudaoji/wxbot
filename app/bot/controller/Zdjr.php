@@ -96,7 +96,9 @@ class Zdjr extends Addon
 
             //备注名称
             if(!empty($rules['remark_name'])){
-                $remark_name = str_replace('[名称]', $this->clue['title'], $rules['remark_name']);
+                $remark_name = str_replace(['[名称]', '[电话]'], [$this->clue['title'], $this->clue['content']], $rules['remark_name']);
+                    //str_replace('[名称]', $this->clue['title'], $rules['remark_name']);
+
                 $res = $this->botClient->setFriendRemarkName([
                     'robot_wxid' => $this->botWxid,
                     'to_wxid' => $this->fromWxid,

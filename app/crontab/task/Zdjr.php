@@ -15,6 +15,7 @@ use app\common\model\zdjr\Log;
 use app\common\model\zdjr\Rule;
 use app\admin\model\Bot;
 use app\constants\Bot as BotConst;
+use ky\Logger;
 
 class Zdjr extends Base
 {
@@ -57,7 +58,7 @@ class Zdjr extends Base
      */
     public function minuteTask(){
         $tasks = $this->ruleM->getAll([
-            'status' => 1
+            'where' => ['status' => 1]
         ]);
         dump($tasks);
         foreach ($tasks as $task){
@@ -71,9 +72,10 @@ class Zdjr extends Base
                 continue; //无机器人可用
             }
             foreach ($bots as $bot_id){
-                if(! $clues = $this->clueM->getList([1, $rules['speed']],
+                $clues = $this->clueM->getList([1, $rules['speed']],
                     ['admin_id' => $task['admin_id'], 'status' => 1, 'step' => Clue::STEP_NOT, 'project_id' => $task['project_id']]
-                )){
+                );
+                if(! count($clues)){
                     break; //无线索
                 }
                 dump($clues);
@@ -90,8 +92,8 @@ class Zdjr extends Base
                         'content' => $clue['content']
                     ]);
 
-                    dump("================查找结果=========");
-                    dump($res_se);
+                    Logger::error("================查找结果=========");
+                    Logger::error($res_se);
 
                     $clue_update = [
                         'id' => $clue['id'],

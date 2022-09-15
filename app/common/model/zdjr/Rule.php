@@ -10,6 +10,8 @@
 namespace app\common\model\zdjr;
 
 
+use app\constants\Bot;
+
 class Rule extends Zdjr
 {
     protected $table = 'rule';
@@ -23,11 +25,22 @@ class Rule extends Zdjr
             'time_add' => '添加间隔时间/s',
             'time_round' => '每轮间隔时间/min',
             'add_msg' => '验证消息',
+            'add_type' => '添加方式',
             'remark_name' => '备注名称',
             'groups' => '自动拉群',
             'invite_way' => '拉群方式',
             'group_person_limit' => '群自动切换临界值',
             'busy_stop' => '账号频繁不再添加'
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
+    public static function addWays($id = null){
+        $list = [
+            Bot::SCENE_WXNUM=> '微信号',
+            Bot::SCENE_CONTACT => '手机号',
+            Bot::SCENE_SCAN => '扫一扫',
+            0 => '随机'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
@@ -48,7 +61,11 @@ class Rule extends Zdjr
     public function sleep($rules = [])
     {
         $time_add = explode('-', $rules['time_add']);
-        sleep(rand($time_add[0], $time_add[1]));
+        if(empty($time_add[1])){
+            sleep(intval($rules['time_add']));
+        }else{
+            sleep(rand(intval($time_add[0]), intval($time_add[1])));
+        }
     }
 
     /**

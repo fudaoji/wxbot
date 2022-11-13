@@ -122,7 +122,7 @@ class Base extends BaseCtl
         }else {
             $res = $this->model->updateOne($post_data);
         }
-
+        
         if($res){
             $this->success('数据保存成功', $jump_to);
         }else{

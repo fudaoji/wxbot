@@ -27,13 +27,18 @@
                             data = excel.filterImportData(data, {:json_encode($form.options.fields)});
                             var serverUrl = "{$form.options.url}";
                             data = data[0]['Sheet1'].slice(1);
-                            var circle = Math.ceil(data.length / 500);
+                            requestPost(serverUrl, {'list': data}, null, true);
+                            /*var circle = Math.ceil(data.length / 500);
                             var arr;
+
                             for (var i = 0; i < circle; i++){
                                 arr = data.slice(i * 500, i * 500 + 500);
+                                setTimeout( function() {
+                                    requestPost(serverUrl, {'list': arr}, null, true);
+                                }, 1500);
                                 //request server
-                                requestPost(serverUrl, {'list': arr}, null, true);
-                            }
+                                //requestPost(serverUrl, {'list': arr}, null, true);
+                            }*/
                             //console.log(dataList);
                         });
                     } catch (e) {

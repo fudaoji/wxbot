@@ -60,10 +60,14 @@ class Zdjrrule extends Botbase
                     foreach (Rule::ruleFields() as $k1 => $v1){
                         if($k1 == 'groups' && $_rules[$k1]){
                             $_rules[$k1] = implode(',', array_values($this->getGroups(['wxid' => ['in', $_rules[$k1]]])));
-                        }elseif ($k1 == 'invite_way' && $_rules[$k1]){
+                        }elseif ($k1 == 'invite_way' && isset($_rules[$k1])){
                             $_rules[$k1] = Rule::inviteWays($_rules[$k1]);
+                        }elseif ($k1 == 'add_way' && isset($_rules[$k1])){
+                            $_rules[$k1] = Rule::addWays($_rules[$k1]);
+                        }elseif ($k1 == 'group_way' && isset($_rules[$k1])){
+                            $_rules[$k1] = Rule::groupWays($_rules[$k1]);
                         }
-                        $rule_str .= '<p>'.$v1.'：<em>'.$_rules[$k1].'</em></p>';
+                        isset($_rules[$k1]) && $rule_str .= '<p>'.$v1.'：<em>'.$_rules[$k1].'</em></p>';
                     }
                     $v['rules'] = $rule_str;
                     $list[$k] = $v;
@@ -109,6 +113,7 @@ class Zdjrrule extends Botbase
         $data['bots'] = explode(',', str_replace('i', '', $data['bots']));
         $groups = model('admin/botMember')->getField(['wxid','nickname'], ['type' => Bot::GROUP]);
         $bots = $this->getFreeBots($id, $data['project_id']);
+
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
             ->setTip("文本内容遵循以下替换规则：<ul><li>[名称]：最终会被替换为名单中的名称</li><li>[电话]：最终会被替换为名单中的电话</li></ul>")
@@ -116,18 +121,25 @@ class Zdjrrule extends Botbase
             ->addFormItem('project_id', 'chosen', '选择项目', '选择项目', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id']]))
             ->addFormItem('title', 'text', '任务名称', '50字内', [], 'required maxlength=50')
             ->addFormItem('bots', 'chosen_multi', '执行机器人', '请选择执行机器人', $bots, 'required')
+            ->addFormItem('apply_limit', 'number', '打招呼限制', '0表示不限', [], 'required min=0')
+            ->addFormItem('busy_stop', 'radio', '账号频繁不再添加', '请求添加验证消息', [1 => '是', 0 => '否'], 'maxlength=200')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启动', 0 => '停止'], 'required')
             ->addFormItem('add_legend', 'legend', '加人策略', '加人策略')
             ->addFormItem('speed', 'number', '每次添加个数', '达到设置值后自动切换下一个账号，建议3-5个之间，多了容易封号', [], 'required min=1')
             ->addFormItem('time_add', 'text', '添加间隔时长/秒', '相邻两次请求的间隔时间，请填写时间段，例如：10-15，单位秒', [], 'required')
             ->addFormItem('time_round', 'number', '每轮间隔时长/分', '所有机器人执行一次为一轮，单位分，建议10分钟以上', [], 'required min=1')
             ->addFormItem('add_msg', 'text', '验证消息', '请求添加验证消息，内容中可填入[名称]，最终会被替换为名单中的名称', [], 'maxlength=200')
+            ->addFormItem('add_way', 'chosen', '添加方式', '添加方式', $this->model->addWays())
             ->addFormItem('after_legend', 'legend', '通过后策略', '通过后策略')
             ->addFormItem('remark_name', 'text', '备注名称', '留空则不自动备注', [], 'maxlength=50')
+            ->addFormItem('send_card', 'text', '发送名片', '请填写wxid')
+            ->addFormItem('group_way', 'radio', '拉群方式', '拉群方式', [0 => '不进群', 1 => '自动建群', 2 => '自动拉群'])
+            ->addFormItem('group_name', 'text', '建群名称', '针对自动建群时有效')
+            ->addFormItem('group_members', 'text', '需要拉好友', '填写好友wxid', [])
+            ->addFormItem('group_quit', 'radio', '是否退群', '是否退群', [1 => '是', 0 => '否'])
             ->addFormItem('groups', 'chosen_multi', '自动拉群', '留空则不自动拉群', $groups)
-            ->addFormItem('invite_way', 'radio', '拉群方式', '拉群方式', Rule::inviteWays(), 'min=1 max=500')
+            ->addFormItem('invite_way', 'radio', '入群方式', '入群方式', Rule::inviteWays(), 'min=1 max=500')
             ->addFormItem('group_person_limit', 'number', '群自动切换', '群成员满多少人自动切换', [], 'min=1 max=500')
-            ->addFormItem('busy_stop', 'radio', '账号频繁不再添加', '请求添加验证消息', [1 => '是', 0 => '否'], 'maxlength=200')
             ->setFormData($data);
 
         return $builder->show();
@@ -144,6 +156,8 @@ class Zdjrrule extends Botbase
         $builder = new FormBuilder();
         if($step == 1){
             $builder->setPostUrl(url('add', ['step' => 1]))
+                ->setBtnSubmit(['text' => '下一步'])
+                ->setBtnReset(['show' => 0])
                 ->addFormItem('project_id', 'chosen', '选择项目', '选择项目', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id']]));
             if(request()->isPost()){
                 $this->success('请继续配置其他信息', url('add', ['step' => 2, 'project_id' => input('project_id')]));
@@ -160,7 +174,10 @@ class Zdjrrule extends Botbase
                 'add_msg' => '[名称]，你好',
                 'busy_stop' => 1,
                 'invite_way' => 'link',
-                'project_id' => $project_id
+                'project_id' => $project_id,
+                'apply_limit' => 10,
+                'group_way' => 0,
+                'group_quite' => 0
             ];
             $groups = model('admin/botMember')->getField(['wxid','nickname'], ['type' => Bot::GROUP]);
             $bots = $this->getFreeBots(0, $project_id);
@@ -169,18 +186,24 @@ class Zdjrrule extends Botbase
                 ->addFormItem('project_id', 'chosen', '选择项目', '选择项目', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id'], 'id' => $project_id]))
                 ->addFormItem('title', 'text', '任务名称', '50字内', [], 'required maxlength=50')
                 ->addFormItem('bots', 'chosen_multi', '执行机器人', '请选择执行机器人', $bots, 'required')
+                ->addFormItem('apply_limit', 'number', '打招呼限制', '0表示不限', [], 'required min=0')
+                ->addFormItem('busy_stop', 'radio', '账号频繁不再添加', '请求添加验证消息', [1 => '是', 0 => '否'], 'maxlength=200')
                 ->addFormItem('add_legend', 'legend', '加人策略', '加人策略')
                 ->addFormItem('speed', 'number', '每次添加个数', '达到设置值后自动切换下一个账号，建议3-5个之间，多了容易封号', [], 'required min=1')
                 ->addFormItem('time_add', 'text', '添加间隔时长/秒', '相邻两次请求的间隔时间，请填写时间段，例如：10-15，单位秒', [], 'required')
                 ->addFormItem('time_round', 'number', '每轮间隔时长/分', '所有机器人执行一次为一轮，单位分，建议10分钟以上', [], 'required min=1')
                 ->addFormItem('add_msg', 'text', '验证消息', '请求添加验证消息，内容中可填入[名称]，最终会被替换为名单中的名称', [], 'maxlength=200')
-                ->addFormItem('add_type', 'chosen', '添加类型', '添加类型', $this->projectM->getProjects(['admin_id' => $this->adminInfo['id'], 'id' => $project_id]))
+                ->addFormItem('add_way', 'chosen', '添加方式', '添加方式', $this->model->addWays())
                 ->addFormItem('after_legend', 'legend', '通过后策略', '通过后策略')
                 ->addFormItem('remark_name', 'text', '备注名称', '留空则不自动备注', [], 'maxlength=50')
-                ->addFormItem('groups', 'chosen_multi', '自动拉群', '留空则不自动拉群', $groups)
-                ->addFormItem('invite_way', 'radio', '拉群方式', '拉群方式', Rule::inviteWays(), 'min=1 max=500')
+                ->addFormItem('send_card', 'text', '发送名片', '请填写wxid')
+                ->addFormItem('group_way', 'radio', '拉群方式', '拉群方式', [0 => '不进群', 1 => '自动建群', 2 => '自动拉群'])
+                ->addFormItem('group_name', 'text', '建群名称', '针对自动建群时有效')
+                ->addFormItem('group_members', 'text', '需要拉好友', '填写好友wxid', [])
+                ->addFormItem('group_quit', 'radio', '是否退群', '是否退群', [1 => '是', 0 => '否'])
+                ->addFormItem('groups', 'chosen_multi', '自动拉群', '针对自动拉群，留空则不自动拉群', $groups)
+                ->addFormItem('invite_way', 'radio', '入群方式', '入群方式', Rule::inviteWays(), 'min=1 max=500')
                 ->addFormItem('group_person_limit', 'number', '群自动切换', '群成员满多少人自动切换', [], 'min=1 max=500')
-                ->addFormItem('busy_stop', 'radio', '账号频繁不再添加', '请求添加验证消息', [1 => '是', 0 => '否'], 'maxlength=200')
                 ->setFormData($data);
         }
 
@@ -190,7 +213,7 @@ class Zdjrrule extends Botbase
     private function getFreeBots($id = 0, $project_id = 0){
         $where = ['id' => ['in', [0]]];
         if($project_id){
-            $exist = $this->projectBotM->getField('bot_id', ['admin_id' => $this->adminInfo['id'], 'project_id' => $project_id]);
+            $exist = $this->projectBotM->getField('bot_id', ['admin_id' => $this->adminInfo['id'], 'project_id' => $project_id], true);
             $exist && $where['id'] = ['in', $exist];
         }
         //dump($where);exit;
@@ -199,7 +222,7 @@ class Zdjrrule extends Botbase
         if($bots){
             $rule_where = ['admin_id' => $this->adminInfo['id'], 'status' => 1];
             $id && $rule_where['id'] = ['<>', $id];
-            $busy_bot = $this->model->getField('bots', $rule_where);
+            $busy_bot = $this->model->getField('bots', $rule_where, true);
             $busy_bot_id = [];
             foreach ($busy_bot as $v){
                 $v = str_replace('i', '', $v);

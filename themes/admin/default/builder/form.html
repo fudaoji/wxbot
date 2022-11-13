@@ -59,7 +59,9 @@
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     {if $btn_submit['show']}
-                    <button class="layui-btn layui-btn-normal" type="submit">{$btn_submit['text']}</button>
+                    <button class="layui-btn layui-btn-normal" type="submit">
+                        {$btn_submit['text']} <img class="hide loading-gif" src="/static/imgs/spin.gif" style="width: 14px;">
+                    </button>
                     {/if}
                     {if $btn_reset['show']}
                     <button type="reset" class="layui-btn layui-btn-primary">{$btn_reset['text']}</button>
@@ -108,6 +110,7 @@
                     data: param,
                     beforeSend: function(){
                         loading_index = layer.load(1);
+                        $('.loading-gif').removeClass('hide');
                     },
                     success : function(res) {
                         if(res.code === 1 ) {
@@ -133,6 +136,7 @@
                     },
                     complete: function(){
                         layer.close(loading_index);
+                        $('.loading-gif').addClass('hide');
                     }
                 });
             },

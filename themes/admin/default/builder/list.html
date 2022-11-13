@@ -106,7 +106,7 @@
             switch(item.type){
                 case 'article':
                     item = Object.assign(item, {templet: function (d) {
-                            return templets.article(d[item.field]);
+                            return templets.article(`${d[item.field]}`);
                         }});
                     break;
                 case 'pre':

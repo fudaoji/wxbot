@@ -37,7 +37,7 @@ class Zdjrlog extends Botbase
             $where = ['log.admin_id' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['clue.content|clue.title'] = ['like', '%' . $post_data['search_key'] . '%'];
             !empty($post_data['bot_id']) && $where['bot.id'] = $post_data['bot_id'];
-
+            !empty($post_data['rule_id']) && $where['log.rule_id'] = $post_data['rule_id'];
             $params = [
                 'alias' => 'log',
                 'join' => [

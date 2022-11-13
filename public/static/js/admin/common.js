@@ -141,7 +141,7 @@ window.chooseEmoji = function () {
 };
 
 window.viewArticle = function (html = '') {
-    html = "<div style='margin: 20px;line-height: 2em;'>" + html + '</div>';
+    html = "<div style='margin: 20px;line-height: 2em;overflow-wrap:anywhere;'>" + html + '</div>';
     layer.open({
         type: 1,
         title: "内容查看",
@@ -204,7 +204,7 @@ window.requestPost = function(url, params, callback, sync = false){
             , layer = layui.layer;
 
         if(sync) $.ajaxSettings.async = false;
-        var loadingIndex = layer.load(1);
+        var loadingIndex = top.layer.load('数据提交中...');
         $.post(url, params, function(res){
             if(res.code === 1){
                 if(res.msg){
@@ -218,7 +218,7 @@ window.requestPost = function(url, params, callback, sync = false){
                 layer.alert(res.msg);
             }
         }, 'json').complete(function () {
-            layer.close(loadingIndex);
+            top.layer.close(loadingIndex);
         }).error(function (xhr, status, info) {
             layer.alert('系统繁忙，请刷新重试或联系管理员');
         });

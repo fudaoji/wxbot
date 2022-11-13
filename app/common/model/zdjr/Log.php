@@ -38,11 +38,16 @@ class Log extends Zdjr
      */
     public function checkLimit(array $params)
     {
-        $config_m = new Config();
-        $limit = max(10, intval($config_m->getConf(['admin_id' => $params['admin_id']], 'apply_perday')));
+        $rules = $params['rules'];
+        $limit = empty($rules['apply_limit']) ? 0 : $rules['apply_limit'];
+        if(!$limit){
+            return  true;
+        }
+        //$limit = max($limit, intval($config_m->getConf(['admin_id' => $params['admin_id']], 'apply_perday')));
         return $limit > $this->total([
             'bot_id' => $params['bot_id'],
-            'create_time' => ['between', [strtotime(date('Y-m-d')), time()]]
+            'create_time' => ['between', [strtotime(date('Y-m-d')), time()]],
+                'type' => 2
         ]);
     }
 

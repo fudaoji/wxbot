@@ -759,4 +759,64 @@ class Vlw extends Base
             'data' => $this->buildPostData($params, self::API_CLEAN_CHAT_HISTORY)
         ]);
     }
+
+    public function sendCardToFriend($params = [])
+    {
+        // TODO: Implement sendCardToFriend() method.
+    }
+
+    public function sendCardToFriends($params = [])
+    {
+        // TODO: Implement sendCardToFriends() method.
+    }
+
+    public function buildingGroup($params = [])
+    {
+        // TODO: Implement buildingGroup() method.
+    }
+
+    public function getMoments($params = [])
+    {
+        // TODO: Implement getMoments() method.
+    }
+
+    public function getFriendMoments($params = [])
+    {
+        // TODO: Implement getFriendMoments() method.
+    }
+
+    public function likeMoments($params = [])
+    {
+        // TODO: Implement likeMoments() method.
+    }
+
+    public function commentMoments($params = [])
+    {
+        // TODO: Implement commentMoments() method.
+    }
+
+    public function sendMomentsText($params = [])
+    {
+        // TODO: Implement sendMomentsText() method.
+    }
+
+    public function sendMomentsImg($params = [])
+    {
+        // TODO: Implement sendMomentsImg() method.
+    }
+
+    public function sendMomentsVideo($params = [])
+    {
+        // TODO: Implement sendMomentsVideo() method.
+    }
+
+    public function sendMomentsLink($params = [])
+    {
+        // TODO: Implement sendMomentsLink() method.
+    }
+
+    public function sendMomentsXml($params = [])
+    {
+        // TODO: Implement sendMomentsXml() method.
+    }
 }

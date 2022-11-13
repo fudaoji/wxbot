@@ -82,7 +82,9 @@ class Setting extends Base
         $builder = new FormBuilder();
         switch ($current_name){
             case 'bot':
-                $builder->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒');
+                $builder->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒')
+                    ->addFormItem('app_key', 'text', '默认AppKey', '机器人框架的appkey')
+                    ->addFormItem('url', 'text', '默认回调地址', '默认回调地址');
                 break;
             case 'site':
                 empty($data) && $data['close'] = 0;

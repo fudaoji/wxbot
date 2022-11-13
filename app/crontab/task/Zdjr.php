@@ -71,20 +71,22 @@ class Zdjr extends Base
             if(! $bots = $this->blockM->getSaveBots(['admin_id' => $task['admin_id'], 'bots' => $task['bots']])){
                 continue; //无机器人可用
             }
+
             foreach ($bots as $bot_id){
                 $clues = $this->clueM->getList([1, $rules['speed']],
                     ['admin_id' => $task['admin_id'], 'status' => 1, 'step' => Clue::STEP_NOT, 'project_id' => $task['project_id']]
                 );
+
                 if(! count($clues)){
                     break; //无线索
                 }
-                dump($clues);
+
                 $bot = $this->botM->getOne($bot_id);
                 $bot_client = $this->botM->getRobotClient($bot);
                 foreach ($clues as $clue){
                     //判断是否触发每日好友申请上限
-                    if(! $this->logM->checkLimit(['bot_id' => $bot['id'], 'admin_id' => $bot['admin_id']])){
-                        break; //切换下个机器人
+                    if(! $this->logM->checkLimit(['bot_id' => $bot['id'], 'admin_id' => $bot['admin_id'], 'rules' => $rules])){
+                        break 2; //切换下个机器人
                     }
                     // 状态码 -1: 未知内容 0: 搜索成功 1: 找不到相关帐号 2: 对方已隐藏账号 3: 操作频繁 4: 用户不存在 5: 用户异常
                     $res_se = $bot_client->searchAccount([
@@ -120,7 +122,7 @@ class Zdjr extends Base
                                 $clue_update['step'] = Clue::STEP_NOT;
                                 break;
                             case 0:
-                                $clue_update['wxid'] = $res_se['data']['wxid'];
+                                $clue_update['headimgurl'] = $res_se['data']['headimgurl'];
                                 $clue_update['nickname'] = filter_emoji($res_se['data']['nickname']);
 
                                 $add_msg = str_replace('[名称]', $clue['title'], $rules['add_msg']);
@@ -130,8 +132,9 @@ class Zdjr extends Base
                                     'v1' => $res_se['data']['v1'],
                                     'v2' => $res_se['data']['v2'],
                                     'msg' => $add_msg,
-                                    'scene' => BotConst::SCENE_WXNUM
+                                    'scene' => $this->ruleM->getAddWay($rules)
                                 ]);
+                                dump('加人方式：'.$this->ruleM->getAddWay($rules));
                                 if($res_add['code']){
                                     $clue_update['step'] = Clue::STEP_APPLIED;
                                     dump("================添加结果=========");
@@ -147,6 +150,8 @@ class Zdjr extends Base
                                         'type' => 2
                                     ]);
                                 }
+                                //sleep
+                                $this->ruleM->sleep($rules);
                                 break;
                         }
                     }
@@ -154,8 +159,7 @@ class Zdjr extends Base
                     $clue = $this->clueM->updateOne($clue_update);
                     dump("================线索更新=========");
                     dump($clue);
-                    //sleep
-                    $this->ruleM->sleep($rules);
+
                 }
             }
         }

@@ -25,6 +25,16 @@ class My extends Base
     const EVENT_LOGIN = 'Login';
     const EVENT_FRIEND_VERIFY = 'EventFrieneVerify';
 
+    const API_GET_MOMENTS = 'GetMoments'; //
+    const API_GET_FRIEND_MOMENTS = 'GetMomentsForFriend'; //
+    const API_LIKE_MOMENTS = 'MomentsLike'; //
+    const API_COMMENT_MOMENTS = 'MomentsComment'; //
+    const API_SEND_MOMENTS_TEXT = 'SendMoments_Str'; //
+    const API_SEND_MOMENTS_IMG = 'SendMoments_Img'; //
+    const API_SEND_MOMENTS_VIDEO = 'SendMoments_Video'; //
+    const API_SEND_MOMENTS_LINK = 'SendMoments_Like'; //
+    const API_SEND_MOMENTS_XML = 'MomentsSend'; //
+
     const API_SEND_IMG = 'SendImageMsg'; //发送图片
     const API_SEND_TEXT = 'SendTextMsg'; //发送文本
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
@@ -34,7 +44,7 @@ class My extends Base
     const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
     const API_SEND_SHARE_LINK_MSG = 'SendShareLinkMsg'; //发送普通分享链接
     const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
-    const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
+    const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息
 
     const API_AGREE_FRIEND_VERIFY = 'AgreeFriendVerify'; // 同意好友请求
     const API_DELETE_FRIEND = 'DeleteFriend'; // 删除好友，只支持pro版
@@ -53,6 +63,7 @@ class My extends Base
     const API_SET_GROUP_NAME = 'ModifyGroupName'; //
     const API_SET_GROUP_NOTICE = 'ModifyGroupNotice'; //
     const API_QUIT_GROUP = 'QuitGroup'; // 退群
+    const API_BUILDING_GROUP = 'BuildingGroup'; //建群
 
     const API_CLEAN_CHAT_HISTORY = 'CleanChathistory'; //清空聊天记录
     const API_GET_GROUP_LIST = 'GetGrouplist'; //获取群列表
@@ -271,6 +282,37 @@ class My extends Base
         return $this->request([
             'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
         ]);
+    }
+
+    /**
+     * req:
+    robot_wxid (string)  // 机器人ID
+    to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
+    content (string)  // 朋友ID
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendCardToFriend($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_CARD_MSG)
+        ]);
+    }
+
+    public function sendCardToFriends($params = [])
+    {
+        $data = $this->buildPostData($params, self::API_SEND_CARD_MSG);
+        $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        $res = ['code' => 1];
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $res = $this->request([
+                'data' => $data
+            ]);
+            $this->sleep();
+        }
+        return $res;
     }
 
     /**
@@ -843,6 +885,148 @@ class My extends Base
     {
         return $this->request([
             'data' => $this->buildPostData($params, self::API_CLEAN_CHAT_HISTORY)
+        ]);
+    }
+
+    /**
+     * 建群
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function buildingGroup($params = [])
+    {
+        $params['friendArr'] = is_array($params['wxids']) ? $params['wxids'] : explode(',', $params['wxids']);
+        unset($params['wxids']);
+        //return $this->buildPostData($params, self::API_BUILDING_GROUP);
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_BUILDING_GROUP)
+        ]);
+    }
+
+    /**
+     * 获取朋友圈
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function getMoments($params = [])
+    {
+        $res = $this->request([
+            'data' => $this->buildPostData($params, self::API_GET_MOMENTS)
+        ]);
+        if($res['code']){
+            $res['data'] = $res['ReturnJson']['pyq_list'];
+            unset($res['ReturnJson']['pyq_list']);
+        }else{
+            $res['data'] = [];
+        }
+        return  $res;
+    }
+
+    /**
+     * 获取好友朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getFriendMoments($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_GET_FRIEND_MOMENTS)
+        ]);
+    }
+
+    /**
+     * 点赞朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function likeMoments($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_LIKE_MOMENTS)
+        ]);
+    }
+
+    /**
+     * 评论朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function commentMoments($params = [])
+    {
+        $params['msg'] = $params['content'];
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_COMMENT_MOMENTS)
+        ]);
+    }
+
+    /**
+     * 发送文本朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMomentsText($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_MOMENTS_TEXT)
+        ]);
+    }
+
+    /**
+     * 发送图片朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMomentsImg($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_MOMENTS_IMG)
+        ]);
+    }
+
+    /**
+     * 发送视频朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMomentsVideo($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_MOMENTS_VIDEO)
+        ]);
+    }
+
+    /**
+     * 发送连接朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMomentsLink($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_MOMENTS_LINK)
+        ]);
+    }
+
+    /**
+     * 发送xml朋友圈
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMomentsXml($params = [])
+    {
+        $params['pyq_xml'] = $params['xml'];
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_MOMENTS_XML)
         ]);
     }
 }

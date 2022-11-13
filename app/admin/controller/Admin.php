@@ -40,7 +40,7 @@ class Admin extends Base
             }
             //非超管
             if($this->adminInfo['id'] != 1) {
-                $where['id'] = ['gt', 1];
+                $where['id'] = ['>', 1];
             }
             $total = $this->model->total($where, true);
             if ($total) {

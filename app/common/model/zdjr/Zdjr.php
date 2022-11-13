@@ -13,7 +13,7 @@ use app\common\model\Base;
 
 class Zdjr extends Base
 {
-    protected $isCache = true;
+    protected $isCache = false;
 
     public function __construct($data = [])
     {

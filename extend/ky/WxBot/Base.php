@@ -34,28 +34,55 @@ Abstract class Base
         }
         !empty($options['step_time']) && $this->stepTime = $options['step_time'];
     }
+    /*==========================朋友圈类==========================*/
+    //req:{robot_wxid, pyq_id: string|optional, num: int|1>num<10}
+    abstract public function getMoments($params = []); // 获取朋友圈
+    //req:{robot_wxid, to_wxid, pyq_id: string|optional, num: int|1>num<10}
+    abstract public function getFriendMoments($params = []); // 获取好友朋友圈
+    //req:{robot_wxid, pyq_id: string}
+    abstract public function likeMoments($params = []); // 点赞朋友圈
+    //req:{robot_wxid, pyq_id: string, content:评论内容}
+    abstract public function commentMoments($params = []); // 评论朋友圈
+    //req:{robot_wxid, content:文本内容}
+    abstract public function sendMomentsText($params = []); // 发送文本朋友圈
+    //req:{robot_wxid, content:文字,  img:图片}
+    abstract public function sendMomentsImg($params = []); // 发送图片朋友圈
+    //req:{robot_wxid, content:文字, video:视频连接}
+    abstract public function sendMomentsVideo($params = []); // 发送视频朋友圈
+    //req:{robot_wxid, content:文字, title: 标题， img:图片, url:跳转地址}
+    abstract public function sendMomentsLink($params = []); // 发送图片朋友圈
+    //req:{robot_wxid, xml:xml内容}
+    abstract public function sendMomentsXml($params = []); // 发送xml朋友圈
 
-    abstract public function getGuest($content = [], $field = '');
-    abstract public function getGroupMembers($params = []);
+    /*==========================消息类============================*/
+    //req: {robot_wxid  to_wxid:接收人wxid  content:名片wxid}
+    abstract public function sendCardToFriend($params = []);
+    abstract public function sendCardToFriends($params = []);
+    //{robot_wxid  to_wxid:接收人wxid  msgid: 消息id}
     abstract public function forwardMsgToFriends($params = []);
     abstract public function forwardMsg($params = []);
+    //req: {robot_wxid  to_wxid  path}
     abstract public function sendImgToFriends($params = []);
-    //req: robot_wxid  to_wxid  path
     abstract public function sendImgToFriend($params = []);
-    abstract public function sendTextToFriends($params = []);
     //req: robot_wxid  to_wxid  msg
+    abstract public function sendTextToFriends($params = []);
     abstract public function sendTextToFriend($params = []);
+    //req: {robot_wxid  to_wxid  path}
     abstract public function sendVideoToFriends($params = []);
     abstract public function sendVideoMsg($params = []);
+    //req: {robot_wxid  to_wxid  path}
     abstract public function sendFileToFriends($params = []);
     abstract public function sendFileMsg($params = []);
+    //{robot_wxid: ,to_wxid ,title, url, desc, dataurl, thumburl
     abstract public function sendMusicLinkMsg($params = []);
+    //{robot_wxid: ,to_wxid ,title, url, desc, image_url
     abstract public function sendShareLinkToFriends($params = []);
     //{title:'', desc:'', image_url:'', url:''}
     abstract public function sendShareLinkMsg($params = []);
-    abstract public function sendLinkMsg($params = []);
-    abstract public function sendCardMsg($params = []);
 
+    abstract public function sendLinkMsg($params = []);
+
+    /*==========================好友操作类============================*/
     //设置好友备注名 note
     abstract public function setFriendRemarkName($params = []);
     abstract public function deleteFriend($params = []);
@@ -69,6 +96,11 @@ Abstract class Base
     //{robot_wxid: '', to_wxid: ''}
     abstract public function getMemberInfo($params = []);
 
+    /*==========================群操作类============================*/
+    //{robot_wxid: '', wxids: [wxid...]}
+    abstract public function buildingGroup($params = []);
+    abstract public function getGuest($content = [], $field = '');
+    abstract public function getGroupMembers($params = []);
     //{data:{robot_wxid: '', is_refresh:1|0}}
     abstract public function getGroups($params = []);
     //at  robot_wxid group_wxid member_wxid msg
@@ -80,6 +112,7 @@ Abstract class Base
     //邀请好友入群 robot_wxid, group_wxid, friend_wxid
     abstract public function inviteInGroup($params = []);
     abstract public function getGroupMemberInfo($params = []);
+    //退出群聊 {robot_wxid:'', group_wxid:''}
     abstract public function quitGroup($params = []);
     //设置群名称 group_name
     abstract public function setGroupName($params = []);

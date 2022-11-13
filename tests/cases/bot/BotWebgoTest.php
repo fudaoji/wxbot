@@ -28,7 +28,7 @@ class BotWebgoTest extends BotTest
      */
     public function __construct() {
         parent::__construct();
-        $this->bot = $this->botM->getOne(14);
+        $this->bot = $this->botM->getOne(5);
         $this->client = $this->botM->getRobotClient($this->bot);
     }
 

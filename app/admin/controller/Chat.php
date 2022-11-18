@@ -79,7 +79,7 @@ class Chat extends Base
             !empty($post_data['search_key']) && $where[] = ['nickname|remark_name|username|wxid','like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->where($where)->count();
             if ($total) {
-                $order = ['last_chat_time' => 'asc'];
+                $order = ['last_chat_time' => 'desc'];
                 $list = $this->model->where($where)->page($post_data['page'])->limit($post_data['limit'])->order($order)->select()->toArray();
                 //  dump($this->model->getlastsql());exit;
                 $redis = get_redis();

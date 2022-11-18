@@ -768,6 +768,7 @@
             }
             //机器人未读点亮
             //如果消息不是当前机器人则点亮
+            var new_to_friend = true;
             if (massage.robot_wxid != vm['bot_uin']) {
                 $.each(vm['bot_list'], function (i, v) {
                     if (massage.robot_wxid == v.uin) {
@@ -794,8 +795,10 @@
                     }
                 })
                 if (!is_in) {
+                    massage.friend.new = 1;
                     vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
-                    console.log(vm['friends_list']);
+                    new_to_friend = false;
+                    // console.log(vm['friends_list']);
                 }
                 vm['friends_list'].sort(function (a, b) {
                     return b.last_chat_time - a.last_chat_time
@@ -811,12 +814,14 @@
             //         }
             //     })
 
-
-
             //点亮对应好友
-            if (!vm['new_friend'].includes(massage.from_wxid)) {
+            if (new_to_friend) {
+                if (!vm['new_friend'].includes(massage.from_wxid)) {
                 vm['new_friend'].push(massage.from_wxid);
             }
+            }
+            
+            
             // vm['searchFriend']();
             // if (massage.from_wxid != vm['friend_wxid']) {
 

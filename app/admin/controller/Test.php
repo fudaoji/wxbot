@@ -71,4 +71,12 @@ class Test
         $redis->rpush($key,$msg);
         dump($msg);
     }
+
+    public function emoji(){
+        $this->emoji = new \ky\Emoji();
+        $unified =$this->emoji->emojiDocomoToUnified('\ue04a');
+        // $bytes = $this->emoji->utf8Bytes($this->emoji->unifiedToHex($unified));
+        $image = $this->emoji->emojiUnifiedToHtml($unified);
+        dump($unified);exit;
+    }
 }

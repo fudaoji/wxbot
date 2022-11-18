@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="__LIB__/layui-v2.7.6/css/layui.css" media="all">
 <script src="__LIB__/layui-v2.7.6/layui.js" charset="utf-8"></script>
 <script src="__LIB__/jquery/jquery-3.6.1.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="__LIB__/emoji/emoji.css" />
 <style>
     .chat_box_panel {
         height: 800px;
@@ -204,11 +205,7 @@
                                     </div>
                                 </div>
                                 <div class="layui-col-md9 content">
-                                    <blockquote class="layui-elem-quote">
-                                        <div>
-                                            <span class="layui-badge layui-bg-gray"></span>
-                                        </div>
-                                    </blockquote>
+                                    <blockquote class="layui-elem-quote">{{item.content}}</blockquote>
                                     <!-- <div>
                                         <span class="layui-badge layui-bg-gray"></span>
                                     </div> -->
@@ -219,12 +216,27 @@
 
 
                     </div>
-                    <hr>
+                    
+                    <div class="send_file layui-form layui-border-box layui-table-view layui-table-view-1">
+                        <div class="layui-table-tool">
+                            <div class="layui-table-tool-temp"></div>
+                            <div class="layui-table-tool-container">
+                                <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS"><i
+                                        class="layui-icon layui-icon-face-smile-b" v-on:click="openEmoji"></i></div>
+                                <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"><i
+                                        class="layui-icon layui-icon-picture"></i></div>
+                                <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT"><i
+                                        class="layui-icon layui-icon-export"></i></div>
+                            </div>
+                        </div>
+                        <textarea placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
+                    </div>
                     <div class="input_area" style="text-align:right">
-                        <textarea placeholder="" class="layui-textarea" v-model="content"></textarea>
+                        <!-- <textarea placeholder="" class="layui-textarea" v-model="content"></textarea> -->
                         <button type="button" class="layui-btn layui-btn-primary layui-border-green" lay-submit=""
                             v-on:click="sendMsg" lay-filter="send">发送</button>
                     </div>
+                    
                 </div>
                 <!-- </div> -->
 
@@ -516,7 +528,7 @@
                 //自动通过
                 this.auto_pass = this.bot_info.auto_pass;
                 this.auto_reply = this.bot_info.auto_reply;
-                this.renderElement();
+
                 //创建聊天数据
                 if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]]) {
                     // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
@@ -537,6 +549,8 @@
                         }
                     })
                 }
+
+                this.renderElement();
             },
             //发送信息
             sendMsg(e) {
@@ -658,15 +672,16 @@
             },
             //更新渲染Element
             renderElement() {
-                layui.use(['dropdown', 'util', 'layer'], function () {
+                layui.use(['dropdown', 'util', 'layer', 'form'], function () {
                     var element = layui.element;
                     var layer = layui.layer;
                     var form = layui.form;
+                    // console.log('更新渲染Element');
                     element.init();
                 });
             },
             //更新渲染Form
-            renderElement() {
+            renderForm() {
                 layui.use(['dropdown', 'util', 'layer', 'form'], function () {
                     var element = layui.element;
                     var layer = layui.layer;
@@ -698,6 +713,13 @@
             //自动通过
             setAutoPass(e) {
                 console.log(e);
+            },
+            openEmoji(e){
+                layer.open({
+                    type: 2,
+                    content: '/admin/Emoji?type=vue',
+                    area: ['600px', '500px'], //自定义文本域宽高
+                });
             }
 
 
@@ -710,7 +732,9 @@
     webSocket.onerror = function (event) {
         console.log("onerror 错误： " + event.data);
     };
-
+    // setInterval(function () {
+    //         console.log(Date());
+    //     }, 30000);
     // 打开websocket
     webSocket.onopen = function (event) {
         console.log('连接成功');
@@ -718,8 +742,10 @@
         var bild = '{"type":"bind","uid":"' + from_id + '"}';
         webSocket.send(bild);
         setInterval(function () {
+            // console.log(Date());
             webSocket.send('heartbeat');    //发送内容不限，只是为了证明客户端还没关闭还在线
-        }, 30000);
+        }, 10000);
+
     };
     //监听消息
     webSocket.onmessage = function (event) {
@@ -768,7 +794,8 @@
                     }
                 })
                 if (!is_in) {
-                    vm['friends_list'].concat([massage.friend]);
+                    vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
+                    console.log(vm['friends_list']);
                 }
                 vm['friends_list'].sort(function (a, b) {
                     return b.last_chat_time - a.last_chat_time
@@ -796,7 +823,7 @@
             // }
 
 
-
+            webSocket.send('client_get_msg');
         }
     };
     webSocket.onclose = function (event) {

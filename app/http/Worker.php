@@ -31,7 +31,12 @@ class Worker extends Server
 				}
 				// 上次通讯时间间隔大于心跳间隔，则认为客户端已经下线，关闭连接
 				// if ($time_now - $connection->lastMessageTime > HEARTBEAT_TIME) {
+					// echo $connection->lastMessageTime.PHP_EOL;
 				if ($time_now - $connection->lastMessageTime > self::$heartbeat_time) {
+					echo "当前时间：".date("Y-m-d H:i:s",$time_now).PHP_EOL;
+					echo "最后通讯时间：".date("Y-m-d H:i:s",$connection->lastMessageTime).PHP_EOL;
+					echo "时间间隔：".$time_now - $connection->lastMessageTime.PHP_EOL;
+					echo "心跳：".self::$heartbeat_time;
 					#这里统计下线人员的id
 					// $offline_user[] = $connection->uid;
 					#关闭连接
@@ -57,6 +62,7 @@ class Worker extends Server
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						$conn->send($msg);
+						echo "发生消息：".$msg;
 						//最后一条聊天记录放redis
 						$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 						$hkey = $res['from_wxid'];
@@ -82,9 +88,10 @@ class Worker extends Server
 	{
 		#最后接收消息时间
 		$connection->lastMessageTime = time();
-
+		
 
 		$msg_data = json_decode($data, true);
+		// echo date("Y-m-d:H:i:s")."最后接收消息:".$data.PHP_EOL;
 		if (!$msg_data) {
 			return;
 		}

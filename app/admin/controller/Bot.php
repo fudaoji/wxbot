@@ -428,7 +428,7 @@ class Bot extends Base
         $data['uuid'] = '';
         $bot_client = $this->model->getRobotClient($data);
         if(request()->isPost()){
-            sleep(1);
+            sleep(3);
             $return = $bot_client->getRobotList();
             if($return['code'] && !empty($return['data'])){
                 foreach ($return['data'] as $v){

@@ -32,6 +32,7 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
     public static $prefixLengthsPsr4 = array (
         't' => 
         array (
+            'think\\worker\\' => 13,
             'think\\view\\driver\\' => 18,
             'think\\trace\\' => 12,
             'think\\captcha\\' => 14,
@@ -62,6 +63,7 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         ),
         'W' => 
         array (
+            'Workerman\\' => 10,
             'Webmozart\\Assert\\' => 17,
         ),
         'S' => 
@@ -105,6 +107,7 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
+            'GatewayWorker\\' => 14,
         ),
         'D' => 
         array (
@@ -118,6 +121,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
     );
 
     public static $prefixDirsPsr4 = array (
+        'think\\worker\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-worker/src',
+        ),
         'think\\view\\driver\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-view/src',
@@ -184,6 +191,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'YearDley\\EasyTBK\\' => 
         array (
             0 => __DIR__ . '/..' . '/yeardley/easytbk/src',
+        ),
+        'Workerman\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/workerman',
         ),
         'Webmozart\\Assert\\' => 
         array (
@@ -284,6 +295,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'GatewayWorker\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/gateway-worker/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (

@@ -8,9 +8,7 @@
 <div class="layui-row">
     {volist name="data_list" id="item"}
     <div class="layui-col-xs1 layui-col-space5" style="text-align: center;margin-bottom: 5px;">
-        <p title="点击复制"
-           class="emoji-box js-zclip"
-           data-text="{$item.softb_unicode}">{$item.image|raw}</p>
+        <p title="点击复制" class="emoji-box js-zclip" data-text="{$item.softb_unicode}">{$item.image|raw}</p>
         <!--<div class="layui-btn layui-btn-xs">复制</div>-->
     </div>
     {/volist}
@@ -22,22 +20,35 @@
 {block name="css"}
 <link rel="stylesheet" href="__LIB__/emoji/emoji.css" />
 <style>
-.emoji-outer:hover{cursor: pointer;}
+    .emoji-outer:hover {
+        cursor: pointer;
+    }
 </style>
 {/block}
 
 {block name="js"}
 {js href='__LIB__/clipboard/clipboard.min.js' /}
 <script>
-    layui.use(['jquery'],function(){
+    layui.use(['jquery', 'layer'], function () {
+        var parent_index = parent.layer.getFrameIndex(window.name);
+        var layer = layui.layer;
+        var $ = layui.$;
         var clipboard = new ClipboardJS('.js-zclip', {
-            text: function(trigger) {
-                return '[emoji=' + trigger.getAttribute('data-text') +']';
+            text: function (trigger) {
+                return '[emoji=' + trigger.getAttribute('data-text') + ']';
             }
         });
         clipboard.on('success', function (e) {
             layer.msg("已复制！");
             e.clearSelection();
+            if (parent_index) {
+                parent.layer.close(parent_index);
+                if ('{$type}' == 'vue') {
+                    let text = e.text;
+                    window.parent.vm.content += text;
+                }
+
+            }
         });
         clipboard.on('error', function (e) {
             console.error('Action:', e.action);

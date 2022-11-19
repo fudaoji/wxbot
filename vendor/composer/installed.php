@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '93c6fc55ebeb7f0bb77ad04c8aa209baa620266f',
+    'reference' => '99ff58f7732dc2de84e78b980550be320eec2f98',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -563,7 +563,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '93c6fc55ebeb7f0bb77ad04c8aa209baa620266f',
+      'reference' => '99ff58f7732dc2de84e78b980550be320eec2f98',
     ),
     'topthink/think-captcha' => 
     array (
@@ -646,6 +646,15 @@
       ),
       'reference' => 'edce0ae2c9551ab65f9e94a222604b0dead3576d',
     ),
+    'topthink/think-worker' => 
+    array (
+      'pretty_version' => 'v3.0.7',
+      'version' => '3.0.7.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '9ba54333f337ee2c3f06054bb896bba9696d926c',
+    ),
     'webmozart/assert' => 
     array (
       'pretty_version' => '1.11.0',
@@ -654,6 +663,24 @@
       array (
       ),
       'reference' => '11cb2199493b2f8a3b53e7f19068fc6aac760991',
+    ),
+    'workerman/gateway-worker' => 
+    array (
+      'pretty_version' => 'v3.0.22',
+      'version' => '3.0.22.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'a615036c482d11f68b693998575e804752ef9068',
+    ),
+    'workerman/workerman' => 
+    array (
+      'pretty_version' => 'v3.5.31',
+      'version' => '3.5.31.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'b73ddc45b3c7299f330923a2bde23ca6e974fd96',
     ),
     'yeardley/easytbk' => 
     array (

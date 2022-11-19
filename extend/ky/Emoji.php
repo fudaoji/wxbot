@@ -10052,7 +10052,7 @@ class Emoji
      * Author: fudaoji<fdj@kuryun.cn>
      */
     function emojiUnifiedToHtml($text)
-    {
+    {   
         return preg_replace_callback($this->emojiMaps['unified_rx'], function ($m) {
             if (isset($m[2]) && $m[2] == "\xEF\xB8\x8E") return $m[0];
             $cp = $this->emojiMaps['unified_to_html'][$m[1]];

@@ -27,6 +27,7 @@ class Emoji extends Base
     }
 
     public function index(){
+        $type = input('type','normal');
         $where = [];
         $data_list = $this->model->page(120, $where, [], true, true);
         foreach ($data_list as $k => &$v){
@@ -35,7 +36,7 @@ class Emoji extends Base
             $data_list[$k] = $v;
         }
         $pager = $data_list->render();
-        $assign = ['data_list' => $data_list, 'pager' => $pager];
+        $assign = ['data_list' => $data_list, 'pager' => $pager, 'type' => $type];
         return $this->show($assign);
     }
 }

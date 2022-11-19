@@ -1,0 +1,843 @@
+<link rel="stylesheet" href="__LIB__/layui-v2.7.6/css/layui.css" media="all">
+<script src="__LIB__/layui-v2.7.6/layui.js" charset="utf-8"></script>
+<script src="__LIB__/jquery/jquery-3.6.1.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="__LIB__/emoji/emoji.css" />
+<style>
+    .chat_box_panel {
+        height: 800px;
+        overflow: scroll;
+    }
+
+    /* .chat_show_panel {
+        height: 800px;
+    } */
+
+    /* .sel_chat {
+
+        visibility: hidden;
+    } */
+
+    .content {
+        margin: auto 10px;
+    }
+
+    .my_chat_content blockquote {
+        border-right: 5px solid #5fb878;
+        border-left: 0px;
+    }
+
+    .friends_chat_content {}
+
+    .chat_panel {
+        height: 450px;
+    }
+
+    .info {
+        margin-left: 20px;
+    }
+
+    .add_reply {
+        margin-left: 5px;
+    }
+
+    .layui-form-switch {
+        margin-top: 0;
+    }
+
+    .layui-textarea {
+        resize: none;
+    }
+
+    .layui-colla-content {
+        height: 100px;
+        overflow: scroll;
+    }
+
+    .bot-panel {
+        height: 800px;
+        overflow: scroll;
+    }
+
+    .friends-panel {
+        height: 800px;
+        overflow: scroll;
+    }
+
+    .bot_list {
+        height: 500px;
+        overflow: scroll;
+    }
+
+    .friends_list {
+        height: 500px;
+        overflow: scroll;
+    }
+
+    /* .speechcraft{
+        visibility: hidden;
+    } */
+</style>
+<div id="app" class="chat" style="height:1000px">
+    <div class="layui-row">
+        <!-- 机器人客服 -->
+        <div class="layui-col-md1 bot">
+            <div class="layui-panel bot-panel">
+                <ul class="layui-menu bot_list" ref="bot_list_ref">
+                    <li v-for="(item, index) in bot_list" :key="item.id" v-on:click="getFriendsData(item)">
+                        <div class="layui-menu-body-title">
+                            <img :src="item.headimgurl" style="width:50px;height:50px;border-radius:10%" />
+                            <span>{{item.nickname}}</span>
+                            <span class="layui-badge-dot" v-if="item.new"></span>
+                        </div>
+                    </li>
+                </ul>
+                <div class="layui-menu-body-title">
+                    <button type="button" class="layui-btn layui-btn-fluid layui-btn-primary">
+                        <i class="layui-icon layui-icon-add-1"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <!-- 好友列表 -->
+        <div class="layui-col-md2" class="friends">
+            <div class="layui-panel friends-panel">
+                <div class="layui-form-item" style="padding: 15px;">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input type="input" name="search" autocomplete="off" class="layui-input"
+                                v-model="search_friend" placeholder="输入昵称或备注">
+                        </div>
+                        <button type="button" class="layui-btn layui-btn-primary"
+                            v-on:click="searchFriend()">搜索</button>
+                    </div>
+                    <!-- <button type="button" class="layui-btn layui-btn-normal layui-btn-sm layui-btn-primary" lay-submit="" lay-filter="search"><i class="layui-icon layui-icon-search"></i></button> -->
+                </div>
+                <ul class="layui-menu friends_list" ref="friends_list_ref">
+                    <li v-for="(item, index) in friends_list" :key="item.id" v-on:click="chatWith(item)">
+                        <div class="layui-menu-body-title">
+                            <div class="layui-row">
+                                <div class="layui-col-md3">
+                                    <div class="headimg">
+                                        <img src="http://wx.qlogo.cn/mmhead/ver_1/XiaHh87vY98hRM0BRZoNK2vdXxiaQuShnnB9I91lqscgqy9Y1313ZrOwx3iaALNHEkzhyMeXjQxPwNwPFu59YU61vfwKaUImdfFrk3V748ibOcs/132"
+                                            style="width:50px;height:50px;border-radius:10%">
+                                        <span class="layui-badge-dot" v-if="item.new"></span>
+                                    </div>
+                                </div>
+                                <div class="layui-col-md3">
+                                    <div class="name"><span>{{item.nickname}}</span></div>
+                                    <div class="last_chat">
+                                        <div class="layui-word-aux">{{item.last_chat_content}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 聊天框 -->
+        <div class="layui-col-md4" class="chat_box">
+            <form class="layui-form layui-panel chat_box_panel" lay-filter="chat_filter">
+                <!-- <div class="layui-panel chat_show_panel"> -->
+                <div class="layui-panel chat_box_panel" v-show="show_chat">
+                    <div style="padding: 15px" class="chat_panel">
+                        <!-- <div class="friends_chat_content">
+                            <div class="layui-row">
+                                <div class="layui-col-md12" class="send_time" style="text-align:center">
+                                    <span class="layui-badge layui-bg-gray">2022年11月14日 16:31</span>
+                                </div>
+                            </div>
+                            <div class="layui-row">
+                                <div class="layui-col-md1 sel_chat" v-show="show_sel">
+                                    <input type="checkbox" name="sel_chat" lay-skin="primary" title="" checked="">
+                                </div>
+                                <div class="layui-col-md1">
+                                    <div class="headimg">
+                                        <img src="http://wx.qlogo.cn/mmhead/ver_1/XiaHh87vY98hRM0BRZoNK2vdXxiaQuShnnB9I91lqscgqy9Y1313ZrOwx3iaALNHEkzhyMeXjQxPwNwPFu59YU61vfwKaUImdfFrk3V748ibOcs/132"
+                                            style="width:50px;height:50px;border-radius:10%">
+                                    </div>
+                                </div>
+                                <div class="layui-col-md9 content">
+                                    <blockquote class="layui-elem-quote">
+                                        猿强，则国强。国强，则猿更强！
+                                        <br>——孟子的崇拜者
+                                        <br>——孟子的崇拜者
+                                    </blockquote>
+                                    <div><span class="layui-badge layui-bg-gray">引用的内容引用的内容引用的内容引用的内容引用的内容引用的内容</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div> -->
+
+
+                        <div v-for="(item, index) in current_chat" :key="item.msg_id" :class="item.class">
+                            <div class="layui-row">
+                                <div class="layui-col-md12" class="send_time" style="text-align:center">
+                                    <span class="layui-badge layui-bg-gray">{{item.date}}</span>
+                                </div>
+                            </div>
+                            <div class="layui-row" v-if="item.class == 'my_chat_content'">
+                                <div class="layui-col-md1 sel_chat" v-show="show_sel">
+                                    <input type="checkbox" name="sel_chat" lay-skin="primary" title="" checked="">
+                                </div>
+                                <div class="layui-col-md9 content">
+                                    <blockquote class="layui-elem-quote">{{item.content}}</blockquote>
+                                    <!-- <div>
+                                        <span class="layui-badge layui-bg-gray"></span>
+                                    </div> -->
+                                </div>
+                                <div class="layui-col-md1">
+                                    <div class="headimg">
+                                        <img :src="item.headimgurl" style="width:50px;height:50px;border-radius:10%">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-row" v-else>
+                                <div class="layui-col-md1 sel_chat" v-show="show_sel">
+                                    <input type="checkbox" name="sel_chat" lay-skin="primary" title="" checked="">
+                                </div>
+                                <div class="layui-col-md1">
+                                    <div class="headimg">
+                                        <img :src="item.headimgurl" style="width:50px;height:50px;border-radius:10%">
+                                    </div>
+                                </div>
+                                <div class="layui-col-md9 content">
+                                    <blockquote class="layui-elem-quote">{{item.content}}</blockquote>
+                                    <!-- <div>
+                                        <span class="layui-badge layui-bg-gray"></span>
+                                    </div> -->
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    
+                    <div class="send_file layui-form layui-border-box layui-table-view layui-table-view-1">
+                        <div class="layui-table-tool">
+                            <div class="layui-table-tool-temp"></div>
+                            <div class="layui-table-tool-container">
+                                <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS"><i
+                                        class="layui-icon layui-icon-face-smile-b" v-on:click="openEmoji"></i></div>
+                                <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"><i
+                                        class="layui-icon layui-icon-picture"></i></div>
+                                <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT"><i
+                                        class="layui-icon layui-icon-export"></i></div>
+                            </div>
+                        </div>
+                        <textarea placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
+                    </div>
+                    <div class="input_area" style="text-align:right">
+                        <!-- <textarea placeholder="" class="layui-textarea" v-model="content"></textarea> -->
+                        <button type="button" class="layui-btn layui-btn-primary layui-border-green" lay-submit=""
+                            v-on:click="sendMsg" lay-filter="send">发送</button>
+                    </div>
+                    
+                </div>
+                <!-- </div> -->
+
+        </div>
+        </form>
+        <!-- 话术 -->
+        <div class="layui-col-md3 speechcraft" v-show='show_info'>
+            <form class="layui-form layui-panel" lay-filter="speechcraft_filter">
+                <div class="layui-row" style="padding: 15px;">
+                    <div class="layui-col-md12 remark">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="input" name="search" autocomplete="off" class="layui-input"
+                                        placeholder="客户备注" v-model="friend_info.remark_name">
+                                </div>
+                                <button type="button" class="layui-btn layui-btn-primary"
+                                    v-on:click="saveRemark">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="layui-row">
+                    <div class="layui-col-md12" class="info">
+                        <div class="layui-card">
+                            <div class="layui-card-header" style="text-align:center">客户资料</div>
+                            <div class="layui-card-body">
+                                <div>
+                                    <span class="info">{{friend_info.nickname}}</span><span
+                                        class="info">{{friend_info.wxid}}</span>
+                                </div>
+                                <div>
+                                    <span class="info">男</span><span class="info">福建厦门</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-col-md12 reply">
+                        <div class="layui-card">
+                            <div class="layui-card-header" style="text-align:center">快捷回复
+                                <button type="button"
+                                    class="layui-btn layui-btn-radius layui-btn-primary layui-btn layui-btn-xs add_reply"
+                                    v-on:click="openAddSpeechcraft">
+                                    <i class="layui-icon layui-icon-add-1"></i>
+                                </button>
+                            </div>
+                            <div class="layui-collapse" style="height: 330px;overflow: scroll;"
+                                ref="speechcraft_list_ref">
+                                <div class="layui-colla-item" v-for="(item, index) in speechcraft_list" :key="item.id">
+                                    <h2 class="layui-colla-title">{{item.title}}</h2>
+                                    <div class="layui-colla-content">
+                                        <p>
+                                            {{item.content}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-md12" class="info">
+                        <div class="layui-card">
+                            <div class="layui-card-header" style="text-align:center">
+                                <span>好友添加自动通过</span>
+                                <input type="checkbox" name="open" lay-skin="switch" lay-filter="switchTest"
+                                    v-model="auto_pass" lay-text="ON|OFF">
+                            </div>
+                            <div class="layui-card-body" style="text-align:right">
+                                <textarea placeholder="通过后默认回复话术" class="layui-textarea">{{auto_reply}}</textarea>
+                                <button class="layui-btn layui-btn-primary" lay-submit=""
+                                    lay-filter="save_default_reply">保存</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="__JS__/admin/vue@2.7.10.js" charset="utf-8"></script>
+<script>
+    //获取机器人参数
+    var get_bot_param = {
+        // 分页
+        page: 1, // 当前页
+        page_size: 10, // 每页总条数
+        page_count: 1, // 总页数
+    };
+    //获取好友列表参数
+    var get_friends_param = {
+        // 分页
+        page: 1, // 当前页
+        page_size: 10, // 每页总条数
+        page_count: 1, // 总页数
+    }
+    //获取话术参数
+    var get_speechcraft_param = {
+        // 分页
+        page: 1, // 当前页
+        page_size: 10, // 每页总条数
+        page_count: 1, // 总页数
+    }
+    var data = {
+        get_bot_param: get_bot_param,//获取机器人参数
+        bot_list: [],//机器人列表
+        get_friends_param: get_friends_param,//获取好友参数
+        friends_list: [],//好友列表
+        bot_id: 0,//当前机器人
+        bot_info: {},
+        friend_id: 0,//当前好友
+        friend_info: {},//当前好友信息
+        content: '',//当前发送的信息
+        search_friend: '',
+        // visibility:visible
+        show_info: false,//好友信息
+        show_sel: false,//聊天复选框
+        get_speechcraft_param: get_speechcraft_param,//获取话术参数
+        speechcraft_list: [],//话术列表
+        chat_log: {},//聊天内容
+        show_chat: false,
+        quote: '',//引用
+        auto_pass: false,
+        auto_reply: '',
+        new_msg_wxid: [],
+        bot_uin: '',//机器人微信
+        friend_wxid: '',//好友微信
+        current_chat: [],
+        new_bot: [],//新机器人消息
+        new_friend: [],//新好友消息
+
+    };
+    var vm = new Vue({
+        el: '#app',
+        data: data,
+        created() {
+            this.getBotData();
+        },
+        mounted() {
+            this.$refs.bot_list_ref.addEventListener('scroll', this.loadBot) // 滚动到底部，再加载的处理事件
+            this.$refs.friends_list_ref.addEventListener('scroll', this.loadFriends) // 滚动到底部，再加载的处理事件
+            this.$refs.speechcraft_list_ref.addEventListener('scroll', this.loadFriends) // 滚动到底部，再加载的处理事件
+        },
+        methods: {
+            //搜索客服机器人
+            getBotData: function () {
+                let self = this;
+                let url = "/admin/chat/getBot";
+                var index = layer.load(2);
+                let page = this.get_bot_param.page;
+                let limit = this.get_bot_param.page_size;
+                let params = {
+                    page: page,
+                    limit: limit,
+                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_bot_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['bot_list'] = self['bot_list'].concat(res.data.list);
+                        if (page == 1) {
+                            self['bot_id'] = self['bot_list'][0].id;
+                            self['bot_info'] = self['bot_list'][0];
+                            self['getFriendsData'](self['bot_info']);
+                            self['bot_uin'] = self['bot_list'][0].uin;
+                        }
+                        //遍历创建客服聊天数据
+                        $.each(self['bot_list'], function (i, v) {
+                            let v_uin = v.uin;
+                            self['chat_log'][[v_uin]] = {};
+                            //消息点亮
+                            if (self['new_bot'].includes(v_uin)) {
+                                self['bot_list'][i].new = 1;
+                                // let new_bot_arr = self['new_bot'];
+                                // new_bot_arr.splice($.inArray(v_uin,new_bot_arr),1);
+                                // self['new_bot'] = new_bot_arr;
+                                // console.log(self['new_bot']);
+                            }
+                        });
+                    }
+                    layer.close(index);
+                }, 'json');
+            },
+            // 滚动加载
+            loadBot(e) {
+                let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
+                let windowHeight = e.target.clientHeight // 可视区的高度
+                let scrollHeight = e.target.scrollHeight // 滚动条的总高度
+                // 滚动条到底部
+                if (scrollTop + windowHeight === scrollHeight) {
+                    this.get_bot_param.page++
+                    if (this.get_bot_param.page > this.get_bot_param.page_count) return
+                    this.getBotData()
+                }
+            },
+            //点击机器人
+            getFriendsData(item) {
+                let self = this;
+                let url = "/admin/chat/getFriends";
+                var index = layer.load(2);
+                let page = this.get_friends_param.page;
+                let limit = this.get_friends_param.page_size;
+                //重新选择客服
+                // console.log(self['bot_id']);console.log(item.id);
+                if (self['bot_id'] != item.id) {
+                    self['bot_id'] = item.id;
+                    this.friends_list = [];
+                    this.friend_info = {};
+                    this.friend_id = 0;
+                    this.bot_info = item;
+                    this.bot_uin = item.uin;
+                    this.get_friends_param.page = 1;
+                    page = 1;
+                    this.show_info = false;
+                    this.show_chat = false;
+                    this.get_speechcraft_param.page = 1;
+                    this.speechcraft_list = [];
+                }
+                //如果有机器人有新信息，改为已读
+                if (item.new) {
+                    $.each(this.bot_list, function (i, v) {
+                        if (item.uin == v.uin) {
+                            // console.log(this.bot_list);
+                            self['bot_list'][i].new = 0;
+                            let new_bot_arr = self['new_bot'];
+                            new_bot_arr.splice($.inArray(item.uin, new_bot_arr), 1);
+                            self['new_bot'] = new_bot_arr;
+                            return false;
+                        }
+                    })
+                }
+                let params = {
+                    page: page,
+                    limit: limit,
+                    id: item.id,
+                    search_key: this.search_friend
+                }
+
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['friends_list'] = self['friends_list'].concat(res.data.list);
+                        //消息点亮
+                        $.each(self['friends_list'], function (i, v) {
+                            if (self['new_friend'].includes(v.wxid)) {
+                                self['friends_list'][i].new = 1;
+                                // let new_friend_arr = self['new_friend'];
+                                // new_friend_arr.splice($.inArray(v.wxid,new_friend_arr),1);
+                                // self['new_friend'] = new_friend_arr;
+                            }
+                        })
+                    }
+                    layer.close(index);
+                }, 'json');
+                this.getSpeechcraftData();
+            },
+            // 滚动加载
+            loadFriends(e) {
+                // console.log('loadFriends');
+                let id = this.bot_id;
+                let bot_info = this.bot_info;
+                let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
+                let windowHeight = e.target.clientHeight // 可视区的高度
+                let scrollHeight = e.target.scrollHeight // 滚动条的总高度
+                // 滚动条到底部
+                if (scrollTop + windowHeight === scrollHeight) {
+                    this.get_friends_param.page++
+                    if (this.get_friends_param.page > this.get_friends_param.page_count) return
+                    this.getFriendsData(bot_info)
+                }
+            },
+            //获取当前选择的好友
+            chatWith(item) {
+                // console.log(item);
+                let self = this;
+                if (self['friend_id'] != item.id) {
+                    self['friend_id'] = item.id;
+                    this.friend_info = {};
+                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid };
+                    this.show_info = true;
+                    this.show_chat = true;
+                    this.friend_wxid = item.wxid;
+                    // console.log(this.friend_info);
+                }
+                //自动通过
+                this.auto_pass = this.bot_info.auto_pass;
+                this.auto_reply = this.bot_info.auto_reply;
+
+                //创建聊天数据
+                if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]]) {
+                    // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
+                    self['chat_log'][[this.bot_uin]][[this.friend_wxid]] = [];
+                }
+
+                this.current_chat = self['chat_log'][[this.bot_uin]][[this.friend_wxid]];
+                //如果新信息，改为已读
+                if (item.new) {
+                    $.each(this.friends_list, function (i, v) {
+                        if (item.wxid == v.wxid) {
+                            // console.log(this.bot_list);
+                            self['friends_list'][i].new = 0;
+                            let new_friend_arr = self['new_friend'];
+                            new_friend_arr.splice($.inArray(v.wxid, new_friend_arr), 1);
+                            self['new_friend'] = new_friend_arr;
+                            return false;
+                        }
+                    })
+                }
+
+                this.renderElement();
+            },
+            //发送信息
+            sendMsg(e) {
+                let self = this;
+                let content = this.content;
+                var uin = this.bot_info.uin;
+                var to_wxid = this.friend_info.wxid;
+                let params = {
+                    content: content,
+                    uin: uin,
+                    to_wxid: to_wxid,
+                    bot_id: this.bot_id,
+                    bot_info: this.bot_info,
+                    quote: '引用内容引用内容',
+                    friend_id: this.friend_id
+                }
+                let url = "/admin/chat/sendMsg";
+                self['content'] = '';
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][uin][[to_wxid]];
+                        //是当前的机器人,好友列表排序
+                        if (uin == res.data.friend.uin) {
+                            $.each(self['friends_list'], function (i, v) {
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
+                                }
+                            });
+                            self['friends_list'].sort(function (a, b) {
+                                return b.last_chat_time - a.last_chat_time
+                            })
+
+                        }
+
+                        // self['searchFriend']();
+                    }
+                }, 'json');
+            },
+            //搜索好友
+            searchFriend() {
+                let self = this;
+                let url = "/admin/chat/getFriends";
+                var index = layer.load(2);
+                this.get_friends_param.page = 1;
+                let page = this.get_friends_param.page;
+                let limit = this.get_friends_param.page_size;
+                this.friend_info = {};
+                this.friend_id = 0;
+                this.friend_wxid = '';
+                let params = {
+                    page: page,
+                    limit: limit,
+                    id: this.bot_id,
+                    search_key: this.search_friend
+                }
+
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['friends_list'] = [];
+                        self['friends_list'] = self['friends_list'].concat(res.data.list);
+                        self['show_info'] = false;
+                        self['show_chat'] = false;
+                        //消息点亮
+                        $.each(self['friends_list'], function (i, v) {
+                            if (self['new_friend'].includes(v.wxid)) {
+                                self['friends_list'][i].new = 1;
+
+                            }
+                        })
+                    }
+                    layer.close(index);
+                }, 'json');
+            },
+            //打开添加话术
+            openAddSpeechcraft() {
+                let bot_id = this.bot_id;
+                layer.open({
+                    type: 2,
+                    content: '/admin/chat/addSpeechcraft?bot_id=' + bot_id,
+                    area: ['600px', '400px'], //自定义文本域宽高
+                });
+            },
+            //获取话术列表
+            getSpeechcraftData() {
+                let self = this;
+                let url = "/admin/chat/getSpeechcraft";
+                var index = layer.load(2);
+                let page = this.get_speechcraft_param.page;
+                let limit = this.get_speechcraft_param.page_size;
+                let params = {
+                    page: page,
+                    limit: limit,
+                    bot_id: this.bot_id,
+                }
+
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_speechcraft_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['speechcraft_list'] = self['speechcraft_list'].concat(res.data.list);
+                        self['renderElement']();
+                    }
+                    layer.close(index);
+                }, 'json');
+            },
+            // 滚动加载话术列表
+            loadSpeechcraft(e) {
+                let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
+                let windowHeight = e.target.clientHeight // 可视区的高度
+                let scrollHeight = e.target.scrollHeight // 滚动条的总高度
+                // 滚动条到底部
+                if (scrollTop + windowHeight === scrollHeight) {
+                    this.get_speechcraft_param.page++
+                    if (this.get_speechcraft_param.page > this.get_speechcraft_param.page_count) return
+                    this.getSpeechcraftData()
+                }
+            },
+            //更新渲染Element
+            renderElement() {
+                layui.use(['dropdown', 'util', 'layer', 'form'], function () {
+                    var element = layui.element;
+                    var layer = layui.layer;
+                    var form = layui.form;
+                    // console.log('更新渲染Element');
+                    element.init();
+                });
+            },
+            //更新渲染Form
+            renderForm() {
+                layui.use(['dropdown', 'util', 'layer', 'form'], function () {
+                    var element = layui.element;
+                    var layer = layui.layer;
+                    var form = layui.form;
+                    form.render();
+                });
+            },
+            //保存备注名
+            saveRemark() {
+                let self = this;
+                let remark_name = this.friend_info.remark_name.replace(/(^\s*)|(\s*$)/g, "");
+                if (remark_name) {
+                    let url = "/admin/chat/saveRemark";
+                    let params = {
+                        remark_name: remark_name,
+                        id: this.friend_id,
+                        bot_id: this.bot_id,
+                        to_wxid: this.friend_info.wxid,
+                    }
+                    var index = layer.load(2);
+                    $.post(url, params, function (res) {
+                        if (res.code == 1) {
+                            self['friend_info'].remark_name = remark_name;
+                        }
+                        layer.close(index);
+                    }, 'json');
+                }
+            },
+            //自动通过
+            setAutoPass(e) {
+                console.log(e);
+            },
+            openEmoji(e){
+                layer.open({
+                    type: 2,
+                    content: '/admin/Emoji?type=vue',
+                    area: ['600px', '500px'], //自定义文本域宽高
+                });
+            }
+
+
+        }
+    });
+
+
+    var from_id = "{$from_id}";
+    var webSocket = new WebSocket("ws://127.0.0.1:9506");
+    webSocket.onerror = function (event) {
+        console.log("onerror 错误： " + event.data);
+    };
+    // setInterval(function () {
+    //         console.log(Date());
+    //     }, 30000);
+    // 打开websocket
+    webSocket.onopen = function (event) {
+        console.log('连接成功');
+        //绑定用户
+        var bild = '{"type":"bind","uid":"' + from_id + '"}';
+        webSocket.send(bild);
+        setInterval(function () {
+            // console.log(Date());
+            webSocket.send('heartbeat');    //发送内容不限，只是为了证明客户端还没关闭还在线
+        }, 10000);
+
+    };
+    //监听消息
+    webSocket.onmessage = function (event) {
+        if (event.data) {
+            console.log('收到客户端消息:' + event.data);
+            var massage = eval("(" + event.data + ")");
+            let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id };
+            if (!vm['chat_log'][[massage.robot_wxid]]) {
+                vm['chat_log'][[massage.robot_wxid]] = {};
+            }
+
+            if (!vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]]) {
+                vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = [];
+            }
+            // console.log(vm['chat_log']);
+            vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
+            vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+            if (!vm['new_bot'].includes(massage.robot_wxid)) {
+                vm['new_bot'].push(massage.robot_wxid);
+            }
+            //机器人未读点亮
+            //如果消息不是当前机器人则点亮
+            var new_to_friend = true;
+            if (massage.robot_wxid != vm['bot_uin']) {
+                $.each(vm['bot_list'], function (i, v) {
+                    if (massage.robot_wxid == v.uin) {
+                        vm['bot_list'][i]['new'] = 1;
+                        // let new_bot_arr = vm['new_bot'];
+                        // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
+                        // vm['new_bot'] = new_bot_arr;
+                        // console.log(new_bot_arr);
+                        return false;
+                    }
+                })
+
+            } else {
+                //判断是否在好友列表里
+                //是替换
+                //否放入
+                //排序
+                var is_in = false;
+                $.each(vm['friends_list'], function (i, v) {
+                    if (massage.from_wxid == v.wxid) {
+                        vm['friends_list'][i] = massage.friend;
+                        is_in = true;
+                        return false;
+                    }
+                })
+                if (!is_in) {
+                    massage.friend.new = 1;
+                    vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
+                    new_to_friend = false;
+                    // console.log(vm['friends_list']);
+                }
+                vm['friends_list'].sort(function (a, b) {
+                    return b.last_chat_time - a.last_chat_time
+                })
+
+
+            }
+            // console.log(vm['new_bot']);
+            // //点亮对应好友
+            // $.each(vm['friends_list'], function (i, v) {
+            //         if (massage.from_wxid == v.wxid) {
+            //             vm['friends_list'][i]['new'] = 1;
+            //         }
+            //     })
+
+            //点亮对应好友
+            if (new_to_friend) {
+                if (!vm['new_friend'].includes(massage.from_wxid)) {
+                vm['new_friend'].push(massage.from_wxid);
+            }
+            }
+            
+            
+            // vm['searchFriend']();
+            // if (massage.from_wxid != vm['friend_wxid']) {
+
+            // }
+
+
+            webSocket.send('client_get_msg');
+        }
+    };
+    webSocket.onclose = function (event) {
+        console.log("关闭: " + sockState());
+        layer.alert('待机时间过长已断开连接，请刷新页面重新连接');
+        webSocket.close();
+    }
+    function sockState() {
+        var status = ['未连接', '连接成功，可通讯', '正在关闭', '连接已关闭或无法打开'];
+        return status[webSocket.readyState];
+    }
+</script>

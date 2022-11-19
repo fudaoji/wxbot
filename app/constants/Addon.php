@@ -16,6 +16,7 @@ class Addon
     const YHQ='yhq';
     const AI = 'ai';
     const ZDJR = 'zdjr';
+    const KEFU = 'kefu';
 
     public static function addons($id = null){
         $list = [
@@ -23,7 +24,8 @@ class Addon
             self::HANZI => '汉字助手',
             self::YHQ => '优惠券助手',
             self::AI => '智能对话',
-            self::ZDJR => '自动加人'
+            self::ZDJR => '自动加人',
+            self::KEFU => '客服',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

@@ -590,10 +590,10 @@ class BaseModel extends Model
     }
 
     /**
-     * 获取builder,兼容分表
+     * 获取builder,兼容分表和分区
      * @param array $query
      * @return Db
-     * @Author: Doogie <461960962@qq.com>
+     * @Author: fudaoji<461960962@qq.com>
      */
     public function getBuilder($query = []){
         if($this->rule && $this->key){

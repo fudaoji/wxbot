@@ -388,6 +388,7 @@ class Bot extends Base
     /**
      * 添加
      * @return mixed
+     * @throws \think\db\exception\DbException
      */
     public function hookAdd()
     {
@@ -395,20 +396,39 @@ class Bot extends Base
             cache('botadd' . $this->adminInfo['id'], input('post.'));
             $this->success('请打开微信扫码登录', url('loginmy', input('post.')));
         }
-        $data = [
+
+        $data = array_merge([
             'protocol' => BotConst::PROTOCOL_MY,
             'app_key' => get_rand_char(32)
-        ];
+        ], $this->getConfig());
+
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
-            ->setTip("请先在服务器上完成框架设置并获取APPKey和http调用地址")
+            ->setTip("app_key和url读取顺序：上个机器人 > 设置默认值 <br> 如果需要填写新的，请先在服务器上完成框架设置并获取APPKey和http调用地址")
             ->setPostUrl(url('hookAdd'))
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', [BotConst::PROTOCOL_MY => '我的个微'])
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
             ->setFormData($data);
         return $builder->show();
+    }
+
+    /**
+     * 快速获取app_key和url
+     * @return array|false|mixed|\PDOStatement|string|\think\Model
+     * @throws \think\db\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function getConfig(){
+        if(! $config = $this->model->getOneByOrder([
+            'where' => ['admin_id' => $this->adminInfo['id']],
+            'order' => ['alive' => 'desc', 'update_time' => 'desc'],
+            'field' => ['app_key', 'url']
+        ])){
+            $config = config('system.bot');
+        }
+        return $config;
     }
 
     /**
@@ -433,7 +453,7 @@ class Bot extends Base
             if($return['code'] && !empty($return['data'])){
                 foreach ($return['data'] as $v){
                     if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'admin_id' => $this->adminInfo['id']])){
-                        $this->model->updateOne([
+                        $data = $this->model->updateOne([
                             'id' => $bot['id'],
                             'uuid' => $v['username'],
                             'nickname' => $v['nickname'],
@@ -441,7 +461,7 @@ class Bot extends Base
                             'alive' => 1
                         ]);
                     }else{
-                        $this->model->addOne([
+                        $data = $this->model->addOne([
                             'uin' => $v['wxid'],
                             'admin_id' => $this->adminInfo['id'],
                             'title' => $v['nickname'],
@@ -454,22 +474,42 @@ class Bot extends Base
                             'alive' => 1
                         ]);
                     }
+                    //同步好友任务
+                    invoke('\\app\\common\\event\\TaskQueue')->push([
+                        'delay' => 3,
+                        'params' => [
+                            'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                            'bot' => $data
+                        ]
+                    ]);
                 }
                 $this->success('登录成功');
             }else{
                 $this->success('登录失败：' . $bot_client->getError());
             }
         }
-
+        //退掉遗留的弹框
+        $bot_client->exitLoginCode();
         $res = $bot_client->getLoginCode();
         if($res['code'] == 0){
             $this->error($res['errmsg']);
+        }
+        if(empty($res['data'])){
+            $bot_client->exitLoginCode();
         }
         $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);
     }
 
-
+    /**
+     * 编辑情况下的扫码登录
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function reLoginMy(){
         $id = input('id', null);
         $data = $this->model->getOne($id);
@@ -503,9 +543,14 @@ class Bot extends Base
             }
         }
 
+        //退掉遗留的弹框
+        $bot_client->exitLoginCode();
         $res = $bot_client->getLoginCode();
         if($res['code'] == 0){
             $this->error($res['errmsg']);
+        }
+        if(empty($res['data'])){
+            $bot_client->exitLoginCode();
         }
         $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);

@@ -85,7 +85,7 @@ class Ai extends Addon
             'userid' => $this->fromWxid,
             'msg' => $msg,
         ]);
-        //Logger::error($res);
+        Logger::error($res);
         if($res['code']){
             switch ($res['answer_type']){
                 case Base::ANSWER_TEXT:
@@ -110,6 +110,15 @@ class Ai extends Addon
                                 'thumburl' => $info['album_pic_url'],  // http图片地址
                             ]);
                         }
+                    }
+                    break;
+                default:
+                    if(!empty($res['answer']) && is_string($res['answer'])){
+                        $this->botClient->sendTextToFriend([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $this->toWxid,
+                            'msg' => $res['answer']
+                        ]);
                     }
                     break;
             }

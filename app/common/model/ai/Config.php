@@ -46,7 +46,7 @@ class Config extends Ai
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function getConf($where = [], $key = '', $refresh = 0){
-        $list = $this->getField(['key', 'value'], $where, ['refresh' => $refresh]);
+        $list = $this->getField(['key', 'value'], $where, $refresh);
         if(!empty($key)){
             return isset($list[$key]) ? $list[$key] : '';
         }

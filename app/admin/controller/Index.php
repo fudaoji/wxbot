@@ -146,6 +146,9 @@ class Index extends Base
     /**
      * 获取初始化数据
      * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function getSystemInit(){
@@ -155,8 +158,8 @@ class Index extends Base
         ];
         $logoInfo = [
             'title' => config('system.site.company_title'),
-            'href' => '/admin/index/index'
-            //'image' => '',
+            'href' => '/admin/index/index',
+            'image' => '',
         ];
         $menuInfo = $this->getMenuList();
         $systemInit = [

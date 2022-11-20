@@ -2,7 +2,7 @@
 
 
 namespace app\bot\controller;
-use app\admin\model\ChatLog;
+use app\common\model\kefu\ChatLog;
 use app\admin\model\BotMember;
 use app\admin\model\Bot as ModelBot;
 class Kefu extends Addon

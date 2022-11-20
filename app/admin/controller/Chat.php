@@ -10,8 +10,8 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot as ModelBot;
 use app\admin\model\BotMember;
-use app\admin\model\BotSpeechcraft;
-use app\admin\model\ChatLog;
+use app\common\model\kefu\Speechcraft;
+use app\common\model\kefu\ChatLog;
 use app\constants\Bot;
 
 class Chat extends Base
@@ -184,7 +184,7 @@ class Chat extends Base
     public function saveSpeechcraft()
     {
         $post_data = input('post.');
-        $this->model = new BotSpeechcraft();
+        $this->model = new Speechcraft();
         unset($post_data['__token__']);
         if (empty($post_data['id'])) {
             $post_data['created_by'] = $this->adminInfo['id'];
@@ -207,7 +207,7 @@ class Chat extends Base
     public function getSpeechcraft()
     {
         if (request()->isPost()) {
-            $this->model = new BotSpeechcraft();
+            $this->model = new Speechcraft();
             $post_data = input('post.');
             $where = ['bot_id' => $post_data['bot_id'], 'status' => 1];
             // !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];

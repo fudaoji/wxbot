@@ -73,6 +73,10 @@
         overflow: scroll;
     }
 
+    .gray_headimgurl {
+        filter: grayscale(100%);
+    }
+
     /* .speechcraft{
         visibility: hidden;
     } */
@@ -85,7 +89,8 @@
                 <ul class="layui-menu bot_list" ref="bot_list_ref">
                     <li v-for="(item, index) in bot_list" :key="item.id" v-on:click="getFriendsData(item)">
                         <div class="layui-menu-body-title">
-                            <img :src="item.headimgurl" style="width:50px;height:50px;border-radius:10%" />
+                            <img :src="item.headimgurl" :class="[item.alive?'light_headimgurl':'gray_headimgurl']"
+                                style="width:50px;height:50px;border-radius:10%" />
                             <span>{{item.nickname}}</span>
                             <span class="layui-badge-dot" v-if="item.new"></span>
                         </div>
@@ -216,7 +221,7 @@
 
 
                     </div>
-                    
+
                     <div class="send_file layui-form layui-border-box layui-table-view layui-table-view-1">
                         <div class="layui-table-tool">
                             <div class="layui-table-tool-temp"></div>
@@ -236,7 +241,7 @@
                         <button type="button" class="layui-btn layui-btn-primary layui-border-green" lay-submit=""
                             v-on:click="sendMsg" lay-filter="send">发送</button>
                     </div>
-                    
+
                 </div>
                 <!-- </div> -->
 
@@ -633,7 +638,8 @@
                 layer.open({
                     type: 2,
                     content: '/admin/chat/addSpeechcraft?bot_id=' + bot_id,
-                    area: ['600px', '400px'], //自定义文本域宽高
+                    area: ['650px', '270px'], //自定义文本域宽高
+                    yes
                 });
             },
             //获取话术列表
@@ -714,7 +720,7 @@
             setAutoPass(e) {
                 console.log(e);
             },
-            openEmoji(e){
+            openEmoji(e) {
                 layer.open({
                     type: 2,
                     content: '/admin/Emoji?type=vue',
@@ -817,11 +823,11 @@
             //点亮对应好友
             if (new_to_friend) {
                 if (!vm['new_friend'].includes(massage.from_wxid)) {
-                vm['new_friend'].push(massage.from_wxid);
+                    vm['new_friend'].push(massage.from_wxid);
+                }
             }
-            }
-            
-            
+
+
             // vm['searchFriend']();
             // if (massage.from_wxid != vm['friend_wxid']) {
 

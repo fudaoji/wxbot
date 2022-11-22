@@ -55,6 +55,13 @@ Abstract class Base
     abstract public function sendMomentsXml($params = []); // 发送xml朋友圈
 
     /*==========================消息类============================*/
+    //收藏消息 req: {robot_wxid  msgid:消息id}
+    abstract public function favoritesMsg($params = []);
+    //获取收藏列表  req: {robot_wxid}
+    abstract public function getFavorites($params = []);
+    //发送收藏消息  req: {robot_wxid  to_wxid:接收人wxid   favorite_id: 收藏id}
+    abstract public function sendFavoritesMsg($params = []);
+
     //req: {robot_wxid  to_wxid:接收人wxid  content:名片wxid}
     abstract public function sendCardToFriend($params = []);
     abstract public function sendCardToFriends($params = []);
@@ -118,6 +125,8 @@ Abstract class Base
     abstract public function setGroupName($params = []);
     //设置群公告 notice
     abstract public function setGroupNotice($params = []);
+
+    /*==========================账号操作类============================*/
     //清空聊天记录
     abstract public function cleanChatHistory($params = []);
 

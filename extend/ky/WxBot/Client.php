@@ -12,6 +12,7 @@ namespace ky\WxBot;
 use ky\WxBot\Driver\Cat;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
+use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;

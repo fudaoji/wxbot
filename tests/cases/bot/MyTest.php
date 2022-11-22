@@ -9,6 +9,8 @@
 namespace tests\cases\bot;
 
 use app\constants\Bot;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 
@@ -16,6 +18,10 @@ class MyTest extends BotTest
 {
     private $botClient;
     private $botComClient;
+    /**
+     * @var My
+     */
+    private $botClient2;
 
     /**
      * 初始化
@@ -23,8 +29,34 @@ class MyTest extends BotTest
      */
     public function __construct() {
         parent::__construct();
+        $this->botClient2 = new My(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.222.4.168:8091']);
         $this->botClient = new My(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
         $this->botComClient = new Mycom(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
+    }
+
+    public function testFavoriteMsg(){
+        $params = [
+            'robot_wxid' => $this->robotJane,
+            'msgid' => '5889647384385348114'
+        ];
+        $res = $this->botClient->favoritesMsg($params);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    public function testGetFavorites(){
+        $params = [
+            'robot_wxid' => $this->robotJane,
+        ];
+        $res = $this->botClient->getFavorites($params);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    public function testGetLoginCode(){
+        $res = $this->botClient2->getLoginCode();
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
     }
 
     /**

@@ -429,4 +429,19 @@ class Webgo extends Base
     {
         // TODO: Implement sendMomentsXml() method.
     }
+
+    public function favoritesMsg($params = [])
+    {
+        // TODO: Implement favoritesMsg() method.
+    }
+
+    public function getFavorites($params = [])
+    {
+        // TODO: Implement getFavorites() method.
+    }
+
+    public function sendFavoritesMsg($params = [])
+    {
+        // TODO: Implement sendFavoritesMsg() method.
+    }
 }

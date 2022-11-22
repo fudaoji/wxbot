@@ -70,11 +70,18 @@ class My extends Base
     const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
     const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
     const API_GET_ROBOT_INFO = 'GetRobotInfo'; //获取机器人信息
-    const API_GET_LOGIN_CODE = 'StartWeChat';
+    const API_GET_LOGIN_CODE = 'StartWeChat'; //
+    const API_EXIT_LOGIN_CODE = 'ExitWeChatLoginWin';
+    const API_EXIT = 'ExitWeChat';
+
+    const API_FAVORITE_MSG = 'FavoritesMsg'; //收藏消息
+    const API_GET_FAVORITES = 'FavoritesGetList'; //获取收藏列表
+    const API_SEND_FAVORITE_MSG = 'SendFavoritesMsg'; //发送收藏消息
 
     const FIELD_MAP = [
         "wxid" => "wxid"
     ];
+
 
     private $token;
 
@@ -760,6 +767,17 @@ class My extends Base
     }
 
     /**
+     * 退出扫码框
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function exitLoginCode(){
+        return $this->request([
+            'data' => $this->buildPostData([], self::API_EXIT_LOGIN_CODE)
+        ]);
+    }
+
+    /**
      * 获取登录二维码
      * @return bool|mixed
      * Author: fudaoji<fdj@kuryun.cn>
@@ -1027,6 +1045,28 @@ class My extends Base
         $params['pyq_xml'] = $params['xml'];
         return $this->request([
             'data' => $this->buildPostData($params, self::API_SEND_MOMENTS_XML)
+        ]);
+    }
+
+    public function favoritesMsg($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_FAVORITE_MSG)
+        ]);
+    }
+
+    public function getFavorites($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_GET_FAVORITES)
+        ]);
+    }
+
+    public function sendFavoritesMsg($params = [])
+    {
+        $params['local_id'] = $params['favorite_id'];
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_FAVORITE_MSG)
         ]);
     }
 }

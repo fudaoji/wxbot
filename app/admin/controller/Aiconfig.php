@@ -66,8 +66,8 @@ class Aiconfig extends Botbase
                     'value'=> $v
                 ]);
             }
-            $this->model->getConf(['bot_id' => $this->bot['id']], $k, true);
         }
+        $this->model->getConf(['bot_id' => $this->bot['id']], '', true);
         $this->success('数据保存成功', $jump_to);
     }
 }

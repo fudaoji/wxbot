@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * Script Name: Tpzs.php
@@ -9,15 +10,85 @@
 
 namespace app\common\model\kefu;
 
+use app\admin\controller\Kefu as ControllerKefu;
 use app\common\model\Base;
-
+use app\admin\model\BotMember;
 class Kefu extends Base
 {
     protected $isCache = false;
 
     public function __construct($data = [])
     {
-        $this->table = $this->getTablePrefix() . 'kefu_'.$this->table;
+        $this->table = $this->getTablePrefix() . 'kefu_' . $this->table;
         parent::__construct($data);
+    }
+
+    /**
+     * 
+     * 自动通过验证
+     */
+    public function autoPass($content, $bot, $botClient)
+    {
+        // "content": {
+        //     "robot_wxid": "",  // 机器人账号id
+        //     "type": 1,  // 添加方式 请参考常量表
+        //     "from_wxid": "",  // 请求者wxid
+        //     "from_name": "",  // 请求者昵称
+        //     "v1": "",
+        //     "v2": "",
+        //     "json_msg": {
+        //         "to_wxid": "wxid_eu05e13ld28822",
+        //         "to_name": "譬如朝露",
+        //         "msgid": 1111250493,
+        //         "from_wxid": "wxid_6ungmd6wtdh521",
+        //         "from_nickname": "??[奸笑]??",
+        //         "v1": "xxxxx",
+        //         "v2": "xxxxx",
+        //         "sex": 1,
+        //         "from_content": "我是??[奸笑]??",
+        //         "headimgurl": "http://wx.qlogo.cn/xxxxx",
+        //         "type": 3
+        //     },  // 友验证信息JSON(群内添加时，包含群id) (名片推荐添加时，包含推荐人id及昵称) (微信号、手机号搜索等添加时,具体JSON结构请查看日志）
+        if ($bot['auto_pass']) {
+            $v1 = $content['json_msg']['v1'];
+            $v2 = $content['json_msg']['v2'];
+            $type = $content['json_msg']['type'];
+            $res = $botClient->agreeFriendVerify([
+                'robot_wxid' => $content['robot_wxid'],
+                'v1' => $v1,
+                'v2' => $v2,
+                'type' => $type
+            ]);
+            //插入用户表
+            $bot_menber_model = new BotMember();
+            if($data = $bot_menber_model->getOneByMap(['uin' => $bot['uin'], 'wxid' => $content['json_msg']['from_wxid']], ['id'])){
+                $id = $data['id'];
+                $bot_menber_model->updateOne([
+                    'id' => $data['id'],
+                    'nickname' => $content['json_msg']['from_nickname'],
+                    'remark_name' => $content['json_msg']['from_content'],
+                    'wxid' => $content['json_msg']['from_wxid'],
+                    'headimgurl' => $content['json_msg']['headimgurl'],
+                ]);
+
+            }else{
+                $id = $bot_menber_model->addOne([
+                    'uin' => $bot['uin'],
+                    'nickname' => $content['json_msg']['from_nickname'],
+                    'remark_name' => $content['json_msg']['from_content'],
+                    'type' => 'friend',
+                    'wxid' => $content['json_msg']['from_wxid'],
+                    'headimgurl' => $content['json_msg']['headimgurl'],
+                ]);
+            }
+            //发生自动回复
+            $auto_reply = trim($bot['auto_reply']);
+            if($auto_reply) {
+                $ControllerKefu = new ControllerKefu();
+                $param = ['bot_id' => $bot['id'],'type' => 1, 'to_wxid' => $conten['from_wxid'], 'content' => $auto_reply, 'friend_id' => $id];
+                $ControllerKefu->sendMsg($param);
+            }
+        }
+
     }
 }

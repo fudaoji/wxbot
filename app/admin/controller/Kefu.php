@@ -75,8 +75,8 @@ class Kefu extends Base
         if (request()->isPost()) {
             $post_data = input('post.');
             $this->bot = $bot_model->getOne($post_data['id']);
-            $where = [['type','=', Bot::FRIEND], ['uin','=', $this->bot['uin']]];
-            !empty($post_data['search_key']) && $where[] = ['nickname|remark_name|username|wxid','like', '%' . $post_data['search_key'] . '%'];
+            $where = [['type', '=', Bot::FRIEND], ['uin', '=', $this->bot['uin']]];
+            !empty($post_data['search_key']) && $where[] = ['nickname|remark_name|username|wxid', 'like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->where($where)->count();
             if ($total) {
                 $order = ['last_chat_time' => 'desc'];
@@ -106,10 +106,12 @@ class Kefu extends Base
      * 
      * 发送消息
      */
-    public function sendMsg()
+    public function sendMsg($post_data = [])
     {
         if (request()->isPost()) {
-            $post_data = input('post.');
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
             $bot_model = new ModelBot();
             $chat_model = new ChatLog();
             $member_model = new BotMember();
@@ -118,8 +120,29 @@ class Kefu extends Base
             $time = time();
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            // $res = $bot_client->sendTextToFriends(['robot_wxid' => $bot['uin'], 'to_wxid' => $post_data['to_wxid'], 'msg' => $post_data['content']]);
-            $msgid = time().$this->adminInfo['id'];
+            if ($post_data['type'] == 1) { //文本
+                // $bot_client->sendTextToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'msg' => $post_data['content']
+                // ]);
+                $last_chat_content = $post_data['content'];
+            } else if ($post_data['type'] == 3) { //图片
+                // $bot_client->sendImgToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[图片]';
+            } else if ($post_data['type'] == 2004) {//文件
+                // $bot_client->sendFileToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[文件]';
+            }
+            $msgid = time() . $this->adminInfo['id'];
             $insert_data = [
                 'from' => $bot['uin'],
                 'to' => $post_data['to_wxid'],
@@ -129,22 +152,23 @@ class Kefu extends Base
                 'from_headimg' => $bot['headimgurl'],
                 'msg_id' => $msgid,
                 'type' => 'send',
-                'msg_type' => 1//文本
+                'msg_type' => $post_data['type'] //文本
             ];
             $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
             //更改好友最后聊天时间
             $member_model->where(['id' => $post_data['friend_id']])->update(['last_chat_time' => $time]);
             $friend = $member_model->where(['id' => $post_data['friend_id']])->find();
-            $friend['last_chat_content'] = $post_data['content'];
+            $friend['last_chat_content'] = $last_chat_content;
             $result = [
                 'msg_id' => $msgid,
                 'date' => $date,
-                'content' => $this->emoji->emojiUnifiedToHtml($post_data['content']),
+                'content' => $post_data['content'],
                 'type' => 'send',
                 'class' => 'my_chat_content',
-                'quote' => $post_data['quote'],
+                'quote' => $post_data['quote']??'',
                 'headimgurl' => $bot['headimgurl'],
-                'friend' => $friend
+                'friend' => $friend,
+                'msg_type' => $post_data['type'],
             ];
             //最后一条聊天记录放redis
             $redis = get_redis();
@@ -241,6 +265,17 @@ class Kefu extends Base
         $bot_client = $bot_model->getRobotClient($bot);
         $bot_client->setFriendRemarkName(['to_wxid' => $post_data['to_wxid'], 'note' => $post_data['remark_name']]);
         $res = $this->model->updateOne(['id' => $post_data['id'], 'remark_name' => $post_data['remark_name']]);
+        $this->success('数据保存成功');
+    }
+
+    /**
+     * 
+     * 保存自动回复
+     */
+    public function saveAutoReply(){
+        $post_data = input('post.');
+        $bot_model = new ModelBot();
+        $res = $bot_model->updateOne($post_data);
         $this->success('数据保存成功');
     }
 }

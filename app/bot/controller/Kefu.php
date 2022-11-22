@@ -3,8 +3,7 @@
 
 namespace app\bot\controller;
 use app\common\model\kefu\ChatLog;
-use app\admin\model\BotMember;
-use app\admin\model\Bot as ModelBot;
+use app\common\model\kefu\Kefu as KefuModel;
 class Kefu extends Addon
 {
     private $switch;
@@ -29,6 +28,16 @@ class Kefu extends Addon
         //保存私聊消息
         $model_chat_log = new ChatLog();
         $model_chat_log->saveChat($this->content,$this->bot);
+    }
+
+    /**
+     * 
+     * 好友请求处理器
+     */
+    public function frieneVerifyHandle(){
+        //自动通过好友验证
+        $model_kefu = new KefuModel();
+        $model_kefu->autoPass($this->content,$this->bot,$this->botClient);
     }
     
 }

@@ -146,7 +146,7 @@
             <form class="layui-form layui-panel chat_box_panel" lay-filter="chat_filter">
                 <!-- <div class="layui-panel chat_show_panel"> -->
                 <div class="layui-panel chat_box_panel" v-show="show_chat">
-                    <div style="padding: 15px" class="chat_panel">
+                    <div style="padding: 15px" class="chat_panel" id="chat_panel">
                         <!-- <div class="friends_chat_content">
                             <div class="layui-row">
                                 <div class="layui-col-md12" class="send_time" style="text-align:center">
@@ -189,10 +189,14 @@
                                     <input type="checkbox" name="sel_chat" lay-skin="primary" title="" checked="">
                                 </div>
                                 <div class="layui-col-md9 content">
-                                    <blockquote class="layui-elem-quote">{{item.content}}</blockquote>
-                                    <!-- <div>
-                                        <span class="layui-badge layui-bg-gray"></span>
-                                    </div> -->
+                                    <blockquote class="layui-elem-quote">
+                                        <span v-if="item.msg_type == 1">{{item.content}}</span>
+                                        <span v-if="item.msg_type == 3"><img :src="item.content"
+                                                style="width:100px;"></span>
+                                        <span v-if="item.msg_type == 2004"><a :href="item.content"
+                                                target="downloadFile"><span>文件：</span><i
+                                                    class="layui-icon layui-icon-file-b"></i></a></span>
+                                    </blockquote>
                                 </div>
                                 <div class="layui-col-md1">
                                     <div class="headimg">
@@ -210,7 +214,14 @@
                                     </div>
                                 </div>
                                 <div class="layui-col-md9 content">
-                                    <blockquote class="layui-elem-quote">{{item.content}}</blockquote>
+                                    <blockquote class="layui-elem-quote">
+                                        <span v-if="item.msg_type == 1">{{item.content}}</span>
+                                        <span v-if="item.msg_type == 3"><img :src="item.content"
+                                                style="width:100px;"></span>
+                                        <span v-if="item.msg_type == 2004"><a :href="item.content"
+                                                target="downloadFile"><span>文件：</span><i
+                                                    class="layui-icon layui-icon-file-b"></i></a></span>
+                                    </blockquote>
                                     <!-- <div>
                                         <span class="layui-badge layui-bg-gray"></span>
                                     </div> -->
@@ -226,12 +237,13 @@
                         <div class="layui-table-tool">
                             <div class="layui-table-tool-temp"></div>
                             <div class="layui-table-tool-container">
-                                <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS"><i
-                                        class="layui-icon layui-icon-face-smile-b" v-on:click="openEmoji"></i></div>
-                                <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"><i
-                                        class="layui-icon layui-icon-picture"></i></div>
-                                <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT"><i
-                                        class="layui-icon layui-icon-export"></i></div>
+                                <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS" v-on:click="openEmoji"><i
+                                        class="layui-icon layui-icon-face-smile-b"></i></div>
+                                <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"
+                                    v-on:click="choosePicture"><i class="layui-icon layui-icon-picture"></i></div>
+                                <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
+                                    <i class="layui-icon layui-icon-export"></i></a>
+                                </div>
                             </div>
                         </div>
                         <textarea placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
@@ -295,7 +307,8 @@
                                 ref="speechcraft_list_ref">
                                 <div class="layui-colla-item" v-for="(item, index) in speechcraft_list" :key="item.id">
                                     <h2 class="layui-colla-title">{{item.title}}</h2>
-                                    <div class="layui-colla-content">
+                                    <div class="layui-colla-content copy_speechcraft"
+                                        @click="copySpeechcraft(item.content)">
                                         <p>
                                             {{item.content}}
                                         </p>
@@ -311,13 +324,14 @@
                         <div class="layui-card">
                             <div class="layui-card-header" style="text-align:center">
                                 <span>好友添加自动通过</span>
-                                <input type="checkbox" name="open" lay-skin="switch" lay-filter="switchTest"
-                                    v-model="auto_pass" lay-text="ON|OFF">
+                                <input type="checkbox" lay-ignore name="open" lay-skin="switch" lay-filter="switchTest"
+                                    v-model="auto_pass" lay-text="ON|OFF" @change="saveAutoPass">
                             </div>
                             <div class="layui-card-body" style="text-align:right">
-                                <textarea placeholder="通过后默认回复话术" class="layui-textarea">{{auto_reply}}</textarea>
-                                <button class="layui-btn layui-btn-primary" lay-submit=""
-                                    lay-filter="save_default_reply">保存</button>
+                                <textarea placeholder="通过后默认回复话术" class="layui-textarea"
+                                    v-model="auto_reply"></textarea>
+                                <button class="layui-btn layui-btn-primary" lay-submit="" type="button"
+                                    lay-filter="save_default_reply" v-on:click="saveAutoReply">保存</button>
                             </div>
 
                         </div>
@@ -328,6 +342,7 @@
     </div>
 </div>
 <script src="__JS__/admin/vue@2.7.10.js" charset="utf-8"></script>
+<script src="__LIB__/clipboard/clipboard.min.js" charset="utf-8"></script>
 <script>
     //获取机器人参数
     var get_bot_param = {
@@ -377,18 +392,20 @@
         current_chat: [],
         new_bot: [],//新机器人消息
         new_friend: [],//新好友消息
-
+        content_type: 1,//1/文本消息 3/图片消息
+        // auto_pass_init: 0,//初始化auto_pass
     };
     var vm = new Vue({
         el: '#app',
         data: data,
         created() {
             this.getBotData();
+            this.renderUpload();
         },
         mounted() {
             this.$refs.bot_list_ref.addEventListener('scroll', this.loadBot) // 滚动到底部，再加载的处理事件
             this.$refs.friends_list_ref.addEventListener('scroll', this.loadFriends) // 滚动到底部，再加载的处理事件
-            this.$refs.speechcraft_list_ref.addEventListener('scroll', this.loadFriends) // 滚动到底部，再加载的处理事件
+            this.$refs.speechcraft_list_ref.addEventListener('scroll', this.loadSpeechcraft) // 滚动到底部，再加载的处理事件
         },
         methods: {
             //搜索客服机器人
@@ -463,6 +480,7 @@
                     this.show_chat = false;
                     this.get_speechcraft_param.page = 1;
                     this.speechcraft_list = [];
+                    // this.auto_pass_init = 0;//需重新赋值
                 }
                 //如果有机器人有新信息，改为已读
                 if (item.new) {
@@ -500,6 +518,7 @@
                     }
                     layer.close(index);
                 }, 'json');
+                this.speechcraft_list = [];
                 this.getSpeechcraftData();
             },
             // 滚动加载
@@ -530,10 +549,11 @@
                     this.friend_wxid = item.wxid;
                     // console.log(this.friend_info);
                 }
+                // console.log(this.bot_info);
                 //自动通过
                 this.auto_pass = this.bot_info.auto_pass;
                 this.auto_reply = this.bot_info.auto_reply;
-
+                // this.auto_pass_init = 1;//初始化赋值完成
                 //创建聊天数据
                 if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]]) {
                     // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
@@ -556,6 +576,7 @@
                 }
 
                 this.renderElement();
+
             },
             //发送信息
             sendMsg(e) {
@@ -570,7 +591,8 @@
                     bot_id: this.bot_id,
                     bot_info: this.bot_info,
                     quote: '引用内容引用内容',
-                    friend_id: this.friend_id
+                    friend_id: this.friend_id,
+                    type: this.content_type
                 }
                 let url = "/admin/kefu/sendMsg";
                 self['content'] = '';
@@ -578,7 +600,7 @@
                     if (res.code == 1) {
                         self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
                         self['current_chat'] = self['chat_log'][uin][[to_wxid]];
-                        //是当前的机器人,好友列表排序
+                        //是当前的机器人,好友列表排序,最后聊天记录
                         if (uin == res.data.friend.uin) {
                             $.each(self['friends_list'], function (i, v) {
                                 if (v.wxid == res.data.friend.wxid) {
@@ -591,6 +613,7 @@
                             })
 
                         }
+                        self['renderDropdown']();
 
                         // self['searchFriend']();
                     }
@@ -634,11 +657,25 @@
             },
             //打开添加话术
             openAddSpeechcraft() {
+                let self = this;
                 let bot_id = this.bot_id;
                 layer.open({
                     type: 2,
-                    content: '/admin/kefu/addSpeechcraft?bot_id=' + bot_id,
+                    content: ['/admin/kefu/addSpeechcraft?bot_id=' + bot_id, 'no'],
                     area: ['650px', '270px'], //自定义文本域宽高
+                    btn: ['保存', '取消'],
+                    yes: function (index, layero) {
+                        var body = layero.find("iframe").contents().find("body");
+                        var params = $(body).find('form').serialize();
+                        var url = '/admin/kefu/saveSpeechcraft';
+                        $.post(url, params, function (res) {
+                            if (res.code == 1) {
+                                self['speechcraft_list'] = [];
+                                self['getSpeechcraftData']();
+                            }
+                            layer.close(index);
+                        }, 'json');
+                    }
                 });
             },
             //获取话术列表
@@ -671,6 +708,7 @@
                 // 滚动条到底部
                 if (scrollTop + windowHeight === scrollHeight) {
                     this.get_speechcraft_param.page++
+                    // console.log(this.get_speechcraft_param.page);console.log(this.get_speechcraft_param.page_count);
                     if (this.get_speechcraft_param.page > this.get_speechcraft_param.page_count) return
                     this.getSpeechcraftData()
                 }
@@ -715,17 +753,137 @@
                     }, 'json');
                 }
             },
-            //自动通过
-            setAutoPass(e) {
-                console.log(e);
-            },
             openEmoji(e) {
                 layer.open({
                     type: 2,
                     content: '/admin/Emoji?type=vue',
                     area: ['600px', '500px'], //自定义文本域宽高
                 });
+            },
+            //发送图片
+            choosePicture(e) {
+                layer.open({
+                    type: 2,
+                    title: '图片',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['100%', '100%'],
+                    content: ['{:url("media/handle", ["type" => "image", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            },
+            //初始化layui上传
+            renderUpload() {
+                var self = this;
+                layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
+                    var upload = layui.upload
+                        , $ = layui.jquery;
+                    var upload_index;
+                    var dropdown = layui.dropdown;
+                    var util = layui.util;
+                    upload.render({
+                        elem: '#chooseFile'
+                        , url: '{:url("uploader/filePost")}'
+                        , multiple: false
+                        , accept: 'file' //允许上传的文件类型
+                        , size: "{(config('system.upload.file_size') ? config('system.upload.file_size')/1000 : 10240)}" //最大允许上传的文件大小
+                        // , exts: "{(config('system.upload.file_ext') ? config('system.upload.file_ext') : 'jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf,tar.gz')}".split(',').join('|')
+                        , before: function () {
+                            upload_index = layer.load(1);
+                            // console.log(22);
+                        }
+                        , done: function (res, index, upload) { //上传后的回调
+                            layer.close(upload_index);
+                            if (res.code !== 1) {
+                                layer.alert(res.msg);
+                                return;
+                            }
+                            let url = res.data[0].url;
+                            self['content'] = url;
+                            self['content_type'] = 2004;
+                            self['sendMsg']();
+                            self['content_type'] = 1;
+                        }
+                    });
+
+                });
+            },
+            renderDropdown() {
+                var self = this;
+                layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
+                    var upload = layui.upload
+                        , $ = layui.jquery;
+                    var upload_index;
+                    var dropdown = layui.dropdown;
+                    var util = layui.util;
+                    //执行菜单
+                    dropdown.render({
+                        elem: '.layui-elem-quote' //在 id="demo" 的元素中触发事件。也可以直接设置为 document，从而重置整个右键菜单
+                        , trigger: 'contextmenu' //右键事件
+                        , data: [{
+                            title: '复制'
+                            , id: 1
+                        }, {
+                            title: '转发'
+                            , id: 555
+                        }, {
+                            title: '收藏'
+                            , id: 666
+                        }, {
+                            title: '多选'
+                            , id: 777
+                        }, {
+                            title: '删除'
+                            , id: 888
+                        }]
+                    });
+                });
+            },
+            //保存自动回复
+            saveAutoReply(e) {
+                let self = this;
+                let url = "/admin/kefu/saveAutoReply";
+                var auto_reply = this.auto_reply.trim();
+                if (auto_reply == '') {
+                    layer.msg('请输入自动回复内容');
+                    return false;
+                }
+                let params = {
+                    id: this.bot_id,
+                    auto_reply: auto_reply,
+                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        layer.msg('保存成功');
+                    }
+                }, 'json');
+            },
+            saveAutoPass() {
+                let self = this;
+                let url = "/admin/kefu/saveAutoReply";
+                let params = {
+                    id: this.bot_id,
+                    auto_pass: this.auto_pass ? 1 : 0,
+                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        layer.msg('保存成功');
+                    }
+                }, 'json');
+            },
+            //复制话术
+            copySpeechcraft(content) {
+                console.log(content);
+                var clipboard = new ClipboardJS('.copy_speechcraft', {
+                    text: function (trigger) {
+                        return content;
+                    }
+                });
+                clipboard.on('success', function (e) {
+                    layer.msg("已复制！");
+                    e.clearSelection();
+                });
             }
+
 
 
         }
@@ -844,5 +1002,16 @@
     function sockState() {
         var status = ['未连接', '连接成功，可通讯', '正在关闭', '连接已关闭或无法打开'];
         return status[webSocket.readyState];
+    }
+
+
+    //根据iframe传回的值进行当前页面的赋值
+    function setPictureValue(value, field) {
+        var picture_url = value[0].url;
+        vm.content = picture_url;
+        vm.content_type = 3;
+        vm.sendMsg();
+        vm.content_type = 1;
+
     }
 </script>

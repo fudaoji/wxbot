@@ -50,12 +50,12 @@ class Tpzstask extends Botbase
             $post_data = input('post.');
             $where = ['bot_id' => $this->bot['id']];
             !empty($post_data['search_key']) && $where['content'] = ['like', '%' . $post_data['search_key'] . '%'];
-            //isset($post_data['complete']) && $post_data['complete'] >= 0 && $where['complete_time'] = $post_data['complete'] == 0 ? 0 : ['gt', 0];
+            //isset($post_data['complete']) && $post_data['complete'] >= 0 && $where['complete_time'] = $post_data['complete'] == 0 ? 0 : ['>', 0];
             if($name == 'todo'){
                 $where['complete_time'] = 0;
                 $order = ['plan_time' => 'asc'];
             }else{
-                $where['complete_time'] = ['gt', 0];
+                $where['complete_time'] = ['>', 0];
                 $order = ['complete_time' => 'desc'];
             }
 
@@ -132,7 +132,7 @@ class Tpzstask extends Botbase
         }
         $this->model->delOne($id);
         $list = $this->model->getAll([
-            'where' => ['bot_id' => $this->bot['id'], 'status' => 1, 'complete_time' => 0, 'plan_time' => ['gt', $data['plan_time']]],
+            'where' => ['bot_id' => $this->bot['id'], 'status' => 1, 'complete_time' => 0, 'plan_time' => ['>', $data['plan_time']]],
             'field' => ['id','plan_time'],
             'order' => ['plan_time' => 'asc'],
             'refresh' => true
@@ -333,7 +333,7 @@ class Tpzstask extends Botbase
         $plan_time = time() + $step_tasktime;
         if(empty($data['plan_time'])){
             $last_task = $this->model->getOneByOrder([
-                'where' => ['admin_id' => $this->adminInfo['id'], 'status' => 1, 'bot_id' => $this->bot['id'], 'plan_time' => ['gt', time()]],
+                'where' => ['admin_id' => $this->adminInfo['id'], 'status' => 1, 'bot_id' => $this->bot['id'], 'plan_time' => ['>', time()]],
                 'order' => ['plan_time' => 'desc'],
                 'field' => 'plan_time'
             ]);

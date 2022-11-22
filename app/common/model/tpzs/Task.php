@@ -32,7 +32,7 @@ class Task extends Tpzs
      */
     public function afterUpdatePlanTime($data, $old){
         $list = $this->getAll([
-            'where' => ['bot_id' => $data['bot_id'], 'status' => 1, 'complete_time' => 0, 'plan_time' => ['gt', $old['plan_time']]],
+            'where' => ['bot_id' => $data['bot_id'], 'status' => 1, 'complete_time' => 0, 'plan_time' => ['>', $old['plan_time']]],
             'field' => ['id','plan_time'],
             'order' => ['plan_time' => 'asc'],
             'refresh' => true

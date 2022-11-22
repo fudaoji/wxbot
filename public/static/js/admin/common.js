@@ -193,7 +193,7 @@ window.templets = {
         return '<a href="'+src+'" class="layui-btn layui-btn-xs" target="_blank">预览</a>';
     }
     , article : function (html = '') {
-        return '<a onclick="viewArticle(\''+html+'\');" class="layui-btn layui-btn-xs">点击查看</a>';
+        return '<div><a onclick="viewArticle(\''+html+'\');" class="layui-btn layui-btn-xs">点击查看</a></div>';
     }
 };
 

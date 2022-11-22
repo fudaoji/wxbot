@@ -166,14 +166,15 @@
         var tt = table.render({
             elem: '#{$controller}-table',
             url: '{:empty($data_url) ? url($action, input("get.")) : $data_url}',
-            toolbar: '#top-btns'
-            ,method: 'post'
-            ,cols: [cols],
+            toolbar: '#top-btns',
+            method: 'post',
+            cols: [cols],
             limits: [10, 15, 20, 25, 50, 100],
             limit: list_limit,
             page: true,
-            skin: 'line'
-            ,parseData: function(res){ //res 即为原始返回的数据
+            skin: 'line',
+            escape: false,
+            parseData: function(res){ //res 即为原始返回的数据
                 return {
                     "code": Math.abs(res.code - 1), //解析接口状态
                     "msg": res.msg, //解析提示文本

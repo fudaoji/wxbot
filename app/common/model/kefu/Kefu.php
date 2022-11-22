@@ -85,7 +85,7 @@ class Kefu extends Base
             $auto_reply = trim($bot['auto_reply']);
             if($auto_reply) {
                 $ControllerKefu = new ControllerKefu();
-                $param = ['bot_id' => $bot['id'],'type' => 1, 'to_wxid' => $conten['from_wxid'], 'content' => $auto_reply, 'friend_id' => $id];
+                $param = ['bot_id' => $bot['id'],'type' => 1, 'to_wxid' => $content['from_wxid'], 'content' => $auto_reply, 'friend_id' => $id];
                 $ControllerKefu->sendMsg($param);
             }
         }

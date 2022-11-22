@@ -33,10 +33,10 @@ class Worker extends Server
 				// if ($time_now - $connection->lastMessageTime > HEARTBEAT_TIME) {
 					// echo $connection->lastMessageTime.PHP_EOL;
 				if ($time_now - $connection->lastMessageTime > self::$heartbeat_time) {
-					echo "当前时间：".date("Y-m-d H:i:s",$time_now).PHP_EOL;
-					echo "最后通讯时间：".date("Y-m-d H:i:s",$connection->lastMessageTime).PHP_EOL;
-					echo "时间间隔：".$time_now - $connection->lastMessageTime.PHP_EOL;
-					echo "心跳：".self::$heartbeat_time;
+					// echo "当前时间：".date("Y-m-d H:i:s",$time_now).PHP_EOL;
+					// echo "最后通讯时间：".date("Y-m-d H:i:s",$connection->lastMessageTime).PHP_EOL;
+					// echo "时间间隔：".$time_now - $connection->lastMessageTime.PHP_EOL;
+					// echo "心跳：".self::$heartbeat_time;
 					#这里统计下线人员的id
 					// $offline_user[] = $connection->uid;
 					#关闭连接

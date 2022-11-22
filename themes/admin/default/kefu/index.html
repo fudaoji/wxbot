@@ -73,6 +73,10 @@
         overflow: scroll;
     }
 
+    .gray_headimgurl {
+        filter: grayscale(100%);
+    }
+
     /* .speechcraft{
         visibility: hidden;
     } */
@@ -85,7 +89,8 @@
                 <ul class="layui-menu bot_list" ref="bot_list_ref">
                     <li v-for="(item, index) in bot_list" :key="item.id" v-on:click="getFriendsData(item)">
                         <div class="layui-menu-body-title">
-                            <img :src="item.headimgurl" style="width:50px;height:50px;border-radius:10%" />
+                            <img :src="item.headimgurl" :class="[item.alive?'light_headimgurl':'gray_headimgurl']"
+                                style="width:50px;height:50px;border-radius:10%" />
                             <span>{{item.nickname}}</span>
                             <span class="layui-badge-dot" v-if="item.new"></span>
                         </div>
@@ -216,7 +221,7 @@
 
 
                     </div>
-                    
+
                     <div class="send_file layui-form layui-border-box layui-table-view layui-table-view-1">
                         <div class="layui-table-tool">
                             <div class="layui-table-tool-temp"></div>
@@ -236,7 +241,7 @@
                         <button type="button" class="layui-btn layui-btn-primary layui-border-green" lay-submit=""
                             v-on:click="sendMsg" lay-filter="send">发送</button>
                     </div>
-                    
+
                 </div>
                 <!-- </div> -->
 
@@ -389,7 +394,7 @@
             //搜索客服机器人
             getBotData: function () {
                 let self = this;
-                let url = "/admin/chat/getBot";
+                let url = "/admin/kefu/getBot";
                 var index = layer.load(2);
                 let page = this.get_bot_param.page;
                 let limit = this.get_bot_param.page_size;
@@ -439,7 +444,7 @@
             //点击机器人
             getFriendsData(item) {
                 let self = this;
-                let url = "/admin/chat/getFriends";
+                let url = "/admin/kefu/getFriends";
                 var index = layer.load(2);
                 let page = this.get_friends_param.page;
                 let limit = this.get_friends_param.page_size;
@@ -567,7 +572,7 @@
                     quote: '引用内容引用内容',
                     friend_id: this.friend_id
                 }
-                let url = "/admin/chat/sendMsg";
+                let url = "/admin/kefu/sendMsg";
                 self['content'] = '';
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
@@ -594,7 +599,7 @@
             //搜索好友
             searchFriend() {
                 let self = this;
-                let url = "/admin/chat/getFriends";
+                let url = "/admin/kefu/getFriends";
                 var index = layer.load(2);
                 this.get_friends_param.page = 1;
                 let page = this.get_friends_param.page;
@@ -632,14 +637,14 @@
                 let bot_id = this.bot_id;
                 layer.open({
                     type: 2,
-                    content: '/admin/chat/addSpeechcraft?bot_id=' + bot_id,
-                    area: ['600px', '400px'], //自定义文本域宽高
+                    content: '/admin/kefu/addSpeechcraft?bot_id=' + bot_id,
+                    area: ['650px', '270px'], //自定义文本域宽高
                 });
             },
             //获取话术列表
             getSpeechcraftData() {
                 let self = this;
-                let url = "/admin/chat/getSpeechcraft";
+                let url = "/admin/kefu/getSpeechcraft";
                 var index = layer.load(2);
                 let page = this.get_speechcraft_param.page;
                 let limit = this.get_speechcraft_param.page_size;
@@ -694,7 +699,7 @@
                 let self = this;
                 let remark_name = this.friend_info.remark_name.replace(/(^\s*)|(\s*$)/g, "");
                 if (remark_name) {
-                    let url = "/admin/chat/saveRemark";
+                    let url = "/admin/kefu/saveRemark";
                     let params = {
                         remark_name: remark_name,
                         id: this.friend_id,
@@ -714,7 +719,7 @@
             setAutoPass(e) {
                 console.log(e);
             },
-            openEmoji(e){
+            openEmoji(e) {
                 layer.open({
                     type: 2,
                     content: '/admin/Emoji?type=vue',
@@ -817,11 +822,11 @@
             //点亮对应好友
             if (new_to_friend) {
                 if (!vm['new_friend'].includes(massage.from_wxid)) {
-                vm['new_friend'].push(massage.from_wxid);
+                    vm['new_friend'].push(massage.from_wxid);
+                }
             }
-            }
-            
-            
+
+
             // vm['searchFriend']();
             // if (massage.from_wxid != vm['friend_wxid']) {
 

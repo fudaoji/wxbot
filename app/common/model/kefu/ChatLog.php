@@ -1,11 +1,18 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * Script Name: Config.php
+ * Create: 2022/4/6 16:05
+ * Description:
+ * Author: fudaoji<fdj@kuryun.cn>
+ */
+namespace app\common\model\kefu;
 
-namespace app\admin\model;
-
-use app\common\model\Base;
-use app\admin\model\Bot as ModelBot;
-class ChatLog extends Base
+use app\admin\model\BotMember;
+class ChatLog extends Kefu
 {
+    protected $isCache = false;
+    protected $table = 'chat_log';
 
     public function saveChat($data, $bot){
         // "content": {

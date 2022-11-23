@@ -462,18 +462,19 @@ class BaseModel extends Model
 
     /**
      * 获取字段
-     * @param string $field
+     * @param string|array $field
      * @param array $query
      * @param int $refresh
      * @return array
      * @Author  Doogie<461960962@qq.com>
      */
-    public function getField($field = '', $query = [],$refresh = 0){
+    public function getField($field, $query = [],$refresh = 0){
         is_string($field) && $field = explode(',', str_replace(' ', '', $field));
         $key = '';
         if(count($field) == 2){
             $key = $field[0];
             unset($field[0]);
+            $field = array_values($field);
         }elseif(count($field) > 2){
             $key = $field[0];
         }

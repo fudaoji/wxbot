@@ -14,6 +14,7 @@ use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
 use app\common\model\tpzs\Gather;
 use app\constants\Bot;
+use think\facade\Db;
 
 class Tpzsgather extends Botbase
 {
@@ -148,7 +149,7 @@ class Tpzsgather extends Botbase
         $group = $this->memberM->getOne($group_id);
         //$this->groupMemberM->pullMembers($this->bot, $group);
         $data = ['bot_id' => $this->bot['id'], 'group_id' => $group_id];
-        $members = $this->groupMemberM->getField('wxid,nickname',['group_id' => $group_id], true);
+        $members = $this->groupMemberM->getField(['wxid', 'CONCAT(nickname, "(", wxid, ")") as nickname'],['group_id' => $group_id], true);
         $builder = new FormBuilder();
         $builder->setTip("调度群：所有发单机器人集合群，选品人员把商品素材发到此群，那么群里的所有机器人会采集然后转发各自负责的群。")
             ->setPostUrl(url('savePost'))

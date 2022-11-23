@@ -3,7 +3,7 @@
 <style>
     .chat_box_panel {
         height: 800px;
-        overflow: scroll;
+        
     }
 
     .content {
@@ -19,6 +19,7 @@
 
     .chat_panel {
         height: 450px;
+        overflow: scroll;
     }
 
     .info {
@@ -608,6 +609,7 @@
                 if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]]) {
                     // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
                     self['chat_log'][[this.bot_uin]][[this.friend_wxid]] = [];
+                    this.getChatLog();
                 }
 
                 this.current_chat = self['chat_log'][[this.bot_uin]][[this.friend_wxid]];
@@ -1136,6 +1138,23 @@
 
                 this.cancelForward();
                 
+            },
+            //获取当日聊天记录
+            getChatLog(){
+                let self = this;
+                let url = "/admin/kefu/getChatLog";
+                let uin = this.bot_info.uin;
+                let friend_wxid = this.friend_info.wxid;
+                let params = {
+                    uin:uin,
+                    friend_wxid:friend_wxid
+                };
+                $.ajaxSettings.async = false;
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['chat_log'][[uin]][[friend_wxid]] = res.data.list;
+                    }
+                }, 'json');
             }
 
 

@@ -113,32 +113,52 @@
                             <input type="input" name="search" autocomplete="off" class="layui-input"
                                 v-model="search_friend" placeholder="输入昵称或备注">
                         </div>
-                        <button type="button" class="layui-btn layui-btn-primary"
+                        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm"
                             v-on:click="searchFriend()">搜索</button>
                     </div>
                     <!-- <button type="button" class="layui-btn layui-btn-normal layui-btn-sm layui-btn-primary" lay-submit="" lay-filter="search"><i class="layui-icon layui-icon-search"></i></button> -->
                 </div>
                 <ul class="layui-menu friends_list" ref="friends_list_ref">
-                    <li v-for="(item, index) in friends_list" :key="item.id" v-on:click="chatWith(item)">
-                        <div class="layui-menu-body-title">
-                            <div class="layui-row">
-                                <div class="layui-col-md3">
-                                    <div class="headimg">
-                                        <img src="http://wx.qlogo.cn/mmhead/ver_1/XiaHh87vY98hRM0BRZoNK2vdXxiaQuShnnB9I91lqscgqy9Y1313ZrOwx3iaALNHEkzhyMeXjQxPwNwPFu59YU61vfwKaUImdfFrk3V748ibOcs/132"
-                                            style="width:50px;height:50px;border-radius:10%">
-                                        <span class="layui-badge-dot" v-if="item.new"></span>
+                    <li v-for="(item, index) in friends_list" :key="item.id">
+                        <div class="layui-row">
+                            <div class="layui-col-md2 sel_friend" v-show="sel_friend">
+                                <input type="checkbox" lay-ignore name="sel_friend" lay-skin="primary" :id="item.wxid" :value="item.wxid"
+                                    style="width: 28px;height:28px;margin-top: 10px;" v-model="share_friends">
+                            </div>
+                            <div class="layui-col-md10 layui-menu-body-title" v-on:click="chatWith(item)">
+                                <div class="layui-row">
+                                    <div class="layui-col-md3">
+                                        <div class="headimg">
+                                            <img src="http://wx.qlogo.cn/mmhead/ver_1/XiaHh87vY98hRM0BRZoNK2vdXxiaQuShnnB9I91lqscgqy9Y1313ZrOwx3iaALNHEkzhyMeXjQxPwNwPFu59YU61vfwKaUImdfFrk3V748ibOcs/132"
+                                                style="width:50px;height:50px;border-radius:10%">
+                                            <span class="layui-badge-dot" v-if="item.new"></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="layui-col-md3">
-                                    <div class="name"><span>{{item.nickname}}</span></div>
-                                    <div class="last_chat">
-                                        <div class="layui-word-aux">{{item.last_chat_content}}</div>
+                                    <div class="layui-col-md3">
+                                        <div class="name"><span>{{item.nickname}}</span></div>
+                                        <div class="last_chat">
+                                            <div class="layui-word-aux">{{item.last_chat_content}}</div>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>
+
                         </div>
                     </li>
                 </ul>
+                <div class="sel_friend"  v-show="sel_friend">
+                    <div>
+                        <label>转发内容：</label><input type="input" autocomplete="off" class="layui-input" disabled v-model="share_content">
+                        <input type="input" autocomplete="off" class="layui-input" placeholder="给朋友留言">
+                    </div>
+                    <div class="btn_group" style="text-align: right;">
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary layui-border-green"
+                            lay-submit="" >发送</button>
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary layui-border-green"
+                            lay-submit="" >取消</button>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- 聊天框 -->
@@ -186,15 +206,17 @@
                             </div>
                             <div class="layui-row" v-if="item.class == 'my_chat_content'">
                                 <div class="layui-col-md1 sel_chat" v-show="show_sel">
-                                    <input type="checkbox" name="sel_chat" lay-skin="primary" title="" checked="">
+                                    <input type="checkbox" lay-ignore name="sel_chat" lay-skin="primary" title=""
+                                        checked="">
                                 </div>
                                 <div class="layui-col-md9 content">
-                                    <blockquote class="layui-elem-quote" lay-data="{'msg_type':'item.msg_type','content':'item.content'}">
-                                        <span v-if="item.msg_type == 1">{{item.content}}</span>
-                                        <span v-if="item.msg_type == 3"><img :src="item.content"
-                                                style="width:100px;"></span>
-                                        <span v-if="item.msg_type == 2004"><a :href="item.content"
-                                                target="downloadFile"><span>文件：</span><i
+                                    <blockquote class="layui-elem-quote">
+                                        <span v-if="item.msg_type == 1"
+                                            :class="'send_text_'+item.msg_id">{{item.content}}</span>
+                                        <span v-if="item.msg_type == 3" :class="'send_img_'+item.msg_id"><img
+                                                :src="item.content" style="width:100px;"></span>
+                                        <span v-if="item.msg_type == 2004" :class="'send_file_'+item.msg_id"><a
+                                                :href="item.content" target="downloadFile"><span>文件：</span><i
                                                     class="layui-icon layui-icon-file-b"></i></a></span>
                                     </blockquote>
                                 </div>
@@ -215,11 +237,12 @@
                                 </div>
                                 <div class="layui-col-md9 content">
                                     <blockquote class="layui-elem-quote">
-                                        <span v-if="item.msg_type == 1">{{item.content}}</span>
-                                        <span v-if="item.msg_type == 3"><img :src="item.content"
-                                                style="width:100px;"></span>
-                                        <span v-if="item.msg_type == 2004"><a :href="item.content"
-                                                target="downloadFile"><span>文件：</span><i
+                                        <span v-if="item.msg_type == 1"
+                                            :class="'receive_text_'+item.msg_id">{{item.content}}</span>
+                                        <span v-if="item.msg_type == 3" :class="'receive_img_'+item.msg_id"><img
+                                                :src="item.content" style="width:100px;"></span>
+                                        <span v-if="item.msg_type == 2004" :class="'receive_file_'+item.msg_id"><a
+                                                :href="item.content" target="downloadFile"><span>文件：</span><i
                                                     class="layui-icon layui-icon-file-b"></i></a></span>
                                     </blockquote>
                                     <!-- <div>
@@ -310,7 +333,7 @@
                                     <i class="layui-icon layui-icon-add-1"></i>
                                 </button>
                             </div>
-                            <div class="layui-collapse" style="height: 330px;overflow: scroll;"
+                            <div class="layui-collapse" style="height: 238px;overflow: scroll;"
                                 ref="speechcraft_list_ref">
                                 <div class="layui-colla-item" v-for="(item, index) in speechcraft_list" :key="item.id">
                                     <h2 class="layui-colla-title">{{item.title}}</h2>
@@ -400,7 +423,10 @@
         new_bot: [],//新机器人消息
         new_friend: [],//新好友消息
         content_type: 1,//1/文本消息 3/图片消息
+        sel_friend: false,
         // auto_pass_init: 0,//初始化auto_pass
+        share_content:'',
+        share_friends:[]
     };
     var vm = new Vue({
         el: '#app',
@@ -830,6 +856,7 @@
                         , data: [{
                             title: '复制'
                             , id: 1
+                            , templet: '<div class="copy_msg">{{d.title}}</div>'
                         }, {
                             title: '转发'
                             , id: 2
@@ -843,14 +870,26 @@
                             title: '删除'
                             , id: 5
                         }], click: function (obj, othis) {
+                            var dom = this.elem;
+                            var content = $(dom).find('span').html();
+                            var msg_type = $(dom).find('span').attr('class');
+                            var class_name = $(dom).attr('class');
                             if (obj.id === 1) {
-                                console.log('复制');
-                                console.log(othis);
-                                console.log(this);
-                                console.log(this.elem);
+                                self['copySpeechcraft'](content, '.copy_msg');
                             } else if (obj.id === 2) {
+                                self['sel_friend'] = true;
+                                self['share_content'] = content;
+                                self['share_friends'] = [];
                                 console.log('转发');
                             } else if (obj.id === 3) {
+                                let class_name_arr = class_name.split("_");
+                                if (class_name_arr[0] == 'send') {
+                                    layer.msg("只能收藏接收的信息");
+                                    return false;
+                                }
+                                let msg_id = class_name_arr[2];
+                                let param = { content: content, msg_type: msg_type, msg_id: msg_id };
+                                self['favoritesMsg'](param);
                                 console.log('收藏');
                             } else if (obj.id === 4) {
                                 console.log('多选');
@@ -894,17 +933,34 @@
                 }, 'json');
             },
             //复制话术
-            copySpeechcraft(content) {
-                console.log(content);
-                var clipboard = new ClipboardJS('.copy_speechcraft', {
+            copySpeechcraft(content, class_name = '.copy_speechcraft') {
+                // console.log(content);
+                // console.log(class_name);
+                var clipboard = new ClipboardJS(class_name, {
                     text: function (trigger) {
                         return content;
                     }
                 });
+                // console.log(clipboard);
                 clipboard.on('success', function (e) {
                     layer.msg("已复制！");
                     e.clearSelection();
                 });
+                clipboard.on('error', function (e) {
+                    console.error('Action:', e.action);
+                    console.error('Trigger:', e.trigger);
+                });
+            },
+            //收藏信息
+            favoritesMsg(params) {
+                let self = this;
+                let url = "/admin/kefu/favoritesMsg";
+                params.robot_wxid = this.bot_info.uin;
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        layer.msg('收藏成功');
+                    }
+                }, 'json');
             }
 
 

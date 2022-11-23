@@ -340,4 +340,20 @@ class Kefu extends Base
         }
         $this->success('数据保存成功');
     }
+
+    /**
+     * 
+     * 收藏消息
+     */
+    public function favoritesMsg(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $params = [
+                'robot_wxid' => $post_data['robot_wxid'],
+                'msgid' => $post_data['msg_id'],
+            ];
+            $res = $this->botClient->favoritesMsg($params);
+            $this->success('收藏成功');
+        }
+    }
 }

@@ -361,4 +361,43 @@ class Kefu extends Base
             $this->success('收藏成功');
         }
     }
+
+    /**
+     * 
+     * 获取好友聊天记录
+     */
+    public function getChatLog(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $year = date("Y");
+            $chat_model = new ChatLog();
+            $member_model = new BotMember();
+            $where = [['from|to', '=', $post_data['uin']],['from|to', '=', $post_data['friend_wxid']]];
+            $from_date = strtotime(date("Y-m-d"));
+            $to_date = time();
+            $where[] = ['create_time','between',[$from_date, $to_date]];
+            $order = ['create_time' => 'asc'];
+            $log_list = $chat_model->partition('p' . $year)->where($where)->order($order)->select();
+            $friend = $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['friend_wxid']])->find();
+            foreach ($log_list as &$val) {
+                $val['date'] = $val['create_time'];
+                $val['class'] = $val['type'] == 'send' ? 'my_chat_content' : 'friend_chat_content';
+                $val['headimgurl'] = $val['from_headimg'];
+                $val['friend'] = $friend;
+            }
+            // $result = [
+            //     'msg_id' => $msgid,
+            //     'date' => $date,
+            //     'content' => $post_data['content'],
+            //     'type' => 'send',
+            //     'class' => 'my_chat_content',
+            //     'quote' => $post_data['quote']??'',
+            //     'headimgurl' => $bot['headimgurl'],
+            //     'friend' => $friend,
+            //     'msg_type' => $post_data['type'],
+            // ];
+            $this->success('success', '', ['list' => $log_list]);
+
+        }
+    }
 }

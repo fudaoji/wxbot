@@ -122,8 +122,9 @@
                     <li v-for="(item, index) in friends_list" :key="item.id">
                         <div class="layui-row">
                             <div class="layui-col-md2 sel_friend" v-show="sel_friend">
-                                <input type="checkbox" lay-ignore name="sel_friend" lay-skin="primary" :id="item.wxid" :value="item.wxid"
-                                    style="width: 28px;height:28px;margin-top: 10px;" v-model="share_friends">
+                                <input type="checkbox" lay-ignore name="sel_friend" lay-skin="primary" :id="item.wxid"
+                                    :value="item.wxid" style="width: 28px;height:28px;margin-top: 10px;"
+                                    v-model="share_friends">
                             </div>
                             <div class="layui-col-md10 layui-menu-body-title" v-on:click="chatWith(item)">
                                 <div class="layui-row">
@@ -147,23 +148,25 @@
                         </div>
                     </li>
                 </ul>
-                <div class="sel_friend"  v-show="sel_friend">
+                <div class="sel_friend" v-show="sel_friend">
                     <div>
-                        <label>转发内容：</label><input type="input" autocomplete="off" class="layui-input" disabled v-model="share_content">
-                        <input type="input" autocomplete="off" class="layui-input" placeholder="给朋友留言">
+                        <label>转发内容：</label><input type="input" autocomplete="off" class="layui-input" disabled
+                            v-model="share_content[0].content">
+                        <input type="input" autocomplete="off" class="layui-input" placeholder="给朋友留言"
+                            v-model="leave_word">
                     </div>
                     <div class="btn_group" style="text-align: right;">
                         <button type="button" class="layui-btn layui-btn-sm layui-btn-primary layui-border-green"
-                            lay-submit="" >发送</button>
+                            lay-submit="" @click="forwardMsg">发送</button>
                         <button type="button" class="layui-btn layui-btn-sm layui-btn-primary layui-border-green"
-                            lay-submit="" >取消</button>
+                            lay-submit="" @click="cancelForward">取消</button>
                     </div>
                 </div>
             </div>
         </div>
         <!-- 聊天框 -->
         <div class="layui-col-md4" class="chat_box">
-            <form class="layui-form layui-panel chat_box_panel" lay-filter="chat_filter">
+            <div class="layui-panel chat_box_panel">
                 <!-- <div class="layui-panel chat_show_panel"> -->
                 <div class="layui-panel chat_box_panel" v-show="show_chat">
                     <div style="padding: 15px" class="chat_panel" id="chat_panel">
@@ -205,17 +208,19 @@
                                 </div>
                             </div>
                             <div class="layui-row" v-if="item.class == 'my_chat_content'">
-                                <div class="layui-col-md1 sel_chat" v-show="show_sel">
-                                    <input type="checkbox" lay-ignore name="sel_chat" lay-skin="primary" title=""
-                                        checked="">
+                                <div class="layui-col-md1" v-show="show_sel">
+                                    <input type="checkbox" lay-ignore lay-skin="primary" title=""
+                                        :id="'sel_chat'+'item.msg_id'"
+                                        :value="{'msg_type':item.msg_type,'content':item.content,'type':'send','msg_id':item.msg_id}"
+                                        v-model="sel_chat_content">
                                 </div>
                                 <div class="layui-col-md9 content">
                                     <blockquote class="layui-elem-quote">
                                         <span v-if="item.msg_type == 1"
-                                            :class="'send_text_'+item.msg_id">{{item.content}}</span>
-                                        <span v-if="item.msg_type == 3" :class="'send_img_'+item.msg_id"><img
+                                            :class="'send_1_'+item.msg_id">{{item.content}}</span>
+                                        <span v-if="item.msg_type == 3" :class="'send_2_'+item.msg_id"><img
                                                 :src="item.content" style="width:100px;"></span>
-                                        <span v-if="item.msg_type == 2004" :class="'send_file_'+item.msg_id"><a
+                                        <span v-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id"><a
                                                 :href="item.content" target="downloadFile"><span>文件：</span><i
                                                     class="layui-icon layui-icon-file-b"></i></a></span>
                                     </blockquote>
@@ -228,7 +233,10 @@
                             </div>
                             <div class="layui-row" v-else>
                                 <div class="layui-col-md1 sel_chat" v-show="show_sel">
-                                    <input type="checkbox" name="sel_chat" lay-skin="primary" title="" checked="">
+                                    <input type="checkbox" lay-ignore lay-skin="primary" title=""
+                                        :id="'sel_chat'+'item.msg_id'"
+                                        :value="{msg_type:'item.msg_type',content:'item.content','type':'receive','msg_id':item.msg_id}"
+                                        v-model="sel_chat_content">
                                 </div>
                                 <div class="layui-col-md1">
                                     <div class="headimg">
@@ -238,10 +246,10 @@
                                 <div class="layui-col-md9 content">
                                     <blockquote class="layui-elem-quote">
                                         <span v-if="item.msg_type == 1"
-                                            :class="'receive_text_'+item.msg_id">{{item.content}}</span>
-                                        <span v-if="item.msg_type == 3" :class="'receive_img_'+item.msg_id"><img
+                                            :class="'receive_1_'+item.msg_id">{{item.content}}</span>
+                                        <span v-if="item.msg_type == 3" :class="'receive_2_'+item.msg_id"><img
                                                 :src="item.content" style="width:100px;"></span>
-                                        <span v-if="item.msg_type == 2004" :class="'receive_file_'+item.msg_id"><a
+                                        <span v-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id"><a
                                                 :href="item.content" target="downloadFile"><span>文件：</span><i
                                                     class="layui-icon layui-icon-file-b"></i></a></span>
                                     </blockquote>
@@ -255,33 +263,56 @@
 
 
                     </div>
-
-                    <div class="send_file layui-form layui-border-box layui-table-view layui-table-view-1">
-                        <div class="layui-table-tool">
-                            <div class="layui-table-tool-temp"></div>
-                            <div class="layui-table-tool-container">
-                                <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS" v-on:click="openEmoji"><i
-                                        class="layui-icon layui-icon-face-smile-b"></i></div>
-                                <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"
-                                    v-on:click="choosePicture"><i class="layui-icon layui-icon-picture"></i></div>
-                                <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
-                                    <i class="layui-icon layui-icon-export"></i></a>
+                    <div v-show="show_multiple">
+                        <div class="layui-panel">
+                            <div class="layui-row">
+                                <div class="layui-col-md1" style="float:right">
+                                    <a href="javascrip::" @click="cancelForward"><i class="layui-icon layui-icon-close"></i></a>
+                                </div>
+                            </div>
+                            <div class="layui-row">
+                                <div class="layui-col-md2" style="text-align: center;">
+                                    <div><button type="button" @click="batchForwardMsg"
+                                            class="layui-btn layui-btn-primary layui-border-green layui-btn-radius  layui-btn-sm"><i
+                                                class="layui-icon layui-icon-release"></i></button></div>
+                                    <div style="color: #c2c2c2;font-size: 8px;"><span>逐条转发</span></div>
+                                </div>
+                                <div class="layui-col-md2" style="text-align: center;">
+                                    <div><button type="button" @click="batchFavoritesMsg"
+                                            class="layui-btn layui-btn-primary layui-border-green layui-btn-radius  layui-btn-sm"><i
+                                                class="layui-icon layui-icon-star"></i></button></div>
+                                    <div><span style="color: #c2c2c2;font-size: 8px;">收藏</span></div>
                                 </div>
                             </div>
                         </div>
-                        <textarea placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
                     </div>
-                    <div class="input_area" style="text-align:right">
-                        <!-- <textarea placeholder="" class="layui-textarea" v-model="content"></textarea> -->
-                        <button type="button" class="layui-btn layui-btn-primary layui-border-green" lay-submit=""
-                            v-on:click="sendMsg" lay-filter="send">发送</button>
+                    <div v-show="!show_multiple">
+                        <div class="send_file layui-form layui-border-box layui-table-view layui-table-view-1">
+                            <div class="layui-table-tool">
+                                <div class="layui-table-tool-temp"></div>
+                                <div class="layui-table-tool-container">
+                                    <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS"
+                                        v-on:click="openEmoji"><i class="layui-icon layui-icon-face-smile-b"></i></div>
+                                    <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"
+                                        v-on:click="choosePicture"><i class="layui-icon layui-icon-picture"></i></div>
+                                    <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
+                                        <i class="layui-icon layui-icon-export"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
+                        </div>
+                        <div class="input_area" style="text-align:right">
+                            <!-- <textarea placeholder="" class="layui-textarea" v-model="content"></textarea> -->
+                            <button type="button" class="layui-btn layui-btn-primary layui-border-green" lay-submit=""
+                                v-on:click="sendMsg" lay-filter="send">发送</button>
+                        </div>
                     </div>
-
                 </div>
                 <!-- </div> -->
 
+            </div>
         </div>
-        </form>
         <!-- 话术 -->
         <div class="layui-col-md3 speechcraft" v-show='show_info'>
             <form class="layui-form layui-panel" lay-filter="speechcraft_filter">
@@ -425,8 +456,12 @@
         content_type: 1,//1/文本消息 3/图片消息
         sel_friend: false,
         // auto_pass_init: 0,//初始化auto_pass
-        share_content:'',
-        share_friends:[]
+        share_content: [{ msg_type: 1, content: '' }],//转发内容
+        share_friends: [],//转发的好友
+        // share_type: 1,//转发内容类型
+        leave_word: '',
+        show_multiple: false,
+        sel_chat_content: []//多选
     };
     var vm = new Vue({
         el: '#app',
@@ -614,9 +649,13 @@
             //发送信息
             sendMsg(e) {
                 let self = this;
-                let content = this.content;
+                let content = this.content.trim();
                 var uin = this.bot_info.uin;
                 var to_wxid = this.friend_info.wxid;
+                if (content == '') {
+                    layer.masg('请输入内容');
+                    return false;
+                }
                 let params = {
                     content: content,
                     uin: uin,
@@ -866,20 +905,20 @@
                         }, {
                             title: '多选'
                             , id: 4
-                        }, {
-                            title: '删除'
-                            , id: 5
                         }], click: function (obj, othis) {
                             var dom = this.elem;
                             var content = $(dom).find('span').html();
-                            var msg_type = $(dom).find('span').attr('class');
+                            var msg_type_class = $(dom).find('span').attr('class');
+                            var msg_type_arr = msg_type_class.split("_");
+                            var msg_type = msg_type_arr[1];
                             var class_name = $(dom).attr('class');
                             if (obj.id === 1) {
                                 self['copySpeechcraft'](content, '.copy_msg');
                             } else if (obj.id === 2) {
                                 self['sel_friend'] = true;
-                                self['share_content'] = content;
+                                self['share_content'][0] = { msg_type: msg_type, content: content };
                                 self['share_friends'] = [];
+                                // self['share_type'] = msg_type;
                                 console.log('转发');
                             } else if (obj.id === 3) {
                                 let class_name_arr = class_name.split("_");
@@ -892,9 +931,10 @@
                                 self['favoritesMsg'](param);
                                 console.log('收藏');
                             } else if (obj.id === 4) {
+                                self['show_multiple'] = true;
+                                self['show_sel'] = true;
+
                                 console.log('多选');
-                            } else if (obj.id === 5) {
-                                console.log('删除');
                             }
                         }
                     });
@@ -961,6 +1001,158 @@
                         layer.msg('收藏成功');
                     }
                 }, 'json');
+            },
+            //取消转发
+            cancelForward() {
+                this.leave_word = '';
+                this.share_content = [{ msg_type: 1, content: '' }];
+                this.share_friends = [];
+                this.sel_friend = false;
+                this.sel_chat_content = [];
+                this.show_multiple = false;
+                this.show_sel = false;
+            },
+            //转发消息
+            forwardMsg() {
+                let self = this;
+                let share_friends = this.share_friends;
+                let share_content = this.share_content;
+                let share_type = this.share_type;
+                let leave_word = this.leave_word.trim();;
+                let uin = this.bot_info.uin;
+                let bot_id = this.bot_id;
+                let bot_info = this.bot_info;
+                if (share_friends.length == 0) {
+                    layer.msg('请选择转发的好友');
+                    return false;
+                }
+                //发送消息
+                $.each(share_friends, function (i, v) {
+                    //发送转发内容
+                    $.each(share_content, function (i2, v2) {
+                        let params = {
+                            content: v2.content,
+                            uin: uin,
+                            to_wxid: v,
+                            bot_id: bot_id,
+                            bot_info: bot_info,
+                            quote: '',
+                            type: v2.msg_type,
+                        }
+                        self['sendMsgPost'](params);
+                    });
+
+                    //发送留言
+                    if (leave_word != '') {
+                        let leave_params = {
+                            content: leave_word,
+                            uin: uin,
+                            to_wxid: v,
+                            bot_id: bot_id,
+                            bot_info: bot_info,
+                            quote: '',
+                            type: 1
+                        }
+                        self['sendMsgPost'](leave_params);
+                    }
+
+
+
+                })
+
+                this.cancelForward();
+            },
+            //发送信息
+            sendMsgPost(params) {
+                let self = this;
+                // let content = this.content;
+                let uin = params.uin;
+                let to_wxid = params.to_wxid;
+                // let params = {
+                //     content: content,
+                //     uin: uin,
+                //     to_wxid: to_wxid,
+                //     bot_id: this.bot_id,
+                //     bot_info: this.bot_info,
+                //     quote: '引用内容引用内容',
+                //     friend_id: this.friend_id,
+                //     type: this.content_type
+                // }
+                let url = "/admin/kefu/sendMsg";
+                //创建聊天数据
+                if (!self['chat_log'][[uin]][[to_wxid]]) {
+                    // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
+                    self['chat_log'][[uin]][[to_wxid]] = [];
+                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        // console.log(uin);
+                        // console.log(to_wxid);
+                        // console.log(self['chat_log'][[uin]][[to_wxid]]);
+                        self['chat_log'][[uin]][[to_wxid]] = self['chat_log'][[uin]][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][[uin]][[to_wxid]];
+                        //是当前的机器人,好友列表排序,最后聊天记录
+                        if (uin == res.data.friend.uin) {
+                            $.each(self['friends_list'], function (i, v) {
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
+                                }
+                            });
+                            self['friends_list'].sort(function (a, b) {
+                                return b.last_chat_time - a.last_chat_time
+                            })
+
+                        }
+                        self['renderDropdown']();
+                        // self['searchFriend']();
+                    }
+                }, 'json');
+            },
+            //批量转发消息
+            batchForwardMsg() {
+                let self = this;
+                let share_content = this.sel_chat_content;
+                if (share_content.length == 0) {
+                    layer.msg('请选择转发内容');
+                    return false;
+                }
+                self['sel_friend'] = true;
+                self['share_content'] = share_content;
+                self['share_friends'] = [];
+
+            },
+            //批量收藏
+            batchFavoritesMsg() {
+                let self = this;
+                let share_content = this.sel_chat_content;
+                if (share_content.length == 0) {
+                    layer.msg('请选择转发内容');
+                    return false;
+                }
+                let check = true;
+                //发送的信息不能收藏
+                $.each(share_content,function(i,v){
+                    if (v.type == 'send') {
+                        check = false;
+                        return false;
+                    }
+                    
+                });
+                if (!check) {
+                    layer.msg('不能收藏发送的信息,请检查');
+                    return false;
+                }
+                $.each(share_content,function(i,v){
+                    if (v.type == 'receive') {
+                        let param = { content: v.content, msg_type: v.msg_type, msg_id: v.msg_id };
+                        self['favoritesMsg'](param);
+                    }
+                    
+                });
+
+                this.cancelForward();
+                
             }
 
 

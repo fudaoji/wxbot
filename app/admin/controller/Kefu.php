@@ -207,8 +207,13 @@ class Kefu extends Base
             ];
             $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
             //更改好友最后聊天时间
-            $member_model->where(['id' => $post_data['friend_id']])->update(['last_chat_time' => $time]);
-            $friend = $member_model->where(['id' => $post_data['friend_id']])->find();
+            if (isset($post_data['friend_id']) && $post_data['friend_id'] > 0) {
+                $friend_id = $post_data['friend_id'];
+            } else {
+                $friend_id = $member_model->where(['uin' => $bot['uin'], 'wxid' => $post_data['to_wxid']])->order(['id' => 'desc'])->value('id');
+            }
+            $member_model->where(['id' => $friend_id])->update(['last_chat_time' => $time]);
+            $friend = $member_model->where(['id' => $friend_id])->find();
             $friend['last_chat_content'] = $last_chat_content;
             $result = [
                 'msg_id' => $msgid,

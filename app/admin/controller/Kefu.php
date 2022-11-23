@@ -377,7 +377,8 @@ class Kefu extends Base
             $to_date = time();
             $where[] = ['create_time','between',[$from_date, $to_date]];
             $order = ['create_time' => 'asc'];
-            $log_list = $chat_model->partition('p' . $year)->where($where)->order($order)->select();
+            $limit = 30;
+            $log_list = $chat_model->partition('p' . $year)->where($where)->order($order)->limit($limit)->select();
             $friend = $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['friend_wxid']])->find();
             foreach ($log_list as &$val) {
                 $val['date'] = $val['create_time'];

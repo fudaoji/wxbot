@@ -48,14 +48,20 @@ class Kefu extends Base
      * 客服配置
      */
     public function config(){
-        $base_config = $this->configM->getConf(['admin_id' => $this->adminInfo['id'],'bot_id' => 0]);
+        if(! $base_config = $this->configM->getConf(['admin_id' => $this->adminInfo['id'],'bot_id' => 0])){
+            $base_config = [
+                'switch' => 1,
+                'socket_ip' => '',
+                'socket_port' => 9506
+            ];
+        }
         $builder = new FormBuilder();
         $builder->setPostUrl(url('saveConfigPost'))
             ->addFormItem('basic_legend', 'legend', '基础配置','基础配置' )
             ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('switch', 'radio', '开启', '是否开启', [1=>'是', 0 => '否'])
-            ->addFormItem('socket_ip', 'text', 'IP', '175.24.234.211')
-            ->addFormItem('socket_port', 'text', '端口号', '9506')
+            ->addFormItem('switch', 'radio', '是否开启', '是否开启', [1=>'是', 0 => '否'])
+            ->addFormItem('socket_ip', 'text', 'Socket主机', 'Socket主机地址',[],'required')
+            ->addFormItem('socket_port', 'text', '端口号', 'Socket端口号',[],'required')
             ->setFormData($base_config);
         return $builder->show();
     }

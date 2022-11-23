@@ -8,3 +8,4 @@ install.lock
 __MACOSX
 .phpunit.result.cache
 runtime
+*.pid

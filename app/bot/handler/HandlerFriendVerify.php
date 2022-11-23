@@ -13,7 +13,7 @@ namespace app\bot\handler;
 use app\constants\Addon;
 use app\constants\Reply;
 
-class HandlerFrieneVerify extends Handler
+class HandlerFriendVerify extends Handler
 {
     /**
      * 插件处理
@@ -25,8 +25,8 @@ class HandlerFrieneVerify extends Handler
             $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
             if(class_exists($class_name)){
                 $class = new $class_name();
-                if(method_exists($class, 'frieneVerifyHandle')){
-                    $class->init($this->getAddonOptions())->frieneVerifyHandle();
+                if(method_exists($class, 'friendVerifyHandle')){
+                    $class->init($this->getAddonOptions())->friendVerifyHandle();
                 }
             }
         }

@@ -189,7 +189,7 @@
                                     <input type="checkbox" name="sel_chat" lay-skin="primary" title="" checked="">
                                 </div>
                                 <div class="layui-col-md9 content">
-                                    <blockquote class="layui-elem-quote">
+                                    <blockquote class="layui-elem-quote" lay-data="{'msg_type':'item.msg_type','content':'item.content'}">
                                         <span v-if="item.msg_type == 1">{{item.content}}</span>
                                         <span v-if="item.msg_type == 3"><img :src="item.content"
                                                 style="width:100px;"></span>
@@ -264,16 +264,23 @@
             <form class="layui-form layui-panel" lay-filter="speechcraft_filter">
                 <div class="layui-row" style="padding: 15px;">
                     <div class="layui-col-md12 remark">
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <div class="layui-input-inline">
-                                    <input type="input" name="search" autocomplete="off" class="layui-input"
-                                        placeholder="客户备注" v-model="friend_info.remark_name">
-                                </div>
-                                <button type="button" class="layui-btn layui-btn-primary"
-                                    v-on:click="saveRemark">保存</button>
-                            </div>
+                        <div class="layui-form-item layui-form-text" style="text-align:right">
+                            <textarea placeholder="客户备注" class="layui-textarea"
+                                v-model="friend_info.remark_name"></textarea>
+                            <button type="button" class="layui-btn layui-btn-primary"
+                                v-on:click="saveRemark">保存</button>
                         </div>
+                        <!-- <div class="layui-form-item"> -->
+                        <!-- <div class="layui-inline"> -->
+                        <!-- <div class="layui-input-block"> -->
+                        <!-- <input type="input" name="search" autocomplete="off" class="layui-input"
+                                        placeholder="客户备注" v-model="friend_info.remark_name"> -->
+                        <!-- <textarea placeholder="客户备注" class="layui-textarea" v-model="friend_info.remark_name"></textarea> -->
+                        <!-- </div> -->
+                        <!-- <button type="button" class="layui-btn layui-btn-primary"
+                                    v-on:click="saveRemark">保存</button> -->
+                        <!-- </div> -->
+                        <!-- </div> -->
                     </div>
                 </div>
                 <hr>
@@ -807,7 +814,8 @@
 
                 });
             },
-            renderDropdown() {
+            //右键
+            renderDropdown(e) {
                 var self = this;
                 layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
                     var upload = layui.upload
@@ -824,17 +832,32 @@
                             , id: 1
                         }, {
                             title: '转发'
-                            , id: 555
+                            , id: 2
                         }, {
                             title: '收藏'
-                            , id: 666
+                            , id: 3
                         }, {
                             title: '多选'
-                            , id: 777
+                            , id: 4
                         }, {
                             title: '删除'
-                            , id: 888
-                        }]
+                            , id: 5
+                        }], click: function (obj, othis) {
+                            if (obj.id === 1) {
+                                console.log('复制');
+                                console.log(othis);
+                                console.log(this);
+                                console.log(this.elem);
+                            } else if (obj.id === 2) {
+                                console.log('转发');
+                            } else if (obj.id === 3) {
+                                console.log('收藏');
+                            } else if (obj.id === 4) {
+                                console.log('多选');
+                            } else if (obj.id === 5) {
+                                console.log('删除');
+                            }
+                        }
                     });
                 });
             },
@@ -891,7 +914,8 @@
 
 
     var from_id = "{$from_id}";
-    var webSocket = new WebSocket("ws://127.0.0.1:9506");
+    // var webSocket = new WebSocket("ws://127.0.0.1:9506");
+    var webSocket = new WebSocket("ws://{$socket_ip}:{$socket_port}");
     webSocket.onerror = function (event) {
         console.log("onerror 错误： " + event.data);
     };

@@ -85,7 +85,7 @@ class Ai extends Addon
             'userid' => $this->fromWxid,
             'msg' => $msg,
         ]);
-        Logger::error($res);
+        //Logger::error($res);
         if($res['code']){
             switch ($res['answer_type']){
                 case Base::ANSWER_TEXT:

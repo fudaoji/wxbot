@@ -3,7 +3,7 @@
 <style>
     .chat_box_panel {
         height: 800px;
-        
+
     }
 
     .content {
@@ -68,7 +68,9 @@
         filter: grayscale(100%);
     }
 
-   .headimg{padding-right: 5px;}
+    .headimg {
+        padding-right: 5px;
+    }
 </style>
 <div id="app" class="chat" style="height:820px;">
     <div class="layui-row">
@@ -86,7 +88,7 @@
                     </li>
                 </ul>
                 <div class="layui-menu-body-title">
-                    <button type="button" class="layui-btn layui-btn-fluid layui-btn-primary">
+                    <button type="button" class="layui-btn layui-btn-fluid layui-btn-primary" @click="addBot">
                         <i class="layui-icon layui-icon-add-1"></i>新增
                     </button>
                 </div>
@@ -104,7 +106,7 @@
                         </div>
                         <div class="layui-col-xs3">
                             <button type="button" class="layui-btn layui-btn-sm" style="height: 38px;"
-                                    @click="searchFriend()">搜索</button>
+                                @click="searchFriend()">搜索</button>
                         </div>
                     </div>
                     <!-- <button type="button" class="layui-btn layui-btn-normal layui-btn-sm layui-btn-primary" lay-submit="" lay-filter="search"><i class="layui-icon layui-icon-search"></i></button> -->
@@ -258,7 +260,8 @@
                         <div class="layui-panel">
                             <div class="layui-row">
                                 <div class="layui-col-md1" style="float:right">
-                                    <a href="javascrip::" @click="cancelForward"><i class="layui-icon layui-icon-close"></i></a>
+                                    <a href="javascrip::" @click="cancelForward"><i
+                                            class="layui-icon layui-icon-close"></i></a>
                                 </div>
                             </div>
                             <div class="layui-row">
@@ -311,10 +314,11 @@
                     <div class="layui-col-md12 remark">
                         <div class="layui-card-header" style="text-align:center">客户备注
                             <button type="button" class="layui-btn layui-btn-xs pull-right"
-                                    @click="saveRemark">保存</button></div>
+                                @click="saveRemark">保存</button>
+                        </div>
                         <div class="layui-card-body">
                             <textarea placeholder="客户备注" class="layui-textarea"
-                                      v-model="friend_info.remark_name"></textarea>
+                                v-model="friend_info.remark_name"></textarea>
                         </div>
                     </div>
                 </div>
@@ -347,11 +351,12 @@
                             </div>
                             <div class="layui-card-body">
                                 <div class="layui-collapse" style="height: 238px;overflow: scroll;"
-                                     ref="speechcraft_list_ref">
-                                    <div class="layui-colla-item" v-for="(item, index) in speechcraft_list" :key="item.id">
+                                    ref="speechcraft_list_ref">
+                                    <div class="layui-colla-item" v-for="(item, index) in speechcraft_list"
+                                        :key="item.id">
                                         <h2 class="layui-colla-title">{{item.title}}</h2>
                                         <div class="layui-colla-content copy_speechcraft"
-                                             @click="copySpeechcraft(item.content)">
+                                            @click="copySpeechcraft(item.content)">
                                             <p>
                                                 {{item.content}}
                                             </p>
@@ -475,10 +480,14 @@
                         self['get_bot_param'].page_count = Math.ceil(res.data.total / limit);
                         self['bot_list'] = self['bot_list'].concat(res.data.list);
                         if (page == 1) {
-                            self['bot_id'] = self['bot_list'][0].id;
-                            self['bot_info'] = self['bot_list'][0];
-                            self['getFriendsData'](self['bot_info']);
-                            self['bot_uin'] = self['bot_list'][0].uin;
+                            if (self['bot_list'].length > 0) {
+                                self['bot_info'] = self['bot_list'][0];
+                                self['bot_id'] = self['bot_list'][0].id;
+                                self['bot_uin'] = self['bot_list'][0].uin;
+                                self['getFriendsData'](self['bot_info']);
+                            } else {
+                                self['addBot']();
+                            }
                         }
                         //遍历创建客服聊天数据
                         $.each(self['bot_list'], function (i, v) {
@@ -613,6 +622,9 @@
                 }
 
                 this.current_chat = self['chat_log'][[this.bot_uin]][[this.friend_wxid]];
+                this.current_chat.sort(function (a, b) {
+                    return b.last_chat_time - a.last_chat_time
+                });
                 //如果新信息，改为已读
                 if (item.new) {
                     $.each(this.friends_list, function (i, v) {
@@ -716,7 +728,7 @@
                 let self = this;
                 let bot_id = this.bot_id;
                 layer.open({
-                    title:'快捷回复',
+                    title: '快捷回复',
                     type: 2,
                     content: ['/admin/kefu/addSpeechcraft?bot_id=' + bot_id, 'no'],
                     area: ['650px', '330px'], //自定义文本域宽高
@@ -1117,37 +1129,37 @@
                 }
                 let check = true;
                 //发送的信息不能收藏
-                $.each(share_content,function(i,v){
+                $.each(share_content, function (i, v) {
                     if (v.type == 'send') {
                         check = false;
                         return false;
                     }
-                    
+
                 });
                 if (!check) {
                     layer.msg('不能收藏发送的信息,请检查');
                     return false;
                 }
-                $.each(share_content,function(i,v){
+                $.each(share_content, function (i, v) {
                     if (v.type == 'receive') {
                         let param = { content: v.content, msg_type: v.msg_type, msg_id: v.msg_id };
                         self['favoritesMsg'](param);
                     }
-                    
+
                 });
 
                 this.cancelForward();
-                
+
             },
             //获取当日聊天记录
-            getChatLog(){
+            getChatLog() {
                 let self = this;
                 let url = "/admin/kefu/getChatLog";
                 let uin = this.bot_info.uin;
                 let friend_wxid = this.friend_info.wxid;
                 let params = {
-                    uin:uin,
-                    friend_wxid:friend_wxid
+                    uin: uin,
+                    friend_wxid: friend_wxid
                 };
                 $.ajaxSettings.async = false;
                 $.post(url, params, function (res) {
@@ -1155,6 +1167,28 @@
                         self['chat_log'][[uin]][[friend_wxid]] = res.data.list;
                     }
                 }, 'json');
+            },
+            //添加机器人
+            addBot() {
+                layer.open({
+                    title: '添加机器人',
+                    type: 2,
+                    content: ['/admin/Kefu/loginBot'],
+                    area: ['500px', '700px'], //自定义文本域宽高
+                    // btn: ['保存', '取消'],
+                    // yes: function (index, layero) {
+                    //     var body = layero.find("iframe").contents().find("body");
+                    //     var params = $(body).find('form').serialize();
+                    //     var url = '/admin/kefu/saveSpeechcraft';
+                    //     $.post(url, params, function (res) {
+                    //         if (res.code == 1) {
+                    //             self['speechcraft_list'] = [];
+                    //             self['getSpeechcraftData']();
+                    //         }
+                    //         layer.close(index);
+                    //     }, 'json');
+                    // }
+                });
             }
 
 

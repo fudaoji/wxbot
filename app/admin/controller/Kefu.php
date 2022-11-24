@@ -392,6 +392,7 @@ class Kefu extends Base
                 $val['class'] = $val['type'] == 'send' ? 'my_chat_content' : 'friend_chat_content';
                 $val['headimgurl'] = $val['from_headimg'];
                 $val['friend'] = $friend;
+                $val['time'] = strtotime($val['create_time']);
             }
             // $result = [
             //     'msg_id' => $msgid,

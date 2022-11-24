@@ -1160,7 +1160,7 @@
                 $.ajaxSettings.async = false;
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
-                        res.data.list.sort(compare("date"));
+                        res.data.list.sort(compare("time"));
                         self['chat_log'][[uin]][[friend_wxid]] = res.data.list;
                     }
                 }, 'json');

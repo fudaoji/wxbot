@@ -622,9 +622,7 @@
                 }
 
                 this.current_chat = self['chat_log'][[this.bot_uin]][[this.friend_wxid]];
-                this.current_chat.sort(function (a, b) {
-                    return b.last_chat_time - a.last_chat_time
-                });
+
                 //如果新信息，改为已读
                 if (item.new) {
                     $.each(this.friends_list, function (i, v) {
@@ -640,7 +638,9 @@
                 }
 
                 this.renderElement();
-
+                // this.current_chat.sort(function (a, b) {
+                //     return b.last_chat_time - a.last_chat_time
+                // });
             },
             //发送信息
             sendMsg(e) {
@@ -676,9 +676,7 @@
                                     return false;
                                 }
                             });
-                            self['friends_list'].sort(function (a, b) {
-                                return b.last_chat_time - a.last_chat_time
-                            })
+                            self['friends_list'].sort(compare("last_chat_time"));
 
                         }
                         self['renderDropdown']();
@@ -1096,9 +1094,7 @@
                                     return false;
                                 }
                             });
-                            self['friends_list'].sort(function (a, b) {
-                                return b.last_chat_time - a.last_chat_time
-                            })
+                            self['friends_list'].sort(compare("last_chat_time"));
 
                         }
                         self['renderDropdown']();
@@ -1164,35 +1160,35 @@
                 $.ajaxSettings.async = false;
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
+                        res.data.list.sort(compare("date"));
                         self['chat_log'][[uin]][[friend_wxid]] = res.data.list;
                     }
                 }, 'json');
             },
             //添加机器人
             addBot() {
-                layer.open({
-                    title: '添加机器人',
-                    type: 2,
-                    content: ['/admin/Kefu/loginBot'],
-                    area: ['500px', '700px'], //自定义文本域宽高
-                    // btn: ['保存', '取消'],
-                    // yes: function (index, layero) {
-                    //     var body = layero.find("iframe").contents().find("body");
-                    //     var params = $(body).find('form').serialize();
-                    //     var url = '/admin/kefu/saveSpeechcraft';
-                    //     $.post(url, params, function (res) {
-                    //         if (res.code == 1) {
-                    //             self['speechcraft_list'] = [];
-                    //             self['getSpeechcraftData']();
-                    //         }
-                    //         layer.close(index);
-                    //     }, 'json');
-                    // }
-                });
-            }
-
-
-
+                window.location.href = "/admin/kefu/loginBot";
+                // layer.open({
+                //     title: '添加机器人',
+                //     type: 2,
+                //     content: ['/admin/Kefu/loginBot'],
+                //     area: ['500px', '700px'], //自定义文本域宽高
+                // btn: ['保存', '取消'],
+                // yes: function (index, layero) {
+                //     var body = layero.find("iframe").contents().find("body");
+                //     var params = $(body).find('form').serialize();
+                //     var url = '/admin/kefu/saveSpeechcraft';
+                //     $.post(url, params, function (res) {
+                //         if (res.code == 1) {
+                //             self['speechcraft_list'] = [];
+                //             self['getSpeechcraftData']();
+                //         }
+                //         layer.close(index);
+                //     }, 'json');
+                // }
+                // });
+            },
+            
         }
     });
 
@@ -1271,9 +1267,8 @@
                     new_to_friend = false;
                     // console.log(vm['friends_list']);
                 }
-                vm['friends_list'].sort(function (a, b) {
-                    return b.last_chat_time - a.last_chat_time
-                })
+                vm['friends_list'].sort(compare("last_chat_time"));
+                
 
 
             }
@@ -1322,4 +1317,13 @@
         vm.content_type = 1;
 
     }
+
+    function compare(property) {
+        return function (a, b) {
+            var value1 = a[property];
+            var value2 = b[property];
+            return value1 - value2;
+        }
+    }
+
 </script>

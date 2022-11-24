@@ -417,7 +417,8 @@ class Kefu extends Base
         $ControllerBot = new ControllerBot;
         $data = array_merge([
             'protocol' => Bot::PROTOCOL_MY,
-            'app_key' => get_rand_char(32)
+            'app_key' => get_rand_char(32),
+            'jump' => '/admin/kefu'
         ], $ControllerBot->getConfig());
         
         cache('botadd' . $this->adminInfo['id'], $data);

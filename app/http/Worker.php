@@ -12,7 +12,7 @@ use Workerman\Lib\Timer;
 class Worker extends Server
 {
 	protected $socket = 'websocket://0.0.0.0:9506';
-
+    protected $daemonize = true;
 	protected static $heartbeat_time = 50;
 
 	public function onWorkerStart($worker)

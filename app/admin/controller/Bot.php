@@ -420,7 +420,7 @@ class Bot extends Base
      * @throws \think\db\exception\DbException
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    private function getConfig(){
+    public function getConfig(){
         if(! $config = $this->model->getOneByOrder([
             'where' => ['admin_id' => $this->adminInfo['id']],
             'order' => ['alive' => 'desc', 'update_time' => 'desc'],

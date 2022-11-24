@@ -8,6 +8,7 @@
 
 namespace app\admin\controller;
 
+use app\admin\controller\Bot as ControllerBot;
 use app\admin\model\Bot as ModelBot;
 use app\admin\model\BotMember;
 use app\common\model\kefu\Speechcraft;
@@ -178,25 +179,25 @@ class Kefu extends Base
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                // $bot_client->sendTextToFriends([
-                //     'robot_wxid' => $bot['uin'],
-                //     'to_wxid' => $post_data['to_wxid'],
-                //     'msg' => $post_data['content']
-                // ]);
+                $bot_client->sendTextToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'msg' => $post_data['content']
+                ]);
                 $last_chat_content = $post_data['content'];
             } else if ($post_data['type'] == 3) { //图片
-                // $bot_client->sendImgToFriends([
-                //     'robot_wxid' => $bot['uin'],
-                //     'to_wxid' => $post_data['to_wxid'],
-                //     'path' => $post_data['content']
-                // ]);
+                $bot_client->sendImgToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
                 $last_chat_content = '[图片]';
             } else if ($post_data['type'] == 2004) {//文件
-                // $bot_client->sendFileToFriends([
-                //     'robot_wxid' => $bot['uin'],
-                //     'to_wxid' => $post_data['to_wxid'],
-                //     'path' => $post_data['content']
-                // ]);
+                $bot_client->sendFileToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
                 $last_chat_content = '[文件]';
             }
             $msgid = time() . $this->adminInfo['id'];
@@ -382,7 +383,7 @@ class Kefu extends Base
             $from_date = strtotime(date("Y-m-d"));
             $to_date = time();
             $where[] = ['create_time','between',[$from_date, $to_date]];
-            $order = ['create_time' => 'asc'];
+            $order = ['create_time' => 'desc'];
             $limit = 30;
             $log_list = $chat_model->partition('p' . $year)->where($where)->order($order)->limit($limit)->select();
             $friend = $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['friend_wxid']])->find();
@@ -406,5 +407,20 @@ class Kefu extends Base
             $this->success('success', '', ['list' => $log_list]);
 
         }
+    }
+
+    /**
+     * 
+     * 机器人登录
+     */
+    public function loginBot(){
+        $ControllerBot = new ControllerBot;
+        $data = array_merge([
+            'protocol' => Bot::PROTOCOL_MY,
+            'app_key' => get_rand_char(32)
+        ], $ControllerBot->getConfig());
+        
+        cache('botadd' . $this->adminInfo['id'], $data);
+        $this->success('请打开微信扫码登录', url('/admin/Bot/loginmy', $data));
     }
 }

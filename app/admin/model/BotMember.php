@@ -318,10 +318,12 @@ class BotMember extends Base
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
+                    Logger::error($list);
                     foreach ($list as $k => $v){
                         $nickname = filter_emoji($v['nickname']);
                         $remark_name = filter_emoji($v['note']);
                         $username = $v['wx_num'];
+                        $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
                         if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
@@ -329,7 +331,8 @@ class BotMember extends Base
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
                                 'remark_name' => $remark_name,
-                                'username' => $username
+                                'username' => $username,
+                                'headimgurl' => $headimgurl
                             ]);
                         }else{
                             $this->addOne([
@@ -338,7 +341,8 @@ class BotMember extends Base
                                 'remark_name' => $remark_name,
                                 'username' => $username,
                                 'wxid' => $wxid,
-                                'type' => \app\constants\Bot::FRIEND
+                                'type' => \app\constants\Bot::FRIEND,
+                                'headimgurl' => $headimgurl
                             ]);
                         }
                     }

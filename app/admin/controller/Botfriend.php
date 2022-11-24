@@ -56,6 +56,7 @@ class Botfriend extends Botbase
             ->setTip($tip)
             ->addTopButton('self', ['title'=>'拉取最新好友', 'href' => url('syncFriends'), 'data-ajax' => 1])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'wxid', 'minWidth' => 90])
+            ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture_url', 'minWidth' => 100])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 90])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name', 'minWidth' => 70])

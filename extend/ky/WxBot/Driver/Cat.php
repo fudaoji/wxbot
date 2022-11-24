@@ -58,6 +58,8 @@ class Cat extends Base
     const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
     const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
 
+    const API_GET_MOMENTS = 'GetWechatMoments';
+
 
     public function __construct($options = [])
     {
@@ -185,6 +187,13 @@ class Cat extends Base
      */
     private function dealParams($params = [], $type = 'img'){
         switch ($type){
+            case 'music':
+                $params['msg'] = [
+                    'music_name' => $params['title'],
+                    'type' => $params['desc']
+                ];
+                unset($params['title'], $params['desc']);
+                break;
             case 'share_link':
                 $params['msg'] = [
                     'title' => $params['title'],
@@ -208,21 +217,22 @@ class Cat extends Base
 
     /**
      *resp:{
-        "success":true,//true时，http-sdk才处理，false直接丢弃
-        "message":"successful!",
-        "event":"SendImageMsg",//告诉它干什么，SendImageMsg是发送图片事件
-        "robot_wxid":"wxid_5hxa04j4z6pg22",//用哪个机器人发
-        "to_wxid":"18900134932@chatroom",//发到哪里？群/好友
-        "member_wxid":"",
-        "member_name":"",
-        "group_wxid":"",
-        "msg": {//消息内容:发送 图片、视频、文件、动态表情都是这个结构
-            "url":"https:\/\/b3logfile.com\/bing\/20201024.jpg",
-            "name":"20201024.jpg"//带有扩展名的文件名，建议文件md5(尽量别重名，否则会给你发错哦！http-sdk会先检测文件在不在，如果不在才去url下载，再发送，否则直接发送)
-        }
-     }
+     * "success":true,//true时，http-sdk才处理，false直接丢弃
+     * "message":"successful!",
+     * "event":"SendImageMsg",//告诉它干什么，SendImageMsg是发送图片事件
+     * "robot_wxid":"wxid_5hxa04j4z6pg22",//用哪个机器人发
+     * "to_wxid":"18900134932@chatroom",//发到哪里？群/好友
+     * "member_wxid":"",
+     * "member_name":"",
+     * "group_wxid":"",
+     * "msg": {//消息内容:发送 图片、视频、文件、动态表情都是这个结构
+     * "url":"https:\/\/b3logfile.com\/bing\/20201024.jpg",
+     * "name":"20201024.jpg"//带有扩展名的文件名，建议文件md5(尽量别重名，否则会给你发错哦！http-sdk会先检测文件在不在，如果不在才去url下载，再发送，否则直接发送)
+     * }
+     * }
      * @param array $params
      * Author: fudaoji<fdj@kuryun.cn>
+     * @return bool
      */
     public function sendImgToFriend($params = [])
     {
@@ -268,8 +278,15 @@ class Cat extends Base
         return $this->doRequest($params, self::API_SEND_FILE_MSG);
     }
 
+    /**
+     * 发送音乐分享 robot_wxid, to_wxid(群/好友), msg(music_name, type)
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function sendMusicLinkMsg($params = [])
     {
+        $params = $this->dealParams($params, 'music');
         return $this->doRequest($params, self::API_SEND_MUSIC_MSG);
     }
 
@@ -301,14 +318,20 @@ class Cat extends Base
         return $this->doRequest($params, self::API_SEND_SHARE_LINK_MSG);
     }
 
+    /**
+     * 文本式链接
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return array
+     */
     public function sendLinkMsg($params = [])
     {
-        // TODO: Implement sendLinkMsg() method.
+        return $this->apiUnSupport();
     }
 
     public function sendCardMsg($params = [])
     {
-        // TODO: Implement sendCardMsg() method.
+        return $this->apiUnSupport();
     }
 
     public function setFriendRemarkName($params = [])
@@ -330,12 +353,12 @@ class Cat extends Base
 
     public function searchAccount($params = [])
     {
-        // TODO: Implement searchAccount() method.
+        return $this->apiUnSupport();
     }
 
     public function addFriendBySearch($params = [])
     {
-        // TODO: Implement addFriendBySearch() method.
+        return $this->apiUnSupport();
     }
 
     /**
@@ -472,7 +495,7 @@ class Cat extends Base
 
     public function getMemberInfo($params = [])
     {
-        // TODO: Implement getMemberInfo() method.
+        return $this->apiUnSupport();
     }
 
     public function cleanChatHistory($params = [])
@@ -482,76 +505,77 @@ class Cat extends Base
 
     public function sendCardToFriend($params = [])
     {
-        // TODO: Implement sendCardToFriend() method.
+        return $this->apiUnSupport();
     }
 
     public function sendCardToFriends($params = [])
     {
-        // TODO: Implement sendCardToFriends() method.
+        return $this->apiUnSupport();
     }
 
     public function buildingGroup($params = [])
     {
-        // TODO: Implement buildingGroup() method.
+        return $this->apiUnSupport();
     }
 
     public function getMoments($params = [])
     {
-        // TODO: Implement getMoments() method.
+        return $this->apiUnSupport();
+        //return $this->doRequest($params, self::API_GET_MOMENTS);
     }
 
     public function getFriendMoments($params = [])
     {
-        // TODO: Implement getFriendMoments() method.
+        return $this->apiUnSupport();
     }
 
     public function likeMoments($params = [])
     {
-        // TODO: Implement likeMoments() method.
+        return $this->apiUnSupport();
     }
 
     public function commentMoments($params = [])
     {
-        // TODO: Implement commentMoments() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsText($params = [])
     {
-        // TODO: Implement sendMomentsText() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsImg($params = [])
     {
-        // TODO: Implement sendMomentsImg() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsVideo($params = [])
     {
-        // TODO: Implement sendMomentsVideo() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsLink($params = [])
     {
-        // TODO: Implement sendMomentsLink() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsXml($params = [])
     {
-        // TODO: Implement sendMomentsXml() method.
+        return $this->apiUnSupport();
     }
 
     public function favoritesMsg($params = [])
     {
-        // TODO: Implement favoritesMsg() method.
+        return $this->apiUnSupport();
     }
 
     public function getFavorites($params = [])
     {
-        // TODO: Implement getFavorites() method.
+        return $this->apiUnSupport();
     }
 
     public function sendFavoritesMsg($params = [])
     {
-        // TODO: Implement sendFavoritesMsg() method.
+        return $this->apiUnSupport();
     }
 }

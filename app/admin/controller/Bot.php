@@ -441,7 +441,7 @@ class Bot extends Base
      */
     public function loginMy(){
         $data = cache('botadd' . $this->adminInfo['id']);
-
+        $jump = $data['jump'] ?? '';
         if (!$data) {
             $this->error('参数错误');
         }
@@ -483,7 +483,8 @@ class Bot extends Base
                         ]
                     ]);
                 }
-                $this->success('登录成功');
+                
+                $this->success('登录成功',$jump);
             }else{
                 $this->success('登录失败：' . $bot_client->getError());
             }

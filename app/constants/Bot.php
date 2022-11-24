@@ -9,7 +9,6 @@
 
 namespace app\constants;
 
-
 class Bot
 {
     const PROTOCOL_WEB = 'webgo';
@@ -138,8 +137,8 @@ class Bot
             self::PROTOCOL_MY => '我的个微',
             self::PROTOCOL_MYCOM => '我的企微',
             self::PROTOCOL_CAT => '可爱猫个微',
-            self::PROTOCOL_VLW => 'VLW个微',
-            self::PROTOCOL_WXWORK => 'VLW企微',
+            //self::PROTOCOL_VLW => 'VLW个微',
+            //self::PROTOCOL_WXWORK => 'VLW企微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

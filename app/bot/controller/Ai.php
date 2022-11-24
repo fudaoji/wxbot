@@ -75,7 +75,6 @@ class Ai extends Addon
      * 关键词回复
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function keyword(){
@@ -86,7 +85,7 @@ class Ai extends Addon
             'msg' => $msg,
         ]);
         //Logger::error($res);
-        if($res['code']){
+        if($res['code'] && !empty($res['answer_type'])){
             switch ($res['answer_type']){
                 case Base::ANSWER_TEXT:
                     $this->botClient->sendTextToFriend([

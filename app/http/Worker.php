@@ -12,14 +12,11 @@ use Workerman\Lib\Timer;
 class Worker extends Server
 {
 	protected $socket = 'websocket://0.0.0.0:9506';
-    protected $option = [
-        'daemonize'	=> false, //生产环境改为true
-    ];
 	protected static $heartbeat_time = 50;
 
 	public function init()
     {
-        $this->option['daemonize'] = env('app_debug') ? false : true;
+        
     }
 
     public function onWorkerStart($worker)

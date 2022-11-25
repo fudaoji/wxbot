@@ -14,7 +14,7 @@ class Worker extends Server
 {
 	protected $socket = 'websocket://0.0.0.0:9506';
 	protected static $heartbeat_time = 50;
-    protected static $daemonize = true;
+    public static $daemonize = true;
 
 	public function init()
     {

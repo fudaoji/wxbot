@@ -1105,6 +1105,7 @@
             //发送微信消息
             sendToWx(params) {
                 let url = '/admin/kefu/sendMsgPost';
+                $.ajaxSettings.async = true;
                 $.post(url, params, function (res) {
 
                 }, 'json');

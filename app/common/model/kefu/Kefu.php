@@ -27,7 +27,7 @@ class Kefu extends Base
      * 
      * 自动通过验证
      */
-    public function autoPass($content, $bot, $botClient)
+    public function autoPass($content, $bot, $botClient,$config)
     {
         // "content": {
         //     "robot_wxid": "",  // 机器人账号id
@@ -49,7 +49,7 @@ class Kefu extends Base
         //         "headimgurl": "http://wx.qlogo.cn/xxxxx",
         //         "type": 3
         //     },  // 友验证信息JSON(群内添加时，包含群id) (名片推荐添加时，包含推荐人id及昵称) (微信号、手机号搜索等添加时,具体JSON结构请查看日志）
-        if ($bot['auto_pass']) {
+        if ($config['auto_pass']) {
             $v1 = $content['json_msg']['v1'];
             $v2 = $content['json_msg']['v2'];
             $type = $content['json_msg']['type'];
@@ -82,13 +82,35 @@ class Kefu extends Base
                 ]);
             }
             //发生自动回复
-            $auto_reply = trim($bot['auto_reply']);
+            $auto_reply = trim($config['auto_reply']);
             if($auto_reply) {
                 $ControllerKefu = new ControllerKefu();
                 $param = ['bot_id' => $bot['id'],'type' => 1, 'to_wxid' => $content['from_wxid'], 'content' => $auto_reply, 'friend_id' => $id];
                 $ControllerKefu->sendMsg($param);
+                //发一条好友请求事件到前端，刷新好友列表
+                $this->sendToClinet([
+                    'event' => 'new_friend',
+                    'from_wxid' => $content['from_wxid'], 
+                    'robot_wxid' => $content['robot_wxid'],
+                    'admin_id' => $bot['admin_id']
+                ]);
             }
         }
 
+    }
+    /**
+     * 发送信息到前端
+     */
+    public function sendToClinet($param){
+        $key = 'receive_private_chat';
+        $redis = get_redis();
+        $msg = json_encode([
+            'event' => $param['event'],
+            'from_wxid' => $param['from_wxid'],
+            'robot_wxid' => $param['robot_wxid'],
+            'client' => $param['admin_id'],//对应用户id
+        ]);
+        $redis->rpush($key,$msg);
+        return true;
     }
 }

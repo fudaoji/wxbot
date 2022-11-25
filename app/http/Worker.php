@@ -67,23 +67,28 @@ class Worker extends Server
 					$res = json_decode($msg, true);
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
-						$content = $msg['msg'];
-						$msg['msg'] = $this->emojiCode($msg['msg']);
-						$conn->send($msg);
-						echo "发送消息：".$msg;
-						//最后一条聊天记录放redis
-						$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
-						$hkey = $res['from_wxid'];
-						$result = [
-							'msg_id' => $res['msg_id'],
-							'date' => $res['date'],
-							'content' => $content,
-							'type' => 'receive',
-							'headimgurl' => $res['headimgurl'],
-							'friend' => $res['friend'],
-							'msg_type' => $res['msg_type'],
-						];
-						$redis->hSet($last_log_key, $hkey, json_encode($result));
+						if ($res['event'] == 'msg') {
+							$content = $res['msg'];
+							$res['msg'] = $this->emojiCode($res['msg']);
+							$conn->send($msg);
+							echo "发送消息：".$msg;
+							//最后一条聊天记录放redis
+							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
+							$hkey = $res['from_wxid'];
+							$result = [
+								'msg_id' => $res['msg_id'],
+								'date' => $res['date'],
+								'content' => $content,
+								'type' => 'receive',
+								'headimgurl' => $res['headimgurl'],
+								'friend' => $res['friend'],
+								'msg_type' => $res['msg_type'],
+							];
+							$redis->hSet($last_log_key, $hkey, json_encode($result));
+						} else if($res['event'] == 'new_friend') {
+							$conn->send($msg);
+						}
+						
 					}
 				}
 			}

@@ -107,7 +107,8 @@
                                     </div>
                                     <div class="layui-col-md9 content">
                                         <blockquote class="layui-elem-quote">
-                                            <div v-if="item.msg_type == 1" :class="'send_1_'+item.msg_id" v-html="item.content"></div>
+                                            <div v-if="item.msg_type == 1" :class="'send_1_'+item.msg_id"
+                                                v-html="item.content"></div>
                                             <div v-if="item.msg_type == 3" :class="'send_2_'+item.msg_id"><img
                                                     :src="item.content" style="width:100px;"></div>
                                             <div v-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id"><a
@@ -137,8 +138,8 @@
                                     </div>
                                     <div class="layui-col-md9 content">
                                         <blockquote class="layui-elem-quote">
-                                            <span v-if="item.msg_type == 1"
-                                                :class="'receive_1_'+item.msg_id" v-html="item.content"></span>
+                                            <span v-if="item.msg_type == 1" :class="'receive_1_'+item.msg_id"
+                                                v-html="item.content"></span>
                                             <span v-if="item.msg_type == 3" :class="'receive_2_'+item.msg_id"><img
                                                     :src="item.content" style="width:100px;"></span>
                                             <span v-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id"><a
@@ -584,7 +585,7 @@
                         scroll();
                         // self['searchFriend']();
                         self['sendToWx'](params);
-                        
+
                     }
                 }, 'json');
             },
@@ -932,19 +933,19 @@
                     //发送转发内容
                     $.each(share_content, function (i2, v2) {
                         //emoji图片转换
-                        $.post(emoji_url, {content:v2.content, to:'emoji'}, function (res) {
+                        $.post(emoji_url, { content: v2.content, to: 'emoji' }, function (res) {
                             let params = {
-                            content: res.data.content,
-                            uin: uin,
-                            to_wxid: v,
-                            bot_id: bot_id,
-                            bot_info: bot_info,
-                            quote: '',
-                            type: v2.msg_type,
-                        }
-                        self['sendMsgPost'](params);
-                        },'json');
-                        
+                                content: res.data.content,
+                                uin: uin,
+                                to_wxid: v,
+                                bot_id: bot_id,
+                                bot_info: bot_info,
+                                quote: '',
+                                type: v2.msg_type,
+                            }
+                            self['sendMsgPost'](params);
+                        }, 'json');
+
                     });
 
                     //发送留言
@@ -1138,83 +1139,71 @@
         if (event.data) {
             console.log('收到客户端消息:' + event.data);
             var massage = eval("(" + event.data + ")");
-            let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type };
-            console.log(msg);
-            if (!vm['chat_log'][[massage.robot_wxid]]) {
-                vm['chat_log'][[massage.robot_wxid]] = {};
-            }
-
-            if (!vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]]) {
-                vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = [];
-            }
-            // console.log(vm['chat_log']);
-            vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
-            vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
-            if (!vm['new_bot'].includes(massage.robot_wxid)) {
-                vm['new_bot'].push(massage.robot_wxid);
-            }
-            //机器人未读点亮
-            //如果消息不是当前机器人则点亮
-            var new_to_friend = true;
-            if (massage.robot_wxid != vm['bot_uin']) {
-                $.each(vm['bot_list'], function (i, v) {
-                    if (massage.robot_wxid == v.uin) {
-                        vm['bot_list'][i]['new'] = 1;
-                        // let new_bot_arr = vm['new_bot'];
-                        // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
-                        // vm['new_bot'] = new_bot_arr;
-                        // console.log(new_bot_arr);
-                        return false;
-                    }
-                })
-
-            } else {
-                //判断是否在好友列表里
-                //是替换
-                //否放入
-                //排序
-                var is_in = false;
-                $.each(vm['friends_list'], function (i, v) {
-                    if (massage.from_wxid == v.wxid) {
-                        vm['friends_list'][i] = massage.friend;
-                        is_in = true;
-                        return false;
-                    }
-                })
-                if (!is_in) {
-                    massage.friend.new = 1;
-                    vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
-                    new_to_friend = false;
-                    // console.log(vm['friends_list']);
+            //收到私聊信息
+            if (massage.event == 'msg') {
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type };
+                console.log(msg);
+                if (!vm['chat_log'][[massage.robot_wxid]]) {
+                    vm['chat_log'][[massage.robot_wxid]] = {};
                 }
-                vm['friends_list'].sort(compare("last_chat_time", "desc"));
 
-
-
-            }
-            // console.log(vm['new_bot']);
-            // //点亮对应好友
-            // $.each(vm['friends_list'], function (i, v) {
-            //         if (massage.from_wxid == v.wxid) {
-            //             vm['friends_list'][i]['new'] = 1;
-            //         }
-            //     })
-
-            //点亮对应好友
-            if (new_to_friend) {
-                if (!vm['new_friend'].includes(massage.from_wxid)) {
-                    vm['new_friend'].push(massage.from_wxid);
+                if (!vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]]) {
+                    vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = [];
                 }
+                // console.log(vm['chat_log']);
+                vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
+                vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+                if (!vm['new_bot'].includes(massage.robot_wxid)) {
+                    vm['new_bot'].push(massage.robot_wxid);
+                }
+                //机器人未读点亮
+                //如果消息不是当前机器人则点亮
+                var new_to_friend = true;
+                if (massage.robot_wxid != vm['bot_uin']) {
+                    $.each(vm['bot_list'], function (i, v) {
+                        if (massage.robot_wxid == v.uin) {
+                            vm['bot_list'][i]['new'] = 1;
+                            // let new_bot_arr = vm['new_bot'];
+                            // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
+                            // vm['new_bot'] = new_bot_arr;
+                            // console.log(new_bot_arr);
+                            return false;
+                        }
+                    })
+
+                } else {
+                    //判断是否在好友列表里
+                    //是替换
+                    //否放入
+                    //排序
+                    var is_in = false;
+                    $.each(vm['friends_list'], function (i, v) {
+                        if (massage.from_wxid == v.wxid) {
+                            vm['friends_list'][i] = massage.friend;
+                            is_in = true;
+                            return false;
+                        }
+                    })
+                    if (!is_in) {
+                        massage.friend.new = 1;
+                        vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
+                        new_to_friend = false;
+                        // console.log(vm['friends_list']);
+                    }
+                    vm['friends_list'].sort(compare("last_chat_time", "desc"));
+                }
+                //点亮对应好友
+                if (new_to_friend) {
+                    if (!vm['new_friend'].includes(massage.from_wxid)) {
+                        vm['new_friend'].push(massage.from_wxid);
+                    }
+                }
+                webSocket.send('client_get_msg');
+            } else if(massage.event == 'new_friend'){
+                //好友添加事件
+                vm.searchFriend();
             }
 
-
-            // vm['searchFriend']();
-            // if (massage.from_wxid != vm['friend_wxid']) {
-
-            // }
-
-
-            webSocket.send('client_get_msg');
         }
     };
     webSocket.onclose = function (event) {
@@ -1261,8 +1250,8 @@
         //     console.log(document.querySelector('.scroll').clientHeight)
         // },2000)
 
-        vm.$nextTick(() => {document.querySelector('.scroll').scrollIntoView(false);}) 
-        
+        vm.$nextTick(() => { document.querySelector('.scroll').scrollIntoView(false); })
+
     }
     // });
 </script>

@@ -48,6 +48,7 @@ class ChatLog extends Kefu
             'client' => $bot['admin_id'],//对应用户id
             'friend' => $member,
             'msg_type' => $data['type'],
+            'event' => 'msg'
         ]);
         $insert_data = [
             'from' => $data['from_wxid'],

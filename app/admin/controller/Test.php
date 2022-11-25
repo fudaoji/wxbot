@@ -11,6 +11,7 @@
 namespace app\admin\controller;
 use app\admin\model\BotMember;
 use app\common\model\kefu\ChatLog;
+use app\common\model\kefu\Kefu;
 class Test
 {
 
@@ -55,7 +56,8 @@ class Test
             'robot_wxid' => $data['robot_wxid'],
             'client' => 1,
             'friend' => $member,
-            'msg_type' => 1
+            'msg_type' => 1,
+            'event' => 'msg'
         ]);
         $insert_data = [
             'from' => $data['from_wxid'],
@@ -79,5 +81,19 @@ class Test
         // $bytes = $this->emoji->utf8Bytes($this->emoji->unifiedToHex($unified));
         $image = $this->emoji->emojiUnifiedToHtml($unified);
         dump($unified);exit;
+    }
+
+    /**
+     * 
+     * 模拟好友添加
+     */
+    public function setNewFriend(){
+        $kefuM = new Kefu();
+        $kefuM->sendToClinet([
+            'event' => 'new_friend',
+            'from_wxid' => 'wxid_53fet7200ygs22',
+            'robot_wxid' => 'cengzhiyang4294',
+            'admin_id' => 1
+        ]);
     }
 }

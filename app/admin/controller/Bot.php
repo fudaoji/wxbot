@@ -295,14 +295,16 @@ class Bot extends Base
     /**
      * 添加
      * @return mixed
+     * @throws \think\db\exception\DbException
      */
     public function add()
     {
-        $data = [
+        $data = array_merge([
             'login_code' => 0,
             'protocol' => \app\constants\Bot::PROTOCOL_MY,
             'app_key' => get_rand_char(32)
-        ];
+        ], $this->getConfig());
+
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')

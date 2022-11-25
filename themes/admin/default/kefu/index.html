@@ -57,6 +57,9 @@
     .chat_panel .layui-elem-quote{
         word-wrap: break-word;
     }
+    .chat_box_panel .layui-table-tool .layui-inline[lay-event]{
+        border: none;
+    }
 </style>
 <div id="app" class="chat" style="height:820px;">
     <div class="layui-row">
@@ -331,6 +334,7 @@
                             <div class="layui-card-body" style="text-align:right">
                                 <textarea placeholder="通过后默认回复话术" class="layui-textarea"
                                     v-model="auto_reply"></textarea>
+                                <span class="pull-left">通过后自动回复</span>
                                 <button class="layui-btn layui-btn-xs" lay-submit="" type="button"
                                     lay-filter="save_default_reply" @click="saveAutoReply">保存</button>
                             </div>

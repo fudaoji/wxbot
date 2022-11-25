@@ -179,6 +179,7 @@ class Kefu extends Base
             $year = date("Y");
             $time = time();
             $bot = $bot_model->getOne($post_data['bot_id']);
+            $content = $post_data['content'];
             // $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
                 // $bot_client->sendTextToFriends([
@@ -187,6 +188,7 @@ class Kefu extends Base
                 //     'msg' => $post_data['content']
                 // ]);
                 $last_chat_content = $post_data['content'];
+                $content = $this->emojiM->emojiText($post_data['content']);
             } else if ($post_data['type'] == 3) { //图片
                 // $bot_client->sendImgToFriends([
                 //     'robot_wxid' => $bot['uin'],
@@ -201,6 +203,9 @@ class Kefu extends Base
                 //     'path' => $post_data['content']
                 // ]);
                 $last_chat_content = '[文件]';
+            } else {
+                $content = '[链接]';
+                $last_chat_content = '[链接]';
             }
             $msgid = time() . $this->adminInfo['id'];
             $insert_data = [
@@ -224,10 +229,11 @@ class Kefu extends Base
             $member_model->where(['id' => $friend_id])->update(['last_chat_time' => $time]);
             $friend = $member_model->where(['id' => $friend_id])->find();
             $friend['last_chat_content'] = $last_chat_content;
+            
             $result = [
                 'msg_id' => $msgid,
                 'date' => $date,
-                'content' => $this->emojiM->emojiText($post_data['content']),
+                'content' => $content,
                 'type' => 'send',
                 'class' => 'my_chat_content',
                 'quote' => $post_data['quote'] ?? '',
@@ -430,7 +436,12 @@ class Kefu extends Base
                 $val['headimgurl'] = $val['from_headimg'];
                 $val['friend'] = $friend;
                 $val['time'] = strtotime($val['create_time']);
-                $val['content'] = $this->emojiM->emojiText($val['content'], 'img');
+                if ($val['msg_type'] == 1) {//文本
+                    $content = $this->emojiM->emojiText($val['content'], 'img');
+                } else if (!in_array($val['msg_type'],[2,2004])) {//图片和文件不处理
+                    $content = '[链接]';
+                }
+                $val['content'] = $content;
             }
             // $result = [
             //     'msg_id' => $msgid,

@@ -69,7 +69,12 @@ class Worker extends Server
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
 							$content = $res['msg'];
-							$res['msg'] = $this->emojiCode($res['msg']);
+							if ($res['msg_type'] == 1) {
+								$res['msg'] = $this->emojiCode($res['msg']);
+							} else if (!in_array($res['msg_type'],[2,2004])) {//图片和文件不处理
+								$res['msg'] = '[链接]';
+							}
+							
 							$conn->send($msg);
 							echo "发送消息：".$msg;
 							//最后一条聊天记录放redis

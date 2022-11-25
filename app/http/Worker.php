@@ -14,7 +14,7 @@ class Worker extends Server
 {
 	protected $socket = 'websocket://0.0.0.0:9506';
 	protected static $heartbeat_time = 50;
-    protected static $daemonize = true;
+    public static $daemonize = true;
 
 	public function init()
     {
@@ -46,7 +46,7 @@ class Worker extends Server
 					#这里统计下线人员的id
 					// $offline_user[] = $connection->uid;
 					#关闭连接
-					$connection->close();
+					//$connection->close();
 				}
 
 				// #这里是一个用户下线后通知其他用户

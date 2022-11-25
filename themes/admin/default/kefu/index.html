@@ -1,66 +1,5 @@
 <script src="__LIB__/jquery/jquery-3.6.1.min.js" charset="utf-8"></script>
 <link rel="stylesheet" href="__LIB__/emoji/emoji.css" />
-<style>
-    .chat_box_panel {
-        height: 800px;
-    }
-    .content {
-        margin: auto 10px;
-    }
-    .my_chat_content blockquote {
-        border-right: 5px solid #5fb878;
-        border-left: 0px;
-    }
-
-    .chat_panel {
-        height: 450px;
-        overflow: scroll;
-    }
-
-    .info {
-        margin-left: 20px;
-    }
-    .add_reply {
-        margin-left: 5px;
-    }
-    .layui-form-switch {
-        margin-top: 0;
-    }
-    .layui-textarea {
-        resize: none;
-    }
-    .layui-colla-content {
-        height: 100px;
-        overflow: scroll;
-    }
-    .bot-panel {
-        height: 800px;
-        overflow: scroll;
-    }
-    .friends-panel {
-        height: 800px;
-        overflow: scroll;
-    }
-    .bot_list {
-        margin-bottom: 30px;
-    }
-    .friends_list {
-        height: 800px;
-        overflow: scroll;
-    }
-    .gray_headimgurl {
-        filter: grayscale(100%);
-    }
-    .headimg {
-        padding-right: 5px;
-    }
-    .chat_panel .layui-elem-quote{
-        word-wrap: break-word;
-    }
-    .chat_box_panel .layui-table-tool .layui-inline[lay-event]{
-        border: none;
-    }
-</style>
 <div id="app" class="chat" style="height:820px;">
     <div class="layui-row">
         <!-- 机器人客服 -->
@@ -149,6 +88,7 @@
         <!-- 聊天框 -->
         <div class="layui-col-xs5" class="chat_box">
             <div class="layui-panel chat_box_panel">
+                <div class="layui-card-header" v-show="friend_info">{{friend_info.nickname}}</div>
                 <div class="layui-panel chat_box_panel" v-show="show_chat">
                     <div style="padding: 15px" class="chat_panel" id="chat_panel">
                         <div v-for="(item, index) in current_chat" :key="item.msg_id" :class="item.class">
@@ -204,11 +144,8 @@
                                                     class="layui-icon layui-icon-file-b"></i></a></span>
                                     </blockquote>
                                 </div>
-
                             </div>
                         </div>
-
-
                     </div>
                     <div v-show="show_multiple">
                         <div class="layui-panel">
@@ -248,7 +185,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <textarea style="height: 205px;" placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
+                            <textarea style="height: 161px;" placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
                         </div>
                         <div class="input_area" style="text-align:right">
                             <button type="button" class="layui-btn layui-btn-primary"
@@ -312,9 +249,7 @@
                                         <h2 class="layui-colla-title">{{item.title}}</h2>
                                         <div class="layui-colla-content copy_speechcraft"
                                             @click="copySpeechcraft(item.content)">
-                                            <p>
-                                                {{item.content}}
-                                            </p>
+                                            <p>{{item.content}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1289,3 +1224,64 @@
         }
     });
 </script>
+<style>
+    .chat_box_panel {
+        height: 756px;
+    }
+    .content {
+        margin: auto 10px;
+    }
+    .my_chat_content blockquote {
+        border-right: 5px solid #5fb878;
+        border-left: 0px;
+    }
+
+    .chat_panel {
+        height: 450px;
+        overflow: scroll;
+    }
+
+    .info {
+        margin-left: 20px;
+    }
+    .add_reply {
+        margin-left: 5px;
+    }
+    .layui-form-switch {
+        margin-top: 0;
+    }
+    .layui-textarea {
+        resize: none;
+    }
+    .layui-colla-content {
+        height: 100px;
+        overflow: scroll;
+    }
+    .bot-panel {
+        height: 800px;
+        overflow: scroll;
+    }
+    .friends-panel {
+        height: 800px;
+        overflow: scroll;
+    }
+    .bot_list {
+        margin-bottom: 30px;
+    }
+    .friends_list {
+        height: 800px;
+        overflow: scroll;
+    }
+    .gray_headimgurl {
+        filter: grayscale(100%);
+    }
+    .headimg {
+        padding-right: 5px;
+    }
+    .chat_panel .layui-elem-quote{
+        word-wrap: break-word;
+    }
+    .chat_box_panel .layui-table-tool .layui-inline[lay-event]{
+        border: none;
+    }
+</style>

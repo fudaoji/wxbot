@@ -177,27 +177,27 @@ class Kefu extends Base
             $year = date("Y");
             $time = time();
             $bot = $bot_model->getOne($post_data['bot_id']);
-            $bot_client = $bot_model->getRobotClient($bot);
+            // $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                $bot_client->sendTextToFriends([
-                    'robot_wxid' => $bot['uin'],
-                    'to_wxid' => $post_data['to_wxid'],
-                    'msg' => $post_data['content']
-                ]);
+                // $bot_client->sendTextToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'msg' => $post_data['content']
+                // ]);
                 $last_chat_content = $post_data['content'];
             } else if ($post_data['type'] == 3) { //图片
-                $bot_client->sendImgToFriends([
-                    'robot_wxid' => $bot['uin'],
-                    'to_wxid' => $post_data['to_wxid'],
-                    'path' => $post_data['content']
-                ]);
+                // $bot_client->sendImgToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
                 $last_chat_content = '[图片]';
             } else if ($post_data['type'] == 2004) {//文件
-                $bot_client->sendFileToFriends([
-                    'robot_wxid' => $bot['uin'],
-                    'to_wxid' => $post_data['to_wxid'],
-                    'path' => $post_data['content']
-                ]);
+                // $bot_client->sendFileToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
                 $last_chat_content = '[文件]';
             }
             $msgid = time() . $this->adminInfo['id'];
@@ -239,6 +239,35 @@ class Kefu extends Base
             $hkey = $post_data['to_wxid'];
             $redis->hSet($key, $hkey, json_encode($result));
             $this->success('success', '', $result);
+        }
+    }
+
+    public function sendMsgPost(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['type'] == 1) { //文本
+                $bot_client->sendTextToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'msg' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 3) { //图片
+                $bot_client->sendImgToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 2004) {//文件
+                $bot_client->sendFileToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            }
+            $this->success('success');
         }
     }
 

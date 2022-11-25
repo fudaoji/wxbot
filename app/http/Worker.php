@@ -78,6 +78,7 @@ class Worker extends Server
 							'type' => 'receive',
 							'headimgurl' => $res['headimgurl'],
 							'friend' => $res['friend'],
+							'msg_type' => $res['msg_type'],
 						];
 						$redis->hSet($last_log_key, $hkey, json_encode($result));
 					}

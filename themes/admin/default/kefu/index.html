@@ -4,9 +4,11 @@
     .chat_box_panel {
         height: 800px;
     }
+
     .content {
         margin: auto 10px;
     }
+
     .my_chat_content blockquote {
         border-right: 5px solid #5fb878;
         border-left: 0px;
@@ -14,50 +16,62 @@
 
     .chat_panel {
         height: 450px;
-        overflow: scroll;
+        overflow: auto;
     }
 
     .info {
         margin-left: 20px;
     }
+
     .add_reply {
         margin-left: 5px;
     }
+
     .layui-form-switch {
         margin-top: 0;
     }
+
     .layui-textarea {
         resize: none;
     }
+
     .layui-colla-content {
         height: 100px;
         overflow: scroll;
     }
+
     .bot-panel {
         height: 800px;
         overflow: scroll;
     }
+
     .friends-panel {
         height: 800px;
         overflow: scroll;
     }
+
     .bot_list {
         margin-bottom: 30px;
     }
+
     .friends_list {
         height: 500px;
         overflow: scroll;
     }
+
     .gray_headimgurl {
         filter: grayscale(100%);
     }
+
     .headimg {
         padding-right: 5px;
     }
-    .chat_panel .layui-elem-quote{
+
+    .chat_panel .layui-elem-quote {
         word-wrap: break-word;
     }
-    .chat_box_panel .layui-table-tool .layui-inline[lay-event]{
+
+    .chat_box_panel .layui-table-tool .layui-inline[lay-event] {
         border: none;
     }
 </style>
@@ -67,7 +81,8 @@
         <div class="layui-col-xs1 bot">
             <div class="layui-panel bot-panel">
                 <ul class="layui-menu bot_list" ref="bot_list_ref">
-                    <li v-for="(item, index) in bot_list" :key="item.id" @click="getFriendsData(item)" :class="item.id == bot_id ? 'layui-menu-item-checked' : ''">
+                    <li v-for="(item, index) in bot_list" :key="item.id" @click="getFriendsData(item)"
+                        :class="item.id == bot_id ? 'layui-menu-item-checked' : ''">
                         <div class="layui-menu-body-title">
                             <img :src="item.headimgurl" :class="[item.alive?'light_headimgurl':'gray_headimgurl']"
                                 style="width:50px;height:50px;border-radius:10%" :title="item.nickname" />
@@ -166,8 +181,9 @@
                                 </div>
                                 <div class="layui-col-md9 content">
                                     <blockquote class="layui-elem-quote">
-                                        <div v-if="item.msg_type == 1"
-                                            :class="'send_1_'+item.msg_id">{{item.content}}</div>
+                                        <div v-if="item.msg_type == 1" :class="'send_1_'+item.msg_id">
+                                            {{item.content}}
+                                        </div>
                                         <div v-if="item.msg_type == 3" :class="'send_2_'+item.msg_id"><img
                                                 :src="item.content" style="width:100px;"></div>
                                         <div v-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id"><a
@@ -207,8 +223,6 @@
 
                             </div>
                         </div>
-
-
                     </div>
                     <div v-show="show_multiple">
                         <div class="layui-panel">
@@ -239,8 +253,8 @@
                             <div class="layui-table-tool">
                                 <div class="layui-table-tool-temp"></div>
                                 <div class="layui-table-tool-container">
-                                    <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS"
-                                        @click="openEmoji"><i class="layui-icon layui-icon-face-smile-b"></i></div>
+                                    <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS" @click="openEmoji"><i
+                                            class="layui-icon layui-icon-face-smile-b"></i></div>
                                     <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"
                                         @click="choosePicture"><i class="layui-icon layui-icon-picture"></i></div>
                                     <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
@@ -248,13 +262,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <textarea style="height: 205px;" placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
+                            <textarea style="height: 205px;" placeholder="" class="layui-textarea" v-model="content"
+                                id="content"></textarea>
                         </div>
                         <div class="input_area" style="text-align:right">
-                            <button type="button" class="layui-btn layui-btn-primary"
-                                    @click="clearMsg">清空</button>
-                            <button type="button" class="layui-btn" lay-submit=""
-                                @click="sendMsg" lay-filter="send"><i class="layui-icon layui-icon-release"></i> 发送</button>
+                            <button type="button" class="layui-btn layui-btn-primary" @click="clearMsg">清空</button>
+                            <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"><i
+                                    class="layui-icon layui-icon-release"></i> 发送</button>
                         </div>
                     </div>
                 </div>
@@ -423,7 +437,7 @@
                 this.$refs.speechcraft_list_ref.addEventListener('scroll', this.loadSpeechcraft) // 滚动到底部，再加载的处理事件
             },
             methods: {
-                clearMsg(){
+                clearMsg() {
                     this.content = '';
                 },
                 //搜索客服机器人
@@ -600,6 +614,7 @@
                     }
 
                     this.renderElement();
+                    scroll();
                     // this.current_chat.sort(function (a, b) {
                     //     return b.last_chat_time - a.last_chat_time
                     // });
@@ -638,12 +653,13 @@
                                         return false;
                                     }
                                 });
-                                self['friends_list'].sort(compare("last_chat_time"));
+                                self['friends_list'].sort(compare("last_chat_time", "desc"));
 
                             }
                             self['renderDropdown']();
 
                             // self['searchFriend']();
+                            self['sendToWx'](params);
                         }
                     }, 'json');
                 },
@@ -691,7 +707,7 @@
                         title: '快捷回复',
                         type: 2,
                         content: ['/admin/kefu/addSpeechcraft?bot_id=' + bot_id, 'no'],
-                        area: ['650px', '330px'], //自定义文本域宽高
+                        area: ['650px', '320px'], //自定义文本域宽高
                         btn: ['保存', '取消'],
                         yes: function (index, layero) {
                             var body = layero.find("iframe").contents().find("body");
@@ -805,7 +821,7 @@
                     var self = this;
                     layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
                         var upload = layui.upload
-                                , $ = layui.jquery;
+                            , $ = layui.jquery;
                         var upload_index;
                         var dropdown = layui.dropdown;
                         var util = layui.util;
@@ -841,7 +857,7 @@
                     var self = this;
                     layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
                         var upload = layui.upload
-                                , $ = layui.jquery;
+                            , $ = layui.jquery;
                         var upload_index;
                         var dropdown = layui.dropdown;
                         var util = layui.util;
@@ -933,20 +949,22 @@
                 copySpeechcraft(content, class_name = '.copy_speechcraft') {
                     // console.log(content);
                     // console.log(class_name);
-                    var clipboard = new ClipboardJS(class_name, {
-                        text: function (trigger) {
-                            return content;
-                        }
-                    });
-                    // console.log(clipboard);
-                    clipboard.on('success', function (e) {
-                        layer.msg("已复制！");
-                        e.clearSelection();
-                    });
-                    clipboard.on('error', function (e) {
-                        console.error('Action:', e.action);
-                        console.error('Trigger:', e.trigger);
-                    });
+                    // var clipboard = new ClipboardJS(class_name, {
+                    //     text: function (trigger) {
+                    //         return content;
+                    //     }
+                    // });
+                    // // console.log(clipboard);
+                    // clipboard.on('success', function (e) {
+                    //     layer.msg("已复制！");
+                    //     e.clearSelection();
+                    // });
+                    // clipboard.on('error', function (e) {
+                    //     console.error('Action:', e.action);
+                    //     console.error('Trigger:', e.trigger);
+                    // });
+                    //复制到对话框
+                    this.content = this.content + content;
                 },
                 //收藏信息
                 favoritesMsg(params) {
@@ -1056,10 +1074,11 @@
                                         return false;
                                     }
                                 });
-                                self['friends_list'].sort(compare("last_chat_time"));
+                                self['friends_list'].sort(compare("last_chat_time", "desc"));
 
                             }
                             self['renderDropdown']();
+                            self['sendToWx'](params);
                             // self['searchFriend']();
                         }
                     }, 'json');
@@ -1150,6 +1169,13 @@
                     // }
                     // });
                 },
+                //发送微信消息
+                sendToWx(params) {
+                    let url = '/admin/kefu/sendMsgPost';
+                    $.post(url, params, function (res) {
+
+                    }, 'json');
+                }
 
             }
         });
@@ -1181,7 +1207,8 @@
             if (event.data) {
                 console.log('收到客户端消息:' + event.data);
                 var massage = eval("(" + event.data + ")");
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id };
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id,msg_type:massage.msg_type};
+                console.log(msg);
                 if (!vm['chat_log'][[massage.robot_wxid]]) {
                     vm['chat_log'][[massage.robot_wxid]] = {};
                 }
@@ -1229,7 +1256,7 @@
                         new_to_friend = false;
                         // console.log(vm['friends_list']);
                     }
-                    vm['friends_list'].sort(compare("last_chat_time"));
+                    vm['friends_list'].sort(compare("last_chat_time", "desc"));
 
 
 
@@ -1261,8 +1288,11 @@
         };
         webSocket.onclose = function (event) {
             console.log("关闭: " + sockState());
-            layer.alert('待机时间过长已断开连接，请刷新页面重新连接');
             webSocket.close();
+            layer.confirm('待机时间过长已断开连接，点击确定重新连接?', function (index) {
+                location.reload();
+                layer.close(index);
+            });
         }
         function sockState() {
             var status = ['未连接', '连接成功，可通讯', '正在关闭', '连接已关闭或无法打开'];
@@ -1280,12 +1310,21 @@
 
         }
 
-        function compare(property) {
+        function compare(property, sort = 'asc') {
             return function (a, b) {
                 var value1 = a[property];
                 var value2 = b[property];
-                return value1 - value2;
+                if (sort == 'asc') {
+                    return value1 - value2;
+                } else {
+                    return value2 - value1;
+                }
+
             }
+        }
+
+        function scroll() {
+            document.querySelector('.chat_panel').scrollIntoView(false);
         }
     });
 </script>

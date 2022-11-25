@@ -10,7 +10,7 @@
 
 namespace app\admin\controller;
 use app\admin\model\BotMember;
-use app\admin\model\ChatLog;
+use app\common\model\kefu\ChatLog;
 class Test
 {
 
@@ -35,7 +35,7 @@ class Test
             "type" => 1,  // 1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请  更多请参考常量表
             "from_wxid" => "wxid_53fet7200ygs22",  // 来源用户ID
             "from_name" => "crush",  // 来源用户昵称
-            "msg" => "模拟插入聊天",  // 消息内容
+            "msg" => "模拟插入聊天111",  // 消息内容
             "clientid" => 0,  // 企业微信可用
             "robot_type" => 0,  // 来源微信类型 0 正常微信 / 1 企业微信
             "msg_id" => $time.rand(0,9999999)  // 消息ID
@@ -54,7 +54,8 @@ class Test
             'from_wxid' => $data['from_wxid'],
             'robot_wxid' => $data['robot_wxid'],
             'client' => 1,
-            'friend' => $member
+            'friend' => $member,
+            'msg_type' => 1
         ]);
         $insert_data = [
             'from' => $data['from_wxid'],

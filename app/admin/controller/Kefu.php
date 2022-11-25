@@ -252,11 +252,11 @@ class Kefu extends Base
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                // $bot_client->sendTextToFriends([
-                //     'robot_wxid' => $bot['uin'],
-                //     'to_wxid' => $post_data['to_wxid'],
-                //     'msg' => $post_data['content']
-                // ]);
+                $bot_client->sendTextToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'msg' => $post_data['content']
+                ]);
             } else if ($post_data['type'] == 3) { //图片
                 $bot_client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],

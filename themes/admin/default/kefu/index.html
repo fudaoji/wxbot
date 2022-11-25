@@ -6,7 +6,8 @@
         <div class="layui-col-xs1 bot">
             <div class="layui-panel bot-panel">
                 <ul class="layui-menu bot_list" ref="bot_list_ref">
-                    <li v-for="(item, index) in bot_list" :key="item.id" @click="getFriendsData(item)" :class="item.id == bot_id ? 'layui-menu-item-checked' : ''">
+                    <li v-for="(item, index) in bot_list" :key="item.id" @click="getFriendsData(item)"
+                        :class="item.id == bot_id ? 'layui-menu-item-checked' : ''">
                         <div class="layui-menu-body-title">
                             <img :src="item.headimgurl" :class="[item.alive?'light_headimgurl':'gray_headimgurl']"
                                 style="width:50px;height:50px;border-radius:10%" :title="item.nickname" />
@@ -90,58 +91,61 @@
                 <div class="layui-card-header" v-show="friend_info">{{friend_info.nickname}}</div>
                 <div class="layui-panel chat_box_panel" v-show="show_chat">
                     <div style="padding: 15px" class="chat_panel" id="chat_panel">
-                        <div v-for="(item, index) in current_chat" :key="item.msg_id" :class="item.class">
-                            <div class="layui-row">
-                                <div class="layui-col-md12" class="send_time" style="text-align:center">
-                                    <span class="layui-badge layui-bg-gray">{{item.date}}</span>
-                                </div>
-                            </div>
-                            <div class="layui-row" v-if="item.class == 'my_chat_content'">
-                                <div class="layui-col-md1" v-show="show_sel">
-                                    <input type="checkbox" lay-ignore lay-skin="primary" title=""
-                                        :id="'sel_chat'+'item.msg_id'"
-                                        :value="{'msg_type':item.msg_type,'content':item.content,'type':'send','msg_id':item.msg_id}"
-                                        v-model="sel_chat_content">
-                                </div>
-                                <div class="layui-col-md9 content">
-                                    <blockquote class="layui-elem-quote">
-                                        <div v-if="item.msg_type == 1"
-                                            :class="'send_1_'+item.msg_id">{{item.content}}</div>
-                                        <div v-if="item.msg_type == 3" :class="'send_2_'+item.msg_id"><img
-                                                :src="item.content" style="width:100px;"></div>
-                                        <div v-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id"><a
-                                                :href="item.content" target="downloadFile"><span>文件：</span><i
-                                                    class="layui-icon layui-icon-file-b"></i></a></div>
-                                    </blockquote>
-                                </div>
-                                <div class="layui-col-md1">
-                                    <div class="headimg">
-                                        <img :src="item.headimgurl" style="width:50px;height:50px;border-radius:10%">
+                        <div class="scroll">
+                            <div v-for="(item, index) in current_chat" :key="item.msg_id" :class="item.class">
+                                <div class="layui-row">
+                                    <div class="layui-col-md12" class="send_time" style="text-align:center">
+                                        <span class="layui-badge layui-bg-gray">{{item.date}}</span>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="layui-row" v-else>
-                                <div class="layui-col-md1 sel_chat" v-show="show_sel">
-                                    <input type="checkbox" lay-ignore lay-skin="primary" title=""
-                                        :id="'sel_chat'+'item.msg_id'"
-                                        :value="{msg_type:'item.msg_type',content:'item.content','type':'receive','msg_id':item.msg_id}"
-                                        v-model="sel_chat_content">
-                                </div>
-                                <div class="layui-col-md1">
-                                    <div class="headimg">
-                                        <img :src="item.headimgurl" style="width:50px;height:50px;border-radius:10%">
+                                <div class="layui-row" v-if="item.class == 'my_chat_content'">
+                                    <div class="layui-col-md1" v-show="show_sel">
+                                        <input type="checkbox" lay-ignore lay-skin="primary" title=""
+                                            :id="'sel_chat'+'item.msg_id'"
+                                            :value="{'msg_type':item.msg_type,'content':item.content,'type':'send','msg_id':item.msg_id}"
+                                            v-model="sel_chat_content">
+                                    </div>
+                                    <div class="layui-col-md9 content">
+                                        <blockquote class="layui-elem-quote">
+                                            <div v-if="item.msg_type == 1" :class="'send_1_'+item.msg_id" v-html="item.content"></div>
+                                            <div v-if="item.msg_type == 3" :class="'send_2_'+item.msg_id"><img
+                                                    :src="item.content" style="width:100px;"></div>
+                                            <div v-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id"><a
+                                                    :href="item.content" target="downloadFile"><span>文件：</span><i
+                                                        class="layui-icon layui-icon-file-b"></i></a></div>
+                                        </blockquote>
+                                    </div>
+                                    <div class="layui-col-md1">
+                                        <div class="headimg">
+                                            <img :src="item.headimgurl"
+                                                style="width:50px;height:50px;border-radius:10%">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="layui-col-md9 content">
-                                    <blockquote class="layui-elem-quote">
-                                        <span v-if="item.msg_type == 1"
-                                            :class="'receive_1_'+item.msg_id">{{item.content}}</span>
-                                        <span v-if="item.msg_type == 3" :class="'receive_2_'+item.msg_id"><img
-                                                :src="item.content" style="width:100px;"></span>
-                                        <span v-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id"><a
-                                                :href="item.content" target="downloadFile"><span>文件：</span><i
-                                                    class="layui-icon layui-icon-file-b"></i></a></span>
-                                    </blockquote>
+                                <div class="layui-row" v-else>
+                                    <div class="layui-col-md1 sel_chat" v-show="show_sel">
+                                        <input type="checkbox" lay-ignore lay-skin="primary" title=""
+                                            :id="'sel_chat'+'item.msg_id'"
+                                            :value="{msg_type:'item.msg_type',content:'item.content','type':'receive','msg_id':item.msg_id}"
+                                            v-model="sel_chat_content">
+                                    </div>
+                                    <div class="layui-col-md1">
+                                        <div class="headimg">
+                                            <img :src="item.headimgurl"
+                                                style="width:50px;height:50px;border-radius:10%">
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-md9 content">
+                                        <blockquote class="layui-elem-quote">
+                                            <span v-if="item.msg_type == 1"
+                                                :class="'receive_1_'+item.msg_id" v-html="item.content"></span>
+                                            <span v-if="item.msg_type == 3" :class="'receive_2_'+item.msg_id"><img
+                                                    :src="item.content" style="width:100px;"></span>
+                                            <span v-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id"><a
+                                                    :href="item.content" target="downloadFile"><span>文件：</span><i
+                                                        class="layui-icon layui-icon-file-b"></i></a></span>
+                                        </blockquote>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -175,8 +179,8 @@
                             <div class="layui-table-tool">
                                 <div class="layui-table-tool-temp"></div>
                                 <div class="layui-table-tool-container">
-                                    <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS"
-                                        @click="openEmoji"><i class="layui-icon layui-icon-face-smile-b"></i></div>
+                                    <div class="layui-inline" title="表情" lay-event="LAYTABLE_COLS" @click="openEmoji"><i
+                                            class="layui-icon layui-icon-face-smile-b"></i></div>
                                     <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"
                                         @click="choosePicture"><i class="layui-icon layui-icon-picture"></i></div>
                                     <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
@@ -184,13 +188,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <textarea style="height: 181px;" placeholder="" class="layui-textarea" v-model="content" id="content"></textarea>
+                            <textarea style="height: 181px;" placeholder="" class="layui-textarea" v-model="content"
+                                id="content"></textarea>
                         </div>
                         <div class="input_area" style="text-align:right">
-                            <button type="button" class="layui-btn layui-btn-primary"
-                                    @click="clearMsg">清空</button>
-                            <button type="button" class="layui-btn" lay-submit=""
-                                @click="sendMsg" lay-filter="send"><i class="layui-icon layui-icon-release"></i> 发送</button>
+                            <button type="button" class="layui-btn layui-btn-primary" @click="clearMsg">清空</button>
+                            <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"><i
+                                    class="layui-icon layui-icon-release"></i> 发送</button>
                         </div>
                     </div>
                 </div>
@@ -286,975 +290,991 @@
     // layui.use(['layer'], function () {
     //     var layer = layui.layer;
 
-        //获取机器人参数
-        var get_bot_param = {
-            // 分页
-            page: 1, // 当前页
-            page_size: 10, // 每页总条数
-            page_count: 1, // 总页数
-        };
-        //获取好友列表参数
-        var get_friends_param = {
-            // 分页
-            page: 1, // 当前页
-            page_size: 20, // 每页总条数
-            page_count: 1, // 总页数
-        }
-        //获取话术参数
-        var get_speechcraft_param = {
-            // 分页
-            page: 1, // 当前页
-            page_size: 10, // 每页总条数
-            page_count: 1, // 总页数
-        }
-        var data = {
-            get_bot_param: get_bot_param,//获取机器人参数
-            bot_list: [],//机器人列表
-            get_friends_param: get_friends_param,//获取好友参数
-            friends_list: [],//好友列表
-            bot_id: 0,//当前机器人
-            bot_info: {},
-            friend_id: 0,//当前好友
-            friend_info: {},//当前好友信息
-            content: '',//当前发送的信息
-            search_friend: '',
-            // visibility:visible
-            show_info: false,//好友信息
-            show_sel: false,//聊天复选框
-            get_speechcraft_param: get_speechcraft_param,//获取话术参数
-            speechcraft_list: [],//话术列表
-            chat_log: {},//聊天内容
-            show_chat: false,
-            quote: '',//引用
-            auto_pass: false,
-            auto_reply: '',
-            new_msg_wxid: [],
-            bot_uin: '',//机器人微信
-            friend_wxid: '',//好友微信
-            current_chat: [],
-            new_bot: [],//新机器人消息
-            new_friend: [],//新好友消息
-            content_type: 1,//1/文本消息 3/图片消息
-            sel_friend: false,
-            // auto_pass_init: 0,//初始化auto_pass
-            share_content: [{ msg_type: 1, content: '' }],//转发内容
-            share_friends: [],//转发的好友
-            // share_type: 1,//转发内容类型
-            leave_word: '',
-            show_multiple: false,
-            sel_chat_content: []//多选
-        };
-        var vm = new Vue({
-            el: '#app',
-            data: data,
-            created() {
-                this.getBotData();
-                this.renderUpload();
+    //获取机器人参数
+    var get_bot_param = {
+        // 分页
+        page: 1, // 当前页
+        page_size: 10, // 每页总条数
+        page_count: 1, // 总页数
+    };
+    //获取好友列表参数
+    var get_friends_param = {
+        // 分页
+        page: 1, // 当前页
+        page_size: 20, // 每页总条数
+        page_count: 1, // 总页数
+    }
+    //获取话术参数
+    var get_speechcraft_param = {
+        // 分页
+        page: 1, // 当前页
+        page_size: 10, // 每页总条数
+        page_count: 1, // 总页数
+    }
+    var data = {
+        get_bot_param: get_bot_param,//获取机器人参数
+        bot_list: [],//机器人列表
+        get_friends_param: get_friends_param,//获取好友参数
+        friends_list: [],//好友列表
+        bot_id: 0,//当前机器人
+        bot_info: {},
+        friend_id: 0,//当前好友
+        friend_info: {},//当前好友信息
+        content: '',//当前发送的信息
+        search_friend: '',
+        // visibility:visible
+        show_info: false,//好友信息
+        show_sel: false,//聊天复选框
+        get_speechcraft_param: get_speechcraft_param,//获取话术参数
+        speechcraft_list: [],//话术列表
+        chat_log: {},//聊天内容
+        show_chat: false,
+        quote: '',//引用
+        auto_pass: false,
+        auto_reply: '',
+        new_msg_wxid: [],
+        bot_uin: '',//机器人微信
+        friend_wxid: '',//好友微信
+        current_chat: [],
+        new_bot: [],//新机器人消息
+        new_friend: [],//新好友消息
+        content_type: 1,//1/文本消息 3/图片消息
+        sel_friend: false,
+        // auto_pass_init: 0,//初始化auto_pass
+        share_content: [{ msg_type: 1, content: '' }],//转发内容
+        share_friends: [],//转发的好友
+        // share_type: 1,//转发内容类型
+        leave_word: '',
+        show_multiple: false,
+        sel_chat_content: []//多选
+    };
+    var vm = new Vue({
+        el: '#app',
+        data: data,
+        created() {
+            this.getBotData();
+            this.renderUpload();
+        },
+        mounted() {
+            this.$refs.bot_list_ref.addEventListener('scroll', this.loadBot) // 滚动到底部，再加载的处理事件
+            this.$refs.friends_list_ref.addEventListener('scroll', this.loadFriends) // 滚动到底部，再加载的处理事件
+            this.$refs.speechcraft_list_ref.addEventListener('scroll', this.loadSpeechcraft) // 滚动到底部，再加载的处理事件
+        },
+        methods: {
+            clearMsg() {
+                this.content = '';
             },
-            mounted() {
-                this.$refs.bot_list_ref.addEventListener('scroll', this.loadBot) // 滚动到底部，再加载的处理事件
-                this.$refs.friends_list_ref.addEventListener('scroll', this.loadFriends) // 滚动到底部，再加载的处理事件
-                this.$refs.speechcraft_list_ref.addEventListener('scroll', this.loadSpeechcraft) // 滚动到底部，再加载的处理事件
-            },
-            methods: {
-                clearMsg(){
-                    this.content = '';
-                },
-                //搜索客服机器人
-                getBotData: function () {
-                    let self = this;
-                    let url = "/admin/kefu/getBot";
-                    var index = layer.load(2);
-                    let page = this.get_bot_param.page;
-                    let limit = this.get_bot_param.page_size;
-                    let params = {
-                        page: page,
-                        limit: limit,
-                    }
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            self['get_bot_param'].page_count = Math.ceil(res.data.total / limit);
-                            self['bot_list'] = self['bot_list'].concat(res.data.list);
-                            if (page == 1) {
-                                if (self['bot_list'].length > 0) {
-                                    self['bot_info'] = self['bot_list'][0];
-                                    self['bot_id'] = self['bot_list'][0].id;
-                                    self['bot_uin'] = self['bot_list'][0].uin;
-                                    self['getFriendsData'](self['bot_info']);
-                                } else {
-                                    self['addBot']();
-                                }
+            //搜索客服机器人
+            getBotData: function () {
+                let self = this;
+                let url = "/admin/kefu/getBot";
+                var index = layer.load(2);
+                let page = this.get_bot_param.page;
+                let limit = this.get_bot_param.page_size;
+                let params = {
+                    page: page,
+                    limit: limit,
+                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_bot_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['bot_list'] = self['bot_list'].concat(res.data.list);
+                        if (page == 1) {
+                            if (self['bot_list'].length > 0) {
+                                self['bot_info'] = self['bot_list'][0];
+                                self['bot_id'] = self['bot_list'][0].id;
+                                self['bot_uin'] = self['bot_list'][0].uin;
+                                self['getFriendsData'](self['bot_info']);
+                            } else {
+                                self['addBot']();
                             }
-                            //遍历创建客服聊天数据
-                            $.each(self['bot_list'], function (i, v) {
-                                let v_uin = v.uin;
-                                self['chat_log'][[v_uin]] = {};
-                                //消息点亮
-                                if (self['new_bot'].includes(v_uin)) {
-                                    self['bot_list'][i].new = 1;
-                                    // let new_bot_arr = self['new_bot'];
-                                    // new_bot_arr.splice($.inArray(v_uin,new_bot_arr),1);
-                                    // self['new_bot'] = new_bot_arr;
-                                    // console.log(self['new_bot']);
-                                }
-                            });
                         }
-                        layer.close(index);
-                    }, 'json');
-                },
-                // 滚动加载
-                loadBot(e) {
-                    let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
-                    let windowHeight = e.target.clientHeight // 可视区的高度
-                    let scrollHeight = e.target.scrollHeight // 滚动条的总高度
-                    // 滚动条到底部
-                    if (scrollTop + windowHeight === scrollHeight) {
-                        this.get_bot_param.page++
-                        if (this.get_bot_param.page > this.get_bot_param.page_count) return
-                        this.getBotData()
-                    }
-                },
-                //点击机器人
-                getFriendsData(item) {
-                    let self = this;
-                    let url = "/admin/kefu/getFriends";
-                    var index = layer.load(2);
-                    let page = this.get_friends_param.page;
-                    let limit = this.get_friends_param.page_size;
-                    //重新选择客服
-                    // console.log(self['bot_id']);console.log(item.id);
-                    if (self['bot_id'] != item.id) {
-                        self['bot_id'] = item.id;
-                        this.friends_list = [];
-                        this.friend_info = {};
-                        this.friend_id = 0;
-                        this.bot_info = item;
-                        this.bot_uin = item.uin;
-                        this.get_friends_param.page = 1;
-                        page = 1;
-                        this.show_info = false;
-                        this.show_chat = false;
-                        this.get_speechcraft_param.page = 1;
-                        this.speechcraft_list = [];
-                        // this.auto_pass_init = 0;//需重新赋值
-                    }
-                    //如果有机器人有新信息，改为已读
-                    if (item.new) {
-                        $.each(this.bot_list, function (i, v) {
-                            if (item.uin == v.uin) {
-                                // console.log(this.bot_list);
-                                self['bot_list'][i].new = 0;
-                                let new_bot_arr = self['new_bot'];
-                                new_bot_arr.splice($.inArray(item.uin, new_bot_arr), 1);
-                                self['new_bot'] = new_bot_arr;
-                                return false;
-                            }
-                        })
-                    }
-                    let params = {
-                        page: page,
-                        limit: limit,
-                        id: item.id,
-                        search_key: this.search_friend
-                    }
-
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
-                            self['friends_list'] = self['friends_list'].concat(res.data.list);
+                        //遍历创建客服聊天数据
+                        $.each(self['bot_list'], function (i, v) {
+                            let v_uin = v.uin;
+                            self['chat_log'][[v_uin]] = {};
                             //消息点亮
-                            $.each(self['friends_list'], function (i, v) {
-                                if (self['new_friend'].includes(v.wxid)) {
-                                    self['friends_list'][i].new = 1;
-                                    // let new_friend_arr = self['new_friend'];
-                                    // new_friend_arr.splice($.inArray(v.wxid,new_friend_arr),1);
-                                    // self['new_friend'] = new_friend_arr;
-                                }
-                            })
-                        }
-                        layer.close(index);
-                    }, 'json');
-                    this.speechcraft_list = [];
-                    this.getSpeechcraftData();
-                },
-                // 滚动加载
-                loadFriends(e) {
-                    // console.log('loadFriends');
-                    let id = this.bot_id;
-                    let bot_info = this.bot_info;
-                    let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
-                    let windowHeight = e.target.clientHeight // 可视区的高度
-                    let scrollHeight = e.target.scrollHeight // 滚动条的总高度
-                    // 滚动条到底部
-                    if (scrollTop + windowHeight === scrollHeight) {
-                        this.get_friends_param.page++
-                        if (this.get_friends_param.page > this.get_friends_param.page_count) return
-                        this.getFriendsData(bot_info)
-                    }
-                },
-                //获取当前选择的好友
-                chatWith(item) {
-                    // console.log(item);
-                    let self = this;
-                    if (self['friend_id'] != item.id) {
-                        self['friend_id'] = item.id;
-                        this.friend_info = {};
-                        this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid };
-                        this.show_info = true;
-                        this.show_chat = true;
-                        this.friend_wxid = item.wxid;
-                        // console.log(this.friend_info);
-                    }
-                    // console.log(this.bot_info);
-                    //自动通过
-                    this.auto_pass = this.bot_info.auto_pass;
-                    this.auto_reply = this.bot_info.auto_reply;
-                    // this.auto_pass_init = 1;//初始化赋值完成
-                    //创建聊天数据
-                    if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]]) {
-                        // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
-                        self['chat_log'][[this.bot_uin]][[this.friend_wxid]] = [];
-                        this.getChatLog();
-                    }
-
-                    this.current_chat = self['chat_log'][[this.bot_uin]][[this.friend_wxid]];
-
-                    //如果新信息，改为已读
-                    if (item.new) {
-                        $.each(this.friends_list, function (i, v) {
-                            if (item.wxid == v.wxid) {
-                                // console.log(this.bot_list);
-                                self['friends_list'][i].new = 0;
-                                let new_friend_arr = self['new_friend'];
-                                new_friend_arr.splice($.inArray(v.wxid, new_friend_arr), 1);
-                                self['new_friend'] = new_friend_arr;
-                                return false;
+                            if (self['new_bot'].includes(v_uin)) {
+                                self['bot_list'][i].new = 1;
+                                // let new_bot_arr = self['new_bot'];
+                                // new_bot_arr.splice($.inArray(v_uin,new_bot_arr),1);
+                                // self['new_bot'] = new_bot_arr;
+                                // console.log(self['new_bot']);
                             }
-                        })
+                        });
                     }
-
-                    this.renderElement();
-                    scroll();
-                    // this.current_chat.sort(function (a, b) {
-                    //     return b.last_chat_time - a.last_chat_time
-                    // });
-                },
-                //发送信息
-                sendMsg(e) {
-                    let self = this;
-                    let content = this.content.trim();
-                    var uin = this.bot_info.uin;
-                    var to_wxid = this.friend_info.wxid;
-                    if (!content) {
-                        layer.msg('请输入内容');
-                        return false;
-                    }
-                    let params = {
-                        content: content,
-                        uin: uin,
-                        to_wxid: to_wxid,
-                        bot_id: this.bot_id,
-                        bot_info: this.bot_info,
-                        quote: '引用内容引用内容',
-                        friend_id: this.friend_id,
-                        type: this.content_type
-                    }
-                    let url = "/admin/kefu/sendMsg";
-                    self['content'] = '';
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
-                            self['current_chat'] = self['chat_log'][uin][[to_wxid]];
-                            //是当前的机器人,好友列表排序,最后聊天记录
-                            if (uin == res.data.friend.uin) {
-                                $.each(self['friends_list'], function (i, v) {
-                                    if (v.wxid == res.data.friend.wxid) {
-                                        self['friends_list'][i] = res.data.friend;
-                                        return false;
-                                    }
-                                });
-                                self['friends_list'].sort(compare("last_chat_time", "desc"));
-
-                            }
-                            self['renderDropdown']();
-
-                            // self['searchFriend']();
-                            self['sendToWx'](params);
-                        }
-                    }, 'json');
-                },
-                //搜索好友
-                searchFriend() {
-                    let self = this;
-                    let url = "/admin/kefu/getFriends";
-                    var index = layer.load(2);
-                    this.get_friends_param.page = 1;
-                    let page = this.get_friends_param.page;
-                    let limit = this.get_friends_param.page_size;
+                    layer.close(index);
+                }, 'json');
+            },
+            // 滚动加载
+            loadBot(e) {
+                let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
+                let windowHeight = e.target.clientHeight // 可视区的高度
+                let scrollHeight = e.target.scrollHeight // 滚动条的总高度
+                // 滚动条到底部
+                if (scrollTop + windowHeight === scrollHeight) {
+                    this.get_bot_param.page++
+                    if (this.get_bot_param.page > this.get_bot_param.page_count) return
+                    this.getBotData()
+                }
+            },
+            //点击机器人
+            getFriendsData(item) {
+                let self = this;
+                let url = "/admin/kefu/getFriends";
+                var index = layer.load(2);
+                let page = this.get_friends_param.page;
+                let limit = this.get_friends_param.page_size;
+                //重新选择客服
+                // console.log(self['bot_id']);console.log(item.id);
+                if (self['bot_id'] != item.id) {
+                    self['bot_id'] = item.id;
+                    this.friends_list = [];
                     this.friend_info = {};
                     this.friend_id = 0;
-                    this.friend_wxid = '';
-                    let params = {
-                        page: page,
-                        limit: limit,
-                        id: this.bot_id,
-                        search_key: this.search_friend
-                    }
+                    this.bot_info = item;
+                    this.bot_uin = item.uin;
+                    this.get_friends_param.page = 1;
+                    page = 1;
+                    this.show_info = false;
+                    this.show_chat = false;
+                    this.get_speechcraft_param.page = 1;
+                    this.speechcraft_list = [];
+                    // this.auto_pass_init = 0;//需重新赋值
+                }
+                //如果有机器人有新信息，改为已读
+                if (item.new) {
+                    $.each(this.bot_list, function (i, v) {
+                        if (item.uin == v.uin) {
+                            // console.log(this.bot_list);
+                            self['bot_list'][i].new = 0;
+                            let new_bot_arr = self['new_bot'];
+                            new_bot_arr.splice($.inArray(item.uin, new_bot_arr), 1);
+                            self['new_bot'] = new_bot_arr;
+                            return false;
+                        }
+                    })
+                }
+                let params = {
+                    page: page,
+                    limit: limit,
+                    id: item.id,
+                    search_key: this.search_friend
+                }
 
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
-                            self['friends_list'] = [];
-                            self['friends_list'] = self['friends_list'].concat(res.data.list);
-                            self['show_info'] = false;
-                            self['show_chat'] = false;
-                            //消息点亮
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['friends_list'] = self['friends_list'].concat(res.data.list);
+                        //消息点亮
+                        $.each(self['friends_list'], function (i, v) {
+                            if (self['new_friend'].includes(v.wxid)) {
+                                self['friends_list'][i].new = 1;
+                                // let new_friend_arr = self['new_friend'];
+                                // new_friend_arr.splice($.inArray(v.wxid,new_friend_arr),1);
+                                // self['new_friend'] = new_friend_arr;
+                            }
+                        })
+                    }
+                    layer.close(index);
+                }, 'json');
+                this.speechcraft_list = [];
+                this.getSpeechcraftData();
+            },
+            // 滚动加载
+            loadFriends(e) {
+                // console.log('loadFriends');
+                let id = this.bot_id;
+                let bot_info = this.bot_info;
+                let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
+                let windowHeight = e.target.clientHeight // 可视区的高度
+                let scrollHeight = e.target.scrollHeight // 滚动条的总高度
+                // 滚动条到底部
+                if (scrollTop + windowHeight === scrollHeight) {
+                    this.get_friends_param.page++
+                    if (this.get_friends_param.page > this.get_friends_param.page_count) return
+                    this.getFriendsData(bot_info)
+                }
+            },
+            //获取当前选择的好友
+            chatWith(item) {
+                // console.log(item);
+                let self = this;
+                if (self['friend_id'] != item.id) {
+                    self['friend_id'] = item.id;
+                    this.friend_info = {};
+                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid };
+                    this.show_info = true;
+                    this.show_chat = true;
+                    this.friend_wxid = item.wxid;
+                    // console.log(this.friend_info);
+                }
+                // console.log(this.bot_info);
+                //自动通过
+                this.auto_pass = this.bot_info.auto_pass;
+                this.auto_reply = this.bot_info.auto_reply;
+                // this.auto_pass_init = 1;//初始化赋值完成
+                //创建聊天数据
+                if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]]) {
+                    // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
+                    self['chat_log'][[this.bot_uin]][[this.friend_wxid]] = [];
+                    this.getChatLog();
+                }
+
+                this.current_chat = self['chat_log'][[this.bot_uin]][[this.friend_wxid]];
+
+                //如果新信息，改为已读
+                if (item.new) {
+                    $.each(this.friends_list, function (i, v) {
+                        if (item.wxid == v.wxid) {
+                            // console.log(this.bot_list);
+                            self['friends_list'][i].new = 0;
+                            let new_friend_arr = self['new_friend'];
+                            new_friend_arr.splice($.inArray(v.wxid, new_friend_arr), 1);
+                            self['new_friend'] = new_friend_arr;
+                            return false;
+                        }
+                    })
+                }
+
+                this.renderElement();
+                scroll();
+                // this.current_chat.sort(function (a, b) {
+                //     return b.last_chat_time - a.last_chat_time
+                // });
+            },
+            //发送信息
+            sendMsg(e) {
+                let self = this;
+                let content = this.content.trim();
+                var uin = this.bot_info.uin;
+                var to_wxid = this.friend_info.wxid;
+                if (!content) {
+                    layer.msg('请输入内容');
+                    return false;
+                }
+                let params = {
+                    content: content,
+                    uin: uin,
+                    to_wxid: to_wxid,
+                    bot_id: this.bot_id,
+                    bot_info: this.bot_info,
+                    quote: '引用内容引用内容',
+                    friend_id: this.friend_id,
+                    type: this.content_type
+                }
+                let url = "/admin/kefu/sendMsg";
+                self['content'] = '';
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][uin][[to_wxid]];
+                        //是当前的机器人,好友列表排序,最后聊天记录
+                        if (uin == res.data.friend.uin) {
                             $.each(self['friends_list'], function (i, v) {
-                                if (self['new_friend'].includes(v.wxid)) {
-                                    self['friends_list'][i].new = 1;
-
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
                                 }
-                            })
-                        }
-                        layer.close(index);
-                    }, 'json');
-                },
-                //打开添加话术
-                openAddSpeechcraft() {
-                    let self = this;
-                    let bot_id = this.bot_id;
-                    layer.open({
-                        title: '快捷回复',
-                        type: 2,
-                        content: ['/admin/kefu/addSpeechcraft?bot_id=' + bot_id, 'no'],
-                        area: ['650px', '320px'], //自定义文本域宽高
-                        btn: ['保存', '取消'],
-                        yes: function (index, layero) {
-                            var body = layero.find("iframe").contents().find("body");
-                            var params = $(body).find('form').serialize();
-                            var url = '/admin/kefu/saveSpeechcraft';
-                            $.post(url, params, function (res) {
-                                if (res.code == 1) {
-                                    self['speechcraft_list'] = [];
-                                    self['getSpeechcraftData']();
-                                }
-                                layer.close(index);
-                            }, 'json');
-                        }
-                    });
-                },
-                //获取话术列表
-                getSpeechcraftData() {
-                    let self = this;
-                    let url = "/admin/kefu/getSpeechcraft";
-                    var index = layer.load(2);
-                    let page = this.get_speechcraft_param.page;
-                    let limit = this.get_speechcraft_param.page_size;
-                    let params = {
-                        page: page,
-                        limit: limit,
-                        bot_id: this.bot_id,
-                    }
+                            });
+                            self['friends_list'].sort(compare("last_chat_time", "desc"));
 
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            self['get_speechcraft_param'].page_count = Math.ceil(res.data.total / limit);
-                            self['speechcraft_list'] = self['speechcraft_list'].concat(res.data.list);
-                            self['renderElement']();
                         }
-                        layer.close(index);
-                    }, 'json');
-                },
-                // 滚动加载话术列表
-                loadSpeechcraft(e) {
-                    let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
-                    let windowHeight = e.target.clientHeight // 可视区的高度
-                    let scrollHeight = e.target.scrollHeight // 滚动条的总高度
-                    // 滚动条到底部
-                    if (scrollTop + windowHeight === scrollHeight) {
-                        this.get_speechcraft_param.page++
-                        // console.log(this.get_speechcraft_param.page);console.log(this.get_speechcraft_param.page_count);
-                        if (this.get_speechcraft_param.page > this.get_speechcraft_param.page_count) return
-                        this.getSpeechcraftData()
+                        self['renderDropdown']();
+                        scroll();
+                        // self['searchFriend']();
+                        self['sendToWx'](params);
+                        
                     }
-                },
-                //更新渲染Element
-                renderElement() {
-                    layui.use(['dropdown', 'util', 'layer', 'form'], function () {
-                        var element = layui.element;
-                        var layer = layui.layer;
-                        var form = layui.form;
-                        // console.log('更新渲染Element');
-                        element.init();
-                    });
-                },
-                //更新渲染Form
-                renderForm() {
-                    layui.use(['dropdown', 'util', 'layer', 'form'], function () {
-                        var element = layui.element;
-                        var layer = layui.layer;
-                        var form = layui.form;
-                        form.render();
-                    });
-                },
-                //保存备注名
-                saveRemark() {
-                    let self = this;
-                    let remark_name = this.friend_info.remark_name.replace(/(^\s*)|(\s*$)/g, "");
-                    if (remark_name) {
-                        let url = "/admin/kefu/saveRemark";
-                        let params = {
-                            remark_name: remark_name,
-                            id: this.friend_id,
-                            bot_id: this.bot_id,
-                            to_wxid: this.friend_info.wxid,
-                        }
-                        var index = layer.load(2);
+                }, 'json');
+            },
+            //搜索好友
+            searchFriend() {
+                let self = this;
+                let url = "/admin/kefu/getFriends";
+                var index = layer.load(2);
+                this.get_friends_param.page = 1;
+                let page = this.get_friends_param.page;
+                let limit = this.get_friends_param.page_size;
+                this.friend_info = {};
+                this.friend_id = 0;
+                this.friend_wxid = '';
+                let params = {
+                    page: page,
+                    limit: limit,
+                    id: this.bot_id,
+                    search_key: this.search_friend
+                }
+
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['friends_list'] = [];
+                        self['friends_list'] = self['friends_list'].concat(res.data.list);
+                        self['show_info'] = false;
+                        self['show_chat'] = false;
+                        //消息点亮
+                        $.each(self['friends_list'], function (i, v) {
+                            if (self['new_friend'].includes(v.wxid)) {
+                                self['friends_list'][i].new = 1;
+
+                            }
+                        })
+                    }
+                    layer.close(index);
+                }, 'json');
+            },
+            //打开添加话术
+            openAddSpeechcraft() {
+                let self = this;
+                let bot_id = this.bot_id;
+                layer.open({
+                    title: '快捷回复',
+                    type: 2,
+                    content: ['/admin/kefu/addSpeechcraft?bot_id=' + bot_id, 'no'],
+                    area: ['650px', '320px'], //自定义文本域宽高
+                    btn: ['保存', '取消'],
+                    yes: function (index, layero) {
+                        var body = layero.find("iframe").contents().find("body");
+                        var params = $(body).find('form').serialize();
+                        var url = '/admin/kefu/saveSpeechcraft';
                         $.post(url, params, function (res) {
                             if (res.code == 1) {
-                                self['friend_info'].remark_name = remark_name;
+                                self['speechcraft_list'] = [];
+                                self['getSpeechcraftData']();
                             }
                             layer.close(index);
                         }, 'json');
                     }
-                },
-                openEmoji(e) {
-                    layer.open({
-                        type: 2,
-                        content: '/admin/Emoji?type=vue',
-                        area: ['600px', '500px'], //自定义文本域宽高
-                    });
-                },
-                //发送图片
-                choosePicture(e) {
-                    layer.open({
-                        type: 2,
-                        title: '图片',
-                        shadeClose: false,
-                        shade: 0.8,
-                        area: ['100%', '100%'],
-                        content: ['{:url("media/handle", ["type" => "image", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
-                    });
-                },
-                //初始化layui上传
-                renderUpload() {
-                    var self = this;
-                    layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
-                        var upload = layui.upload
-                                , $ = layui.jquery;
-                        var upload_index;
-                        var dropdown = layui.dropdown;
-                        var util = layui.util;
-                        upload.render({
-                            elem: '#chooseFile'
-                            , url: '{:url("uploader/filePost")}'
-                            , multiple: false
-                            , accept: 'file' //允许上传的文件类型
-                            , size: "{(config('system.upload.file_size') ? config('system.upload.file_size')/1000 : 10240)}" //最大允许上传的文件大小
-                            // , exts: "{(config('system.upload.file_ext') ? config('system.upload.file_ext') : 'jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf,tar.gz')}".split(',').join('|')
-                            , before: function () {
-                                upload_index = layer.load(1);
-                                // console.log(22);
-                            }
-                            , done: function (res, index, upload) { //上传后的回调
-                                layer.close(upload_index);
-                                if (res.code !== 1) {
-                                    layer.alert(res.msg);
-                                    return;
-                                }
-                                let url = res.data[0].url;
-                                self['content'] = url;
-                                self['content_type'] = 2004;
-                                self['sendMsg']();
-                                self['content_type'] = 1;
-                            }
-                        });
+                });
+            },
+            //获取话术列表
+            getSpeechcraftData() {
+                let self = this;
+                let url = "/admin/kefu/getSpeechcraft";
+                var index = layer.load(2);
+                let page = this.get_speechcraft_param.page;
+                let limit = this.get_speechcraft_param.page_size;
+                let params = {
+                    page: page,
+                    limit: limit,
+                    bot_id: this.bot_id,
+                }
 
-                    });
-                },
-                //右键
-                renderDropdown(e) {
-                    var self = this;
-                    layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
-                        var upload = layui.upload
-                                , $ = layui.jquery;
-                        var upload_index;
-                        var dropdown = layui.dropdown;
-                        var util = layui.util;
-                        //执行菜单
-                        dropdown.render({
-                            elem: '.layui-elem-quote' //在 id="demo" 的元素中触发事件。也可以直接设置为 document，从而重置整个右键菜单
-                            , trigger: 'contextmenu' //右键事件
-                            , data: [{
-                                title: '复制'
-                                , id: 1
-                                , templet: '<div class="copy_msg">{{d.title}}</div>'
-                            }, {
-                                title: '转发'
-                                , id: 2
-                            }, {
-                                title: '收藏'
-                                , id: 3
-                            }, {
-                                title: '多选'
-                                , id: 4
-                            }], click: function (obj, othis) {
-                                var dom = this.elem;
-                                var content = $(dom).find('span').html();
-                                var msg_type_class = $(dom).find('span').attr('class');
-                                var msg_type_arr = msg_type_class.split("_");
-                                var msg_type = msg_type_arr[1];
-                                var class_name = $(dom).attr('class');
-                                if (obj.id === 1) {
-                                    self['copySpeechcraft'](content, '.copy_msg');
-                                } else if (obj.id === 2) {
-                                    self['sel_friend'] = true;
-                                    self['share_content'][0] = { msg_type: msg_type, content: content };
-                                    self['share_friends'] = [];
-                                    // self['share_type'] = msg_type;
-                                    console.log('转发');
-                                } else if (obj.id === 3) {
-                                    let class_name_arr = class_name.split("_");
-                                    if (class_name_arr[0] == 'send') {
-                                        layer.msg("只能收藏接收的信息");
-                                        return false;
-                                    }
-                                    let msg_id = class_name_arr[2];
-                                    let param = { content: content, msg_type: msg_type, msg_id: msg_id };
-                                    self['favoritesMsg'](param);
-                                    console.log('收藏');
-                                } else if (obj.id === 4) {
-                                    self['show_multiple'] = true;
-                                    self['show_sel'] = true;
-
-                                    console.log('多选');
-                                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_speechcraft_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['speechcraft_list'] = self['speechcraft_list'].concat(res.data.list);
+                        self['renderElement']();
+                    }
+                    layer.close(index);
+                }, 'json');
+            },
+            // 滚动加载话术列表
+            loadSpeechcraft(e) {
+                let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
+                let windowHeight = e.target.clientHeight // 可视区的高度
+                let scrollHeight = e.target.scrollHeight // 滚动条的总高度
+                // 滚动条到底部
+                if (scrollTop + windowHeight === scrollHeight) {
+                    this.get_speechcraft_param.page++
+                    // console.log(this.get_speechcraft_param.page);console.log(this.get_speechcraft_param.page_count);
+                    if (this.get_speechcraft_param.page > this.get_speechcraft_param.page_count) return
+                    this.getSpeechcraftData()
+                }
+            },
+            //更新渲染Element
+            renderElement() {
+                layui.use(['dropdown', 'util', 'layer', 'form'], function () {
+                    var element = layui.element;
+                    var layer = layui.layer;
+                    var form = layui.form;
+                    // console.log('更新渲染Element');
+                    element.init();
+                });
+            },
+            //更新渲染Form
+            renderForm() {
+                layui.use(['dropdown', 'util', 'layer', 'form'], function () {
+                    var element = layui.element;
+                    var layer = layui.layer;
+                    var form = layui.form;
+                    form.render();
+                });
+            },
+            //保存备注名
+            saveRemark() {
+                let self = this;
+                let remark_name = this.friend_info.remark_name.replace(/(^\s*)|(\s*$)/g, "");
+                if (remark_name) {
+                    let url = "/admin/kefu/saveRemark";
+                    let params = {
+                        remark_name: remark_name,
+                        id: this.friend_id,
+                        bot_id: this.bot_id,
+                        to_wxid: this.friend_info.wxid,
+                    }
+                    var index = layer.load(2);
+                    $.post(url, params, function (res) {
+                        if (res.code == 1) {
+                            self['friend_info'].remark_name = remark_name;
+                        }
+                        layer.close(index);
+                    }, 'json');
+                }
+            },
+            openEmoji(e) {
+                layer.open({
+                    type: 2,
+                    content: '/admin/Emoji?type=vue',
+                    area: ['600px', '500px'], //自定义文本域宽高
+                });
+            },
+            //发送图片
+            choosePicture(e) {
+                layer.open({
+                    type: 2,
+                    title: '图片',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['100%', '100%'],
+                    content: ['{:url("media/handle", ["type" => "image", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            },
+            //初始化layui上传
+            renderUpload() {
+                var self = this;
+                layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
+                    var upload = layui.upload
+                        , $ = layui.jquery;
+                    var upload_index;
+                    var dropdown = layui.dropdown;
+                    var util = layui.util;
+                    upload.render({
+                        elem: '#chooseFile'
+                        , url: '{:url("uploader/filePost")}'
+                        , multiple: false
+                        , accept: 'file' //允许上传的文件类型
+                        , size: "{(config('system.upload.file_size') ? config('system.upload.file_size')/1000 : 10240)}" //最大允许上传的文件大小
+                        // , exts: "{(config('system.upload.file_ext') ? config('system.upload.file_ext') : 'jpg,gif,png,jpeg,zip,rar,tar,gz,7z,doc,docx,txt,xml,mp3,mp4,xls,xlsx,pdf,tar.gz')}".split(',').join('|')
+                        , before: function () {
+                            upload_index = layer.load(1);
+                            // console.log(22);
+                        }
+                        , done: function (res, index, upload) { //上传后的回调
+                            layer.close(upload_index);
+                            if (res.code !== 1) {
+                                layer.alert(res.msg);
+                                return;
                             }
-                        });
+                            let url = res.data[0].url;
+                            self['content'] = url;
+                            self['content_type'] = 2004;
+                            self['sendMsg']();
+                            self['content_type'] = 1;
+                        }
                     });
-                },
-                //保存自动回复
-                saveAutoReply(e) {
-                    let self = this;
-                    let url = "/admin/kefu/saveAutoReply";
-                    var auto_reply = this.auto_reply.trim();
-                    if (auto_reply == '') {
-                        layer.msg('请输入自动回复内容');
-                        return false;
-                    }
-                    let params = {
-                        id: this.bot_id,
-                        auto_reply: auto_reply,
-                    }
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            layer.msg('保存成功');
+
+                });
+            },
+            //右键
+            renderDropdown(e) {
+                var self = this;
+                layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
+                    var upload = layui.upload
+                        , $ = layui.jquery;
+                    var upload_index;
+                    var dropdown = layui.dropdown;
+                    var util = layui.util;
+                    //执行菜单
+                    dropdown.render({
+                        elem: '.layui-elem-quote' //在 id="demo" 的元素中触发事件。也可以直接设置为 document，从而重置整个右键菜单
+                        , trigger: 'contextmenu' //右键事件
+                        , data: [{
+                            title: '复制'
+                            , id: 1
+                            , templet: '<div class="copy_msg">{{d.title}}</div>'
+                        }, {
+                            title: '转发'
+                            , id: 2
+                        }, {
+                            title: '收藏'
+                            , id: 3
+                        }, {
+                            title: '多选'
+                            , id: 4
+                        }], click: function (obj, othis) {
+                            var dom = this.elem;
+                            var content = $(dom).find('span').html();
+                            var msg_type_class = $(dom).find('span').attr('class');
+                            var msg_type_arr = msg_type_class.split("_");
+                            var msg_type = msg_type_arr[1];
+                            var class_name = $(dom).attr('class');
+                            if (obj.id === 1) {
+                                self['copySpeechcraft'](content, '.copy_msg');
+                            } else if (obj.id === 2) {
+                                self['sel_friend'] = true;
+                                self['share_content'][0] = { msg_type: msg_type, content: content };
+                                self['share_friends'] = [];
+                                // self['share_type'] = msg_type;
+                                console.log('转发');
+                            } else if (obj.id === 3) {
+                                let class_name_arr = class_name.split("_");
+                                if (class_name_arr[0] == 'send') {
+                                    layer.msg("只能收藏接收的信息");
+                                    return false;
+                                }
+                                let msg_id = class_name_arr[2];
+                                let param = { content: content, msg_type: msg_type, msg_id: msg_id };
+                                self['favoritesMsg'](param);
+                                console.log('收藏');
+                            } else if (obj.id === 4) {
+                                self['show_multiple'] = true;
+                                self['show_sel'] = true;
+
+                                console.log('多选');
+                            }
                         }
-                    }, 'json');
-                },
-                saveAutoPass() {
-                    let self = this;
-                    let url = "/admin/kefu/saveAutoReply";
-                    let params = {
-                        id: this.bot_id,
-                        auto_pass: this.auto_pass ? 1 : 0,
+                    });
+                });
+            },
+            //保存自动回复
+            saveAutoReply(e) {
+                let self = this;
+                let url = "/admin/kefu/saveAutoReply";
+                var auto_reply = this.auto_reply.trim();
+                if (auto_reply == '') {
+                    layer.msg('请输入自动回复内容');
+                    return false;
+                }
+                let params = {
+                    id: this.bot_id,
+                    auto_reply: auto_reply,
+                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        layer.msg('保存成功');
                     }
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            layer.msg('保存成功');
-                        }
-                    }, 'json');
-                },
-                //复制话术
-                copySpeechcraft(content, class_name = '.copy_speechcraft') {
-                    // console.log(content);
-                    // console.log(class_name);
-                    // var clipboard = new ClipboardJS(class_name, {
-                    //     text: function (trigger) {
-                    //         return content;
-                    //     }
-                    // });
-                    // // console.log(clipboard);
-                    // clipboard.on('success', function (e) {
-                    //     layer.msg("已复制！");
-                    //     e.clearSelection();
-                    // });
-                    // clipboard.on('error', function (e) {
-                    //     console.error('Action:', e.action);
-                    //     console.error('Trigger:', e.trigger);
-                    // });
-                    //复制到对话框
-                    this.content = this.content + content;
-                },
-                //收藏信息
-                favoritesMsg(params) {
-                    let self = this;
-                    let url = "/admin/kefu/favoritesMsg";
-                    params.robot_wxid = this.bot_info.uin;
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            layer.msg('收藏成功');
-                        }
-                    }, 'json');
-                },
-                //取消转发
-                cancelForward() {
-                    this.leave_word = '';
-                    this.share_content = [{ msg_type: 1, content: '' }];
-                    this.share_friends = [];
-                    this.sel_friend = false;
-                    this.sel_chat_content = [];
-                    this.show_multiple = false;
-                    this.show_sel = false;
-                },
-                //转发消息
-                forwardMsg() {
-                    let self = this;
-                    let share_friends = this.share_friends;
-                    let share_content = this.share_content;
-                    let share_type = this.share_type;
-                    let leave_word = this.leave_word.trim();;
-                    let uin = this.bot_info.uin;
-                    let bot_id = this.bot_id;
-                    let bot_info = this.bot_info;
-                    if (share_friends.length == 0) {
-                        layer.msg('请选择转发的好友');
-                        return false;
+                }, 'json');
+            },
+            saveAutoPass() {
+                let self = this;
+                let url = "/admin/kefu/saveAutoReply";
+                let params = {
+                    id: this.bot_id,
+                    auto_pass: this.auto_pass ? 1 : 0,
+                }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        layer.msg('保存成功');
                     }
-                    //发送消息
-                    $.each(share_friends, function (i, v) {
-                        //发送转发内容
-                        $.each(share_content, function (i2, v2) {
+                }, 'json');
+            },
+            //复制话术
+            copySpeechcraft(content, class_name = '.copy_speechcraft') {
+                // console.log(content);
+                // console.log(class_name);
+                // var clipboard = new ClipboardJS(class_name, {
+                //     text: function (trigger) {
+                //         return content;
+                //     }
+                // });
+                // // console.log(clipboard);
+                // clipboard.on('success', function (e) {
+                //     layer.msg("已复制！");
+                //     e.clearSelection();
+                // });
+                // clipboard.on('error', function (e) {
+                //     console.error('Action:', e.action);
+                //     console.error('Trigger:', e.trigger);
+                // });
+                //复制到对话框
+                this.content = this.content + content;
+            },
+            //收藏信息
+            favoritesMsg(params) {
+                let self = this;
+                let url = "/admin/kefu/favoritesMsg";
+                params.robot_wxid = this.bot_info.uin;
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        layer.msg('收藏成功');
+                    }
+                }, 'json');
+            },
+            //取消转发
+            cancelForward() {
+                this.leave_word = '';
+                this.share_content = [{ msg_type: 1, content: '' }];
+                this.share_friends = [];
+                this.sel_friend = false;
+                this.sel_chat_content = [];
+                this.show_multiple = false;
+                this.show_sel = false;
+            },
+            //转发消息
+            forwardMsg() {
+                let self = this;
+                let share_friends = this.share_friends;
+                let share_content = this.share_content;
+                let share_type = this.share_type;
+                let leave_word = this.leave_word.trim();;
+                let uin = this.bot_info.uin;
+                let bot_id = this.bot_id;
+                let bot_info = this.bot_info;
+                if (share_friends.length == 0) {
+                    layer.msg('请选择转发的好友');
+                    return false;
+                }
+                let emoji_url = '/admin/kefu/emojiConvert';
+                //发送消息
+                $.each(share_friends, function (i, v) {
+                    //发送转发内容
+                    $.each(share_content, function (i2, v2) {
+                        //emoji图片转换
+                        $.post(emoji_url, {content:v2.content, to:'emoji'}, function (res) {
                             let params = {
-                                content: v2.content,
-                                uin: uin,
-                                to_wxid: v,
-                                bot_id: bot_id,
-                                bot_info: bot_info,
-                                quote: '',
-                                type: v2.msg_type,
-                            }
-                            self['sendMsgPost'](params);
-                        });
-
-                        //发送留言
-                        if (leave_word != '') {
-                            let leave_params = {
-                                content: leave_word,
-                                uin: uin,
-                                to_wxid: v,
-                                bot_id: bot_id,
-                                bot_info: bot_info,
-                                quote: '',
-                                type: 1
-                            }
-                            self['sendMsgPost'](leave_params);
+                            content: res.data.content,
+                            uin: uin,
+                            to_wxid: v,
+                            bot_id: bot_id,
+                            bot_info: bot_info,
+                            quote: '',
+                            type: v2.msg_type,
                         }
-
-
-
-                    })
-
-                    this.cancelForward();
-                },
-                //发送信息
-                sendMsgPost(params) {
-                    let self = this;
-                    // let content = this.content;
-                    let uin = params.uin;
-                    let to_wxid = params.to_wxid;
-                    // let params = {
-                    //     content: content,
-                    //     uin: uin,
-                    //     to_wxid: to_wxid,
-                    //     bot_id: this.bot_id,
-                    //     bot_info: this.bot_info,
-                    //     quote: '引用内容引用内容',
-                    //     friend_id: this.friend_id,
-                    //     type: this.content_type
-                    // }
-                    let url = "/admin/kefu/sendMsg";
-                    //创建聊天数据
-                    if (!self['chat_log'][[uin]][[to_wxid]]) {
-                        // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
-                        self['chat_log'][[uin]][[to_wxid]] = [];
-                    }
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            // console.log(uin);
-                            // console.log(to_wxid);
-                            // console.log(self['chat_log'][[uin]][[to_wxid]]);
-                            self['chat_log'][[uin]][[to_wxid]] = self['chat_log'][[uin]][[to_wxid]].concat(res.data);
-                            self['current_chat'] = self['chat_log'][[uin]][[to_wxid]];
-                            //是当前的机器人,好友列表排序,最后聊天记录
-                            if (uin == res.data.friend.uin) {
-                                $.each(self['friends_list'], function (i, v) {
-                                    if (v.wxid == res.data.friend.wxid) {
-                                        self['friends_list'][i] = res.data.friend;
-                                        return false;
-                                    }
-                                });
-                                self['friends_list'].sort(compare("last_chat_time", "desc"));
-
-                            }
-                            self['renderDropdown']();
-                            self['sendToWx'](params);
-                            // self['searchFriend']();
-                        }
-                    }, 'json');
-                },
-                //批量转发消息
-                batchForwardMsg() {
-                    let self = this;
-                    let share_content = this.sel_chat_content;
-                    if (share_content.length == 0) {
-                        layer.msg('请选择转发内容');
-                        return false;
-                    }
-                    self['sel_friend'] = true;
-                    self['share_content'] = share_content;
-                    self['share_friends'] = [];
-
-                },
-                //批量收藏
-                batchFavoritesMsg() {
-                    let self = this;
-                    let share_content = this.sel_chat_content;
-                    if (share_content.length == 0) {
-                        layer.msg('请选择转发内容');
-                        return false;
-                    }
-                    let check = true;
-                    //发送的信息不能收藏
-                    $.each(share_content, function (i, v) {
-                        if (v.type == 'send') {
-                            check = false;
-                            return false;
-                        }
-
-                    });
-                    if (!check) {
-                        layer.msg('不能收藏发送的信息,请检查');
-                        return false;
-                    }
-                    $.each(share_content, function (i, v) {
-                        if (v.type == 'receive') {
-                            let param = { content: v.content, msg_type: v.msg_type, msg_id: v.msg_id };
-                            self['favoritesMsg'](param);
-                        }
-
+                        self['sendMsgPost'](params);
+                        },'json');
+                        
                     });
 
-                    this.cancelForward();
-
-                },
-                //获取当日聊天记录
-                getChatLog() {
-                    let self = this;
-                    let url = "/admin/kefu/getChatLog";
-                    let uin = this.bot_info.uin;
-                    let friend_wxid = this.friend_info.wxid;
-                    let params = {
-                        uin: uin,
-                        friend_wxid: friend_wxid
-                    };
-                    $.ajaxSettings.async = false;
-                    $.post(url, params, function (res) {
-                        if (res.code == 1) {
-                            res.data.list.sort(compare("time"));
-                            self['chat_log'][[uin]][[friend_wxid]] = res.data.list;
+                    //发送留言
+                    if (leave_word != '') {
+                        let leave_params = {
+                            content: leave_word,
+                            uin: uin,
+                            to_wxid: v,
+                            bot_id: bot_id,
+                            bot_info: bot_info,
+                            quote: '',
+                            type: 1
                         }
-                    }, 'json');
-                },
-                //添加机器人
-                addBot() {
-                    window.location.href = "/admin/kefu/loginBot";
-                    // layer.open({
-                    //     title: '添加机器人',
-                    //     type: 2,
-                    //     content: ['/admin/Kefu/loginBot'],
-                    //     area: ['500px', '700px'], //自定义文本域宽高
-                    // btn: ['保存', '取消'],
-                    // yes: function (index, layero) {
-                    //     var body = layero.find("iframe").contents().find("body");
-                    //     var params = $(body).find('form').serialize();
-                    //     var url = '/admin/kefu/saveSpeechcraft';
-                    //     $.post(url, params, function (res) {
-                    //         if (res.code == 1) {
-                    //             self['speechcraft_list'] = [];
-                    //             self['getSpeechcraftData']();
-                    //         }
-                    //         layer.close(index);
-                    //     }, 'json');
-                    // }
-                    // });
-                },
-                //发送微信消息
-                sendToWx(params) {
-                    let url = '/admin/kefu/sendMsgPost';
-                    $.post(url, params, function (res) {
-
-                    }, 'json');
-                }
-
-            }
-        });
-
-
-        var from_id = "{$from_id}";
-        // var webSocket = new WebSocket("ws://127.0.0.1:9506");
-        var webSocket = new WebSocket("ws://{$socket_ip}:{$socket_port}");
-        webSocket.onerror = function (event) {
-            console.log("onerror 错误： " + event.data);
-        };
-        // setInterval(function () {
-        //         console.log(Date());
-        //     }, 30000);
-        // 打开websocket
-        webSocket.onopen = function (event) {
-            console.log('连接成功');
-            //绑定用户
-            var bild = '{"type":"bind","uid":"' + from_id + '"}';
-            webSocket.send(bild);
-            setInterval(function () {
-                // console.log(Date());
-                webSocket.send('heartbeat');    //发送内容不限，只是为了证明客户端还没关闭还在线
-            }, 10000);
-
-        };
-        //监听消息
-        webSocket.onmessage = function (event) {
-            if (event.data) {
-                console.log('收到客户端消息:' + event.data);
-                var massage = eval("(" + event.data + ")");
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id,msg_type:massage.msg_type};
-                console.log(msg);
-                if (!vm['chat_log'][[massage.robot_wxid]]) {
-                    vm['chat_log'][[massage.robot_wxid]] = {};
-                }
-
-                if (!vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]]) {
-                    vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = [];
-                }
-                // console.log(vm['chat_log']);
-                vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
-                vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
-                if (!vm['new_bot'].includes(massage.robot_wxid)) {
-                    vm['new_bot'].push(massage.robot_wxid);
-                }
-                //机器人未读点亮
-                //如果消息不是当前机器人则点亮
-                var new_to_friend = true;
-                if (massage.robot_wxid != vm['bot_uin']) {
-                    $.each(vm['bot_list'], function (i, v) {
-                        if (massage.robot_wxid == v.uin) {
-                            vm['bot_list'][i]['new'] = 1;
-                            // let new_bot_arr = vm['new_bot'];
-                            // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
-                            // vm['new_bot'] = new_bot_arr;
-                            // console.log(new_bot_arr);
-                            return false;
-                        }
-                    })
-
-                } else {
-                    //判断是否在好友列表里
-                    //是替换
-                    //否放入
-                    //排序
-                    var is_in = false;
-                    $.each(vm['friends_list'], function (i, v) {
-                        if (massage.from_wxid == v.wxid) {
-                            vm['friends_list'][i] = massage.friend;
-                            is_in = true;
-                            return false;
-                        }
-                    })
-                    if (!is_in) {
-                        massage.friend.new = 1;
-                        vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
-                        new_to_friend = false;
-                        // console.log(vm['friends_list']);
+                        self['sendMsgPost'](leave_params);
                     }
-                    vm['friends_list'].sort(compare("last_chat_time", "desc"));
 
 
 
-                }
-                // console.log(vm['new_bot']);
-                // //点亮对应好友
-                // $.each(vm['friends_list'], function (i, v) {
-                //         if (massage.from_wxid == v.wxid) {
-                //             vm['friends_list'][i]['new'] = 1;
-                //         }
-                //     })
+                })
 
-                //点亮对应好友
-                if (new_to_friend) {
-                    if (!vm['new_friend'].includes(massage.from_wxid)) {
-                        vm['new_friend'].push(massage.from_wxid);
-                    }
-                }
-
-
-                // vm['searchFriend']();
-                // if (massage.from_wxid != vm['friend_wxid']) {
-
+                this.cancelForward();
+            },
+            //发送信息
+            sendMsgPost(params) {
+                let self = this;
+                // let content = this.content;
+                let uin = params.uin;
+                let to_wxid = params.to_wxid;
+                // let params = {
+                //     content: content,
+                //     uin: uin,
+                //     to_wxid: to_wxid,
+                //     bot_id: this.bot_id,
+                //     bot_info: this.bot_info,
+                //     quote: '引用内容引用内容',
+                //     friend_id: this.friend_id,
+                //     type: this.content_type
                 // }
-
-
-                webSocket.send('client_get_msg');
-            }
-        };
-        webSocket.onclose = function (event) {
-            console.log("关闭: " + sockState());
-            webSocket.close();
-            layer.confirm('待机时间过长已断开连接，点击确定重新连接?', function (index) {
-                location.reload();
-                layer.close(index);
-            });
-        }
-        function sockState() {
-            var status = ['未连接', '连接成功，可通讯', '正在关闭', '连接已关闭或无法打开'];
-            return status[webSocket.readyState];
-        }
-
-
-        //根据iframe传回的值进行当前页面的赋值
-        function setPictureValue(value, field) {
-            var picture_url = value[0].url;
-            vm.content = picture_url;
-            vm.content_type = 3;
-            vm.sendMsg();
-            vm.content_type = 1;
-
-        }
-
-        function compare(property, sort = 'asc') {
-            return function (a, b) {
-                var value1 = a[property];
-                var value2 = b[property];
-                if (sort == 'asc') {
-                    return value1 - value2;
-                } else {
-                    return value2 - value1;
+                let url = "/admin/kefu/sendMsg";
+                //创建聊天数据
+                if (!self['chat_log'][[uin]][[to_wxid]]) {
+                    // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
+                    self['chat_log'][[uin]][[to_wxid]] = [];
                 }
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        // console.log(uin);
+                        // console.log(to_wxid);
+                        // console.log(self['chat_log'][[uin]][[to_wxid]]);
+                        self['chat_log'][[uin]][[to_wxid]] = self['chat_log'][[uin]][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][[uin]][[to_wxid]];
+                        //是当前的机器人,好友列表排序,最后聊天记录
+                        if (uin == res.data.friend.uin) {
+                            $.each(self['friends_list'], function (i, v) {
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
+                                }
+                            });
+                            self['friends_list'].sort(compare("last_chat_time", "desc"));
+
+                        }
+                        self['renderDropdown']();
+                        scroll();
+                        self['sendToWx'](params);
+                        // self['searchFriend']();
+                    }
+                }, 'json');
+            },
+            //批量转发消息
+            batchForwardMsg() {
+                let self = this;
+                let share_content = this.sel_chat_content;
+                if (share_content.length == 0) {
+                    layer.msg('请选择转发内容');
+                    return false;
+                }
+                self['sel_friend'] = true;
+                self['share_content'] = share_content;
+                self['share_friends'] = [];
+
+            },
+            //批量收藏
+            batchFavoritesMsg() {
+                let self = this;
+                let share_content = this.sel_chat_content;
+                if (share_content.length == 0) {
+                    layer.msg('请选择转发内容');
+                    return false;
+                }
+                let check = true;
+                //发送的信息不能收藏
+                $.each(share_content, function (i, v) {
+                    if (v.type == 'send') {
+                        check = false;
+                        return false;
+                    }
+
+                });
+                if (!check) {
+                    layer.msg('不能收藏发送的信息,请检查');
+                    return false;
+                }
+                $.each(share_content, function (i, v) {
+                    if (v.type == 'receive') {
+                        let param = { content: v.content, msg_type: v.msg_type, msg_id: v.msg_id };
+                        self['favoritesMsg'](param);
+                    }
+
+                });
+
+                this.cancelForward();
+
+            },
+            //获取当日聊天记录
+            getChatLog() {
+                let self = this;
+                let url = "/admin/kefu/getChatLog";
+                let uin = this.bot_info.uin;
+                let friend_wxid = this.friend_info.wxid;
+                let params = {
+                    uin: uin,
+                    friend_wxid: friend_wxid
+                };
+                $.ajaxSettings.async = false;
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        res.data.list.sort(compare("time"));
+                        self['chat_log'][[uin]][[friend_wxid]] = res.data.list;
+                    }
+                }, 'json');
+            },
+            //添加机器人
+            addBot() {
+                window.location.href = "/admin/kefu/loginBot";
+                // layer.open({
+                //     title: '添加机器人',
+                //     type: 2,
+                //     content: ['/admin/Kefu/loginBot'],
+                //     area: ['500px', '700px'], //自定义文本域宽高
+                // btn: ['保存', '取消'],
+                // yes: function (index, layero) {
+                //     var body = layero.find("iframe").contents().find("body");
+                //     var params = $(body).find('form').serialize();
+                //     var url = '/admin/kefu/saveSpeechcraft';
+                //     $.post(url, params, function (res) {
+                //         if (res.code == 1) {
+                //             self['speechcraft_list'] = [];
+                //             self['getSpeechcraftData']();
+                //         }
+                //         layer.close(index);
+                //     }, 'json');
+                // }
+                // });
+            },
+            //发送微信消息
+            sendToWx(params) {
+                let url = '/admin/kefu/sendMsgPost';
+                $.post(url, params, function (res) {
+
+                }, 'json');
+            }
+
+        }
+    });
+
+
+    var from_id = "{$from_id}";
+    // var webSocket = new WebSocket("ws://127.0.0.1:9506");
+    var webSocket = new WebSocket("ws://{$socket_ip}:{$socket_port}");
+    webSocket.onerror = function (event) {
+        console.log("onerror 错误： " + event.data);
+    };
+    // setInterval(function () {
+    //         console.log(Date());
+    //     }, 30000);
+    // 打开websocket
+    webSocket.onopen = function (event) {
+        console.log('连接成功');
+        //绑定用户
+        var bild = '{"type":"bind","uid":"' + from_id + '"}';
+        webSocket.send(bild);
+        setInterval(function () {
+            // console.log(Date());
+            webSocket.send('heartbeat');    //发送内容不限，只是为了证明客户端还没关闭还在线
+        }, 10000);
+
+    };
+    //监听消息
+    webSocket.onmessage = function (event) {
+        if (event.data) {
+            console.log('收到客户端消息:' + event.data);
+            var massage = eval("(" + event.data + ")");
+            let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type };
+            console.log(msg);
+            if (!vm['chat_log'][[massage.robot_wxid]]) {
+                vm['chat_log'][[massage.robot_wxid]] = {};
+            }
+
+            if (!vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]]) {
+                vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = [];
+            }
+            // console.log(vm['chat_log']);
+            vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
+            vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+            if (!vm['new_bot'].includes(massage.robot_wxid)) {
+                vm['new_bot'].push(massage.robot_wxid);
+            }
+            //机器人未读点亮
+            //如果消息不是当前机器人则点亮
+            var new_to_friend = true;
+            if (massage.robot_wxid != vm['bot_uin']) {
+                $.each(vm['bot_list'], function (i, v) {
+                    if (massage.robot_wxid == v.uin) {
+                        vm['bot_list'][i]['new'] = 1;
+                        // let new_bot_arr = vm['new_bot'];
+                        // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
+                        // vm['new_bot'] = new_bot_arr;
+                        // console.log(new_bot_arr);
+                        return false;
+                    }
+                })
+
+            } else {
+                //判断是否在好友列表里
+                //是替换
+                //否放入
+                //排序
+                var is_in = false;
+                $.each(vm['friends_list'], function (i, v) {
+                    if (massage.from_wxid == v.wxid) {
+                        vm['friends_list'][i] = massage.friend;
+                        is_in = true;
+                        return false;
+                    }
+                })
+                if (!is_in) {
+                    massage.friend.new = 1;
+                    vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
+                    new_to_friend = false;
+                    // console.log(vm['friends_list']);
+                }
+                vm['friends_list'].sort(compare("last_chat_time", "desc"));
+
+
 
             }
-        }
+            // console.log(vm['new_bot']);
+            // //点亮对应好友
+            // $.each(vm['friends_list'], function (i, v) {
+            //         if (massage.from_wxid == v.wxid) {
+            //             vm['friends_list'][i]['new'] = 1;
+            //         }
+            //     })
 
-        function scroll() {
-            document.querySelector('.chat_panel').scrollIntoView(false);
+            //点亮对应好友
+            if (new_to_friend) {
+                if (!vm['new_friend'].includes(massage.from_wxid)) {
+                    vm['new_friend'].push(massage.from_wxid);
+                }
+            }
+
+
+            // vm['searchFriend']();
+            // if (massage.from_wxid != vm['friend_wxid']) {
+
+            // }
+
+
+            webSocket.send('client_get_msg');
         }
+    };
+    webSocket.onclose = function (event) {
+        console.log("关闭: " + sockState());
+        webSocket.close();
+        layer.confirm('待机时间过长已断开连接，点击确定重新连接?', function (index) {
+            location.reload();
+            layer.close(index);
+        });
+    }
+    function sockState() {
+        var status = ['未连接', '连接成功，可通讯', '正在关闭', '连接已关闭或无法打开'];
+        return status[webSocket.readyState];
+    }
+
+
+    //根据iframe传回的值进行当前页面的赋值
+    function setPictureValue(value, field) {
+        var picture_url = value[0].url;
+        vm.content = picture_url;
+        vm.content_type = 3;
+        vm.sendMsg();
+        vm.content_type = 1;
+
+    }
+
+    function compare(property, sort = 'asc') {
+        return function (a, b) {
+            var value1 = a[property];
+            var value2 = b[property];
+            if (sort == 'asc') {
+                return value1 - value2;
+            } else {
+                return value2 - value1;
+            }
+
+        }
+    }
+
+    function scroll() {
+        //    let res = document.querySelector('.scroll').clickHeight();
+        //    console.log('scroll:'+res);
+        // setTimeout(function(){
+        //     console.log(document.querySelector('.scroll').clientHeight)
+        // },2000)
+
+        vm.$nextTick(() => {document.querySelector('.scroll').scrollIntoView(false);}) 
+        
+    }
     // });
 </script>
 <style>
     .chat_box_panel {
         height: 776px;
     }
+
     .content {
         margin: auto 10px;
     }
+
     .my_chat_content blockquote {
         border-right: 5px solid #5fb878;
         border-left: 0px;
@@ -1268,44 +1288,56 @@
     .info {
         margin-left: 20px;
     }
+
     .add_reply {
         margin-left: 5px;
     }
+
     .layui-form-switch {
         margin-top: 0;
     }
+
     .layui-textarea {
         resize: none;
     }
+
     .layui-colla-content {
         height: 100px;
         overflow: scroll;
     }
+
     .bot-panel {
         height: 820px;
         overflow: scroll;
     }
+
     .friends-panel {
         height: 820px;
         overflow: scroll;
     }
+
     .bot_list {
         margin-bottom: 30px;
     }
+
     .friends_list {
         height: 820px;
         overflow: scroll;
     }
+
     .gray_headimgurl {
         filter: grayscale(100%);
     }
+
     .headimg {
         padding-right: 5px;
     }
-    .chat_panel .layui-elem-quote{
+
+    .chat_panel .layui-elem-quote {
         word-wrap: break-word;
     }
-    .chat_box_panel .layui-table-tool .layui-inline[lay-event]{
+
+    .chat_box_panel .layui-table-tool .layui-inline[lay-event] {
         border: none;
     }
 </style>

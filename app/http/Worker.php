@@ -7,6 +7,7 @@ namespace app\http;
 use think\facade\Db;
 use think\worker\Server;
 use Workerman\Lib\Timer;
+use app\common\model\EmojiCode;
 
 // define('HEARTBEAT_TIME', 30);// 心跳间隔
 class Worker extends Server
@@ -17,7 +18,7 @@ class Worker extends Server
 
 	public function init()
     {
-
+		$this->emojiCode = new EmojiCode();
     }
 
     public function onWorkerStart($worker)
@@ -66,15 +67,17 @@ class Worker extends Server
 					$res = json_decode($msg, true);
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
+						$content = $msg['msg'];
+						$msg['msg'] = $this->emojiCode($msg['msg']);
 						$conn->send($msg);
-						echo "发生消息：".$msg;
+						echo "发送消息：".$msg;
 						//最后一条聊天记录放redis
 						$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 						$hkey = $res['from_wxid'];
 						$result = [
 							'msg_id' => $res['msg_id'],
 							'date' => $res['date'],
-							'content' => $res['msg'],
+							'content' => $content,
 							'type' => 'receive',
 							'headimgurl' => $res['headimgurl'],
 							'friend' => $res['friend'],

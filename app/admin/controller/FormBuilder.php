@@ -34,22 +34,28 @@ class FormBuilder extends Base
 
     /**
      * 设置表单提交按钮
-     * @param array $params
+     * @param int|array $params
      * @return FormBuilder
      * @author: fudaoji<fdj@kuryun.cn>
      */
-    public function setBtnSubmit($params = []){
+    public function setBtnSubmit($params){
+        if(is_int($params)){
+            $params = ['show' => $params];
+        }
         $this->_btn_submit = array_merge($this->_btn_submit, $params);
         return $this;
     }
 
     /**
      * 设置表单重置按钮
-     * @param array $params
+     * @param int|array $params
      * @return FormBuilder
      * @author: fudaoji<fdj@kuryun.cn>
      */
-    public function setBtnReset($params = []){
+    public function setBtnReset($params){
+        if(is_int($params)){
+            $params = ['show' => $params];
+        }
         $this->_btn_reset = array_merge($this->_btn_reset, $params);
         return $this;
     }

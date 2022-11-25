@@ -283,8 +283,8 @@
 <script src="__JS__/admin/vue@2.7.10.js" charset="utf-8"></script>
 <script src="__LIB__/clipboard/clipboard.min.js" charset="utf-8"></script>
 <script>
-    layui.use(['layer'], function () {
-        var layer = layui.layer;
+    // layui.use(['layer'], function () {
+    //     var layer = layui.layer;
 
         //获取机器人参数
         var get_bot_param = {
@@ -534,6 +534,7 @@
                     }
 
                     this.renderElement();
+                    scroll();
                     // this.current_chat.sort(function (a, b) {
                     //     return b.last_chat_time - a.last_chat_time
                     // });
@@ -572,12 +573,13 @@
                                         return false;
                                     }
                                 });
-                                self['friends_list'].sort(compare("last_chat_time"));
+                                self['friends_list'].sort(compare("last_chat_time", "desc"));
 
                             }
                             self['renderDropdown']();
 
                             // self['searchFriend']();
+                            self['sendToWx'](params);
                         }
                     }, 'json');
                 },
@@ -625,7 +627,7 @@
                         title: '快捷回复',
                         type: 2,
                         content: ['/admin/kefu/addSpeechcraft?bot_id=' + bot_id, 'no'],
-                        area: ['650px', '330px'], //自定义文本域宽高
+                        area: ['650px', '320px'], //自定义文本域宽高
                         btn: ['保存', '取消'],
                         yes: function (index, layero) {
                             var body = layero.find("iframe").contents().find("body");
@@ -867,20 +869,22 @@
                 copySpeechcraft(content, class_name = '.copy_speechcraft') {
                     // console.log(content);
                     // console.log(class_name);
-                    var clipboard = new ClipboardJS(class_name, {
-                        text: function (trigger) {
-                            return content;
-                        }
-                    });
-                    // console.log(clipboard);
-                    clipboard.on('success', function (e) {
-                        layer.msg("已复制！");
-                        e.clearSelection();
-                    });
-                    clipboard.on('error', function (e) {
-                        console.error('Action:', e.action);
-                        console.error('Trigger:', e.trigger);
-                    });
+                    // var clipboard = new ClipboardJS(class_name, {
+                    //     text: function (trigger) {
+                    //         return content;
+                    //     }
+                    // });
+                    // // console.log(clipboard);
+                    // clipboard.on('success', function (e) {
+                    //     layer.msg("已复制！");
+                    //     e.clearSelection();
+                    // });
+                    // clipboard.on('error', function (e) {
+                    //     console.error('Action:', e.action);
+                    //     console.error('Trigger:', e.trigger);
+                    // });
+                    //复制到对话框
+                    this.content = this.content + content;
                 },
                 //收藏信息
                 favoritesMsg(params) {
@@ -990,10 +994,11 @@
                                         return false;
                                     }
                                 });
-                                self['friends_list'].sort(compare("last_chat_time"));
+                                self['friends_list'].sort(compare("last_chat_time", "desc"));
 
                             }
                             self['renderDropdown']();
+                            self['sendToWx'](params);
                             // self['searchFriend']();
                         }
                     }, 'json');
@@ -1084,6 +1089,13 @@
                     // }
                     // });
                 },
+                //发送微信消息
+                sendToWx(params) {
+                    let url = '/admin/kefu/sendMsgPost';
+                    $.post(url, params, function (res) {
+
+                    }, 'json');
+                }
 
             }
         });
@@ -1115,7 +1127,8 @@
             if (event.data) {
                 console.log('收到客户端消息:' + event.data);
                 var massage = eval("(" + event.data + ")");
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id };
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id,msg_type:massage.msg_type};
+                console.log(msg);
                 if (!vm['chat_log'][[massage.robot_wxid]]) {
                     vm['chat_log'][[massage.robot_wxid]] = {};
                 }
@@ -1163,7 +1176,7 @@
                         new_to_friend = false;
                         // console.log(vm['friends_list']);
                     }
-                    vm['friends_list'].sort(compare("last_chat_time"));
+                    vm['friends_list'].sort(compare("last_chat_time", "desc"));
 
 
 
@@ -1195,8 +1208,11 @@
         };
         webSocket.onclose = function (event) {
             console.log("关闭: " + sockState());
-            layer.alert('待机时间过长已断开连接，请刷新页面重新连接');
             webSocket.close();
+            layer.confirm('待机时间过长已断开连接，点击确定重新连接?', function (index) {
+                location.reload();
+                layer.close(index);
+            });
         }
         function sockState() {
             var status = ['未连接', '连接成功，可通讯', '正在关闭', '连接已关闭或无法打开'];
@@ -1214,14 +1230,23 @@
 
         }
 
-        function compare(property) {
+        function compare(property, sort = 'asc') {
             return function (a, b) {
                 var value1 = a[property];
                 var value2 = b[property];
-                return value1 - value2;
+                if (sort == 'asc') {
+                    return value1 - value2;
+                } else {
+                    return value2 - value1;
+                }
+
             }
         }
-    });
+
+        function scroll() {
+            document.querySelector('.chat_panel').scrollIntoView(false);
+        }
+    // });
 </script>
 <style>
     .chat_box_panel {

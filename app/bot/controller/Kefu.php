@@ -43,7 +43,7 @@ class Kefu extends Addon
         }
         //自动通过好友验证
         $model_kefu = new KefuModel();
-        $model_kefu->autoPass($this->content,$this->bot,$this->botClient);
+        $model_kefu->autoPass($this->content,$this->bot,$this->botClient,$this->configs);
     }
     
 }

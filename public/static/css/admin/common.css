@@ -7,9 +7,10 @@
  */
 
 body {
-    margin: 15px 15px 15px 15px;
+    margin: 5px;
     background: #f2f2f2;
 }
+.layui-body{padding-bottom: 0;}
 .layuimini-menu-left .layui-nav .layui-nav-more {
     top: 40%;
 }

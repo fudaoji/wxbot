@@ -24,8 +24,8 @@ class Api extends BaseCtl
             set_time_limit(0);
             Helper::$ajax = $this->getAjax();
             $this->driver = strtolower(input('driver', BotConst::PROTOCOL_MY));
-            if($this->driver == 'my'){
-                //Logger::error(Helper::$ajax);
+            if($this->driver == 'xbot'){
+                Logger::error(Helper::$ajax);
             }
         }else{
             Logger::error('Request invalid!');

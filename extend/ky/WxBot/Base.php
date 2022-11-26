@@ -180,9 +180,9 @@ Abstract class Base
                 }
             }
         }
-
+        
         $response = $this->client->request($method, $url, $extra);
-
+        
         if($response->getStatusCode() !== 200){
             $this->setError($response->getStatusCode());
             return false;

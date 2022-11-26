@@ -492,7 +492,7 @@ class Bot extends Base
             }
         }
         //退掉遗留的弹框
-        $bot_client->exitLoginCode();
+        // $bot_client->exitLoginCode();
         $res = $bot_client->getLoginCode();
         if($res['code'] == 0){
             $this->error($res['errmsg']);

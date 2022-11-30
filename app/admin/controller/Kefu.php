@@ -262,6 +262,7 @@ class Kefu extends Base
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
+            Logger::write(json_encode($post_data));
             if ($post_data['type'] == 1) { //文本
                 $res = $bot_client->sendTextToFriends([
                     'robot_wxid' => $bot['uin'],

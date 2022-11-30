@@ -30,6 +30,7 @@ class Bot
     const EVENT_FRIEND_VERIFY = 'EventFriendVerify'; //好友请求事件
     const EVENT_DEVICE = "EventDeviceCallback"; //设备回调事件
     const EVENT_LOGIN = "EventLogin"; //登录、退出
+    const EVENT_LOGOUT = "EventLogout"; //退出
     const EVENT_GROUP_CHAT = "EventGroupChat"; //群聊事件
     const EVENT_PRIVATE_CHAT = "EventPrivateChat"; //私聊消息事件
     const EVENT_RECEIVE_TRANSFER = 'EventReceivedTransfer'; //收到转账

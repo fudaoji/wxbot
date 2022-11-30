@@ -58,7 +58,7 @@ class Bot extends Base
                     return [
                         'wxid' => $data['wxid'],
                         'nickname' => $data['nickname'],
-                        'username' => $params['account'],
+                        'username' => $data['account'],
                         'headimgurl' => $data['avatar'],
                         'uuid' => $params['uuid']
                     ];

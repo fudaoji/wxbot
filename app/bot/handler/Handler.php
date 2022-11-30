@@ -45,7 +45,7 @@ class Handler extends BaseCtl
     protected $groupMemberM;
     protected $bot;
     /**
-     * @var Vlw|Wxwork|Cat|Webgo|My|Mycom
+     * @var Vlw|Wxwork|Cat|Webgo|My|Mycom|Xbot
      */
     protected $botClient;
     protected $fromWxid = '';
@@ -109,8 +109,10 @@ class Handler extends BaseCtl
         $this->checkEvent();
         switch ($this->driver){
             case BotConst::PROTOCOL_XBOT:
-                $this->botWxid = empty($this->ajaxData['wxid']) ? $this->content['wxid'] : $this->ajaxData['wxid'];
-                $this->fromWxid = $this->content['from_wxid'];
+                $this->botWxid = empty($this->ajaxData['wxid']) ? (empty($this->content['wxid'])?'':$this->content['wxid']) : $this->ajaxData['wxid'];
+                $this->fromWxid = empty($this->content['from_wxid']) ? '' : $this->content['from_wxid'];
+                !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
+                !empty($this->content['msgid']) && $this->content['msg_id'] = $this->content['msgid'];
                 break;
             case BotConst::PROTOCOL_QXUN:
                 $this->botWxid = $this->ajaxData['wxid'];
@@ -146,6 +148,7 @@ class Handler extends BaseCtl
                     Xbot::EVENT_LOGIN_CODE => BotConst::EVENT_LOGIN_CODE,
                     Xbot::EVENT_CONNECTED => BotConst::EVENT_CONNECTED,
                     Xbot::EVENT_LOGIN => BotConst::EVENT_LOGIN,
+                    Xbot::EVENT_LOGOUT => BotConst::EVENT_LOGOUT,
                     Xbot::EVENT_GROUP_MEMBER_ADD => BotConst::EVENT_GROUP_MEMBER_ADD,
                     Xbot::EVENT_GROUP_MEMBER_DEC => BotConst::EVENT_GROUP_MEMBER_DEC
                 ];

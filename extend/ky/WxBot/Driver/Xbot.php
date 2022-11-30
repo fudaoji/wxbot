@@ -10,10 +10,21 @@
 namespace ky\WxBot\Driver;
 
 
+use ky\Logger;
 use ky\WxBot\Base;
 
 class Xbot extends Base
 {
+    const API_SEND_IMG = 'MT_SEND_IMGMSG_BY_URL'; //发送图片
+    const API_SEND_TEXT = 'MT_SEND_TEXTMSG'; //发送文本
+    const API_FORWARD_MSG = 'MT_FORWARD_ANY_MSG'; //转发消息
+    const API_SEND_VIDEO_MSG = 'SendVideoMsg'; // 发送视频消息，只支持pro版
+    const API_SEND_FILE_MSG = 'SendFileMsg'; // 发送文件消息，只支持pro版
+    const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
+    const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
+    const API_SEND_SHARE_LINK_MSG = 'MT_SEND_LINKMSG'; //发送普通分享链接
+    const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
+    const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息
 
     const API_GET_FRIEND_LIST = 'MT_DATA_FRIENDS_MSG'; //
 
@@ -22,13 +33,16 @@ class Xbot extends Base
     const API_SET_GROUP_NAME = 'MT_MOD_ROOM_NAME_MSG'; //
     const API_GET_GROUP_LIST = 'MT_DATA_CHATROOMS_MSG';
 
+    const API_CLEAN_CHAT_HISTORY = 'MT_CLEAR_CHAT_HISTORY_MSG'; //清空聊天记录
     const API_INJECT_WECHAT = 'MT_INJECT_WECHAT'; //
     const API_GET_LOGIN_CODE = 'MT_RECV_QRCODE_MSG';
     const API_GET_ROBOT_INFO = 'MT_DATA_OWNER_MSG';
+    const API_EXIT = 'MT_QUIT_WECHAT_MSG'; //退出微信程序
 
     const EVENT_CONNECTED = 'MT_CLIENT_CONTECTED'; //注入微信
     const EVENT_LOGIN_CODE = 'MT_RECV_QRCODE_MSG'; //显示登录码
     const EVENT_LOGIN = 'MT_USER_LOGIN'; //登录微信
+    const EVENT_LOGOUT = 'MT_USER_LOGOUT'; //退出微信
     const EVENT_GROUP_MEMBER_ADD = 'MT_ROOM_ADD_MEMBER_NOTIFY_MSG'; //群人员增加
     const EVENT_GROUP_MEMBER_DEC = 'MT_ROOM_DEL_MEMBER_NOTIFY_MSG'; //群人员减少
 
@@ -50,6 +64,144 @@ class Xbot extends Base
     public static function init($options = [])
     {
         return new static($options);
+    }
+
+    /**
+     * 退出微信程序
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function exit($params = [])
+    {
+        $params['client_id']= $params['uuid'];
+        return $this->doRequest(self::API_EXIT, $params);
+    }
+
+    public function forwardMsgToFriends($params = [])
+    {
+        $data = $params;
+        $data['client_id']= $params['uuid'];
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', trim($params['to_wxid'], ','));
+        unset($data['to_wxid']);
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest(self::API_FORWARD_MSG, $data);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    public function forwardMsg($params = [])
+    {
+        $params['client_id']= $params['uuid'];
+        return $this->doRequest(self::API_FORWARD_MSG, $params);
+    }
+
+    public function sendShareLinkToFriends($params = [])
+    {
+        $data = $params;
+        $data['client_id']= $params['uuid'];
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', trim($params['to_wxid'], ','));
+        unset($data['to_wxid']);
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest(self::API_SEND_SHARE_LINK_MSG, $data);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    public function sendShareLinkMsg($params = [])
+    {
+        $params['client_id'] = $params['uuid'];
+        return $this->doRequest(self::API_SEND_SHARE_LINK_MSG, $params);
+    }
+
+    public function sendImgToFriends($params = [])
+    {
+        $data = [
+            'client_id' => $params['uuid'],
+            'url' => $params['path']
+        ];
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', trim($params['to_wxid'], ','));
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest(self::API_SEND_IMG, $data);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    /**
+     * req:{
+    "data": {
+    "to_wxid": "filehelper",
+    "content": "新版发送文本接口"
+    },
+    "client_id": 1,
+    "type": "MT_SEND_TEXT_V2_MSG"
+     *
+     * }
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendImgToFriend($params = [])
+    {
+        $params = [
+            'client_id' => $params['uuid'],
+            'url' => $params['path'],
+            'to_wxid' => $params['to_wxid']
+        ];
+        return $this->doRequest(self::API_SEND_IMG, $params);
+    }
+
+    public function sendTextToFriends($params = [])
+    {
+        $data = [
+            'client_id' => $params['uuid'],
+            'content' => $params['msg']
+        ];
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', trim($params['to_wxid'], ','));
+        foreach($to_wxid as $id){
+            $data['to_wxid'] = $id;
+            $this->doRequest(self::API_SEND_TEXT, $data);
+            $this->sleep();
+        }
+        return ['code' => 1];
+    }
+
+    /**
+     * req:{
+        "data": {
+        "to_wxid": "filehelper",
+        "content": "新版发送文本接口"
+        },
+        "client_id": 1,
+        "type": "MT_SEND_TEXT_V2_MSG"
+     *
+     * }
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendTextToFriend($params = [])
+    {
+        $params = [
+            'client_id' => $params['uuid'],
+            'content' => $params['msg'],
+            'to_wxid' => $params['to_wxid']
+        ];
+        return $this->doRequest(self::API_SEND_TEXT, $params);
+    }
+
+    public function cleanChatHistory($params = [])
+    {
+        $params = [
+            'client_id' => $params['uuid']
+        ];
+        return $this->doRequest(self::API_CLEAN_CHAT_HISTORY, $params);
     }
 
     /**
@@ -295,36 +447,6 @@ class Xbot extends Base
         // TODO: Implement sendCardToFriends() method.
     }
 
-    public function forwardMsgToFriends($params = [])
-    {
-        // TODO: Implement forwardMsgToFriends() method.
-    }
-
-    public function forwardMsg($params = [])
-    {
-        // TODO: Implement forwardMsg() method.
-    }
-
-    public function sendImgToFriends($params = [])
-    {
-        // TODO: Implement sendImgToFriends() method.
-    }
-
-    public function sendImgToFriend($params = [])
-    {
-        // TODO: Implement sendImgToFriend() method.
-    }
-
-    public function sendTextToFriends($params = [])
-    {
-        // TODO: Implement sendTextToFriends() method.
-    }
-
-    public function sendTextToFriend($params = [])
-    {
-        // TODO: Implement sendTextToFriend() method.
-    }
-
     public function sendVideoToFriends($params = [])
     {
         // TODO: Implement sendVideoToFriends() method.
@@ -348,16 +470,6 @@ class Xbot extends Base
     public function sendMusicLinkMsg($params = [])
     {
         // TODO: Implement sendMusicLinkMsg() method.
-    }
-
-    public function sendShareLinkToFriends($params = [])
-    {
-        // TODO: Implement sendShareLinkToFriends() method.
-    }
-
-    public function sendShareLinkMsg($params = [])
-    {
-        // TODO: Implement sendShareLinkMsg() method.
     }
 
     public function sendLinkMsg($params = [])
@@ -440,8 +552,5 @@ class Xbot extends Base
         // TODO: Implement setGroupNotice() method.
     }
 
-    public function cleanChatHistory($params = [])
-    {
-        // TODO: Implement cleanChatHistory() method.
-    }
+
 }

@@ -59,49 +59,12 @@ class EventPrivateChat extends HandlerPrivateChat
         ])) {
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
-            switch ($this->content['type']) {
-                case Bot::MSG_TEXT:
-                    $this->botClient->sendTextToFriends([
-                        'robot_wxid' => $this->content['robot_wxid'],
-                        'to_wxid' => $groups,
-                        'msg' => $this->content['msg']]);
-                    break;
-                case Bot::MSG_LINK:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_MYCOM) {
-                        $msg = json_decode($this->content['msg'], true)['Link'][0];
-                        $url = $msg['url'];
-                        $this->botClient->sendShareLinkToFriends([
-                            'robot_wxid' => $this->content['robot_wxid'],
-                            'to_wxid' => $groups,
-                            'url' => $url,
-                            'image_url' => empty($msg['image_url']) ? 'https://zyx.images.huihuiba.net/default-headimg.png' : $msg['image_url'],
-                            'title' => $msg['title'],
-                            'desc' => $msg['desc']
-                        ]);
-                    } else { //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
-                    }
-                    break;
-                default:
-                    if ($this->bot['protocol'] == Bot::PROTOCOL_MYCOM) {
-                        $this->botClient->sendTextToFriends([
-                            'robot_wxid' => $this->content['robot_wxid'],
-                            'to_wxid' => $groups,
-                            'msg' => $this->content['msg']
-                        ]);
-                    } else { //个微
-                        $this->botClient->forwardMsgToFriends([
-                            'robot_wxid' => $this->botWxid,
-                            'to_wxid' => $groups,
-                            'msgid' => $this->content['msg_id']
-                        ]);
-                    }
-                    break;
-            }
+            $this->botClient->forwardMsgToFriends([
+                'robot_wxid' => $this->botWxid,
+                'uuid' => $this->bot['uuid'],
+                'to_wxid' => $groups,
+                'msgid' => $this->content['msg_id']
+            ]);
         }
     }
 
@@ -114,7 +77,7 @@ class EventPrivateChat extends HandlerPrivateChat
             $this->isNewFriend = true;
             $this->friend = $this->memberM->addFriend([
                 'bot' => $this->bot,
-                'nickname' => filter_emoji($this->content['from_name']),
+                'nickname' => '', //todo 根据wxid获取好友的详细信息
                 'wxid' => $this->content['from_wxid']
             ]);
 

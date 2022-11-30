@@ -535,22 +535,39 @@ class Bot extends Base
             $this->error('参数错误');
         }
 
+        $data['uuid'] = '';
         /**
          * @var $bot_client Xbot
          */
         $bot_client = $this->model->getRobotClient($data);
         if(request()->isPost()){
-            $params = ['uuid' => session('bot_client_id')];
+            $data['uuid'] = session('bot_client_id');
             //获取机器人信息
-            $info = $this->model->getRobotInfo($params);
+            $info = $this->model->getRobotInfo($data);
             if(!empty($info) && !is_string($info)){
-                $this->model->updateOne([
-                    'id' => $data['id'],
-                    'nickname' => $info['nickname'],
-                    'headimgurl' => $info['headimgurl'],
-                    'username' => $info['username'],
-                    'uuid' => $params['uuid']
-                ]);
+                if($bot = $this->model->getOneByMap(['uin' => $info['wxid'], 'admin_id' => $this->adminInfo['id']])){
+                    $data = $this->model->updateOne([
+                        'id' => $bot['id'],
+                        'username' => $info['username'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl'],
+                        'alive' => 1,
+                        'uuid' => $data['uuid']
+                    ]);
+                }else{
+                    $data = $this->model->addOne([
+                        'uin' => $info['wxid'],
+                        'admin_id' => $this->adminInfo['id'],
+                        'title' => $info['nickname'],
+                        'uuid' => $info['username'],
+                        'app_key' => $data['app_key'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl'],
+                        'protocol' => $data['protocol'],
+                        'url' => $data['url'],
+                        'alive' => 1
+                    ]);
+                }
             }else{
                 $this->error($info);
             }
@@ -725,7 +742,10 @@ class Bot extends Base
             $this->error('参数错误');
         }
         $client = $this->model->getRobotClient($data);
-        $res = $client->cleanChatHistory(['robot_wxid' => $data['uin']]);
+        $res = $client->cleanChatHistory([
+            'robot_wxid' => $data['uin'],
+            'uuid' => $data['uuid']
+        ]);
         if($res['code']){
             $this->success('操作成功');
         }

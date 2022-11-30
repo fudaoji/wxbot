@@ -42,6 +42,7 @@ class Reply extends Base
             case Media::LINK:
                 $client->sendShareLinkToFriends([
                     'robot_wxid' => $bot['uin'],
+                    'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
                     'url' => $media['url'],
                     'image_url' => $media['image_url'],
@@ -59,12 +60,13 @@ class Reply extends Base
                         $client->sendMsgAtAll(['robot_wxid' => $bot['uin'], 'group_wxid' => $gid, 'msg' => $msg]);
                     }
                 }else{
-                    $client->sendTextToFriends(['robot_wxid' => $bot['uin'], 'to_wxid' => $to_wxid, 'msg' => $msg]);
+                    $client->sendTextToFriends(['robot_wxid' => $bot['uin'], 'uuid' => $bot['uuid'], 'to_wxid' => $to_wxid, 'msg' => $msg]);
                 }
                 break;
             case Media::IMAGE:
                 $client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],
+                    'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
                     'path' => $media['url']
                 ]);
@@ -72,6 +74,7 @@ class Reply extends Base
             case Media::VIDEO:
                 $client->sendVideoToFriends([
                     'robot_wxid' => $bot['uin'],
+                    'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
                     'path' => $media['url']
                 ]);
@@ -79,6 +82,7 @@ class Reply extends Base
             case Media::FILE:
                 $client->sendFileToFriends([
                     'robot_wxid' => $bot['uin'],
+                    'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
                     'path' => $media['url']
                 ]);

@@ -12,7 +12,7 @@ namespace app\common\model\kefu;
 
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
-
+use app\common\model\EmojiCode;
 class ChatLog extends Kefu
 {
     protected $isCache = false;
@@ -191,6 +191,7 @@ class ChatLog extends Kefu
      */
     public function convertMsgToHtml($msg = '', $msg_type = 1)
     {
+        $this->emojiM = new EmojiCode();
         $content = '';
         switch ($msg_type) {
                 //文本消息

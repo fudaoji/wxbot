@@ -18,6 +18,7 @@ class Bot
     const PROTOCOL_MY = 'my'; //我的个微
     const PROTOCOL_MYCOM = 'mycom'; //我的企微
     const PROTOCOL_QXUN = 'qianxun'; //千寻个微
+    const PROTOCOL_XBOT = 'xbot'; //XBOT个微
 
     const FRIEND = 'friend';
     const GROUP = 'group';
@@ -33,6 +34,8 @@ class Bot
     const EVENT_PRIVATE_CHAT = "EventPrivateChat"; //私聊消息事件
     const EVENT_RECEIVE_TRANSFER = 'EventReceivedTransfer'; //收到转账
     const EVENT_SCAN_CASH_MONEY = 'EventScanCashMoney'; //面对面付款
+    const EVENT_LOGIN_CODE = 'EventLoginCode'; //接收登录二维码信息
+    const EVENT_CONNECTED = 'EventConnected';
 
     const MSG_TEXT = 1; //文本消息
     const MSG_IMG = 3; //图片消息
@@ -106,6 +109,7 @@ class Bot
             self::PROTOCOL_CAT => '可爱猫个微',
             self::PROTOCOL_VLW => 'VLW个微',
             self::PROTOCOL_WXWORK => 'VLW企微',
+            self::PROTOCOL_XBOT => 'XBOT个微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
@@ -134,11 +138,27 @@ class Bot
     {
         $list = [
             //self::PROTOCOL_QXUN => '千寻个微',
+            self::PROTOCOL_XBOT => 'XBot个微',
             self::PROTOCOL_MY => '我的个微',
             self::PROTOCOL_MYCOM => '我的企微',
             self::PROTOCOL_CAT => '可爱猫个微',
             //self::PROTOCOL_VLW => 'VLW个微',
             //self::PROTOCOL_WXWORK => 'VLW企微',
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
+    /**
+     * 支持扫码登录的机器人协议
+     * @param null $id
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function canScan($id = null)
+    {
+        $list = [
+            self::PROTOCOL_MY => '我的个微',
+            self::PROTOCOL_XBOT=> 'XBot个微'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

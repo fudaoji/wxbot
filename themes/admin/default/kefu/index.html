@@ -889,8 +889,8 @@
                             , id: 4
                         }], click: function (obj, othis) {
                             var dom = this.elem;
-                            var content = $(dom).find('span').html();
-                            var msg_type_class = $(dom).find('span').attr('class');
+                            var content = $(dom).find('div').html();
+                            var msg_type_class = $(dom).find('div').attr('class');
                             var msg_type_arr = msg_type_class.split("_");
                             var msg_type = msg_type_arr[1];
                             var class_name = $(dom).attr('class');
@@ -1191,7 +1191,7 @@
                     this.get_chat_log_param.page++
                     if (this.get_chat_log_param.page > this.get_chat_log_param.page_count) {
                         this.show_more_chat_log = false;
-                        layer.msg('没有更多消息');
+                        // layer.msg('没有更多消息');
                         return false;
                     }
                     this.getChatLog();

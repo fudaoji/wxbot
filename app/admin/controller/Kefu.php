@@ -255,14 +255,11 @@ class Kefu extends Base
 
     public function sendMsgPost()
     {
-        Logger::write('发消息------------');
         if (request()->isPost()) {
-            $this->success('success');
             $post_data = input('post.');
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            Logger::write(json_encode($post_data));
             if ($post_data['type'] == 1) { //文本
                 $res = $bot_client->sendTextToFriends([
                     'robot_wxid' => $bot['uin'],
@@ -274,7 +271,6 @@ class Kefu extends Base
                     'to_wxid' => $post_data['to_wxid'],
                     'msg' => $post_data['content']
                 ]);
-                Logger::write('send_msg_arr:'.$arr.'-------------res:'.json_encode($res));
             } else if ($post_data['type'] == 3) { //图片
                 $bot_client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],

@@ -261,12 +261,7 @@ class Kefu extends Base
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                $res = $bot_client->sendTextToFriends([
-                    'robot_wxid' => $bot['uin'],
-                    'to_wxid' => $post_data['to_wxid'],
-                    'msg' => $post_data['content']
-                ]);
-                $arr = json_encode([
+                $bot_client->sendTextToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'msg' => $post_data['content']

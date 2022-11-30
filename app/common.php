@@ -551,3 +551,15 @@ function get_unique_number_arr($start = 0, $end = 9, $length = 8)
     //替换掉逗号
     return str_replace(',', '', $str);
 }
+
+/**
+ * 上传base64到七牛
+ * @param string $key
+ * @param string $string
+ * @return mixed
+ * Author: Doogie<fdj@kuryun.cn>
+ */
+function upload_base64($key = '', $string = ''){
+    $qiniu = (new \app\common\event\Base())->getQiniu();
+    return $qiniu->downLink($qiniu->uploadBase64($key, $string));
+}

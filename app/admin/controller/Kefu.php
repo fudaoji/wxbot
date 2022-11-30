@@ -30,6 +30,7 @@ class Kefu extends Base
         $this->configM = new Config();
         $this->botM = new ModelBot();
         $this->emojiM = new EmojiCode();
+        $this->chatLogM = new ChatLog();
     }
 
 
@@ -180,7 +181,9 @@ class Kefu extends Base
             $time = time();
             $bot = $bot_model->getOne($post_data['bot_id']);
             $content = $post_data['content'];
-            // $bot_client = $bot_model->getRobotClient($bot);
+            // $content = $chat_model->convertMsg($content, $post_data['type']);
+            // $last_chat_content = $content;
+            $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
                 // $bot_client->sendTextToFriends([
                 //     'robot_wxid' => $bot['uin'],
@@ -229,7 +232,7 @@ class Kefu extends Base
             $member_model->where(['id' => $friend_id])->update(['last_chat_time' => $time]);
             $friend = $member_model->where(['id' => $friend_id])->find();
             $friend['last_chat_content'] = $last_chat_content;
-            
+
             $result = [
                 'msg_id' => $msgid,
                 'date' => $date,
@@ -253,6 +256,7 @@ class Kefu extends Base
     public function sendMsgPost()
     {
         if (request()->isPost()) {
+            $this->success('success');
             $post_data = input('post.');
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);
@@ -425,24 +429,26 @@ class Kefu extends Base
             $where = [['from|to', '=', $post_data['uin']], ['from|to', '=', $post_data['friend_wxid']]];
             $from_date = strtotime(date("Y-m-d"));
             $to_date = time();
-            $where[] = ['create_time', 'between', [$from_date, $to_date]];
+            // $where[] = ['create_time', 'between', [$from_date, $to_date]];
             $order = ['create_time' => 'desc'];
-            $limit = 30;
-            $log_list = $chat_model->partition('p' . $year)->where($where)->order($order)->limit($limit)->select();
-            $friend = $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['friend_wxid']])->find();
-            foreach ($log_list as &$val) {
-                $val['date'] = $val['create_time'];
-                $val['class'] = $val['type'] == 'send' ? 'my_chat_content' : 'friend_chat_content';
-                $val['headimgurl'] = $val['from_headimg'];
-                $val['friend'] = $friend;
-                $val['time'] = strtotime($val['create_time']);
-                if ($val['msg_type'] == 1) {//文本
-                    $content = $this->emojiM->emojiText($val['content'], 'img');
-                } else if (!in_array($val['msg_type'],[2,2004])) {//图片和文件不处理
-                    $content = '[链接]';
+            $limit = $post_data['limit'] ?? 30;
+            $page = $post_data['page'] ?? 1;
+            $total = $chat_model->partition('p' . $year)->where($where)->count();
+            $log_list = [];
+            if ($total) {
+                $log_list = $chat_model->partition('p' . $year)->where($where)->order($order)->page($page)->limit($limit)->select();
+                $friend = $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['friend_wxid']])->find();
+                foreach ($log_list as &$val) {
+                    $val['date'] = $val['create_time'];
+                    $val['class'] = $val['type'] == 'send' ? 'my_chat_content' : 'friend_chat_content';
+                    $val['headimgurl'] = $val['from_headimg'];
+                    $val['friend'] = $friend;
+                    $val['time'] = strtotime($val['create_time']);
+                    $content = $chat_model->convertMsg($val['content'], $val['msg_type']);
+                    $val['content'] = $content;
                 }
-                $val['content'] = $content;
             }
+
             // $result = [
             //     'msg_id' => $msgid,
             //     'date' => $date,
@@ -454,7 +460,7 @@ class Kefu extends Base
             //     'friend' => $friend,
             //     'msg_type' => $post_data['type'],
             // ];
-            $this->success('success', '', ['list' => $log_list]);
+            $this->success('success', '', ['list' => $log_list, 'total' => $total]);
         }
     }
 
@@ -480,13 +486,74 @@ class Kefu extends Base
      * 
      * emoji转换
      */
-    public function emojiConvert(){
+    public function emojiConvert()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $content = $this->emojiM->emojiText($post_data['content'], $post_data['to']);
-            $this->success('success','',['content' => $content]);
+            $this->success('success', '', ['content' => $content]);
+        }
+    }
+
+    /**
+     * 
+     * 检查转账是否已同意
+     */
+    public function checkTransferMsg(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $msg_id = $post_data['msg_id'];
+            $is_read = $this->chatLogM->where(['msg_id' => $msg_id, 'type' => 'receive'])->value('is_read');
+            if ($is_read != 0) {
+                $this->error('转账已操作');
+            } else {
+                $this->success('ok');
+            }
         }
     }
 
 
+    /**
+     * 
+     * 同意转账
+     */
+    public function accepteTransfer(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $msg_id = $post_data['msg_id'];
+            $this->chatLogM->where(['msg_id' => $msg_id, 'type' => 'receive'])->update(['is_read' => 1]);
+            $bot_model = $this->botM;
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            $bot_client->accepteTransfer([
+                'robot_wxid' => $bot['uin'],
+                'from_wxid' => $post_data['from_wxid'],
+                'payer_pay_id' => $post_data['payer_pay_id'],
+                'receiver_pay_id' => $post_data['receiver_pay_id'],
+                'paysubtype' => $post_data['paysubtype'],
+                'money' => $post_data['money'],
+            ]);
+            $this->success('success');
+        }
+    }
+
+    /**
+     * 
+     * 拒绝转账
+     */
+    public function rejectTransfer(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $msg_id = $post_data['msg_id'];
+            $this->chatLogM->where(['msg_id' => $msg_id, 'type' => 'receive'])->update(['is_read' => -1]);
+            $bot_model = $this->botM;
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            $bot_client->rejectTransfer([
+                'robot_wxid' => $bot['uin'],
+                'receiver_pay_id' => $post_data['receiver_pay_id'],
+            ]);
+            $this->success('success');
+        }
+    }
 }

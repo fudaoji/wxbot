@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * Script Name: Config.php
@@ -6,15 +7,19 @@
  * Description:
  * Author: fudaoji<fdj@kuryun.cn>
  */
+
 namespace app\common\model\kefu;
 
+use app\admin\model\Bot;
 use app\admin\model\BotMember;
+
 class ChatLog extends Kefu
 {
     protected $isCache = false;
     protected $table = 'chat_log';
 
-    public function saveChat($data, $bot){
+    public function saveChat($data, $bot)
+    {
         // "content": {
         //     "robot_wxid": "",  // 机器人账号id
         //     "type": 1,  // 1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请  更多请参考常量表
@@ -35,17 +40,19 @@ class ChatLog extends Kefu
         $member = $member_model->where(['wxid' => $data['from_wxid']])->find();
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        //信息转换
+        $convert = $this->convertReceiveMsg($data['msg'],$data['type'],$bot);
         $member['last_chat_time'] = $time;
-        $member['last_chat_content'] = $data['msg'];
+        $member['last_chat_content'] = $convert['last_chat_content'];
         // $bot = $bot_model->where(['uin' => $data['robot_wxid']])->find();
         $msg = json_encode([
-            'msg' => $data['msg'],
-            'date' => date("Y-m-d H:i:s",$time),
+            'msg' => $convert['content'],
+            'date' => date("Y-m-d H:i:s", $time),
             'msg_id' => $data['msg_id'],
             'headimgurl' => $member['headimgurl'],
             'from_wxid' => $data['from_wxid'],
             'robot_wxid' => $data['robot_wxid'],
-            'client' => $bot['admin_id'],//对应用户id
+            'client' => $bot['admin_id'], //对应用户id
             'friend' => $member,
             'msg_type' => $data['type'],
             'event' => 'msg'
@@ -54,7 +61,7 @@ class ChatLog extends Kefu
             'from' => $data['from_wxid'],
             'to' => $data['robot_wxid'],
             'create_time' => $time,
-            'content' => $data['msg'],
+            'content' => $convert['content'],
             'year' => $year,
             'from_headimg' => $member['headimgurl'],
             'msg_id' => $data['msg_id'],
@@ -62,6 +69,176 @@ class ChatLog extends Kefu
             'msg_type' => $data['type'],
         ];
         $chat_model->partition('p' . $year)->insertGetId($insert_data);
-        $redis->rpush($key,$msg);
+        $redis->rpush($key, $msg);
+    }
+
+    /**
+     * 
+     * 接收消息转换
+     */
+    public function convertReceiveMsg($msg = '', $msg_type = 1, $bot = []) {
+        $content = '';
+        $last_chat_content = '';
+        switch ($msg_type) {
+                //文本消息
+                //[微笑]
+            case 1:
+                $content = $msg;
+                $last_chat_content = $content;
+                break;
+                //图片消息
+                //转base64上传七牛云获取url地址
+                //[pic=E:\北遇框架(兼容我的框架)\Data\wxid_eko8u5yga0jr22\4d6eb5054e05cef3ac288ca8423c6805.jpg]
+            case 3:
+                $bot_model = new Bot();
+                $bot_client = $bot_model->getRobotClient($bot);
+                $path = mb_substr($msg,5,-1);
+                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $base64 = $res['ReturnStr'];
+                $url = upload_base64('pic_'.rand(1000,9999).'_'.time(),$base64);
+                $content = $url;
+                $last_chat_content = "[图片]";
+                break;
+                //文件
+                //[file=E:\北遇框架(兼容我的框架)\Data\xxx]
+            case 2004:
+                $bot_model = new Bot();
+                $bot_client = $bot_model->getRobotClient($bot);
+                $path = mb_substr($msg,6,-1);
+                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $base64 = $res['ReturnStr'];
+                $url = upload_base64('file_'.rand(1000,9999).'_'.time(),$base64);
+                $content = $url;
+                $last_chat_content = "[文件]";
+                break;
+            //语音
+            //[mp3=C:\Users\Administrator\AppData\Local\Temp\2\wxmD189_tmp.mp3]
+            case 34:
+                $bot_model = new Bot();
+                $bot_client = $bot_model->getRobotClient($bot);
+                $path = mb_substr($msg,5,-1);
+                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $base64 = $res['ReturnStr'];
+                $url = upload_base64('mp3_'.rand(1000,9999).'_'.time(),$base64);
+                $content = $url;
+                $last_chat_content = "[语音消息]";
+                break;
+            case 42:
+                $content = "[名片消息]";
+                $last_chat_content = "[名片消息]";
+                break;
+            case 43:
+                //视频消息
+                //[mp4=C:\Users\Administrator\Documents\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-11\0777bb2b86444a5ac848234dd1071683.mp4]
+                $bot_model = new Bot();
+                $bot_client = $bot_model->getRobotClient($bot);
+                $path = mb_substr($msg,5,-1);
+                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $base64 = $res['ReturnStr'];
+                $url = upload_base64('mp4_'.rand(1000,9999).'_'.time(),$base64);
+                $content = $url;
+                $last_chat_content = "[视频]";
+                break;
+            case 47:
+                //gif
+                //[gif=E:\北遇框架(兼容我的框架)\Data\wxid_uzmmu9jzsvjn12\bac239988eb3606f63dbebebeb15dcb4.gif]
+                $bot_model = new Bot();
+                $bot_client = $bot_model->getRobotClient($bot);
+                $path = mb_substr($msg,5,-1);
+                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $base64 = $res['ReturnStr'];
+                $url = upload_base64('gif_'.rand(1000,9999).'_'.time(),$base64);
+                $content = $url;
+                $last_chat_content = "[动态表情]";
+                break;
+            case 48:
+                $content = "[地理位置]";
+                $last_chat_content = "[地理位置]";
+                break;
+            case 49:
+                $content = "[分享链接]";
+                $last_chat_content = "[分享链接]";
+                break;
+            //转账
+            case 2000:
+                //转账
+                //{"payer_pay_id":"100005000122112500083349286519001491","receiver_pay_id":"1000050001202211250210301400144","paysubtype":3,"money":"1165.00","pay_memo":""}
+                $content = $msg;
+                $last_chat_content = "[转账]";
+                break;
+            case 2001:
+                $content = "[红包]";
+                $last_chat_content = "[红包]";
+                break;
+            case 2003:
+                $content = "[群邀请]";
+                $last_chat_content = "[群邀请]";
+                break;
+            default:
+                $content = "[链接]";
+                $last_chat_content = "[链接]";
+                break;
+        }
+
+
+        return ['content' => $content, 'last_chat_content' => $last_chat_content];
+    }
+
+    /**
+     * 
+     * 消息内容转换html代码
+     * 1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请  接收文件 2004
+     */
+    public function convertMsgToHtml($msg = '', $msg_type = 1)
+    {
+        $content = '';
+        switch ($msg_type) {
+                //文本消息
+            case 1:
+                $content = $this->emojiM->emojiText($msg, 'img');
+                break;
+            //     //图片消息
+            // case 3:
+            //     $content = $msg;
+            //     break;
+            //     //文件
+            // case 2004:
+            //     $content = $msg;
+            //     break;
+            // case 34:
+            //     $content = "[语音消息]";
+            //     break;
+            // case 42:
+            //     $content = "[名片消息]";
+            //     break;
+            // case 43:
+            //     $content = "[视频]";
+            //     break;
+            // case 47:
+            //     $content = "[动态表情]";
+            //     break;
+            // case 48:
+            //     $content = "[地理位置]";
+            //     break;
+            // case 49:
+            //     $content = "[分享链接]";
+            //     break;
+            // //转账
+            // case 2000:
+            //     $content = $msg;
+            //     break;
+            // case 2001:
+            //     $content = "[红包]";
+            //     break;
+            // case 2003:
+            //     $content = "[群邀请]";
+            //     break;
+            default:
+                $content = $msg;
+                break;
+        }
+
+
+        return $content;
     }
 }

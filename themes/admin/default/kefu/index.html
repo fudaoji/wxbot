@@ -90,7 +90,8 @@
             <div class="layui-panel chat_box_panel">
                 <div class="layui-card-header" v-show="friend_info">{{friend_info.nickname}}</div>
                 <div class="layui-panel chat_box_panel" v-show="show_chat">
-                    <div style="padding: 15px" class="chat_panel" id="chat_panel">
+                    <!-- <div><a href="javaScript:" @click="loadChatLog" v-show="show_more_chat_log">查看更多消息</a></div> -->
+                    <div style="padding: 15px" class="chat_panel" id="chat_panel" ref="chat_log_list_ref">
                         <div class="scroll">
                             <div v-for="(item, index) in current_chat" :key="item.msg_id" :class="item.class">
                                 <div class="layui-row">
@@ -98,6 +99,7 @@
                                         <span class="layui-badge layui-bg-gray">{{item.date}}</span>
                                     </div>
                                 </div>
+                                <!-- 我的发送 -->
                                 <div class="layui-row" v-if="item.class == 'my_chat_content'">
                                     <div class="layui-col-md1" v-show="show_sel">
                                         <input type="checkbox" lay-ignore lay-skin="primary" title=""
@@ -109,11 +111,18 @@
                                         <blockquote class="layui-elem-quote">
                                             <div v-if="item.msg_type == 1" :class="'send_1_'+item.msg_id"
                                                 v-html="item.content"></div>
-                                            <div v-if="item.msg_type == 3" :class="'send_2_'+item.msg_id"><img
-                                                    :src="item.content" style="width:100px;"></div>
-                                            <div v-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id"><a
-                                                    :href="item.content" target="downloadFile"><span>文件：</span><i
-                                                        class="layui-icon layui-icon-file-b"></i></a></div>
+                                            <div v-else-if="item.msg_type == 3" :class="'send_3_'+item.msg_id">
+                                                <div class="layer-photos">
+                                                    <img :src="item.content" style="width:100px;"
+                                                        :layer-src="item.content">
+                                                </div>
+                                            </div>
+                                            <div v-else-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id">
+                                                <a :href="item.content" target="downloadFile">
+                                                    <span>文件：</span>
+                                                    <i class="layui-icon layui-icon-file-b"></i>
+                                                </a>
+                                            </div>
                                         </blockquote>
                                     </div>
                                     <div class="layui-col-md1">
@@ -123,6 +132,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- 接收好友消息 -->
                                 <div class="layui-row" v-else>
                                     <div class="layui-col-md1 sel_chat" v-show="show_sel">
                                         <input type="checkbox" lay-ignore lay-skin="primary" title=""
@@ -138,13 +148,69 @@
                                     </div>
                                     <div class="layui-col-md9 content">
                                         <blockquote class="layui-elem-quote">
-                                            <span v-if="item.msg_type == 1" :class="'receive_1_'+item.msg_id"
-                                                v-html="item.content"></span>
-                                            <span v-if="item.msg_type == 3" :class="'receive_2_'+item.msg_id"><img
-                                                    :src="item.content" style="width:100px;"></span>
-                                            <span v-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id"><a
-                                                    :href="item.content" target="downloadFile"><span>文件：</span><i
-                                                        class="layui-icon layui-icon-file-b"></i></a></span>
+                                            <!-- 文本消息 -->
+                                            <div v-if="item.msg_type == 1" :class="'receive_1_'+item.msg_id"
+                                                v-html="item.content">
+                                            </div>
+                                            <!-- 图片消息 -->
+                                            <div v-else-if="item.msg_type == 3" :class="'receive_3_'+item.msg_id">
+                                                <div class="layer-photos">
+                                                    <img :src="item.content" style="width:100px;"
+                                                        :layer-src="item.content">
+                                                </div>
+                                            </div>
+                                            <!-- 文件消息 -->
+                                            <div v-else-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id">
+                                                <a :href="item.content" target="downloadFile">
+                                                    <span>文件：</span>
+                                                    <i class="layui-icon layui-icon-file-b"></i>
+                                                </a>
+                                            </div>
+                                            <!-- 语音消息mp3 -->
+                                            <div v-else-if="item.msg_type == 34" :class="'receive_34_'+item.msg_id">
+                                                <embed :src="item.content" autostart=false>
+                                            </div>
+                                            <!-- 名片消息 -->
+                                            <div v-else-if="item.msg_type == 42" :class="'receive_42_'+item.msg_id"
+                                                v-html="item.content">
+                                            </div>
+                                            <!-- 视频消息mp4 -->
+                                            <div v-else-if="item.msg_type == 43" :class="'receive_43_'+item.msg_id">
+                                                <embed :src="item.content" autostart=false>
+                                            </div>
+                                            <!-- gif -->
+                                            <div v-else-if="item.msg_type == 47" :class="'receive_47_'+item.msg_id">
+                                                <div class="layer-photos">
+                                                    <img :src="item.content" style="width:100px;"
+                                                        :layer-src="item.content">
+                                                </div>
+                                            </div>
+                                            <!-- 地理位置 -->
+                                            <div v-else-if="item.msg_type == 48" :class="'receive_48_'+item.msg_id"
+                                                v-html="item.content">
+                                            </div>
+                                            <!-- 分享链接 -->
+                                            <div v-else-if="item.msg_type == 49" :class="'receive_49_'+item.msg_id"
+                                                v-html="item.content">
+                                            </div>
+                                            <!-- 转账 -->
+                                            <div v-else-if="item.msg_type == 2000" :class="'receive_2000_'+item.msg_id"
+                                                @click="tansfer(item)">
+                                                <span>转账：</span>
+                                                <i class="layui-icon layui-icon-rmb"></i>
+                                            </div>
+                                            <!-- 红包 -->
+                                            <div v-else-if="item.msg_type == 2001" :class="'receive_2001_'+item.msg_id"
+                                                v-html="item.content">
+                                            </div>
+                                            <!-- 群邀请 -->
+                                            <div v-else-if="item.msg_type == 2003" :class="'receive_2003_'+item.msg_id"
+                                                v-html="item.content">
+                                            </div>
+                                            <!-- 其他 -->
+                                            <div v-else :class="'receive_'+item.msg_type+'_'+item.msg_id"
+                                                v-html="item.content">
+                                            </div>
                                         </blockquote>
                                     </div>
                                 </div>
@@ -312,6 +378,13 @@
         page_size: 10, // 每页总条数
         page_count: 1, // 总页数
     }
+    //获取聊天记录
+    var get_chat_log_param = {
+        // 分页
+        page: 1, // 当前页
+        page_size: 10, // 每页总条数
+        page_count: 1, // 总页数
+    }
     var data = {
         get_bot_param: get_bot_param,//获取机器人参数
         bot_list: [],//机器人列表
@@ -347,7 +420,9 @@
         // share_type: 1,//转发内容类型
         leave_word: '',
         show_multiple: false,
-        sel_chat_content: []//多选
+        sel_chat_content: [],//多选
+        get_chat_log_param: get_chat_log_param,//获取聊天记录参数
+        show_more_chat_log: true,
     };
     var vm = new Vue({
         el: '#app',
@@ -360,6 +435,7 @@
             this.$refs.bot_list_ref.addEventListener('scroll', this.loadBot) // 滚动到底部，再加载的处理事件
             this.$refs.friends_list_ref.addEventListener('scroll', this.loadFriends) // 滚动到底部，再加载的处理事件
             this.$refs.speechcraft_list_ref.addEventListener('scroll', this.loadSpeechcraft) // 滚动到底部，再加载的处理事件
+            this.$refs.chat_log_list_ref.addEventListener('scroll', this.loadChatLog) // 滚动到底部，再加载的处理事件
         },
         methods: {
             clearMsg() {
@@ -508,6 +584,7 @@
                     this.show_info = true;
                     this.show_chat = true;
                     this.friend_wxid = item.wxid;
+                    this.show_more_chat_log = true;
                     // console.log(this.friend_info);
                 }
                 // console.log(this.bot_info);
@@ -782,12 +859,17 @@
             //右键
             renderDropdown(e) {
                 var self = this;
-                layui.use(['upload', 'jquery', 'dropdown', 'util'], function () {
+                layui.use(['upload', 'jquery', 'dropdown', 'util', 'layer'], function () {
                     var upload = layui.upload
                         , $ = layui.jquery;
                     var upload_index;
                     var dropdown = layui.dropdown;
                     var util = layui.util;
+                    var layer = layui.layer;
+                    layer.photos({
+                        photos: '.layer-photos'
+                        , anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                    });
                     //执行菜单
                     dropdown.render({
                         elem: '.layui-elem-quote' //在 id="demo" 的元素中触发事件。也可以直接设置为 document，从而重置整个右键菜单
@@ -933,19 +1015,25 @@
                 $.each(share_friends, function (i, v) {
                     //发送转发内容
                     $.each(share_content, function (i2, v2) {
-                        //emoji图片转换
-                        $.post(emoji_url, { content: v2.content, to: 'emoji' }, function (res) {
-                            let params = {
-                                content: res.data.content,
-                                uin: uin,
-                                to_wxid: v,
-                                bot_id: bot_id,
-                                bot_info: bot_info,
-                                quote: '',
-                                type: v2.msg_type,
-                            }
+                        //文本消息转emoji
+                        if (v2.msg_type == 1) {
+                            //emoji图片转换
+                            $.post(emoji_url, { content: v2.content, to: 'emoji' }, function (res) {
+                                let params = {
+                                    content: res.data.content,
+                                    uin: uin,
+                                    to_wxid: v,
+                                    bot_id: bot_id,
+                                    bot_info: bot_info,
+                                    quote: '',
+                                    type: v2.msg_type,
+                                }
+                                self['sendMsgPost'](params);
+                            }, 'json');
+                        } else {
                             self['sendMsgPost'](params);
-                        }, 'json');
+                        }
+
 
                     });
 
@@ -1067,17 +1155,53 @@
                 let url = "/admin/kefu/getChatLog";
                 let uin = this.bot_info.uin;
                 let friend_wxid = this.friend_info.wxid;
+                let page = this.get_chat_log_param.page;
+                let limit = this.get_chat_log_param.page_size;
                 let params = {
                     uin: uin,
-                    friend_wxid: friend_wxid
+                    friend_wxid: friend_wxid,
+                    page: page,
+                    limit: limit,
                 };
+
                 $.ajaxSettings.async = false;
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
-                        res.data.list.sort(compare("time"));
-                        self['chat_log'][[uin]][[friend_wxid]] = res.data.list;
+                        self['get_chat_log_param'].page_count = Math.ceil(res.data.total / limit);
+                        // res.data.list.sort(compare("time"));
+                        self['chat_log'][[uin]][[friend_wxid]] = self['chat_log'][[uin]][[friend_wxid]].concat(res.data.list);
+                        // self['chat_log'][[uin]][[friend_wxid]] = self['chat_log'][[uin]][[friend_wxid]].unshift(res.data.list);
+                        self['chat_log'][[uin]][[friend_wxid]].sort(compare("time"));
                     }
                 }, 'json');
+            },
+            // 滚动加载
+            loadChatLog(e) {
+                let scrollTop = e.target.scrollTop // 滚动条滚动时，距离顶部的距离
+                // let windowHeight = e.target.clientHeight // 可视区的高度
+                // let scrollHeight = e.target.scrollHeight // 滚动条的总高度
+                // // 滚动条到底部
+                // if (scrollTop + windowHeight === scrollHeight) {
+                //     this.get_chat_log_param.page++
+                //     if (this.get_chat_log_param.page > this.get_chat_log_param.page_count) return
+                //     this.getChatLog()
+                // }
+                console.log(scrollTop);
+                if (scrollTop == 0) {
+                    this.get_chat_log_param.page++
+                    if (this.get_chat_log_param.page > this.get_chat_log_param.page_count) {
+                        this.show_more_chat_log = false;
+                        layer.msg('没有更多消息');
+                        return false;
+                    }
+                    this.getChatLog();
+                    this.current_chat = this.chat_log[[this.bot_uin]][[this.friend_wxid]];
+                    // console.log(document.querySelector('.scroll').scrollTop);
+                    document.querySelector('.chat_panel').scrollTop = 1;
+                    // vm.$nextTick(() => { document.querySelector('.scroll').scrollTop = 1000; })
+                    // console.log('scrollTop2:'+document.querySelector('.chat_panel').scrollTop);
+                }
+
             },
             //添加机器人
             addBot() {
@@ -1108,6 +1232,44 @@
                 $.ajaxSettings.async = true;
                 $.post(url, params, function (res) {
 
+                }, 'json');
+            },
+            //同意/拒绝转账
+            transfer(item) {
+                let url = '/admin/kefu/checkTransferMsg';
+                let params = item;
+                let bot_id = this.bot_id;
+                params.bot_id = bot_id;
+                let from_wxid = this.friend_info.wxid;
+                params.from_wxid = from_wxid;
+
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        layer.open({
+                            content: '是否同意转账？'
+                            , btn: ['同意', '拒绝']
+                            , yes: function (index, layero) {
+                                let accepteTransferUrl = '/admin/kefu/accepteTransfer';
+                                $.post(accepteTransferUrl, params, function (res) {
+                                    if (res.code == 1) {
+                                        layer.msg('已同意');
+                                    }
+                                }, 'json');
+                            }
+                            , btn2: function (index, layero) {
+                                let rejectTransferUrl = '/admin/kefu/rejectTransfer';
+                                $.post(rejectTransferUrl, params, function (res) {
+                                    if (res.code == 1) {
+                                        layer.msg('已拒绝');
+                                    }
+                                }, 'json');
+                            }
+                        });
+
+
+                    } else {
+                        layer.msg(res.msg);
+                    }
                 }, 'json');
             }
 
@@ -1201,7 +1363,7 @@
                     }
                 }
                 webSocket.send('client_get_msg');
-            } else if(massage.event == 'new_friend'){
+            } else if (massage.event == 'new_friend') {
                 //好友添加事件
                 vm.searchFriend();
             }

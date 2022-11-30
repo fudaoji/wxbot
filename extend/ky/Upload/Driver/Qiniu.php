@@ -321,4 +321,37 @@ class Qiniu
             return $this->downLink($key);
         }
     }
+
+    /**
+     * 上传base64格式的图片
+     * @param $key
+     * @param $string
+     * @return mixed
+     * @author: Doogie<461960962@qq.com>
+     */
+    function uploadBase64($key = '', $string = ''){
+        $remote_server = 'http://upload.qiniu.com/putb64/-1' . ($key ? '/key/'.base64_encode($key) : '');
+        $headers = array();
+        $headers[] = 'Content-Type:image/png';
+        $headers[] = 'Authorization:UpToken '.$this->upToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$remote_server);
+        //curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER ,$headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        //curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $string);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $data = curl_exec($ch);
+        curl_close($ch);
+
+        $data = json_decode($data, true);
+        if(!empty($data['error'])){
+            Log::write('ErrorCode: ' . ErrorCode::QiniuException . '; ErrorMsg: ' . $data['error']);
+            return false;
+        }else{
+            return $data['key'];
+        }
+    }
 }

@@ -8,6 +8,7 @@ use think\facade\Db;
 use think\worker\Server;
 use Workerman\Lib\Timer;
 use app\common\model\EmojiCode;
+use app\common\model\kefu\ChatLog;
 
 // define('HEARTBEAT_TIME', 30);// 心跳间隔
 class Worker extends Server
@@ -15,12 +16,6 @@ class Worker extends Server
 	protected $socket = 'websocket://0.0.0.0:9506';
 	protected static $heartbeat_time = 50;
     public static $daemonize = true;
-
-	public function init()
-    {
-		$this->emojiCodeM = new EmojiCode();
-    }
-
     public function onWorkerStart($worker)
 	{
 		$redis = get_redis();
@@ -61,6 +56,7 @@ class Worker extends Server
 		Timer::add(5, function () use ($worker, $redis) {
 			$key = 'receive_private_chat';
 			$limit = 1000;
+			$chatLogM = new ChatLog();
 			for ($i = 0; $i < $limit; $i++) {
 				$msg = $redis->lPop($key);
 				if ($msg) {
@@ -68,14 +64,17 @@ class Worker extends Server
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
-							$content = $res['msg'];
-							if ($res['msg_type'] == 1) {
-								$res['msg'] = $this->emojiCodeM->emojiText($res['msg']);
-							} else if (!in_array($res['msg_type'],[2,2004])) {//图片和文件不处理
-								$res['msg'] = '[链接]';
-							}
-							
-							$conn->send($msg);
+							$content = $chatLogM->convertMsg($res['msg'], $res['msg_type']);
+							// $content = $res['msg'];
+							// if ($res['msg_type'] == 1) {
+							// 	$res['msg'] = $this->emojiCodeM->emojiText($content);
+							// 	$content = $res['msg'];
+							// } else if (!in_array($res['msg_type'],[3,2004])) {//图片和文件不处理
+							// 	$res['msg'] = '[链接]';
+							// 	$content = $res['msg'];
+							// }
+							$res['msg'] = $content;
+							$conn->send(json_encode($res));
 							echo "发送消息：".$msg;
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
@@ -144,4 +143,5 @@ class Worker extends Server
 		// }
 
 	}
+
 }

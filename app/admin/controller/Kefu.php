@@ -255,6 +255,7 @@ class Kefu extends Base
 
     public function sendMsgPost()
     {
+        Logger::write('发消息------------');
         if (request()->isPost()) {
             $this->success('success');
             $post_data = input('post.');

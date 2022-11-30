@@ -64,7 +64,7 @@ class Worker extends Server
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
-							$content = $chatLogM->convertReceiveMsg($res['msg'], $res['msg_type']);
+							$convert = $chatLogM->convertReceiveMsg($res['msg'], $res['msg_type']);
 							// $content = $res['msg'];
 							// if ($res['msg_type'] == 1) {
 							// 	$res['msg'] = $this->emojiCodeM->emojiText($content);
@@ -73,16 +73,19 @@ class Worker extends Server
 							// 	$res['msg'] = '[链接]';
 							// 	$content = $res['msg'];
 							// }
+							$content = $convert['content'];
+							$last_chat_log = $convert['last_chat_content'];
 							$res['msg'] = $content;
 							$conn->send(json_encode($res));
-							echo "发送消息：".$msg;
+							Logger::write("发送消息---".json_encode($res));
+							// echo "发送消息：".$msg;
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$hkey = $res['from_wxid'];
 							$result = [
 								'msg_id' => $res['msg_id'],
 								'date' => $res['date'],
-								'content' => $content,
+								'content' => $last_chat_log,
 								'type' => 'receive',
 								'headimgurl' => $res['headimgurl'],
 								'friend' => $res['friend'],

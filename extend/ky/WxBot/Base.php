@@ -135,7 +135,7 @@ Abstract class Base
 
     /*==========================文件操作类============================*/
     //获取文件 返回该文件的Base64编码 path
-    abstract public function getFileFoBase64($params = []);
+    abstract public function downloadFile($params = []);
     /**
      * 间隔
      * Author: fudaoji<fdj@kuryun.cn>

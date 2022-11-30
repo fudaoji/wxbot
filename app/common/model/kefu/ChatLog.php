@@ -93,7 +93,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('pic_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -105,7 +105,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,6,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('file_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -117,7 +117,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('mp3_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -133,7 +133,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('mp4_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -145,7 +145,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('gif_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;

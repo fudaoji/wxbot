@@ -16,7 +16,7 @@ use app\common\model\kefu\Speechcraft;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Config;
 use app\constants\Bot;
-
+use ky\Logger;
 class Kefu extends Base
 {
     private $emoji;
@@ -262,11 +262,17 @@ class Kefu extends Base
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                $bot_client->sendTextToFriends([
+                $res = $bot_client->sendTextToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'msg' => $post_data['content']
                 ]);
+                $arr = json_encode([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'msg' => $post_data['content']
+                ]);
+                Logger::write('send_msg_arr:'.$arr.'-------------res:'.json_encode($res));
             } else if ($post_data['type'] == 3) { //图片
                 $bot_client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],

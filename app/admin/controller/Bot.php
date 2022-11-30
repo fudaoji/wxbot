@@ -6,6 +6,7 @@ use app\admin\model\Bot as BotM;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
+use ky\WxBot\Driver\Xbot;
 
 class Bot extends Base
 {
@@ -31,8 +32,9 @@ class Bot extends Base
             'index' => ['title' => 'PC机器人', 'href' => url('index')],
             'web' => ['title' => 'Web机器人', 'href' => url('web')]
         ];
-        $this->tip = "<p>若选择扫码登陆，请先在服务器上完成框架设置</p> 
-<ul><li>我的框架的接口回调地址: ".request()->domain()."/bot/api/my</li> 
+        $this->tip = "<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p> 
+<ul><li>XBot框架的接口回调地址: ".request()->domain()."/bot/api/xbot</li> 
+<li>我的框架的接口回调地址: ".request()->domain()."/bot/api/my</li> 
 <li>vlw的接口回调地址: ".request()->domain()."/bot/api/vlw</li> 
 <li>可爱猫的接口回调地址: ".request()->domain()."/bot/api/cat</li>
 <li>千寻的接口回调地址: ".request()->domain()."/bot/api/qianxun</li>
@@ -337,6 +339,7 @@ class Bot extends Base
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
+            ->addFormItem('uuid', 'text', 'client_id', 'xbot类型的必填')
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
@@ -359,7 +362,15 @@ class Bot extends Base
         }
         if ($res) {
             if($login_code){
-                $this->success('保存成功，请继续扫码登录', url('reloginmy', ['id' => $res['id']]));
+                switch ($post_data['protocol']){
+                    case  BotConst::PROTOCOL_XBOT:
+                        $action = 'reloginxbot';
+                        break;
+                    default:
+                        $action = 'reloginmy';
+                        break;
+                }
+                $this->success('保存成功，请继续扫码登录', url($action, ['id' => $res['id']]));
             }
             $msg = '数据保存成功';
             try{
@@ -379,7 +390,7 @@ class Bot extends Base
                     $msg .= '，但系统检测到您的机器人尚未登录';
                 }
             }catch (\Exception $e){
-                $msg = "请检查接口地址是否填写正确";
+                $msg = "请检查接口地址是否填写正确" . $e->getMessage();
             }
             $this->success($msg, $jump_to);
         } else {
@@ -395,8 +406,18 @@ class Bot extends Base
     public function hookAdd()
     {
         if(request()->isPost()){
-            cache('botadd' . $this->adminInfo['id'], input('post.'));
-            $this->success('请打开微信扫码登录', url('loginmy', input('post.')));
+            $post_data = input('post.');
+            cache('botadd' . $this->adminInfo['id'], $post_data);
+            switch ($post_data['protocol']){
+                case  BotConst::PROTOCOL_XBOT:
+                    $action = 'loginxbot';
+                    break;
+                default:
+                    $action = 'loginmy';
+                    break;
+            }
+
+            $this->success('请打开微信扫码登录', url($action, input('post.')));
         }
 
         $data = array_merge([
@@ -407,9 +428,9 @@ class Bot extends Base
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
-            ->setTip("app_key和url读取顺序：上个机器人 > 设置默认值 <br> 如果需要填写新的，请先在服务器上完成框架设置并获取APPKey和http调用地址")
+            ->setTip("微信二维码加载需要几秒钟，点击提交后请耐心等待！<br>app_key和url读取顺序：上个机器人 > 设置默认值 <br> 如果需要填写新的，请先在服务器上完成框架设置并获取APPKey和http调用地址")
             ->setPostUrl(url('hookAdd'))
-            ->addFormItem('protocol', 'radio', '类型', '机器人类型', [BotConst::PROTOCOL_MY => '我的个微'])
+            ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::canScan())
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
             ->setFormData($data);
@@ -431,6 +452,135 @@ class Bot extends Base
             $config = config('system.bot');
         }
         return $config;
+    }
+
+    /**
+     * 编辑情况下的扫码登录
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function reLoginXbot(){
+        $id = input('id', null);
+        $data = $this->model->getOne($id);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        /**
+         * @var $bot_client Xbot
+         */
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            if($data['alive']){
+                //获取机器人信息
+                $info = $this->model->getRobotInfo($data);
+                if(!empty($info) && !is_string($info)){
+                    $this->model->updateOne([
+                        'id' => $data['id'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl'],
+                        'username' => $info['username'],
+                    ]);
+                }else{
+                    $this->error($info);
+                }
+
+                //同步好友任务
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                        'bot' => $data
+                    ]
+                ]);
+                $this->success('登录成功');
+            }
+        }
+
+        $host = explode(':', $data['url'])[0];
+        $this->model->cacheLoginCode($data['protocol'], $host, ''); //flush cache
+        $res = $bot_client->injectWechat();
+        sleep(2);
+        $client_id = $this->model->cacheLoginCode($data['protocol'], $host);
+        if(empty($client_id['client_id'])){
+            $this->error($res['errmsg']);
+        }
+        $login_code = $bot_client->getLoginCode(['client_id' => $client_id['client_id']]);
+        if($login_code['code'] == 0){
+            $this->error($login_code['errmsg']);
+        }
+        session('bot_client_id', $client_id['client_id']);
+        $data['code'] = generate_qr(['text' => $login_code['data']['code']]);
+        return $this->show($data, 'bot/reloginmy');
+    }
+
+    /**
+     * xbot扫码登录
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \Exception
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function loginXbot(){
+        $data = cache('botadd' . $this->adminInfo['id']);
+        $jump = $data['jump'] ?? '';
+        if (!$data) {
+            $this->error('参数错误');
+        }
+
+        /**
+         * @var $bot_client Xbot
+         */
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            $params = ['uuid' => session('bot_client_id')];
+            //获取机器人信息
+            $info = $this->model->getRobotInfo($params);
+            if(!empty($info) && !is_string($info)){
+                $this->model->updateOne([
+                    'id' => $data['id'],
+                    'nickname' => $info['nickname'],
+                    'headimgurl' => $info['headimgurl'],
+                    'username' => $info['username'],
+                    'uuid' => $params['uuid']
+                ]);
+            }else{
+                $this->error($info);
+            }
+
+            //同步好友任务
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => 3,
+                'params' => [
+                    'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                    'bot' => $data
+                ]
+            ]);
+            $this->success('登录成功', $jump);
+        }
+
+        $host = explode(':', $data['url'])[0];
+        $this->model->cacheLoginCode($data['protocol'], $host, ''); //flush cache
+        $res = $bot_client->injectWechat();
+        sleep(2);
+        $client_id = $this->model->cacheLoginCode($data['protocol'], $host);
+        if(empty($client_id['client_id'])){
+            $this->error($res['errmsg']);
+        }
+        $login_code = $bot_client->getLoginCode(['client_id' => $client_id['client_id']]);
+        if($login_code['code'] == 0){
+            $this->error($login_code['errmsg']);
+        }
+        session('bot_client_id', $client_id['client_id']);
+        $data['code'] = generate_qr(['text' => $login_code['data']['code']]);
+        return $this->show($data, 'bot/loginmy');
     }
 
     /**
@@ -547,7 +697,7 @@ class Bot extends Base
         }
 
         //退掉遗留的弹框
-        $bot_client->exitLoginCode();
+        //$bot_client->exitLoginCode();
         $res = $bot_client->getLoginCode();
         if($res['code'] == 0){
             $this->error($res['errmsg']);

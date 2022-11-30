@@ -31,7 +31,7 @@
                 miniTab = layui.miniTab;
 
         $('#btn-login').on('click', () => {
-            requestPost("{:url('reloginmy')}", {id: "{$id}"}, () => {
+            requestPost("", {id: "{$id}"}, () => {
                 parent.location.reload();
                 miniTab.deleteCurrentByIframe();
             });

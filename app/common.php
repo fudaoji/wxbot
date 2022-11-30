@@ -9,6 +9,29 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+if(!function_exists('generate_qr')){
+    function generate_qr($params = []){
+        try {
+            $qrClass = new \ky\ErWeiCode();
+            $file_name = (empty($params['file_name']) ?('code'.time()) : $params['file_name']) . '.png';
+            $size = empty($params['size']) ? 6 : $params['size'];
+            $margin = empty($params['margin']) ? 2 : $params['margin'];
+            $qr_url = empty($params['logo'])
+                ? $qrClass->qrCode($params['text'], $file_name, QR_ECLEVEL_H, $size, $margin, false)
+                : $qrClass->qrCodeWithLogo($params['text'], $file_name, QR_ECLEVEL_H, $size, $margin, false, $params['logo']);
+            $qiniu_url = fetch_to_qiniu(request()->domain() . $qr_url, 'qrcode_' . $file_name);
+            if ($qiniu_url) {
+                @unlink('.' . $qr_url);
+            }
+            unset($qrClass, $text, $file_name, $qr_url, $qiniuClass, $qiniu_key);
+        } catch (\Exception $e) {
+            \think\facade\Log::write($e->getMessage());
+            $qiniu_url = '';
+        }
+        return $qiniu_url;
+    }
+}
+
 if(! function_exists('base64_to_pic')){
     function base64_to_pic($base64 = '', $content_type = 'image/jpeg'){
         return "data:{$content_type};base64,{$base64}";
@@ -81,7 +104,7 @@ function execute_sql($sql_path = '')
  */
 function fetch_img($url = '', $key = '')
 {
-    $qiniu = controller('common/base', 'event')->getQiniu();
+    $qiniu = (new \app\common\event\Base())->getQiniu();
     $key = $key ? $key : md5($url);
     $res = $qiniu->fetch($url, $key);
     if ($res) {
@@ -155,17 +178,6 @@ function filter_emoji($str = '')
 }
 
 /**
- * 获取支付配置
- * @param string $type
- * @return array
- * Author: fudaoji<fdj@kuryun.cn>
- */
-function get_pay_config()
-{
-    return controller('common/mini', 'event')->getPayConfig();
-}
-
-/**
  * 生成唯一订单号
  * @param string $prefix
  * @return string
@@ -185,7 +197,7 @@ function build_order_no($prefix = '')
  */
 function fetch_to_qiniu($url = '', $key = '')
 {
-    $qiniu = controller('mp/mp', 'event')->getQiniu();
+    $qiniu = (new \app\common\event\Base())->getQiniu();
     $key = $key ? $key : md5($url);
     $res = $qiniu->fetch($url, $key);
     if ($res) {

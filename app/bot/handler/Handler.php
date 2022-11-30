@@ -27,6 +27,7 @@ use ky\WxBot\Driver\Wxwork;
 use ky\WxBot\Driver\Cat;
 use ky\Logger;
 use ky\WxBot\Driver\Qianxun;
+use ky\WxBot\Driver\Xbot;
 
 class Handler extends BaseCtl
 {
@@ -107,6 +108,10 @@ class Handler extends BaseCtl
 
         $this->checkEvent();
         switch ($this->driver){
+            case BotConst::PROTOCOL_XBOT:
+                $this->botWxid = empty($this->ajaxData['wxid']) ? $this->content['wxid'] : $this->ajaxData['wxid'];
+                $this->fromWxid = $this->content['from_wxid'];
+                break;
             case BotConst::PROTOCOL_QXUN:
                 $this->botWxid = $this->ajaxData['wxid'];
                 $this->fromWxid = empty($this->content['finalFromWxid']) ? (
@@ -127,12 +132,34 @@ class Handler extends BaseCtl
                 break;
         }
 
-        $this->getBot($this->botWxid);
-        $this->botClient = $this->botM->getRobotClient($this->bot);
+        if(! in_array($this->event, [BotConst::EVENT_LOGIN_CODE, BotConst::EVENT_CONNECTED])){
+            $this->getBot($this->botWxid);
+            $this->botClient = $this->botM->getRobotClient($this->bot);
+        }
     }
 
     public function checkEvent(){
         switch ($this->driver){
+            case BotConst::PROTOCOL_XBOT:
+                $this->content = $this->ajaxData['data'] ?? [];
+                $map = [
+                    Xbot::EVENT_LOGIN_CODE => BotConst::EVENT_LOGIN_CODE,
+                    Xbot::EVENT_CONNECTED => BotConst::EVENT_CONNECTED,
+                    Xbot::EVENT_LOGIN => BotConst::EVENT_LOGIN,
+                    Xbot::EVENT_GROUP_MEMBER_ADD => BotConst::EVENT_GROUP_MEMBER_ADD,
+                    Xbot::EVENT_GROUP_MEMBER_DEC => BotConst::EVENT_GROUP_MEMBER_DEC
+                ];
+                $this->event = isset($map[$this->ajaxData['type']]) ? $map[$this->ajaxData['type']] : $this->ajaxData['type'];
+                if(!empty($this->content['from_wxid'])){
+                    $this->event = BotConst::EVENT_PRIVATE_CHAT;
+                    if(!empty($this->content['room_wxid'])){
+                        $this->event = BotConst::EVENT_GROUP_CHAT;
+                    }
+                }
+                if($this->isGroupEvent()){
+                    $this->groupWxid = $this->content['room_wxid'];
+                }
+                break;
             case BotConst::PROTOCOL_QXUN:
                 $this->content = empty($this->ajaxData['data']['data']) ? $this->ajaxData['data'] : $this->ajaxData['data']['data'];
                 !empty($this->content['msgType']) && $this->content['type'] = $this->content['msgType'];

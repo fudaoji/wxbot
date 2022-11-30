@@ -51,6 +51,21 @@ class Bot extends Base
          */
         $bot_client = $this->getRobotClient($params);
         switch ($params['protocol']){
+            case BotConst::PROTOCOL_XBOT:
+                $return = $bot_client->getRobotInfo(['client_id' => $params['uuid']]);
+                if($return['code'] && !empty($return['data'])){
+                    $data = $return['data'];
+                    return [
+                        'wxid' => $data['wxid'],
+                        'nickname' => $data['nickname'],
+                        'username' => $params['account'],
+                        'headimgurl' => $data['avatar'],
+                        'uuid' => $params['uuid']
+                    ];
+                }else{
+                    return $bot_client->getError();
+                }
+                break;
             case BotConst::PROTOCOL_QXUN:
                 $return = $bot_client->getRobotInfo(['robot_wxid' => $params['uin']]);
                 if($return['code'] && !empty($return['data'])){
@@ -89,5 +104,22 @@ class Bot extends Base
                 break;
         }
         return [];
+    }
+
+    /**
+     * 登录码缓存
+     * @param string $driver
+     * @param string $host
+     * @param mixed $data
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return mixed
+     */
+    public function cacheLoginCode($driver = 'xbot', $host = '',$data = null)
+    {
+        $key = md5("logincode-{$driver}-".$host);
+        if($data !== null){
+            return cache($key, $data, 300);
+        }
+        return cache($key);
     }
 }

@@ -64,7 +64,7 @@ class Worker extends Server
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
-							$content = $chatLogM->convertMsg($res['msg'], $res['msg_type']);
+							$content = $chatLogM->convertReceiveMsg($res['msg'], $res['msg_type']);
 							// $content = $res['msg'];
 							// if ($res['msg_type'] == 1) {
 							// 	$res['msg'] = $this->emojiCodeM->emojiText($content);

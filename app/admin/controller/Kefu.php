@@ -444,7 +444,7 @@ class Kefu extends Base
                     $val['headimgurl'] = $val['from_headimg'];
                     $val['friend'] = $friend;
                     $val['time'] = strtotime($val['create_time']);
-                    $content = $chat_model->convertMsg($val['content'], $val['msg_type']);
+                    $content = $chat_model->convertMsgToHtml($val['content'], $val['msg_type']);
                     $val['content'] = $content;
                 }
             }

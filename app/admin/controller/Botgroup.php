@@ -38,23 +38,15 @@ class Botgroup extends Botbase
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['g.type' => \app\constants\Bot::GROUP, 'g.uin' => $this->bot['uin']];
+            $where = ['type' => \app\constants\Bot::GROUP, 'uin' => $this->bot['uin']];
             !empty($post_data['search_key']) && $where['nickname|remark_name|wxid'] = ['like', '%' . $post_data['search_key'] . '%'];
-            $params = [
-                'alias' => 'g',
-                'join' => [
-                    ['tpzs_grouppos gp', 'g.id=gp.group_id', 'left'],
-                    ['tpzs_position p', 'p.id=gp.position_id', 'left']
-                ],
-                'where' => $where,
-                'refresh' => true
-            ];
-            $total = $this->model->totalJoin($params);
+
+            $total = $this->model->total($where, true);
             if ($total) {
-                $list = $this->model->getListJoin(array_merge($params, [
-                    'limit' => [$post_data['page'], $post_data['limit']],
-                    'field' => ['g.id', 'g.nickname', 'g.remark_name', 'p.title', 'g.wxid']
-                ]));
+                $list = $this->model->getList([$post_data['page'], $post_data['limit']],
+                    $where, ['id' => 'desc'],
+                    ['id', 'nickname', 'remark_name', 'wxid']
+                );
             }else{
                 $list = [];
             }
@@ -81,6 +73,14 @@ class Botgroup extends Botbase
         return $builder->show();
     }
 
+    /**
+     * 退群
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function quitGroupPost()
     {
         $id = input('id', null);
@@ -91,6 +91,7 @@ class Botgroup extends Botbase
         }
         $res = model('admin/bot')->getRobotClient($this->bot)->quitGroup([
             'robot_wxid' => $this->bot['uin'],
+            'uuid' => $this->bot['uuid'],
             'group_wxid' => $data['wxid']
         ]);
         if($res['code']){
@@ -108,7 +109,12 @@ class Botgroup extends Botbase
         if(request()->isPost()){
             $post_data = input('post.');
             $bot_client = model('admin/bot')->getRobotClient($this->bot);
-            $res = $bot_client->setGroupName(['robot_wxid' => $this->bot['uin'], 'group_wxid' => $post_data['wxid'], 'group_name' => $post_data['nickname']]);
+            $res = $bot_client->setGroupName([
+                'robot_wxid' => $this->bot['uin'],
+                'uuid' => $this->bot['uuid'],
+                'group_wxid' => $post_data['wxid'],
+                'group_name' => $post_data['nickname']
+            ]);
             if($res['code'] != 1){
                 $this->error('群名修改失败：' . $res['errmsg']);
             }

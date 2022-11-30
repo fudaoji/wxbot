@@ -7,6 +7,7 @@ v2.0.5
 
 数据库表更新
 * 表bot增加username字段
+* 表bot_groupmember增加headimgurl字段
 
 2022-09-08
 v2.0.4

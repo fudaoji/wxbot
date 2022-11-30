@@ -24,6 +24,33 @@ class XbotTest extends BotTest
     }
 
     /**
+     * 获取群成员列表
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testGetGroupMembers() {
+        $res = $this->botClient->getGroupMembers([
+            'uuid' => $this->clientId,
+            'group_wxid' => $this->group51
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 获取群组列表
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSetGroupName() {
+        $res = $this->botClient->setGroupName([
+            'uuid' => $this->clientId,
+            'group_wxid' => $this->group51,
+            'group_name' => '群51'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
      * 获取群组列表
      * Author: fudaoji<fdj@kuryun.cn>
      */

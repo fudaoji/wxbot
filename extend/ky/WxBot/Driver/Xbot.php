@@ -17,7 +17,9 @@ class Xbot extends Base
 
     const API_GET_FRIEND_LIST = 'MT_DATA_FRIENDS_MSG'; //
 
-
+    const API_QUIT_GROUP = 'MT_QUIT_DEL_ROOM_MSG'; // 退群
+    const API_GET_GROUP_MEMBER = "MT_DATA_CHATROOM_MEMBERS_MSG"; //获取群成员列表
+    const API_SET_GROUP_NAME = 'MT_MOD_ROOM_NAME_MSG'; //
     const API_GET_GROUP_LIST = 'MT_DATA_CHATROOMS_MSG';
 
     const API_INJECT_WECHAT = 'MT_INJECT_WECHAT'; //
@@ -48,6 +50,71 @@ class Xbot extends Base
     public static function init($options = [])
     {
         return new static($options);
+    }
+
+    /**
+     * req:{
+     * "data": {
+     * "room_wxid": "xxxxxxx"
+     * },
+     * "client_id": 1,
+     * "type": "MT_QUIT_DEL_ROOM_MSG"
+     * }
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return bool
+     */
+    public function quitGroup($params = [])
+    {
+        $params = [
+            'client_id' => $params['uuid'],
+            'room_wxid' => $params['group_wxid'],
+        ];
+        return $this->doRequest(self::API_QUIT_GROUP, $params);
+    }
+
+    /**
+     * req:{
+            "data": {
+            "room_wxid": "xxxxxxx"
+            },
+            "client_id": 1,
+            "type": "MT_DATA_CHATROOM_MEMBERS_MSG"
+     * }
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getGroupMembers($params = [])
+    {
+        $params = [
+            'client_id' => $params['uuid'],
+            'room_wxid' => $params['group_wxid'],
+        ];
+        return $this->doRequest(self::API_GET_GROUP_MEMBER, $params);
+    }
+
+    /**
+     * req:{
+     * "data": {
+     * "room_wxid": "xxxxxxx",
+     * "name": "新群名"
+     * },
+     * "client_id": 1,
+     * "type": "MT_MOD_ROOM_NAME_MSG"
+     * }
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return bool
+     */
+    public function setGroupName($params = [])
+    {
+        $params = [
+            'client_id' => $params['uuid'],
+            'room_wxid' => $params['group_wxid'],
+            'name' => $params['group_name']
+        ];
+        return $this->doRequest(self::API_SET_GROUP_NAME, $params);
     }
 
     public function getGroups($params = [])
@@ -338,11 +405,6 @@ class Xbot extends Base
         // TODO: Implement getGuest() method.
     }
 
-    public function getGroupMembers($params = [])
-    {
-        // TODO: Implement getGroupMembers() method.
-    }
-
 
     public function sendGroupMsgAndAt($params = [])
     {
@@ -369,15 +431,9 @@ class Xbot extends Base
         // TODO: Implement getGroupMemberInfo() method.
     }
 
-    public function quitGroup($params = [])
-    {
-        // TODO: Implement quitGroup() method.
-    }
 
-    public function setGroupName($params = [])
-    {
-        // TODO: Implement setGroupName() method.
-    }
+
+
 
     public function setGroupNotice($params = [])
     {

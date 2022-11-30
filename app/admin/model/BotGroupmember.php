@@ -17,6 +17,7 @@ use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
+use ky\WxBot\Driver\Xbot;
 use ky\WxBot\Wx;
 use ky\WxBot\Driver\Wxwork;
 use ky\Logger;
@@ -83,14 +84,53 @@ class BotGroupmember extends Base
      */
     public function pullMembers($bot, $group){
         /**
-         * @var $bot_client Vlw|Wxwork|Cat|Webgo|My|Mycom
+         * @var $bot_client Vlw|Wxwork|Cat|Webgo|My|Mycom|Xbot
          */
         $bot_client = model('admin/bot')->getRobotClient($bot);
         $res = $bot_client->getGroupMembers([
             'robot_wxid' => $bot['uin'],
+            'uuid' => $bot['uuid'],
             'group_wxid' => $group['wxid'],
         ]);
         switch ($bot['protocol']) {
+            case Bot::PROTOCOL_XBOT:
+                if($res['code'] && count($res['data']['member_list'])) {
+                    $list = $res['data']['member_list'];
+                    $wxid_arr = [];
+                    foreach ($list as $k => $v){
+                        $nickname = filter_emoji($v['nickname']);
+                        $group_nickname = filter_emoji($v['display_name']);
+                        $username = $v['account'];
+                        $headimgurl = $v['avatar'];
+                        $wxid = $v['wxid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['group_id' => $group['id'], 'wxid' => $wxid], ['id'])){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'group_nickname' => $group_nickname,
+                                'username' => $username,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'bot_id' => $bot['id'],
+                                'group_id' => $group['id'],
+                                'nickname' => $nickname,
+                                'group_nickname' => $group_nickname,
+                                'username' => $username,
+                                'wxid' => $wxid,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }
+                    }
+                    //删除无效数据
+                    $this->delByMap(['group_id' => $group['id'], 'wxid' => ['notin', $wxid_arr]]);
+                    return count($list);
+                } else{
+                    Logger::error("pullGroupMembers:" . json_encode($res, JSON_UNESCAPED_UNICODE));
+                }
+                break;
             case Bot::PROTOCOL_WEB:
                 if($res['code'] && !empty($res['data']['total'])){
                     $list = $res['data']['members'];

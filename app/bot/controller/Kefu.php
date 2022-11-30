@@ -5,6 +5,7 @@ namespace app\bot\controller;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu as KefuModel;
 use app\common\model\kefu\Config;
+use ky\Logger;
 class Kefu extends Addon
 {
     private $switch;
@@ -24,6 +25,7 @@ class Kefu extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function privateChatHandle(){
+        Logger::write("私聊处理器---");
         if(empty($this->switch)){
             return false;
         }

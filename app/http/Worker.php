@@ -9,7 +9,7 @@ use think\worker\Server;
 use Workerman\Lib\Timer;
 use app\common\model\EmojiCode;
 use app\common\model\kefu\ChatLog;
-
+use ky\Logger;
 // define('HEARTBEAT_TIME', 30);// 心跳间隔
 class Worker extends Server
 {
@@ -144,4 +144,11 @@ class Worker extends Server
 
 	}
 
+	
+	public function onError($connection, $code, $msg)
+	{
+		$error = "worker error [ $code ] $msg\n";
+		Logger::write($error);
+
+	}
 }

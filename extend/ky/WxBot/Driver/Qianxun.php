@@ -66,6 +66,10 @@ class Qianxun extends Base
     const API_ADD_FRIEND_BY_WXID = 'Q0019'; //根据wxid添加好友
     const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息，只支持pro版
 
+    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
+    const API_ACCEPT_TRANSFER = 'AccepteTransfer';// 同意转账
+    const API_REJECT_TRANSFER = 'RejectTransfer';// 拒绝转账
+
     const FIELD_MAP = [
         "wxid" => "wxid",
         "wxNum" => "username",
@@ -569,5 +573,21 @@ class Qianxun extends Base
     public function sendFavoritesMsg($params = [])
     {
         // TODO: Implement sendFavoritesMsg() method.
+    }
+
+    public function downloadFile($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+
+    public function acceptTransfer($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+    public function rejectTransfer($params = [])
+    {
+        return $this->apiUnSupport();
     }
 }

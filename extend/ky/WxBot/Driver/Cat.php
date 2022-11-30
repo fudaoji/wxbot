@@ -59,7 +59,9 @@ class Cat extends Base
     const API_SEARCH_ACCOUNT = "SearchAccount"; //搜索好友，只支持pro版
 
     const API_GET_MOMENTS = 'GetWechatMoments';
-
+    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
+    const API_ACCEPT_TRANSFER = 'AccepteTransfer';// 同意转账
+    const API_REJECT_TRANSFER = 'RejectTransfer';// 拒绝转账
 
     public function __construct($options = [])
     {
@@ -575,6 +577,22 @@ class Cat extends Base
     }
 
     public function sendFavoritesMsg($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+    public function downloadFile($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+
+    public function acceptTransfer($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+    public function rejectTransfer($params = [])
     {
         return $this->apiUnSupport();
     }

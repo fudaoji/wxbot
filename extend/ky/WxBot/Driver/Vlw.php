@@ -58,6 +58,10 @@ class Vlw extends Base
     const API_GET_FRIEND_LIST = 'GetFriendlist'; //获取好友列表
     const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
     const API_GET_ROBOT_INFO = 'GetRobotInfo'; //获取机器人信息
+
+    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
+    const API_ACCEPT_TRANSFER = 'AccepteTransfer';// 同意转账
+    const API_REJECT_TRANSFER = 'RejectTransfer';// 拒绝转账
     private $token;
 
     public function __construct($options = [])
@@ -231,11 +235,11 @@ class Vlw extends Base
      * @return bool
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function downloadFile($params = []){
-        return $this->request([
-            'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
-        ]);
-    }
+    // public function downloadFile($params = []){
+    //     return $this->request([
+    //         'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
+    //     ]);
+    // }
 
     /**
      * 批量发送视频消息给好友/群聊等
@@ -833,5 +837,21 @@ class Vlw extends Base
     public function sendFavoritesMsg($params = [])
     {
         // TODO: Implement sendFavoritesMsg() method.
+    }
+
+    public function downloadFile($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+
+    public function acceptTransfer($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+    public function rejectTransfer($params = [])
+    {
+        return $this->apiUnSupport();
     }
 }

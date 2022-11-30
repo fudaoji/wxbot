@@ -45,6 +45,9 @@ class Mycom extends Base
     const API_GET_GROUP_MEMBER = "GetGroupMemberEnterprise"; //获取群成员列表
     const API_QUIT_GROUP = 'QuitGroupEnterprise'; // 退群
     const API_SEND_MSG_AT_ALL = 'SendMsgAtAll_Enterprise'; //艾特群员
+    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
+    const API_ACCEPT_TRANSFER = 'AccepteTransfer';// 同意转账
+    const API_REJECT_TRANSFER = 'RejectTransfer';// 拒绝转账
 
 
     private $token;
@@ -184,11 +187,11 @@ class Mycom extends Base
      * @return bool
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function downloadFile($params = []){
-        return $this->request([
-            'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
-        ]);
-    }
+    // public function downloadFile($params = []){
+    //     return $this->request([
+    //         'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
+    //     ]);
+    // }
 
     /**
      * 批量发送视频消息给好友/群聊等
@@ -824,5 +827,20 @@ class Mycom extends Base
     public function sendFavoritesMsg($params = [])
     {
         // TODO: Implement sendFavoritesMsg() method.
+    }
+    public function downloadFile($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+
+    public function acceptTransfer($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+    public function rejectTransfer($params = [])
+    {
+        return $this->apiUnSupport();
     }
 }

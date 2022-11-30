@@ -12,7 +12,8 @@ namespace app\common\model\kefu;
 
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
-
+use app\common\model\EmojiCode;
+use ky\Logger;
 class ChatLog extends Kefu
 {
     protected $isCache = false;
@@ -42,6 +43,8 @@ class ChatLog extends Kefu
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'],$data['type'],$bot);
+        Logger::write("收到信息".json_encode($data['msg'])."\n");
+        Logger::write("转化信息".json_encode($convert)."\n");
         $member['last_chat_time'] = $time;
         $member['last_chat_content'] = $convert['last_chat_content'];
         // $bot = $bot_model->where(['uin' => $data['robot_wxid']])->find();
@@ -55,7 +58,8 @@ class ChatLog extends Kefu
             'client' => $bot['admin_id'], //对应用户id
             'friend' => $member,
             'msg_type' => $data['type'],
-            'event' => 'msg'
+            'event' => 'msg',
+            'last_chat_content' => $convert['last_chat_content'],
         ]);
         $insert_data = [
             'from' => $data['from_wxid'],
@@ -70,6 +74,7 @@ class ChatLog extends Kefu
         ];
         $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
+        Logger::write("存储数据OK：".json_encode($msg)."\n");
     }
 
     /**
@@ -93,7 +98,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('pic_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -105,7 +110,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,6,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('file_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -117,7 +122,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('mp3_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -133,7 +138,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('mp4_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -145,7 +150,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg,5,-1);
-                $res = $bot_client->getFileFoBase64(['path' => $path]);
+                $res = $bot_client->downloadFile(['path' => $path]);
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('gif_'.rand(1000,9999).'_'.time(),$base64);
                 $content = $url;
@@ -191,6 +196,7 @@ class ChatLog extends Kefu
      */
     public function convertMsgToHtml($msg = '', $msg_type = 1)
     {
+        $this->emojiM = new EmojiCode();
         $content = '';
         switch ($msg_type) {
                 //文本消息

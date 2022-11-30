@@ -40,7 +40,7 @@ class My extends Base
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
     const API_SEND_VIDEO_MSG = 'SendVideoMsg'; // 发送视频消息，只支持pro版
     const API_SEND_FILE_MSG = 'SendFileMsg'; // 发送文件消息，只支持pro版
-    const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
+    // const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，只支持pro版
     const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
     const API_SEND_SHARE_LINK_MSG = 'SendShareLinkMsg'; //发送普通分享链接
     const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
@@ -77,9 +77,9 @@ class My extends Base
     const API_FAVORITE_MSG = 'FavoritesMsg'; //收藏消息
     const API_GET_FAVORITES = 'FavoritesGetList'; //获取收藏列表
     const API_SEND_FAVORITE_MSG = 'SendFavoritesMsg'; //发送收藏消息
-    const API_Get_File_Fo_Base64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
-    const API_Accepte_Transfer = 'AccepteTransfer';// 同意转账
-    const API_Reject_Transfer = 'RejectTransfer';// 同意转账
+    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
+    const API_ACCEPT_TRANSFER = 'AccepteTransfer';// 同意转账
+    const API_REJECT_TRANSFER = 'RejectTransfer';// 拒绝转账
     const FIELD_MAP = [
         "wxid" => "wxid"
     ];
@@ -287,11 +287,11 @@ class My extends Base
      * @return bool
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function downloadFile($params = []){
-        return $this->request([
-            'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
-        ]);
-    }
+    // public function downloadFile($params = []){
+    //     return $this->request([
+    //         'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
+    //     ]);
+    // }
 
     /**
      * req:
@@ -1072,25 +1072,25 @@ class My extends Base
         ]);
     }
     
-    public function getFileFoBase64($params = [])
+    public function downloadFile($params = [])
     {
         return $this->request([
-            'data' => $this->buildPostData($params, self::API_Get_File_Fo_Base64)
+            'data' => $this->buildPostData($params, self::API_GET_FILE_FO_BASE64)
         ]);
     }
 
 
-    public function accepteTransfer($params = [])
+    public function acceptTransfer($params = [])
     {
         return $this->request([
-            'data' => $this->buildPostData($params, self::API_Accepte_Transfer)
+            'data' => $this->buildPostData($params, self::API_ACCEPT_TRANSFER)
         ]);
     }
 
     public function rejectTransfer($params = [])
     {
         return $this->request([
-            'data' => $this->buildPostData($params, self::API_Reject_Transfer)
+            'data' => $this->buildPostData($params, self::API_REJECT_TRANSFER)
         ]);
     }
 

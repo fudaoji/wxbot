@@ -88,7 +88,10 @@ Abstract class Base
     abstract public function sendShareLinkMsg($params = []);
 
     abstract public function sendLinkMsg($params = []);
-
+    //同意好友转账 {'robot_wxid','from_wxid','payer_pay_id','receiver_pay_id','paysubtype','money'}
+    abstract public function acceptTransfer($params = []);
+    //拒绝好友转账 {'robot_wxid','receiver_pay_id'}
+    abstract public function rejectTransfer($params = []);
     /*==========================好友操作类============================*/
     //设置好友备注名 note
     abstract public function setFriendRemarkName($params = []);
@@ -130,6 +133,9 @@ Abstract class Base
     //清空聊天记录
     abstract public function cleanChatHistory($params = []);
 
+    /*==========================文件操作类============================*/
+    //获取文件 返回该文件的Base64编码 path
+    abstract public function downloadFile($params = []);
     /**
      * 间隔
      * Author: fudaoji<fdj@kuryun.cn>

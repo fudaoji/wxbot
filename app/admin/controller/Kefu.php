@@ -16,7 +16,7 @@ use app\common\model\kefu\Speechcraft;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Config;
 use app\constants\Bot;
-
+use ky\Logger;
 class Kefu extends Base
 {
     private $emoji;
@@ -256,7 +256,6 @@ class Kefu extends Base
     public function sendMsgPost()
     {
         if (request()->isPost()) {
-            $this->success('success');
             $post_data = input('post.');
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);
@@ -444,7 +443,7 @@ class Kefu extends Base
                     $val['headimgurl'] = $val['from_headimg'];
                     $val['friend'] = $friend;
                     $val['time'] = strtotime($val['create_time']);
-                    $content = $chat_model->convertMsg($val['content'], $val['msg_type']);
+                    $content = $chat_model->convertMsgToHtml($val['content'], $val['msg_type']);
                     $val['content'] = $content;
                 }
             }
@@ -525,7 +524,7 @@ class Kefu extends Base
             $bot_model = $this->botM;
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            $bot_client->accepteTransfer([
+            $bot_client->acceptTransfer([
                 'robot_wxid' => $bot['uin'],
                 'from_wxid' => $post_data['from_wxid'],
                 'payer_pay_id' => $post_data['payer_pay_id'],

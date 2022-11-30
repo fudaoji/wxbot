@@ -25,6 +25,9 @@ class Xbot extends Base
     const API_SEND_SHARE_LINK_MSG = 'MT_SEND_LINKMSG'; //发送普通分享链接
     const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
     const API_SEND_CARD_MSG = "SendCardMsg"; //发送名片消息
+    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
+    const API_ACCEPT_TRANSFER = 'AccepteTransfer';// 同意转账
+    const API_REJECT_TRANSFER = 'RejectTransfer';// 拒绝转账
 
     const API_GET_FRIEND_LIST = 'MT_DATA_FRIENDS_MSG'; //
 
@@ -45,6 +48,7 @@ class Xbot extends Base
     const EVENT_LOGOUT = 'MT_USER_LOGOUT'; //退出微信
     const EVENT_GROUP_MEMBER_ADD = 'MT_ROOM_ADD_MEMBER_NOTIFY_MSG'; //群人员增加
     const EVENT_GROUP_MEMBER_DEC = 'MT_ROOM_DEL_MEMBER_NOTIFY_MSG'; //群人员减少
+
 
     /**
      * @var string
@@ -543,14 +547,25 @@ class Xbot extends Base
         // TODO: Implement getGroupMemberInfo() method.
     }
 
-
-
-
-
     public function setGroupNotice($params = [])
     {
         // TODO: Implement setGroupNotice() method.
     }
 
 
+    public function downloadFile($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+
+    public function acceptTransfer($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+    public function rejectTransfer($params = [])
+    {
+        return $this->apiUnSupport();
+    }
 }

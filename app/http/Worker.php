@@ -9,7 +9,7 @@ use think\worker\Server;
 use Workerman\Lib\Timer;
 use app\common\model\EmojiCode;
 use app\common\model\kefu\ChatLog;
-
+use ky\Logger;
 // define('HEARTBEAT_TIME', 30);// 心跳间隔
 class Worker extends Server
 {
@@ -56,16 +56,17 @@ class Worker extends Server
 		Timer::add(5, function () use ($worker, $redis) {
 			$key = 'receive_private_chat';
 			$limit = 1000;
-			$chatLogM = new ChatLog();
+			// $chatLogM = new ChatLog();
 			for ($i = 0; $i < $limit; $i++) {
 				$msg = $redis->lPop($key);
 				if ($msg) {
 					$res = json_decode($msg, true);
+					Logger::write("发送消息---".json_encode($res));
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
-							$content = $chatLogM->convertMsg($res['msg'], $res['msg_type']);
-							// $content = $res['msg'];
+							// $convert = $chatLogM->convertReceiveMsg($res['msg'], $res['msg_type']);
+							$content = $res['msg'];
 							// if ($res['msg_type'] == 1) {
 							// 	$res['msg'] = $this->emojiCodeM->emojiText($content);
 							// 	$content = $res['msg'];
@@ -73,16 +74,19 @@ class Worker extends Server
 							// 	$res['msg'] = '[链接]';
 							// 	$content = $res['msg'];
 							// }
+							// $content = $convert['content'];
+							$last_chat_log = $res['last_chat_content'];
 							$res['msg'] = $content;
 							$conn->send(json_encode($res));
-							echo "发送消息：".$msg;
+							Logger::write("最终发送消息---".json_encode($res));
+							// echo "发送消息：".$msg;
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$hkey = $res['from_wxid'];
 							$result = [
 								'msg_id' => $res['msg_id'],
 								'date' => $res['date'],
-								'content' => $content,
+								'content' => $last_chat_log,
 								'type' => 'receive',
 								'headimgurl' => $res['headimgurl'],
 								'friend' => $res['friend'],
@@ -144,4 +148,11 @@ class Worker extends Server
 
 	}
 
+	
+	public function onError($connection, $code, $msg)
+	{
+		$error = "worker error [ $code ] $msg\n";
+		Logger::write($error);
+
+	}
 }

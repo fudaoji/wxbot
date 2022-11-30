@@ -13,6 +13,7 @@ namespace app\common\model\kefu;
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\model\EmojiCode;
+use ky\Logger;
 class ChatLog extends Kefu
 {
     protected $isCache = false;
@@ -42,6 +43,8 @@ class ChatLog extends Kefu
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'],$data['type'],$bot);
+        Logger::write("收到信息".json_encode($data['msg'])."\n");
+        Logger::write("转化信息".json_encode($convert)."\n");
         $member['last_chat_time'] = $time;
         $member['last_chat_content'] = $convert['last_chat_content'];
         // $bot = $bot_model->where(['uin' => $data['robot_wxid']])->find();
@@ -55,7 +58,8 @@ class ChatLog extends Kefu
             'client' => $bot['admin_id'], //对应用户id
             'friend' => $member,
             'msg_type' => $data['type'],
-            'event' => 'msg'
+            'event' => 'msg',
+            'last_chat_content' => $convert['last_chat_content'],
         ]);
         $insert_data = [
             'from' => $data['from_wxid'],
@@ -70,6 +74,7 @@ class ChatLog extends Kefu
         ];
         $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
+        Logger::write("存储数据OK：".json_encode($msg)."\n");
     }
 
     /**

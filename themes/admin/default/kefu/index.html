@@ -1,4 +1,5 @@
 <script src="__LIB__/jquery/jquery-3.6.1.min.js" charset="utf-8"></script>
+<script src="__JS__/admin/jquery.cookie-1.4.1.min.js" charset="utf-8"></script>
 <link rel="stylesheet" href="__LIB__/emoji/emoji.css" />
 <div id="app" class="chat" style="height:820px;">
     <div class="layui-row">
@@ -458,10 +459,21 @@
                         self['bot_list'] = self['bot_list'].concat(res.data.list);
                         if (page == 1) {
                             if (self['bot_list'].length > 0) {
-                                self['bot_info'] = self['bot_list'][0];
-                                self['bot_id'] = self['bot_list'][0].id;
-                                self['bot_uin'] = self['bot_list'][0].uin;
-                                self['getFriendsData'](self['bot_info']);
+                                let cookie_bot_info = $.cookie('bot_info');
+                                if (cookie_bot_info) {
+                                    let bot_info = JSON.parse(cookie_bot_info);
+                                    self['bot_info'] = bot_info;
+                                    self['bot_id'] = bot_info.id;
+                                    self['bot_uin'] = bot_info.uin;
+                                    self['getFriendsData'](bot_info);
+
+                                } else {
+                                    self['bot_info'] = self['bot_list'][0];
+                                    self['bot_id'] = self['bot_list'][0].id;
+                                    self['bot_uin'] = self['bot_list'][0].uin;
+                                    self['getFriendsData'](self['bot_info']);
+                                }
+                                
                             } else {
                                 self['addBot']();
                             }
@@ -557,6 +569,7 @@
                 }, 'json');
                 this.speechcraft_list = [];
                 this.getSpeechcraftData();
+                $.cookie('bot_info',JSON.stringify(this.bot_info));
             },
             // 滚动加载
             loadFriends(e) {

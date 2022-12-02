@@ -14,6 +14,7 @@ use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
+
 class Test
 {
 
@@ -41,7 +42,7 @@ class Test
             "msg" => "模拟插入聊天111",  // 消息内容
             "clientid" => 0,  // 企业微信可用
             "robot_type" => 0,  // 来源微信类型 0 正常微信 / 1 企业微信
-            "msg_id" => $time.rand(0,9999999)  // 消息ID
+            "msg_id" => $time . rand(0, 9999999)  // 消息ID
         ];
         $member_model = new BotMember();
         $member = $member_model->where(['wxid' => $data['from_wxid']])->find();
@@ -70,26 +71,29 @@ class Test
             'from_headimg' => $member['headimgurl'],
             'msg_id' => $data['msg_id'],
             'type' => 'receive',
-            'msg_type' => 1//文本
+            'msg_type' => 1 //文本
         ];
         $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
-        $redis->rpush($key,$msg);
+        $redis->rpush($key, $msg);
         dump($msg);
     }
 
-    public function emoji(){
+    public function emoji()
+    {
         $this->emoji = new \ky\Emoji();
-        $unified =$this->emoji->emojiDocomoToUnified('\ue04a');
+        $unified = $this->emoji->emojiDocomoToUnified('\ue04a');
         // $bytes = $this->emoji->utf8Bytes($this->emoji->unifiedToHex($unified));
         $image = $this->emoji->emojiUnifiedToHtml($unified);
-        dump($unified);exit;
+        dump($unified);
+        exit;
     }
 
     /**
      * 
      * 模拟好友添加
      */
-    public function setNewFriend(){
+    public function setNewFriend()
+    {
         $kefuM = new Kefu();
         $kefuM->sendToClinet([
             'event' => 'new_friend',
@@ -100,8 +104,9 @@ class Test
     }
 
 
-    public function convertReceiveMsg() {
-        
+    public function convertReceiveMsg()
+    {
+
         $msg_type = 3;
         $msg = "[pic=E:\北遇框架(兼容我的框架)\Data\wxid_eko8u5yga0jr22\4d6eb5054e05cef3ac288ca8423c6805.jpg]";
         $content = '';
@@ -120,10 +125,10 @@ class Test
                 $bot_model = new Bot();
                 $bot = $bot_model->getOne(22);
                 $bot_client = $bot_model->getRobotClient($bot);
-                $path = mb_substr($msg,5,-1);
+                $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->getFileFoBase64(['path' => $path]);
                 $base64 = $res['ReturnStr'];
-                $url = upload_base64('pic_'.rand(1000,9999).'_'.time(),$base64);
+                $url = upload_base64('pic_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;
                 $last_chat_content = "[图片]";
                 break;
@@ -133,23 +138,23 @@ class Test
                 $bot_model = new Bot();
                 $bot = $bot_model->getOne(22);
                 $bot_client = $bot_model->getRobotClient($bot);
-                $path = mb_substr($msg,6,-1);
+                $path = mb_substr($msg, 6, -1);
                 $res = $bot_client->getFileFoBase64(['path' => $path]);
                 $base64 = $res['ReturnStr'];
-                $url = upload_base64('file_'.rand(1000,9999).'_'.time(),$base64);
+                $url = upload_base64('file_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;
                 $last_chat_content = "[文件]";
                 break;
-            //语音
-            //[mp3=C:\Users\Administrator\AppData\Local\Temp\2\wxmD189_tmp.mp3]
+                //语音
+                //[mp3=C:\Users\Administrator\AppData\Local\Temp\2\wxmD189_tmp.mp3]
             case 34:
                 $bot_model = new Bot();
                 $bot = $bot_model->getOne(22);
                 $bot_client = $bot_model->getRobotClient($bot);
-                $path = mb_substr($msg,5,-1);
+                $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->getFileFoBase64(['path' => $path]);
                 $base64 = $res['ReturnStr'];
-                $url = upload_base64('mp3_'.rand(1000,9999).'_'.time(),$base64);
+                $url = upload_base64('mp3_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;
                 $last_chat_content = "[语音消息]";
                 break;
@@ -163,10 +168,10 @@ class Test
                 $bot_model = new Bot();
                 $bot = $bot_model->getOne(22);
                 $bot_client = $bot_model->getRobotClient($bot);
-                $path = mb_substr($msg,5,-1);
+                $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->getFileFoBase64(['path' => $path]);
                 $base64 = $res['ReturnStr'];
-                $url = upload_base64('mp4_'.rand(1000,9999).'_'.time(),$base64);
+                $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;
                 $last_chat_content = "[视频]";
                 break;
@@ -176,10 +181,10 @@ class Test
                 $bot_model = new Bot();
                 $bot = $bot_model->getOne(22);
                 $bot_client = $bot_model->getRobotClient($bot);
-                $path = mb_substr($msg,5,-1);
+                $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->getFileFoBase64(['path' => $path]);
                 $base64 = $res['ReturnStr'];
-                $url = upload_base64('gif_'.rand(1000,9999).'_'.time(),$base64);
+                $url = upload_base64('gif_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;
                 $last_chat_content = "[动态表情]";
                 break;
@@ -191,7 +196,7 @@ class Test
                 $content = "[分享链接]";
                 $last_chat_content = "[分享链接]";
                 break;
-            //转账
+                //转账
             case 2000:
                 //转账
                 //{"payer_pay_id":"100005000122112500083349286519001491","receiver_pay_id":"1000050001202211250210301400144","paysubtype":3,"money":"1165.00","pay_memo":""}
@@ -214,5 +219,17 @@ class Test
 
 
         return $content;
+    }
+
+
+    public function filetobase64()
+    {
+        $msg = "[mp3=C:\Users\Administrator\AppData\Local\Temp\2\wxmD189_tmp.mp3]";
+        $bot_model = new Bot();
+        $bot = $bot_model->where(['id' => 38])->find();
+        $bot_client = $bot_model->getRobotClient($bot);
+        $path = mb_substr($msg, 5, -1);
+        $res = $bot_client->downloadFile(['path' => $path]);
+        dump($res);exit;
     }
 }

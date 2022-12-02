@@ -232,7 +232,31 @@ class Test
         dump($path);
         $res = $bot_client->downloadFile(['path' => $path]);
         $base64 = $res['ReturnStr'];
-        $url = upload_base64('mp3_'.rand(1000,9999).'_'.time(),$base64);
-        dump($url);exit;
+        $url = upload_base64('mp3_' . rand(1000, 9999) . '_' . time(), $base64);
+        dump($url);
+        exit;
+    }
+
+    public function sendVideoMsg()
+    {
+        $member_model = new BotMember();
+        $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
+        $msg = json_encode([
+            'msg' => 'http://webwx.sxwig.com/mp4_4890_1669988986',
+            'date' => date("Y-m-d H:i:s"),
+            'msg_id' => '5791531156442254467',
+            'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/sGCpic6YuOTdGoYdslG1riaCj5Vly5P33FbXibfG1guiaXW5OokPr1ltt3nurPpCosQcgibQNic60pond25zBczooPialXG891Lxk19arf3RicLkbdk/0',
+            'from_wxid' => 'wxid_53fet7200ygs22',
+            'robot_wxid' => 'cengzhiyang4294',
+            'client' => 1,
+            'friend' => $member,
+            'msg_type' => 43,
+            'event' => 'msg',
+            'last_chat_content' => '[视频]',
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
+        echo "ok";
     }
 }

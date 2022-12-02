@@ -177,7 +177,7 @@
                                             </div>
                                             <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'receive_43_'+item.msg_id">
-                                                <embed :src="item.content" autostart=false>
+                                                <embed :src="item.content" autostart=false width="300px" height="400px">
                                             </div>
                                             <!-- gif -->
                                             <div v-else-if="item.msg_type == 47" :class="'receive_47_'+item.msg_id">
@@ -196,7 +196,7 @@
                                             </div>
                                             <!-- 转账 -->
                                             <div v-else-if="item.msg_type == 2000" :class="'receive_2000_'+item.msg_id"
-                                                @click="tansfer(item)">
+                                                @click="transfer(item)">
                                                 <span>转账：</span>
                                                 <i class="layui-icon layui-icon-rmb"></i>
                                             </div>
@@ -1209,6 +1209,7 @@
                     }
                     this.getChatLog();
                     this.current_chat = this.chat_log[[this.bot_uin]][[this.friend_wxid]];
+                    this.renderDropdown();
                     // console.log(document.querySelector('.scroll').scrollTop);
                     document.querySelector('.chat_panel').scrollTop = 1;
                     // vm.$nextTick(() => { document.querySelector('.scroll').scrollTop = 1000; })
@@ -1333,6 +1334,7 @@
                 if (!vm['new_bot'].includes(massage.robot_wxid)) {
                     vm['new_bot'].push(massage.robot_wxid);
                 }
+                vm['renderDropdown']();
                 //机器人未读点亮
                 //如果消息不是当前机器人则点亮
                 var new_to_friend = true;

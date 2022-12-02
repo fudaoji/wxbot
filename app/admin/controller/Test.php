@@ -229,6 +229,7 @@ class Test
         $bot = $bot_model->where(['id' => 38])->find();
         $bot_client = $bot_model->getRobotClient($bot);
         $path = mb_substr($msg, 5, -1);
+        dump($path);
         $res = $bot_client->downloadFile(['path' => $path]);
         dump($res);exit;
     }

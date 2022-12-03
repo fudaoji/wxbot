@@ -1330,7 +1330,9 @@
                 }
                 // console.log(vm['chat_log']);
                 vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
-                vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+                if (massage.from_wxid == vm['friend_wxid']) {
+                    vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+                }
                 if (!vm['new_bot'].includes(massage.robot_wxid)) {
                     vm['new_bot'].push(massage.robot_wxid);
                 }

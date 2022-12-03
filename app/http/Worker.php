@@ -53,7 +53,7 @@ class Worker extends Server
 		});
 
 
-		Timer::add(5, function () use ($worker, $redis) {
+		Timer::add(1, function () use ($worker, $redis) {
 			$key = 'receive_private_chat';
 			$limit = 1000;
 			// $chatLogM = new ChatLog();

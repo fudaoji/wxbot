@@ -527,10 +527,10 @@ class Kefu extends Base
             $bot_client->acceptTransfer([
                 'robot_wxid' => $bot['uin'],
                 'from_wxid' => $post_data['from_wxid'],
-                'payer_pay_id' => $post_data['payer_pay_id'],
-                'receiver_pay_id' => $post_data['receiver_pay_id'],
-                'paysubtype' => $post_data['paysubtype'],
-                'money' => $post_data['money'],
+                'payer_pay_id' => $post_data['content']['payer_pay_id'],
+                'receiver_pay_id' => $post_data['content']['receiver_pay_id'],
+                'paysubtype' => $post_data['content']['paysubtype'],
+                'money' => $post_data['content']['money'],
             ]);
             $this->success('success');
         }
@@ -550,7 +550,7 @@ class Kefu extends Base
             $bot_client = $bot_model->getRobotClient($bot);
             $bot_client->rejectTransfer([
                 'robot_wxid' => $bot['uin'],
-                'receiver_pay_id' => $post_data['receiver_pay_id'],
+                'receiver_pay_id' => $post_data['content']['receiver_pay_id'],
             ]);
             $this->success('success');
         }

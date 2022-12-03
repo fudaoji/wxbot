@@ -198,7 +198,7 @@
                                             <div v-else-if="item.msg_type == 2000" :class="'receive_2000_'+item.msg_id"
                                                 @click="transfer(item)">
                                                 <span>转账：</span>
-                                                <i class="layui-icon layui-icon-rmb"></i>
+                                                <i class="layui-icon layui-icon-rmb">{{item.content.money}}</i>
                                             </div>
                                             <!-- 红包 -->
                                             <div v-else-if="item.msg_type == 2001" :class="'receive_2001_'+item.msg_id"

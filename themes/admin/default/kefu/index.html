@@ -1319,6 +1319,10 @@
             var massage = eval("(" + event.data + ")");
             //收到私聊信息
             if (massage.event == 'msg') {
+                //转账单独处理
+                if (massage.msg_type == 2000) {
+                    massage.msg = JSON.parse(massage.msg);
+                }
                 let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type };
                 console.log(msg);
                 if (!vm['chat_log'][[massage.robot_wxid]]) {

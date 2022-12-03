@@ -264,7 +264,7 @@ class Test
         $member_model = new BotMember();
         $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
         $msg = '{"payer_pay_id":"100005000122112500083349286519001491","receiver_pay_id":"1000050001202211250210301400144","paysubtype":3,"money":"1165.00","pay_memo":""}';
-        $msg = json_decode($msg,true);
+        // $msg = json_decode($msg,true);
         $msg = json_encode([
             'msg' => $msg,
             'date' => date("Y-m-d H:i:s"),

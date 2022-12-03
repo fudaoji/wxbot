@@ -232,9 +232,9 @@ class ChatLog extends Kefu
                 //     $content = "[分享链接]";
                 //     break;
                 // //转账
-                // case 2000:
-                //     $content = $msg;
-                //     break;
+                case 2000:
+                    $content = json_decode($msg,true);
+                    break;
                 // case 2001:
                 //     $content = "[红包]";
                 //     break;

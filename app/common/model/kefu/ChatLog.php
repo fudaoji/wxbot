@@ -170,7 +170,7 @@ class ChatLog extends Kefu
             case 2000:
                 //转账
                 //{"payer_pay_id":"100005000122112500083349286519001491","receiver_pay_id":"1000050001202211250210301400144","paysubtype":3,"money":"1165.00","pay_memo":""}
-                $content = json_decode($msg, true);
+                $content = $msg;
                 $last_chat_content = "[转账]";
                 break;
             case 2001:

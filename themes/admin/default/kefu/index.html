@@ -12,8 +12,9 @@
                         <div class="layui-menu-body-title">
                             <img :src="item.headimgurl" :class="[item.alive?'light_headimgurl':'gray_headimgurl']"
                                 style="width:50px;height:50px;border-radius:10%" :title="item.nickname" />
-                            <span>{{item.nickname}}</span>
                             <span class="layui-badge-dot" v-if="item.new"></span>
+                            <span>{{item.nickname}}</span>
+                            
                         </div>
                     </li>
                 </ul>
@@ -1357,7 +1358,7 @@
                             return false;
                         }
                     })
-
+                    // console.log(vm['bot_list']);
                 } else {
                     //是当前机器人
                     //判断是否在好友列表里

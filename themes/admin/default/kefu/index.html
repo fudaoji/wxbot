@@ -1177,7 +1177,7 @@
                     page: page,
                     limit: limit,
                 };
-
+                let load = layer.load();
                 $.ajaxSettings.async = false;
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
@@ -1187,6 +1187,7 @@
                         // self['chat_log'][[uin]][[friend_wxid]] = self['chat_log'][[uin]][[friend_wxid]].unshift(res.data.list);
                         self['chat_log'][[uin]][[friend_wxid]].sort(compare("time"));
                     }
+                    layer.close(load);
                 }, 'json');
             },
             // 滚动加载

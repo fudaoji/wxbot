@@ -1364,6 +1364,7 @@
                     //是替换
                     //否放入
                     //排序
+                    console.log('是当前机器人')
                     var is_in = false;
                     $.each(vm['friends_list'], function (i, v) {
                         if (massage.from_wxid == v.wxid) {
@@ -1373,10 +1374,25 @@
                         }
                     })
                     if (!is_in) {
+                        //不在当前好友列表里
                         massage.friend.new = 1;
                         vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
                         new_to_friend = false;
                         // console.log(vm['friends_list']);
+                    } else {
+                        //在当前好友列表
+                        //是否当前选择的好友
+                        //不是则点亮
+                        if (massage.from_wxid != vm['friend_wxid']) {
+                            $.each(vm['friends_list'], function (i, v) {
+                                if (massage.from_wxid == v.wxid) {
+                                    v.new = 1;
+                                    return false;
+                                }
+                            })
+                        }
+                        
+
                     }
                     vm['friends_list'].sort(compare("last_chat_time", "desc"));
                     //是当前好友滚动到底

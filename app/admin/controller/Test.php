@@ -283,4 +283,29 @@ class Test
         $redis->rpush($key, $msg);
         echo "ok";
     }
+
+    public function sendTextMsg(){
+        $member_model = new BotMember();
+        $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
+        $msg = '测试3';
+        $member['last_chat_content'] = $msg;
+        // $msg = json_decode($msg,true);
+        $msg = json_encode([
+            'msg' => $msg,
+            'date' => date("Y-m-d H:i:s"),
+            'msg_id' => '5791531156442254467',
+            'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/sGCpic6YuOTdGoYdslG1riaCj5Vly5P33FbXibfG1guiaXW5OokPr1ltt3nurPpCosQcgibQNic60pond25zBczooPialXG891Lxk19arf3RicLkbdk/0',
+            'from_wxid' => 'wxid_53fet7200ygs22',
+            'robot_wxid' => 'cengzhiyang4294',
+            'client' => 1,
+            'friend' => $member,
+            'msg_type' => 1,
+            'event' => 'msg',
+            'last_chat_content' => $msg,
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
+        echo "ok";
+    }
 }

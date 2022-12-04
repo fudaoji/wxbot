@@ -232,6 +232,7 @@ class Test
         $path = mb_substr($msg, 5, -1);
         dump($path);
         $res = $bot_client->downloadFile(['path' => $path]);
+        dump($res);
         $base64 = $res['ReturnStr'];
         $url = upload_base64('mp3_' . rand(1000, 9999) . '_' . time(), $base64);
         dump($url);

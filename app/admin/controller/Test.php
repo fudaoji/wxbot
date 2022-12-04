@@ -224,6 +224,7 @@ class Test
 
     public function filetobase64()
     {
+        model('common/setting')->settings();
         $msg = '[mp4=D:\weixinjilu\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-12\7cc52be7295dfb19d34647103c502147.mp4]';
         $bot_model = new Bot();
         $bot = $bot_model->where(['id' => 40])->find();
@@ -234,7 +235,7 @@ class Test
         $res = $bot_client->downloadFile(['path' => $path]);
         dump($res);
         $base64 = $res['ReturnStr'];
-        $url = upload_base64('mp3_' . rand(1000, 9999) . '_' . time(), $base64);
+        $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
         dump($url);
         exit;
     }

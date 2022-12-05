@@ -292,6 +292,7 @@ class Test
         $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
         $msg = '测试3';
         $member['last_chat_content'] = $msg;
+        $member['last_chat_time'] = time();
         // $msg = json_decode($msg,true);
         $msg = json_encode([
             'msg' => $msg,

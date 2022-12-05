@@ -92,7 +92,7 @@
             <div class="layui-panel chat_box_panel">
                 <div class="layui-card-header" v-show="friend_info">{{friend_info.nickname}}</div>
                 <div class="layui-panel chat_box_panel" v-show="show_chat">
-                    <!-- <div><a href="javaScript:" @click="loadChatLog" v-show="show_more_chat_log">查看更多消息</a></div> -->
+                    <!-- <div><a href="javaScript:" @click="loadChatLogNext" v-show="show_more_chat_log">查看更多消息</a></div> -->
                     <div style="padding: 15px" class="chat_panel" id="chat_panel" ref="chat_log_list_ref">
                         <div class="scroll">
                             <div v-for="(item, index) in current_chat" :key="item.msg_id" :class="item.class">
@@ -530,6 +530,7 @@
                     this.show_chat = false;
                     this.get_speechcraft_param.page = 1;
                     this.speechcraft_list = [];
+                    this.friend_wxid = '';
                     // this.auto_pass_init = 0;//需重新赋值
                 }
                 //如果有机器人有新信息，改为已读
@@ -599,6 +600,7 @@
                     this.show_chat = true;
                     this.friend_wxid = item.wxid;
                     this.show_more_chat_log = true;
+                    this.get_chat_log_param.page = 1;
                     // console.log(this.friend_info);
                 }
                 // console.log(this.bot_info);
@@ -607,7 +609,7 @@
                 this.auto_reply = this.bot_info.auto_reply;
                 // this.auto_pass_init = 1;//初始化赋值完成
                 //创建聊天数据
-                if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]]) {
+                if (!self['chat_log'][[this.bot_uin]][[this.friend_wxid]] || self['chat_log'][[this.bot_uin]][[this.friend_wxid]].length < 10) {
                     // self['chat_log'][[this.bot_uin]] = {[this.friend_wxid]:[]};
                     self['chat_log'][[this.bot_uin]][[this.friend_wxid]] = [];
                     this.getChatLog();
@@ -1177,7 +1179,7 @@
                     page: page,
                     limit: limit,
                 };
-                let load = layer.load();
+                // let load = layer.load();
                 $.ajaxSettings.async = false;
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
@@ -1187,7 +1189,7 @@
                         // self['chat_log'][[uin]][[friend_wxid]] = self['chat_log'][[uin]][[friend_wxid]].unshift(res.data.list);
                         self['chat_log'][[uin]][[friend_wxid]].sort(compare("time"));
                     }
-                    layer.close(load);
+                    // layer.close(load);
                 }, 'json');
             },
             // 滚动加载
@@ -1389,6 +1391,7 @@
                             $.each(vm['friends_list'], function (i, v) {
                                 if (massage.from_wxid == v.wxid) {
                                     v.new = 1;
+                                    v.last_chat_time = massage.friend.last_chat_time;
                                     return false;
                                 }
                             })
@@ -1396,7 +1399,11 @@
                         
 
                     }
+                    console.log('排序前好友列表');
+                    console.log(vm['friends_list']);
                     vm['friends_list'].sort(compare("last_chat_time", "desc"));
+                    console.log('排序后好友列表');
+                    console.log(vm['friends_list']);
                     //是当前好友滚动到底
                     if (massage.from_wxid == vm['friend_wxid']) {
                         scroll();

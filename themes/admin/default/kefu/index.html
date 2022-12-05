@@ -517,7 +517,7 @@
                 let limit = this.get_friends_param.page_size;
                 //重新选择客服
                 // console.log(self['bot_id']);console.log(item.id);
-                if (self['bot_id'] != item.id) {
+                if (self['bot_id'] != item.id || 1) {
                     self['bot_id'] = item.id;
                     this.friends_list = [];
                     this.friend_info = {};
@@ -634,6 +634,31 @@
                 this.renderElement();
                 self['renderDropdown']();
                 scroll();
+                //判断是否全部已读
+                let all_read = true;
+                $.each(this.friends_list, function (i, v) {
+                    if (v.new == 1) {
+                        all_read = false;
+                        return;
+                    }
+                })
+                //全部已读，当前机器人红点取消
+                if (all_read) {
+                    // console.log('all_read');
+                    $.each(this.bot_list, function (i, v) {
+                        // console.log(self['bot_uin']);
+                        // console.log(v);
+                        if (self['bot_uin'] == v.uin) {
+                            console.log('bot_read');
+                            // console.log(this.bot_list);
+                            self['bot_list'][i].new = 0;
+                            let new_bot_arr = self['new_bot'];
+                            new_bot_arr.splice($.inArray(item.uin, new_bot_arr), 1);
+                            self['new_bot'] = new_bot_arr;
+                            return false;
+                        }
+                    })
+                }
                 // this.current_chat.sort(function (a, b) {
                 //     return b.last_chat_time - a.last_chat_time
                 // });
@@ -1293,7 +1318,7 @@
 
         }
     });
-
+    // console.log(vm);
 
     var from_id = "{$from_id}";
     // var webSocket = new WebSocket("ws://127.0.0.1:9506");
@@ -1350,8 +1375,7 @@
                 //机器人未读点亮
                 //如果消息不是当前机器人则点亮
                 var new_to_friend = true;
-                if (massage.robot_wxid != vm['bot_uin']) {
-                    $.each(vm['bot_list'], function (i, v) {
+                $.each(vm['bot_list'], function (i, v) {
                         if (massage.robot_wxid == v.uin) {
                             vm['bot_list'][i]['new'] = 1;
                             // let new_bot_arr = vm['new_bot'];
@@ -1360,7 +1384,19 @@
                             // console.log(new_bot_arr);
                             return false;
                         }
-                    })
+                });
+                console.log(vm['bot_list']);
+                if (massage.robot_wxid != vm['bot_uin']) {
+                    // $.each(vm['bot_list'], function (i, v) {
+                    //     if (massage.robot_wxid == v.uin) {
+                    //         vm['bot_list'][i]['new'] = 1;
+                    //         // let new_bot_arr = vm['new_bot'];
+                    //         // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
+                    //         // vm['new_bot'] = new_bot_arr;
+                    //         // console.log(new_bot_arr);
+                    //         return false;
+                    //     }
+                    // })
                     // console.log(vm['bot_list']);
                 } else {
                     //是当前机器人
@@ -1399,11 +1435,11 @@
                         
 
                     }
-                    console.log('排序前好友列表');
-                    console.log(vm['friends_list']);
+                    // console.log('排序前好友列表');
+                    // console.log(vm['friends_list']);
                     vm['friends_list'].sort(compare("last_chat_time", "desc"));
-                    console.log('排序后好友列表');
-                    console.log(vm['friends_list']);
+                    // console.log('排序后好友列表');
+                    // console.log(vm['friends_list']);
                     //是当前好友滚动到底
                     if (massage.from_wxid == vm['friend_wxid']) {
                         scroll();

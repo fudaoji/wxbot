@@ -141,6 +141,9 @@ class ChatLog extends Kefu
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
+                if ($res['Code'] != 0) {
+                    Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
+                }
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;

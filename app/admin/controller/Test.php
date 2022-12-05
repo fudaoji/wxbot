@@ -225,7 +225,7 @@ class Test
     public function filetobase64()
     {
         model('common/setting')->settings();
-        $msg = '[mp4=D:\weixinjilu\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-12\7cc52be7295dfb19d34647103c502147.mp4]';
+        $msg = '[mp4=D:\weixinjilu\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-12\0c3a372776cc659faa117d192e0940c6.mp4]';
         $bot_model = new Bot();
         $bot = $bot_model->where(['id' => 40])->find();
         dump($bot);dump($bot_model->getlastsql());

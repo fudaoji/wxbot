@@ -14,7 +14,7 @@
                                 style="width:50px;height:50px;border-radius:10%" :title="item.nickname" />
                             <span class="layui-badge-dot" v-if="item.new"></span>
                             <span>{{item.nickname}}</span>
-                            
+
                         </div>
                     </li>
                 </ul>
@@ -474,7 +474,7 @@
                                     self['bot_uin'] = self['bot_list'][0].uin;
                                     self['getFriendsData'](self['bot_info']);
                                 }
-                                
+
                             } else {
                                 self['addBot']();
                             }
@@ -571,7 +571,7 @@
                 }, 'json');
                 this.speechcraft_list = [];
                 this.getSpeechcraftData();
-                $.cookie('bot_info',JSON.stringify(this.bot_info));
+                $.cookie('bot_info', JSON.stringify(this.bot_info));
             },
             // 滚动加载
             loadFriends(e) {
@@ -1376,14 +1376,14 @@
                 //如果消息不是当前机器人则点亮
                 var new_to_friend = true;
                 $.each(vm['bot_list'], function (i, v) {
-                        if (massage.robot_wxid == v.uin) {
-                            vm['bot_list'][i]['new'] = 1;
-                            // let new_bot_arr = vm['new_bot'];
-                            // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
-                            // vm['new_bot'] = new_bot_arr;
-                            // console.log(new_bot_arr);
-                            return false;
-                        }
+                    if (massage.robot_wxid == v.uin) {
+                        vm['bot_list'][i]['new'] = 1;
+                        // let new_bot_arr = vm['new_bot'];
+                        // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
+                        // vm['new_bot'] = new_bot_arr;
+                        // console.log(new_bot_arr);
+                        return false;
+                    }
                 });
                 console.log(vm['bot_list']);
                 if (massage.robot_wxid != vm['bot_uin']) {
@@ -1432,7 +1432,7 @@
                                 }
                             })
                         }
-                        
+
 
                     }
                     // console.log('排序前好友列表');
@@ -1444,7 +1444,7 @@
                     if (massage.from_wxid == vm['friend_wxid']) {
                         scroll();
                     }
-                    
+
                 }
                 //点亮对应好友
                 if (new_to_friend) {
@@ -1456,6 +1456,54 @@
             } else if (massage.event == 'new_friend') {
                 //好友添加事件
                 vm.searchFriend();
+            } else if (massage.event == 'callback') {
+                let msg = {
+                    content: massage.content,
+                    class: 'my_chat_content',
+                    date: massage.date,
+                    headimgurl: massage.headimgurl,
+                    msg_id: massage.msg_id,
+                    msg_type: massage.msg_type,
+                    type: massage.type,
+                };
+                console.log('同步发送信息');
+                // //判断是否为当前聊天
+                if (massage.to == vm['friend_wxid']) {
+                    if (!vm['chat_log'][[massage.robot_wxid]]) {
+                        vm['chat_log'][[massage.robot_wxid]] = {};
+                    }
+                    if (!vm['chat_log'][[massage.robot_wxid]][[massage.to]]) {
+                        vm['chat_log'][[massage.robot_wxid]][[massage.to]] = [];
+                    }
+
+                    let last_key = -1;
+                    //找最后一条模拟ID的发送数据替换ID
+                    //没有则为手机发送直接加入
+                    $.each(vm['chat_log'][[massage.robot_wxid]][[massage.to]], function (i, v) {
+                        let first_msg_id = v.msg_id.substr(0, 1)
+                        if (v.type == 'send' && first_msg_id == 's') {
+                            v.msg_id = massage.msg_id;
+                            last_key = i;
+                        }
+                    });
+                    //直接加入
+                    if (last_key == -1) {
+                        vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
+                        vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
+                        scroll();
+                        $.each(vm['friends_list'], function (i, v) {
+                            if (massage.to == v.wxid) {
+                                v.last_chat_time = massage.friend.last_chat_time;
+                                v.last_chat_content = massage.friend.last_chat_content;
+                                return false;
+                            }
+                        })
+                        vm['friends_list'].sort(compare("last_chat_time", "desc"));
+                    }
+
+
+                    vm['renderDropdown']();
+                }
             }
 
         }

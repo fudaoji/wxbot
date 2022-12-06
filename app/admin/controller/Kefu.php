@@ -184,7 +184,7 @@ class Kefu extends Base
             $content = $post_data['content'];
             // $content = $chat_model->convertMsg($content, $post_data['type']);
             // $last_chat_content = $content;
-            $bot_client = $bot_model->getRobotClient($bot);
+            // $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
                 // $bot_client->sendTextToFriends([
                 //     'robot_wxid' => $bot['uin'],
@@ -211,19 +211,19 @@ class Kefu extends Base
                 $content = '[链接]';
                 $last_chat_content = '[链接]';
             }
-            $msgid = time() . $this->adminInfo['id'];
-            $insert_data = [
-                'from' => $bot['uin'],
-                'to' => $post_data['to_wxid'],
-                'create_time' => $time,
-                'content' => $post_data['content'],
-                'year' => $year,
-                'from_headimg' => $bot['headimgurl'],
-                'msg_id' => $msgid,
-                'type' => 'send',
-                'msg_type' => $post_data['type'] //文本
-            ];
-            $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
+            $msgid = 'send_'.time() . $this->adminInfo['id'];
+            // $insert_data = [
+            //     'from' => $bot['uin'],
+            //     'to' => $post_data['to_wxid'],
+            //     'create_time' => $time,
+            //     'content' => $post_data['content'],
+            //     'year' => $year,
+            //     'from_headimg' => $bot['headimgurl'],
+            //     'msg_id' => $msgid,
+            //     'type' => 'send',
+            //     'msg_type' => $post_data['type'] //文本
+            // ];
+            // $chat_model->partition('p' . $year)->insertGetId($insert_data);
             //更改好友最后聊天时间
             if (isset($post_data['friend_id']) && $post_data['friend_id'] > 0) {
                 $friend_id = $post_data['friend_id'];
@@ -256,7 +256,7 @@ class Kefu extends Base
 
     public function sendMsgPost()
     {
-        if (request()->isPost()) {
+        if (request()->isPost()) {$this->success('success');
             $post_data = input('post.');
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);

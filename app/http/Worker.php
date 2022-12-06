@@ -93,7 +93,10 @@ class Worker extends Server
 								'msg_type' => $res['msg_type'],
 							];
 							$redis->hSet($last_log_key, $hkey, json_encode($result));
-						} else if($res['event'] == 'new_friend') {
+						} else if ($res['event'] == 'new_friend') {
+							$conn->send($msg);
+						} else if ($res['event'] == 'callback') {
+							//消息发送回调
 							$conn->send($msg);
 						}
 						

@@ -61,6 +61,7 @@ class ChatLog extends Kefu
             'msg_type' => $data['type'],
             'event' => 'msg',
             'last_chat_content' => $convert['last_chat_content'],
+            'type' => 'receive'
         ]);
         $insert_data = [
             'from' => $data['from_wxid'],
@@ -259,21 +260,58 @@ class ChatLog extends Kefu
      * 保存手机端发送的消息
      */
     public function saveMobileMsg($data, $bot){
-        /**
-         * Send：{"sdkVer":6,"Event":"EventDeviceCallback",
-         * "content":{
-         * "robot_wxid":"wxid_bg2yo1n6rh2m22",
-         * "type":1,
-         * "msg":"好的好的好的",
-         * "to_wxid":"wxid_uzmmu9jzsvjn12",
-         * "to_name":"尚新假发 郑启示 新号",
-         * "clientid":0,"robot_type":0,
-         * "msg_id":"7812540218118947551"
-         * }}
-         * 
-         */
-
-        Logger::write("保存手机端发送的消息" . json_encode($data) . "\n");
-
+        // {
+        //     "robot_wxid":"wxid_bg2yo1n6rh2m22",
+        //     "type":1,
+        //     "msg":"现在手机发",
+        //     "to_wxid":"cengzhiyang4294",
+        //     "to_name":"zengzhiyang",
+        //     "clientid":0,
+        //     "robot_type":0,
+        //     "msg_id":"7532735423531046036"
+        // }
+        Logger::write("保存发送的消息" . json_encode($data) . "\n");
+        $time = time();
+        $year = date("Y");
+        $chat_model = new ChatLog();
+        $member_model = new BotMember();
+        $member = $member_model->where(['wxid' => $data['to_wxid']])->find();
+        //更改好友最后聊天时间
+        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        //信息转换
+        $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
+        $member['last_chat_time'] = $time;
+        $member['last_chat_content'] = $convert['last_chat_content'];
+        $insert_data = [
+            'from' => $data['robot_wxid'],
+            'to' => $data['to_wxid'],
+            'create_time' => $time,
+            'content' => $convert['content'],
+            'year' => $year,
+            'headimgurl' => $bot['headimgurl'],
+            'msg_id' => $data['msg_id'],
+            'type' => 'send',
+            'msg_type' => $data['type'] //文本
+        ];
+        $chat_model->partition('p' . $year)->insertGetId($insert_data);
+        
+        $msg = json_encode([
+            'robot_wxid' => $data['robot_wxid'],
+            'to' => $data['to_wxid'],
+            'create_time' => $time,
+            'content' => $convert['content'],
+            'year' => $year,
+            'headimgurl' => $bot['headimgurl'],
+            'msg_id' => $data['msg_id'],
+            'type' => 'send',
+            'msg_type' => $data['type'], //文本
+            'event' => 'callback',
+            'friend' => $member,
+            'client' => $bot['admin_id'], //对应用户id
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
+        Logger::write("保存发送的消息,推送前端:" . json_encode($msg) . "\n");
     }
 }

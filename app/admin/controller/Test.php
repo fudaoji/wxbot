@@ -228,7 +228,8 @@ class Test
         $msg = '[mp4=D:\weixinjilu\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-12\0c3a372776cc659faa117d192e0940c6.mp4]';
         $bot_model = new Bot();
         $bot = $bot_model->where(['id' => 40])->find();
-        dump($bot);dump($bot_model->getlastsql());
+        dump($bot);
+        dump($bot_model->getlastsql());
         $bot_client = $bot_model->getRobotClient($bot);
         $path = mb_substr($msg, 5, -1);
         dump($path);
@@ -263,7 +264,8 @@ class Test
         echo "ok";
     }
 
-    public function sendTransfer(){
+    public function sendTransfer()
+    {
         $member_model = new BotMember();
         $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
         $msg = '{"payer_pay_id":"100005000122112500083349286519001491","receiver_pay_id":"1000050001202211250210301400144","paysubtype":3,"money":"1165.00","pay_memo":""}';
@@ -287,7 +289,8 @@ class Test
         echo "ok";
     }
 
-    public function sendTextMsg(){
+    public function sendTextMsg()
+    {
         $member_model = new BotMember();
         $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
         $msg = '测试3';
@@ -311,5 +314,56 @@ class Test
         $key = 'receive_private_chat';
         $redis->rpush($key, $msg);
         echo "ok";
+    }
+
+    public function msgCallback()
+    {
+        // {
+        //     "robot_wxid":"wxid_bg2yo1n6rh2m22",
+        //     "type":1,
+        //     "msg":"现在手机发",
+        //     "to_wxid":"cengzhiyang4294",
+        //     "to_name":"zengzhiyang",
+        //     "clientid":0,
+        //     "robot_type":0,
+        //     "msg_id":"7532735423531046036"
+        // }
+        $time = time();
+        $year = date("Y");
+        $data = [
+            "robot_wxid" => "cengzhiyang4294",
+            "type" => 1,
+            "msg" => "现在手机发",
+            "to_wxid" => "wxid_53fet7200ygs22",
+            "to_name" => "crush",
+            "clientid" => 0,
+            "robot_type" => 0,
+            "msg_id" => "7532735423531046036"
+        ];
+        $botM = new Bot();
+        $bot = $botM->where(['id' => 22])->find();
+        $member_model = new BotMember();
+        $member = $member_model->where(['wxid' => $data['to_wxid']])->find();
+        //更改好友最后聊天时间
+        // $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        $member['last_chat_time'] = $time;
+        $member['last_chat_content'] = "现在手机发";
+        $msg = json_encode([
+            'robot_wxid' => 'cengzhiyang4294',
+            'to' => $data['to_wxid'],
+            'create_time' => $time,
+            'content' => "现在手机发",
+            'year' => $year,
+            'from_headimg' => $bot['headimgurl'],
+            'msg_id' => $data['msg_id'],
+            'type' => 'send',
+            'msg_type' => $data['type'], //文本
+            'event' => 'callback',
+            'friend' => $member,
+            'client' => 1,
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
     }
 }

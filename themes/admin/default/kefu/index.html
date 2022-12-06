@@ -7,7 +7,7 @@
         <div class="layui-col-xs1 bot">
             <div class="layui-panel bot-panel">
                 <ul class="layui-menu bot_list" ref="bot_list_ref">
-                    <li v-for="(item, index) in bot_list" :key="item.id" @click="getFriendsData(item)"
+                    <li v-for="(item, index) in bot_list" :key="item.id" @click="clickFriend(item)"
                         :class="item.id == bot_id ? 'layui-menu-item-checked' : ''">
                         <div class="layui-menu-body-title">
                             <img :src="item.headimgurl" :class="[item.alive?'light_headimgurl':'gray_headimgurl']"
@@ -517,6 +517,71 @@
                 let limit = this.get_friends_param.page_size;
                 //重新选择客服
                 // console.log(self['bot_id']);console.log(item.id);
+                if (self['bot_id'] != item.id) {
+                    self['bot_id'] = item.id;
+                    this.friends_list = [];
+                    this.friend_info = {};
+                    this.friend_id = 0;
+                    this.bot_info = item;
+                    this.bot_uin = item.uin;
+                    this.get_friends_param.page = 1;
+                    page = 1;
+                    this.show_info = false;
+                    this.show_chat = false;
+                    this.get_speechcraft_param.page = 1;
+                    this.speechcraft_list = [];
+                    this.friend_wxid = '';
+                    // this.auto_pass_init = 0;//需重新赋值
+                }
+                //如果有机器人有新信息，改为已读
+                if (item.new) {
+                    $.each(this.bot_list, function (i, v) {
+                        if (item.uin == v.uin) {
+                            // console.log(this.bot_list);
+                            self['bot_list'][i].new = 0;
+                            let new_bot_arr = self['new_bot'];
+                            new_bot_arr.splice($.inArray(item.uin, new_bot_arr), 1);
+                            self['new_bot'] = new_bot_arr;
+                            return false;
+                        }
+                    })
+                }
+                let params = {
+                    page: page,
+                    limit: limit,
+                    id: item.id,
+                    search_key: this.search_friend
+                }
+
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
+                        self['friends_list'] = self['friends_list'].concat(res.data.list);
+                        //消息点亮
+                        $.each(self['friends_list'], function (i, v) {
+                            if (self['new_friend'].includes(v.wxid)) {
+                                self['friends_list'][i].new = 1;
+                                // let new_friend_arr = self['new_friend'];
+                                // new_friend_arr.splice($.inArray(v.wxid,new_friend_arr),1);
+                                // self['new_friend'] = new_friend_arr;
+                            }
+                        })
+                    }
+                    layer.close(index);
+                }, 'json');
+                this.speechcraft_list = [];
+                this.getSpeechcraftData();
+                $.cookie('bot_info', JSON.stringify(this.bot_info));
+            },
+            //点击机器人
+            clickFriend(item){
+                let self = this;
+                let url = "/admin/kefu/getFriends";
+                var index = layer.load(2);
+                let page = this.get_friends_param.page;
+                let limit = this.get_friends_param.page_size;
+                //重新选择客服
+                // console.log(self['bot_id']);console.log(item.id);
                 if (self['bot_id'] != item.id || 1) {
                     self['bot_id'] = item.id;
                     this.friends_list = [];
@@ -584,6 +649,7 @@
                 // 滚动条到底部
                 if (scrollTop + windowHeight === scrollHeight) {
                     this.get_friends_param.page++
+                    console.log('加载好友page：'+this.get_friends_param.page);
                     if (this.get_friends_param.page > this.get_friends_param.page_count) return
                     this.getFriendsData(bot_info)
                 }

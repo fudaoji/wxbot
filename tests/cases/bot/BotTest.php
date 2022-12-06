@@ -19,6 +19,7 @@ class BotTest extends UnitTestCase
     protected $robotJane = 'wxid_a98qqf9m4bny22';
     protected $robotComDj = '1688854317341474';
     protected $robotDj = 'wxid_xokb2ezu1p6t21';
+    protected $robotFjq = 'wxid_7v3b6hncdo6f12';
     protected $wxidDj = 'wxid_xokb2ezu1p6t21';
     protected $wxidYyp = 'weiwei562608';
     protected $wxidYlp = 'wxid_ze4ojaebxstd22';

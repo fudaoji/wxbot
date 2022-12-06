@@ -15,8 +15,8 @@ class Bot
     const PROTOCOL_CAT = 'cat';
     const PROTOCOL_VLW = 'vlw';
     const PROTOCOL_WXWORK = 'wxwork'; //企业微信
-    const PROTOCOL_MY = 'my'; //我的个微
-    const PROTOCOL_MYCOM = 'mycom'; //我的企微
+    const PROTOCOL_MY = 'my'; //西瓜个微
+    const PROTOCOL_MYCOM = 'mycom'; //西瓜企微
     const PROTOCOL_QXUN = 'qianxun'; //千寻个微
     const PROTOCOL_XBOT = 'xbot'; //XBOT个微
 
@@ -105,8 +105,8 @@ class Bot
         $list = [
             self::PROTOCOL_QXUN => '千寻个微',
             self::PROTOCOL_WEB => '网页版',
-            self::PROTOCOL_MY => '我的个微',
-            self::PROTOCOL_MYCOM => '我的企微',
+            self::PROTOCOL_MY => '西瓜个微',
+            self::PROTOCOL_MYCOM => '西瓜企微',
             self::PROTOCOL_CAT => '可爱猫个微',
             self::PROTOCOL_VLW => 'VLW个微',
             self::PROTOCOL_WXWORK => 'VLW企微',
@@ -138,13 +138,9 @@ class Bot
     public static function hooks($id = null)
     {
         $list = [
-            //self::PROTOCOL_QXUN => '千寻个微',
-            self::PROTOCOL_XBOT => 'XBot个微',
-            self::PROTOCOL_MY => '我的个微',
-            self::PROTOCOL_MYCOM => '我的企微',
-            self::PROTOCOL_CAT => '可爱猫个微',
-            //self::PROTOCOL_VLW => 'VLW个微',
-            //self::PROTOCOL_WXWORK => 'VLW企微',
+            self::PROTOCOL_MY => '西瓜个微',
+            self::PROTOCOL_MYCOM => '西瓜企微',
+            self::PROTOCOL_CAT => '可爱猫个微'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

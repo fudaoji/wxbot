@@ -47,5 +47,22 @@ class Kefu extends Addon
         $model_kefu = new KefuModel();
         $model_kefu->autoPass($this->content,$this->bot,$this->botClient,$this->configs);
     }
+
+    /**
+     * 
+     * 回调处理器
+     */
+    public function deviceCallbackHandle(){
+        if(empty($this->switch)){
+            return false;
+        }
+
+        //保存手机发送消息
+        $model_chat_log = new ChatLog();
+        $model_chat_log->saveMobileMsg($this->content,$this->bot);
+
+    }
+
+    
     
 }

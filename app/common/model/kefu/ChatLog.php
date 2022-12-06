@@ -252,4 +252,28 @@ class ChatLog extends Kefu
 
         return $content;
     }
+
+
+    /**
+     * 
+     * 保存手机端发送的消息
+     */
+    public function saveMobileMsg($data, $bot){
+        /**
+         * Send：{"sdkVer":6,"Event":"EventDeviceCallback",
+         * "content":{
+         * "robot_wxid":"wxid_bg2yo1n6rh2m22",
+         * "type":1,
+         * "msg":"好的好的好的",
+         * "to_wxid":"wxid_uzmmu9jzsvjn12",
+         * "to_name":"尚新假发 郑启示 新号",
+         * "clientid":0,"robot_type":0,
+         * "msg_id":"7812540218118947551"
+         * }}
+         * 
+         */
+
+        Logger::write("保存手机端发送的消息" . json_encode($data) . "\n");
+
+    }
 }

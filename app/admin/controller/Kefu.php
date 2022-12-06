@@ -256,7 +256,7 @@ class Kefu extends Base
 
     public function sendMsgPost()
     {
-        if (request()->isPost()) {$this->success('success');
+        if (request()->isPost()) {
             $post_data = input('post.');
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);

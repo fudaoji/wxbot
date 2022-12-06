@@ -97,6 +97,7 @@ class Worker extends Server
 							$conn->send($msg);
 						} else if ($res['event'] == 'callback') {
 							//消息发送回调
+							Logger::write("定时器消息发送回调---".json_encode($res));
 							$conn->send($msg);
 						}
 						

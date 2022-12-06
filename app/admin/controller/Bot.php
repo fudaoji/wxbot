@@ -33,12 +33,12 @@ class Bot extends Base
             'web' => ['title' => 'Web机器人', 'href' => url('web')]
         ];
         $this->tip = "<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p> 
-<ul><li>XBot框架的接口回调地址: ".request()->domain()."/bot/api/xbot</li> 
-<li>我的框架的接口回调地址: ".request()->domain()."/bot/api/my</li> 
-<li>vlw的接口回调地址: ".request()->domain()."/bot/api/vlw</li> 
+<ul><li>西瓜框架的接口回调地址: ".request()->domain()."/bot/api/my</li>
 <li>可爱猫的接口回调地址: ".request()->domain()."/bot/api/cat</li>
-<li>千寻的接口回调地址: ".request()->domain()."/bot/api/qianxun</li>
-<li>详细接入教程：<a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
+<!--<li>XBot框架的接口回调地址: ".request()->domain()."/bot/api/xbot</li>  
+<li>vlw的接口回调地址: ".request()->domain()."/bot/api/vlw</li> 
+<li>千寻的接口回调地址: ".request()->domain()."/bot/api/qianxun</li>-->
+<li>详细接入教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='http://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
     }
 
     /**

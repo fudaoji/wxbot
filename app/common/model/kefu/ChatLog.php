@@ -291,7 +291,7 @@ class ChatLog extends Kefu
             'create_time' => $time,
             'content' => $convert['content'],
             'year' => $year,
-            'headimgurl' => $bot['headimgurl'],
+            'from_headimg' => $bot['headimgurl'],
             'msg_id' => $data['msg_id'],
             'type' => 'send',
             'msg_type' => $data['type'] //文本

@@ -338,7 +338,7 @@ class Test
             "to_name" => "crush",
             "clientid" => 0,
             "robot_type" => 0,
-            "msg_id" => "7532735423531046036"
+            "msg_id" => "753273542".time(),
         ];
         $botM = new Bot();
         $bot = $botM->where(['id' => 22])->find();

@@ -154,7 +154,7 @@ class Worker extends Server
 							$conn = $this->worker->uidConnections[$data['client']];
 							$data['msg'] = $convert['content'];
 							$data['event'] = 'delay';
-							$conn->send($data);
+							$conn->send(json_encode($data));
 						}
 					} else {
 						// echo "延迟数据转换失败". json_encode($convert)."\n";

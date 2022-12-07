@@ -107,6 +107,7 @@ class ChatLog extends Kefu
      */
     public function convertReceiveMsg($msg = '', $msg_type = 1, $bot = [])
     {
+        model('common/setting')->settings();
         $content = '';
         $last_chat_content = '';
         switch ($msg_type) {

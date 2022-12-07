@@ -155,6 +155,7 @@ class Worker extends Server
 							$data['msg'] = $convert['content'];
 							$data['event'] = 'delay';
 							$conn->send(json_encode($data));
+							echo "视频转换成功，发送前端：".json_encode($data)."\n";
 						}
 					} else {
 						// echo "延迟数据转换失败". json_encode($convert)."\n";

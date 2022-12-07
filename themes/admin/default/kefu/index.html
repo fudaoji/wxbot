@@ -1578,7 +1578,7 @@
                 //延迟数据替换
                 $.each(vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]], function (i, v) {
                     if (v.msg_id == massage.msg_id) {
-                        v.content = massage.content;
+                        v.content = massage.msg;
                         return false;
                     }
                 });

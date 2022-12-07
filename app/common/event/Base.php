@@ -27,6 +27,8 @@ class Base
      */
     public function getQiniu(){
         $config = config('system.upload');
+        dump("七牛云配置");
+        dump($config);
         return new Qiniu([
             'secrectKey' => $config['qiniu_sk'], //七牛服务器
             'accessKey' => $config['qiniu_ak'], //七牛用户

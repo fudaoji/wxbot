@@ -121,9 +121,9 @@ class Worker extends Server
 				if ($msg) {
 					$time = time();
 					$data = json_decode($msg, true);
-					// echo "文件接收延迟---". json_encode($data)."\n";
+					echo "文件接收延迟---". json_encode($data)."\n";
 					if ($time < $data['start_time']) {
-						// echo "延迟时间还没到,放回---". json_encode($data)."\n";
+						echo "延迟时间还没到,放回---". json_encode($data)."\n";
 						// Logger::write("延迟时间还没到,放回---" . json_encode($data));
 						//延迟时间还没到,放回
 						$redis->rpush($key, json_encode($data));

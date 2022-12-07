@@ -145,6 +145,7 @@ class Worker extends Server
 					// 	'from_wxid' => $data['from_wxid'],
 					// ];
 					$chatLogM = new ChatLog();
+					echo "开始转换数据：".$data['msg']."\n".$data['msg_type']."\n".json_encode($data['bot'])."\n";
 					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['msg_type'], $data['bot']);
 					if ($convert['content']) {
 						echo "延迟数据转换成功". json_encode($convert)."\n";

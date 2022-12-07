@@ -114,6 +114,7 @@ class Worker extends Server
 		 * 文件接收延迟
 		 */
 		Timer::add(5, function () use ($worker, $redis) {
+			Logger::write("文件接收延迟---11111");
 			$key = 'receive_private_chat_delay';
 			$limit = 1000;
 			for ($i = 0; $i < $limit; $i++) {

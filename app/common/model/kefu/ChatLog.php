@@ -19,6 +19,11 @@ class ChatLog extends Kefu
 {
     protected $isCache = false;
     protected $table = 'chat_log';
+    
+    public function __construct()
+    {
+        model('common/setting')->settings();
+    }
 
     public function saveChat($data, $bot)
     {

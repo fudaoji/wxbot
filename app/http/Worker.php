@@ -128,6 +128,7 @@ class Worker extends Server
 						// Logger::write("延迟时间还没到,放回---" . json_encode($data));
 						//延迟时间还没到,放回
 						$redis->rpush($key, json_encode($data));
+						sleep(1);
 						continue;
 					}
 					// $r_data = [
@@ -157,6 +158,7 @@ class Worker extends Server
 							$conn->send($data);
 						}
 					} else {
+						echo "延迟数据转换失败". json_encode($convert)."\n";
 						//失败+10秒再补回
 						$data['start_time'] = $data['start_time'] + $data['delay_second'];
 						$redis->rpush($key, json_encode($data));

@@ -162,15 +162,13 @@ class ChatLog extends Kefu
                 //[mp4=C:\Users\Administrator\Documents\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-11\0777bb2b86444a5ac848234dd1071683.mp4]
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
-                dump($bot);
-                dump($bot_client);
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
-                dump($res);
                 if ($res['Code'] != 0) {
                     Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                     $url = '';
                 } else {
+                    echo "转换成功"."\n";
                     $base64 = $res['ReturnStr'];
                     $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                 }

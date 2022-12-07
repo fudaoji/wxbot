@@ -95,7 +95,9 @@ class ChatLog extends Kefu
                 'from_wxid' => $data['from_wxid'],
             ];
             $redis->rpush($key_delay, json_encode($r_data));
+            Logger::write("视频转换失败,存延迟队列：" . json_encode($msg) . "\n");
         }
+
     }
 
     /**

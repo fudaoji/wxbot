@@ -74,9 +74,28 @@ class ChatLog extends Kefu
             'type' => 'receive',
             'msg_type' => $data['type'],
         ];
-        $chat_model->partition('p' . $year)->insertGetId($insert_data);
+        $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
         Logger::write("存储数据OK：" . json_encode($msg) . "\n");
+        //视频转换失败
+        if ($data['type'] == 43 && $convert['content'] == '') {
+            $delay_second = 10;
+            $key_delay = 'receive_private_chat_delay';
+            $r_data = [
+                'msg_type' => $data['type'],
+                'msg' => $data['msg'],
+                'delay_second' => 10,
+                'start_time' => $time + $delay_second,
+                'num' => 0,//执行次数
+                'msg_id' => $data['msg_id'],
+                'id' => $id,
+                'bot' => $bot,
+                'client' => $bot['admin_id'], //对应用户id
+                'robot_wxid' => $data['robot_wxid'],
+                'from_wxid' => $data['from_wxid'],
+            ];
+            $redis->rpush($key_delay, json_encode($r_data));
+        }
     }
 
     /**

@@ -15,8 +15,8 @@ class Worker extends Server
 {
 	protected $socket = 'websocket://0.0.0.0:9506';
 	protected static $heartbeat_time = 50;
-    public static $daemonize = true;
-    public function onWorkerStart($worker)
+	public static $daemonize = true;
+	public function onWorkerStart($worker)
 	{
 		$redis = get_redis();
 		Timer::add(10, function () use ($worker) {
@@ -32,7 +32,7 @@ class Worker extends Server
 				}
 				// 上次通讯时间间隔大于心跳间隔，则认为客户端已经下线，关闭连接
 				// if ($time_now - $connection->lastMessageTime > HEARTBEAT_TIME) {
-					// echo $connection->lastMessageTime.PHP_EOL;
+				// echo $connection->lastMessageTime.PHP_EOL;
 				if ($time_now - $connection->lastMessageTime > self::$heartbeat_time) {
 					// echo "当前时间：".date("Y-m-d H:i:s",$time_now).PHP_EOL;
 					// echo "最后通讯时间：".date("Y-m-d H:i:s",$connection->lastMessageTime).PHP_EOL;
@@ -61,7 +61,7 @@ class Worker extends Server
 				$msg = $redis->lPop($key);
 				if ($msg) {
 					$res = json_decode($msg, true);
-					Logger::write("发送消息---".json_encode($res));
+					Logger::write("发送消息---" . json_encode($res));
 					if (isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
@@ -78,8 +78,8 @@ class Worker extends Server
 							$last_chat_log = $res['last_chat_content'];
 							$res['msg'] = $content;
 							$conn->send(json_encode($res));
-							Logger::write("最终发送消息---".json_encode($res));
-							echo "发送消息：".json_encode($res);
+							Logger::write("最终发送消息---" . json_encode($res));
+							echo "发送消息：" . json_encode($res);
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$hkey = $res['from_wxid'];
@@ -97,16 +97,68 @@ class Worker extends Server
 							$conn->send($msg);
 						} else if ($res['event'] == 'callback') {
 							//消息发送回调
-							Logger::write("定时器消息发送回调---".json_encode($res));
+							Logger::write("定时器消息发送回调---" . json_encode($res));
 							$conn->send($msg);
 						}
-						
 					}
 				}
 			}
-			
+
 			// $msg = json_encode(['msg' => 'zzy测试测试', 'date' => date("Y-m-d H:i:s"), 'msg_id' => time(), 'headimgurl' => '', 'from_wxid' => 'wxid_53fet7200ygs22', 'robot_wxid' => 'cengzhiyang4294']);
-			
+
+		});
+
+
+		/**
+		 * 
+		 * 文件接收延迟
+		 */
+		Timer::add(5, function () use ($worker, $redis) {
+			$key = 'receive_private_chat_delay';
+			$limit = 1000;
+			for ($i = 0; $i < $limit; $i++) {
+				$msg = $redis->lPop($key);
+				if ($msg) {
+					$time = time();
+					$data = json_decode($msg, true);
+					if ($time < $data['start_time']) {
+						//延迟时间还没到,放回
+						$redis->rpush($key, json_encode($data));
+						continue;
+					}
+					Logger::write("文件接收延迟---" . json_encode($data));
+					// $r_data = [
+					// 	'msg_type' => $data['type'],
+					// 	'msg' => $data['msg'],
+					// 	'delay_second' => 10,
+					// 	'start_time' => $time + $delay_second,
+					// 	'num' => 0,//执行次数
+					// 	'msg_id' => $data['msg_id'],
+					// 	'id' => $id,
+					// 	'bot' => $bot,
+					// 	'client' => $bot['admin_id'], //对应用户id
+					// 	'robot_wxid' => $data['robot_wxid'],
+					// 	'from_wxid' => $data['from_wxid'],
+					// ];
+					$chatLogM = new ChatLog();
+					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['type'], $data['bot']);
+					if ($convert['content']) {
+						//视频转换成功
+						//更新数据库，发送到前端替换视频
+						$chatLogM->where(['id' => $data['id']])->update(['content' => $convert['content']]);
+						if (isset($this->worker->uidConnections[$data['client']])) {
+							$conn = $this->worker->uidConnections[$data['client']];
+							$data['msg'] = $convert['content'];
+							$data['event'] = 'delay';
+							$conn->send($data);
+						}
+					} else {
+						//失败+10秒再补回
+						$data['start_time'] = $data['start_time'] + $data['delay_second'];
+						$redis->rpush($key, json_encode($data));
+					}
+				}
+			}
 		});
 	}
 
@@ -114,7 +166,7 @@ class Worker extends Server
 	{
 		#最后接收消息时间
 		$connection->lastMessageTime = time();
-		
+
 
 		$msg_data = json_decode($data, true);
 		// echo date("Y-m-d:H:i:s")."最后接收消息:".$data.PHP_EOL;
@@ -152,11 +204,10 @@ class Worker extends Server
 
 	}
 
-	
+
 	public function onError($connection, $code, $msg)
 	{
 		$error = "worker error [ $code ] $msg\n";
 		Logger::write($error);
-
 	}
 }

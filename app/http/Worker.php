@@ -121,13 +121,13 @@ class Worker extends Server
 				if ($msg) {
 					$time = time();
 					$data = json_decode($msg, true);
+					Logger::write("文件接收延迟---" . json_encode($data));
 					if ($time < $data['start_time']) {
 						Logger::write("延迟时间还没到,放回---" . json_encode($data));
 						//延迟时间还没到,放回
 						$redis->rpush($key, json_encode($data));
 						continue;
 					}
-					Logger::write("文件接收延迟---" . json_encode($data));
 					// $r_data = [
 					// 	'msg_type' => $data['type'],
 					// 	'msg' => $data['msg'],

@@ -162,6 +162,7 @@ class ChatLog extends Kefu
                 //[mp4=C:\Users\Administrator\Documents\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-11\0777bb2b86444a5ac848234dd1071683.mp4]
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
+                dump($bot);
                 echo "视频消息bot_client:".json_encode($bot_client)."\n";
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);

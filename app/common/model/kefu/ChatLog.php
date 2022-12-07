@@ -171,7 +171,7 @@ class ChatLog extends Kefu
                     // Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                     $url = '';
                 } else {
-                    // echo "转换成功11111"."\n";
+                    echo "转换成功11111"."\n";
                     $base64 = $res['ReturnStr'];
                     $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                     // dump('url');

@@ -39,7 +39,7 @@ class ChatLog extends Kefu
         $key = 'receive_private_chat';
         $time = time();
         $member_model = new BotMember();
-        $member = $member_model->where(['wxid' => $data['from_wxid']])->find();
+        $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换
@@ -297,7 +297,7 @@ class ChatLog extends Kefu
         $year = date("Y");
         $chat_model = new ChatLog();
         $member_model = new BotMember();
-        $member = $member_model->where(['wxid' => $data['to_wxid']])->find();
+        $member = $member_model->where(['uin' => $bot['uin'],'wxid' => $data['to_wxid']])->find();
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换

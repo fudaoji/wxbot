@@ -163,7 +163,7 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 dump($bot);
-                echo "视频消息bot_client:".json_encode($bot_client)."\n";
+                dump($bot_client);
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
                 if ($res['Code'] != 0) {

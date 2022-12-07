@@ -1546,10 +1546,21 @@
                     if (!vm['chat_log'][[massage.robot_wxid]][[massage.to]]) {
                         vm['chat_log'][[massage.robot_wxid]][[massage.to]] = [];
                     }
+                    let is_mobile_send = true;
+                    //替换最后一条为send的msg_id
+                    $.each(vm['chat_log'][[massage.robot_wxid]][[massage.to]], function (i, v) {
+                        let first_msg_id = v.msg_id.substr(0, 1);
+                        if (v.type == 'send' && first_msg_id == 's') {
+                            v.msg_id = massage.msg_id;
+                            is_mobile_send = false;
+                        }
+                    });
+                    if (is_mobile_send) {
+                        vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
+                        vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
+                        scroll();
+                    }
 
-                    vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
-                    vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
-                    scroll();
                     $.each(vm['friends_list'], function (i, v) {
                         if (massage.to == v.wxid) {
                             v.last_chat_time = massage.friend.last_chat_time;
@@ -1560,35 +1571,7 @@
                     vm['friends_list'].sort(compare("last_chat_time", "desc"));
                     vm['renderDropdown']();
                     return false;
-                    // let last_key = -1;
-                    //找最后一条模拟ID的发送数据替换ID
-                    //没有则为手机发送直接加入
-                    // $.each(vm['chat_log'][[massage.robot_wxid]][[massage.to]], function (i, v) {
-                    //     let first_msg_id = v.msg_id.substr(0, 1);
-                    //     if (v.type == 'send' && first_msg_id == 's') {
-                    //         v.msg_id = massage.msg_id;
-                    //         last_key = i;
-                    //     }
-                    // });
-                    // console.log(last_key);
-                    // //直接加入
-                    // if (last_key == -1) {
-                    //     console.log('拼入手机发送的');
-                    //     vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
-                    //     vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
-                    //     scroll();
-                    //     $.each(vm['friends_list'], function (i, v) {
-                    //         if (massage.to == v.wxid) {
-                    //             v.last_chat_time = massage.friend.last_chat_time;
-                    //             v.last_chat_content = massage.friend.last_chat_content;
-                    //             return false;
-                    //         }
-                    //     })
-                    //     vm['friends_list'].sort(compare("last_chat_time", "desc"));
-                    // }
-
-                    // console.log(vm['current_chat']);
-                    // vm['renderDropdown']();
+                    
                 }
             } else if (massage.event == 'delay') {
                 //延迟数据替换

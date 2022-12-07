@@ -171,7 +171,6 @@ class ChatLog extends Kefu
                 } else {
                     echo "转换成功11111"."\n";
                     $base64 = $res['ReturnStr'];
-                    dump($base64);
                     $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                     dump('url');
                     dump($url);

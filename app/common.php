@@ -573,5 +573,6 @@ function get_unique_number_arr($start = 0, $end = 9, $length = 8)
  */
 function upload_base64($key = '', $string = ''){
     $qiniu = (new \app\common\event\Base())->getQiniu();
+    dump($qiniu);
     return $qiniu->downLink($qiniu->uploadBase64($key, $string));
 }

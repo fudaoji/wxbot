@@ -1556,6 +1556,7 @@
                         }
                     });
                     if (is_mobile_send) {
+                        console.log("是手机端发送");
                         vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
                         vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
                         scroll();

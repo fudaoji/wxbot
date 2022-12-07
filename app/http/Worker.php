@@ -141,7 +141,7 @@ class Worker extends Server
 					// 	'from_wxid' => $data['from_wxid'],
 					// ];
 					$chatLogM = new ChatLog();
-					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['type'], $data['bot']);
+					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['msg_type'], $data['bot']);
 					if ($convert['content']) {
 						//视频转换成功
 						//更新数据库，发送到前端替换视频

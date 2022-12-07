@@ -114,7 +114,6 @@ class Worker extends Server
 		 * 文件接收延迟
 		 */
 		Timer::add(5, function () use ($worker, $redis) {
-			echo "文件接收延迟定时器"."\n";
 			$key = 'receive_private_chat_delay';
 			$limit = 1000;
 			for ($i = 0; $i < $limit; $i++) {
@@ -122,9 +121,9 @@ class Worker extends Server
 				if ($msg) {
 					$time = time();
 					$data = json_decode($msg, true);
-					echo "文件接收延迟---". json_encode($data)."\n";
+					// echo "文件接收延迟---". json_encode($data)."\n";
 					if ($time < $data['start_time']) {
-						echo "延迟时间还没到,放回---". json_encode($data)."\n";
+						// echo "延迟时间还没到,放回---". json_encode($data)."\n";
 						// Logger::write("延迟时间还没到,放回---" . json_encode($data));
 						//延迟时间还没到,放回
 						$redis->rpush($key, json_encode($data));
@@ -145,7 +144,7 @@ class Worker extends Server
 					// 	'from_wxid' => $data['from_wxid'],
 					// ];
 					$chatLogM = new ChatLog();
-					echo "开始转换数据：".$data['msg']."\n".$data['msg_type']."\n".json_encode($data['bot'])."\n";
+					// echo "开始转换数据：".$data['msg']."\n".$data['msg_type']."\n".json_encode($data['bot'])."\n";
 					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['msg_type'], $data['bot']);
 					if ($convert['content'] != '') {
 						//视频转换成功
@@ -158,7 +157,7 @@ class Worker extends Server
 							$conn->send($data);
 						}
 					} else {
-						echo "延迟数据转换失败". json_encode($convert)."\n";
+						// echo "延迟数据转换失败". json_encode($convert)."\n";
 						//失败+10秒再补回
 						$data['start_time'] = $data['start_time'] + $data['delay_second'];
 						$redis->rpush($key, json_encode($data));

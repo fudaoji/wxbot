@@ -208,8 +208,8 @@ class MyTest extends BotTest
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function testGetFriends() {
-        $res = $this->botClient->getFriends([
-            'robot_wxid' => $this->robotJane,
+        $res = $this->botClient2->getFriends([
+            'robot_wxid' => $this->robotDj,
             'refresh' => 1
         ]);
         dump($res);

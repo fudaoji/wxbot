@@ -162,6 +162,7 @@ class Worker extends Server
 						//失败+10秒再补回
 						$data['start_time'] = $data['start_time'] + $data['delay_second'];
 						$redis->rpush($key, json_encode($data));
+						sleep(1);
 					}
 				}
 			}

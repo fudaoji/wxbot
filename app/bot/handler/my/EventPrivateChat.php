@@ -13,6 +13,7 @@ use app\bot\handler\HandlerPrivateChat;
 use app\constants\Bot;
 use app\constants\Reply;
 use app\constants\Task;
+use ky\Logger;
 
 class EventPrivateChat extends HandlerPrivateChat
 {
@@ -151,7 +152,7 @@ class EventPrivateChat extends HandlerPrivateChat
                 'status' => 1
             ]
         ]);
-
+        
         $flag = false;
         foreach ($keywords as $keyword){
             if(empty($keyword['wxids'])){

@@ -12,6 +12,7 @@ namespace app\admin\controller;
 
 use app\admin\model\BotMember;
 use app\constants\Bot;
+use app\constants\Common;
 
 class Botfriend extends Botbase
 {
@@ -61,6 +62,9 @@ class Botfriend extends Botbase
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 90])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name', 'minWidth' => 70])
+            ->addTableColumn(['title' => '性别', 'field' => 'sex', 'minWidth' => 70, 'type' => 'enum', 'options' => Common::sex()])
+            ->addTableColumn(['title' => '省份', 'field' => 'province', 'minWidth' => 90])
+            ->addTableColumn(['title' => '城市', 'field' => 'city', 'minWidth' => 90])
             ->addTableColumn(['title' => '操作', 'minWidth' => 200, 'type' => 'toolbar'])
             ->addRightButton('edit', ['title' => '设置备注名'])
             ->addRightButton('delete', ['title' => '删除好友', 'href' => url('deleteFriendPost', ['id' => '__data_id__'])]);

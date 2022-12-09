@@ -403,7 +403,9 @@ class BotMember extends Base
                                 'nickname' => $nickname,
                                 'remark_name' => $remark_name,
                                 'username' => $username,
-                                'headimgurl' => $headimgurl
+                                'headimgurl' => $headimgurl,
+                                'province' => $v['province'],
+                                'city' => $v['city']
                             ]);
                         }else{
                             $this->addOne([
@@ -412,13 +414,15 @@ class BotMember extends Base
                                 'remark_name' => $remark_name,
                                 'username' => $username,
                                 'wxid' => $wxid,
-                                'type' => \app\constants\Bot::FRIEND,
-                                'headimgurl' => $headimgurl
+                                'type' => Bot::FRIEND,
+                                'headimgurl' => $headimgurl,
+                                'province' => $v['province'],
+                                'city' => $v['city']
                             ]);
                         }
                     }
                     //删除无效好友
-                    $this->delByMap(['uin' => $bot['uin'],'type' => \app\constants\Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
+                    $this->delByMap(['uin' => $bot['uin'],'type' => Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
                 }
                 break;
@@ -446,7 +450,7 @@ class BotMember extends Base
                                 'remark_name' => $remark_name,
                                 'username' => $username,
                                 'wxid' => $wxid,
-                                'type' => \app\constants\Bot::FRIEND
+                                'type' => Bot::FRIEND
                             ]);
                         }
                     }

@@ -34,6 +34,16 @@ class MyTest extends BotTest
         $this->botComClient = new Mycom(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
     }
 
+    public function testGetMemberInfo(){
+        $params = [
+            'robot_wxid' => $this->robotFjq,
+            'to_wxid' => $this->wxidDj
+        ];
+        $res = $this->botClient->getMemberInfo($params);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
     public function testFavoriteMsg(){
         $params = [
             'robot_wxid' => $this->robotJane,
@@ -209,7 +219,7 @@ class MyTest extends BotTest
      */
     public function testGetFriends() {
         $res = $this->botClient2->getFriends([
-            'robot_wxid' => $this->robotDj,
+            'robot_wxid' => $this->robotFjq,
             'refresh' => 1
         ]);
         dump($res);

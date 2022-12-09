@@ -5146,3 +5146,16 @@ CREATE TABLE `__PREFIX__zdjr_rule`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `status`(`status`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '策略表' ROW_FORMAT = Dynamic;
+
+#---2.0.5---#
+ALTER TABLE `__PREFIX__bot_member`
+ADD COLUMN `last_chat_time` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '最后聊天时间' AFTER `internal`,
+ADD COLUMN `sex` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '1男 2女' AFTER `last_chat_time`,
+ADD COLUMN `province` varchar(50) NOT NULL DEFAULT '' AFTER `sex`,
+ADD COLUMN `city` varchar(50) NOT NULL DEFAULT '' AFTER `province`;
+
+ALTER TABLE `__PREFIX__bot`
+ADD COLUMN `username` varchar(20) NOT NULL DEFAULT '';
+
+ALTER TABLE `__PREFIX__bot_groupmember`
+ADD COLUMN `headimgurl` varchar(200) NOT NULL DEFAULT '';

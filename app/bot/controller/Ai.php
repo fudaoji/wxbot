@@ -78,7 +78,7 @@ class Ai extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function keyword(){
-        $this->aiClient = $this->configM->getAiClient($this->bot);
+        $this->aiClient = $this->configM->getAiClient($this->bot, $this->configs['driver']);
         $msg = trim($this->content['msg']);
         $res = $this->aiClient->smart([
             'userid' => $this->fromWxid,

@@ -53,7 +53,7 @@ class Bot extends Base
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['admin_id' => $this->adminInfo['id'],'protocol' => ['<>', \app\constants\Bot::PROTOCOL_WEB]];
+            $where = ['admin_id' => $this->adminInfo['id'],'protocol' => ['<>', BotConst::PROTOCOL_WEB]];
             !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
@@ -77,7 +77,7 @@ class Bot extends Base
             ->addTopButton('addnew', ['title' => '扫码登录', 'href' => url('hookadd')])
             ->addTopButton('addnew', ['title' => '手动添加'])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 190])
-            ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => \app\constants\Bot::protocols(), 'minWidth' => 90])
+            ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => BotConst::protocols(), 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 100])
             ->addTableColumn(['title' => 'appKey', 'field' => 'app_key', 'minWidth' => 200])
@@ -112,7 +112,7 @@ class Bot extends Base
         $this->model->updateByMap(['is_current' => 1, 'admin_id' => $this->adminInfo['id']],
             ['is_current' => 0]
         );
-        $this->model->updateOne(['id' => $data['id'], 'is_current' => 1]);
+        $this->model->updateOne(['id' => $data['id'], 'is_current' => 1, 'admin_id' => $this->adminInfo['id']]);
         $this->redirect(url('botfriend/index'));
     }
 
@@ -128,7 +128,7 @@ class Bot extends Base
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['admin_id' => $this->adminInfo['id'], 'protocol' => \app\constants\Bot::PROTOCOL_WEB];
+            $where = ['admin_id' => $this->adminInfo['id'], 'protocol' => BotConst::PROTOCOL_WEB];
             !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
@@ -160,7 +160,7 @@ class Bot extends Base
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
             ->addTopButton('addnew', ['href' => url('webadd')])
             ->addTableColumn(['title' => 'id', 'field' => 'uin', 'minWidth' => 170])
-            ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => \app\constants\Bot::protocols(), 'minWidth' => 100])
+            ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => BotConst::protocols(), 'minWidth' => 100])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 100])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 120])
             ->addTableColumn(['title' => 'appKey', 'field' => 'app_key', 'minWidth' => 120])
@@ -199,11 +199,11 @@ class Bot extends Base
         $builder->setMetaTitle('新增web微信机器人')
             ->setTip($tip)
             ->setPostUrl(url('webAdd'))
-            ->addFormItem('protocol', 'radio', '驱动', '驱动', \app\constants\Bot::webs())
+            ->addFormItem('protocol', 'radio', '驱动', '驱动', BotConst::webs())
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '接口地址', [], 'required')
-            ->setFormData(['protocol' => \app\constants\Bot::PROTOCOL_WEB]);
+            ->setFormData(['protocol' => BotConst::PROTOCOL_WEB]);
 
         return $builder->show();
     }
@@ -303,7 +303,7 @@ class Bot extends Base
     {
         $data = array_merge([
             'login_code' => 0,
-            'protocol' => \app\constants\Bot::PROTOCOL_MY,
+            'protocol' => BotConst::PROTOCOL_MY,
             'app_key' => get_rand_char(32)
         ], $this->getConfig());
 
@@ -381,7 +381,7 @@ class Bot extends Base
                     $this->model->updateOne([
                         'id' => $res['id'],
                         'uin' => $info['wxid'],
-                        'uuid' => $info['username'],
+                        'username' => $info['username'],
                         'nickname' => $info['nickname'],
                         'headimgurl' => $info['headimgurl'],
                         'alive' => 1
@@ -624,7 +624,7 @@ class Bot extends Base
                     if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'admin_id' => $this->adminInfo['id']])){
                         $data = $this->model->updateOne([
                             'id' => $bot['id'],
-                            'uuid' => $v['username'],
+                            'username' => $v['username'],
                             'nickname' => $v['nickname'],
                             'headimgurl' => $v['headimgurl'],
                             'alive' => 1
@@ -634,7 +634,7 @@ class Bot extends Base
                             'uin' => $v['wxid'],
                             'admin_id' => $this->adminInfo['id'],
                             'title' => $v['nickname'],
-                            'uuid' => $v['username'],
+                            'username' => $v['username'],
                             'app_key' => $data['app_key'],
                             'nickname' => $v['nickname'],
                             'headimgurl' => $v['headimgurl'],
@@ -695,7 +695,7 @@ class Bot extends Base
                 if(!empty($info) && !is_string($info)){
                     $this->model->updateOne([
                         'id' => $data['id'],
-                        'uuid' => $info['username'],
+                        'username' => $info['username'],
                         'nickname' => $info['nickname'],
                         'headimgurl' => $info['headimgurl']
                     ]);

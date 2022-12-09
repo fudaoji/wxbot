@@ -9,7 +9,8 @@
 
 namespace app\common\model\ai;
 
-
+use ky\OpenAI\Driver\Gpt;
+use ky\OpenAI\Driver\Qyk;
 use ky\OpenAI\Driver\Weixin;
 
 class Config extends Ai
@@ -26,6 +27,16 @@ class Config extends Ai
     public function getAiClient($bot, $driver = 'weixin'){
         $configs = $this->getConf(['bot_id' => $bot['id']]);
         switch ($driver){
+            case 'gpt':
+                $client = new Gpt([
+                    'appid' => $configs['gpt_appid']
+                ]);
+                break;
+            case 'qyk':
+                $client = new Qyk([
+                    'appid' => $configs['qyk_appid']
+                ]);
+                break;
             default:
                 $client = new Weixin([
                     'appid' => $configs['wx_appid'],

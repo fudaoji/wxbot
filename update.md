@@ -1,12 +1,14 @@
 2022-10-13
 v2.0.5
 功能更新
+* 智能AI应用新增青云客和GPT驱动
 * 新增xbot驱动
 * 自动加人应用新增操作日志
 * 修复已知bugs
 
 数据库表更新
 * 表bot增加username字段
+* 表bot_member增加last_chat_time,sex,province,city字段
 * 表bot_groupmember增加headimgurl字段
 
 2022-09-08

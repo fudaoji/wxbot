@@ -16,6 +16,7 @@ use Qiniu\Storage\UploadManager;
 use Qiniu\Cdn\CdnManager;
 use Qiniu\Config;
 use Qiniu\Processing\PersistentFop;
+use Qiniu\Zone;
 use think\facade\Log;
 
 class Qiniu
@@ -81,9 +82,10 @@ class Qiniu
 
     /**
      * 保存指定文件
-     * @param  array   $file    保存的文件信息
-     * @param  boolean $replace 同名文件是否覆盖
+     * @param array $file 保存的文件信息
+     * @param boolean $replace 同名文件是否覆盖
      * @return boolean          保存状态，true-成功，false-失败
+     * @throws \Exception
      */
     public function save(&$file, $replace=false){
         // 要上传的空间
@@ -330,7 +332,7 @@ class Qiniu
      * @author: Doogie<461960962@qq.com>
      */
     function uploadBase64($key = '', $string = ''){
-        $remote_server = 'http://upload.qiniu.com/putb64/-1' . ($key ? '/key/'.base64_encode($key) : '');
+        $remote_server = 'http://'.$this->getZone()->srcUpHosts[0].'/putb64/-1' . ($key ? '/key/'.base64_encode($key) : '');
         $headers = array();
         $headers[] = 'Content-Type:image/png';
         $headers[] = 'Authorization:UpToken '.$this->upToken();
@@ -353,5 +355,14 @@ class Qiniu
         }else{
             return $data['key'];
         }
+    }
+
+    /**
+     * 获取空间信息
+     * @return mixed
+     * @author: fudaoji<fdj@kuryun.cn>
+     */
+    function getZone(){
+        return Zone::queryZone($this->config['accessKey'], $this->config['bucket']);
     }
 }

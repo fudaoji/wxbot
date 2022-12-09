@@ -143,6 +143,7 @@ class Kefu extends Base
             if ($total) {
                 $order = ['last_chat_time' => 'desc'];
                 $list = $this->model->where($where)->page($post_data['page'])->limit($post_data['limit'])->order($order)->select()->toArray();
+                // dump($this->model->getlastsql());exit;
                 //  dump($this->model->getlastsql());exit;
                 $redis = get_redis();
                 $key = 'last_chat_log:' . $this->bot['uin'];

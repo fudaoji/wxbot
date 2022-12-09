@@ -178,7 +178,9 @@
                                             </div>
                                             <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'receive_43_'+item.msg_id">
-                                                <embed :src="item.content" autostart=false width="300px" height="400px">
+                                                <span v-if="item.content == ''">收到视频，正在加载中</span>
+                                                <embed v-else :src="item.content" autostart=false width="300px"
+                                                    height="400px">
                                             </div>
                                             <!-- gif -->
                                             <div v-else-if="item.msg_type == 47" :class="'receive_47_'+item.msg_id">
@@ -622,6 +624,7 @@
                     if (res.code == 1) {
                         self['get_friends_param'].page_count = Math.ceil(res.data.total / limit);
                         self['friends_list'] = self['friends_list'].concat(res.data.list);
+                        console.log(self['new_friend']);
                         //消息点亮
                         $.each(self['friends_list'], function (i, v) {
                             if (self['new_friend'].includes(v.wxid)) {
@@ -1483,7 +1486,7 @@
                         //不在当前好友列表里
                         massage.friend.new = 1;
                         vm['friends_list'] = vm['friends_list'].concat([massage.friend]);
-                        new_to_friend = false;
+                        // new_to_friend = false;
                         // console.log(vm['friends_list']);
                     } else {
                         //在当前好友列表
@@ -1514,9 +1517,11 @@
                 }
                 //点亮对应好友
                 if (new_to_friend) {
+                    console.log('点亮对应好友');
                     if (!vm['new_friend'].includes(massage.from_wxid)) {
                         vm['new_friend'].push(massage.from_wxid);
                     }
+                    console.log(vm['new_friend']);
                 }
                 webSocket.send('client_get_msg');
             } else if (massage.event == 'new_friend') {
@@ -1541,10 +1546,22 @@
                     if (!vm['chat_log'][[massage.robot_wxid]][[massage.to]]) {
                         vm['chat_log'][[massage.robot_wxid]][[massage.to]] = [];
                     }
+                    let is_mobile_send = true;
+                    //替换最后一条为send的msg_id
+                    $.each(vm['chat_log'][[massage.robot_wxid]][[massage.to]], function (i, v) {
+                        let first_msg_id = v.msg_id.substr(0, 1);
+                        if (v.type == 'send' && first_msg_id == 's') {
+                            v.msg_id = massage.msg_id;
+                            is_mobile_send = false;
+                        }
+                    });
+                    if (is_mobile_send) {
+                        console.log("是手机端发送");
+                        vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
+                        vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
+                        scroll();
+                    }
 
-                    vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
-                    vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
-                    scroll();
                     $.each(vm['friends_list'], function (i, v) {
                         if (massage.to == v.wxid) {
                             v.last_chat_time = massage.friend.last_chat_time;
@@ -1555,36 +1572,18 @@
                     vm['friends_list'].sort(compare("last_chat_time", "desc"));
                     vm['renderDropdown']();
                     return false;
-                    // let last_key = -1;
-                    //找最后一条模拟ID的发送数据替换ID
-                    //没有则为手机发送直接加入
-                    // $.each(vm['chat_log'][[massage.robot_wxid]][[massage.to]], function (i, v) {
-                    //     let first_msg_id = v.msg_id.substr(0, 1);
-                    //     if (v.type == 'send' && first_msg_id == 's') {
-                    //         v.msg_id = massage.msg_id;
-                    //         last_key = i;
-                    //     }
-                    // });
-                    // console.log(last_key);
-                    // //直接加入
-                    // if (last_key == -1) {
-                    //     console.log('拼入手机发送的');
-                    //     vm['chat_log'][[massage.robot_wxid]][[massage.to]] = vm['chat_log'][[massage.robot_wxid]][[massage.to]].concat([msg]);
-                    //     vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.to]];
-                    //     scroll();
-                    //     $.each(vm['friends_list'], function (i, v) {
-                    //         if (massage.to == v.wxid) {
-                    //             v.last_chat_time = massage.friend.last_chat_time;
-                    //             v.last_chat_content = massage.friend.last_chat_content;
-                    //             return false;
-                    //         }
-                    //     })
-                    //     vm['friends_list'].sort(compare("last_chat_time", "desc"));
-                    // }
-
-                    // console.log(vm['current_chat']);
-                    // vm['renderDropdown']();
+                    
                 }
+            } else if (massage.event == 'delay') {
+                //延迟数据替换
+                $.each(vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]], function (i, v) {
+                    if (v.msg_id == massage.msg_id) {
+                        v.content = massage.msg;
+                        return false;
+                    }
+                });
+                vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+                vm['renderDropdown']();
             }
 
         }

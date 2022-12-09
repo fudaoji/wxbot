@@ -20,6 +20,7 @@ class ChatLog extends Kefu
     protected $isCache = false;
     protected $table = 'chat_log';
 
+
     public function saveChat($data, $bot)
     {
         // "content": {
@@ -39,7 +40,7 @@ class ChatLog extends Kefu
         $key = 'receive_private_chat';
         $time = time();
         $member_model = new BotMember();
-        $member = $member_model->where(['wxid' => $data['from_wxid']])->find();
+        $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换
@@ -74,9 +75,30 @@ class ChatLog extends Kefu
             'type' => 'receive',
             'msg_type' => $data['type'],
         ];
-        $chat_model->partition('p' . $year)->insertGetId($insert_data);
+        $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
         Logger::write("存储数据OK：" . json_encode($msg) . "\n");
+        //视频转换失败
+        if ($data['type'] == 43 && $convert['content'] == '') {
+            $delay_second = 10;
+            $key_delay = 'receive_private_chat_delay';
+            $r_data = [
+                'msg_type' => $data['type'],
+                'msg' => $data['msg'],
+                'delay_second' => 10,
+                'start_time' => $time + $delay_second,
+                'num' => 0,//执行次数
+                'msg_id' => $data['msg_id'],
+                'id' => $id,
+                'bot' => $bot,
+                'client' => $bot['admin_id'], //对应用户id
+                'robot_wxid' => $data['robot_wxid'],
+                'from_wxid' => $data['from_wxid'],
+            ];
+            $redis->rpush($key_delay, json_encode($r_data));
+            Logger::write("视频转换失败,存延迟队列：" . json_encode($r_data) . "\n");
+        }
+
     }
 
     /**
@@ -85,6 +107,7 @@ class ChatLog extends Kefu
      */
     public function convertReceiveMsg($msg = '', $msg_type = 1, $bot = [])
     {
+        model('common/setting')->settings();
         $content = '';
         $last_chat_content = '';
         switch ($msg_type) {
@@ -136,6 +159,7 @@ class ChatLog extends Kefu
                 $last_chat_content = "[名片消息]";
                 break;
             case 43:
+                echo "视频消息"."\n";
                 //视频消息
                 //[mp4=C:\Users\Administrator\Documents\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-11\0777bb2b86444a5ac848234dd1071683.mp4]
                 $bot_model = new Bot();
@@ -143,11 +167,15 @@ class ChatLog extends Kefu
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
                 if ($res['Code'] != 0) {
-                    Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
+                    echo "转换视频消息为base64错误:". json_encode($res) . "\n";
+                    // Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                     $url = '';
                 } else {
+                    echo "转换成功11111"."\n";
                     $base64 = $res['ReturnStr'];
                     $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
+                    // dump('url');
+                    // dump($url);
                 }
                 
                 $content = $url;
@@ -278,7 +306,7 @@ class ChatLog extends Kefu
         $year = date("Y");
         $chat_model = new ChatLog();
         $member_model = new BotMember();
-        $member = $member_model->where(['wxid' => $data['to_wxid']])->find();
+        $member = $member_model->where(['uin' => $bot['uin'],'wxid' => $data['to_wxid']])->find();
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换

@@ -72,26 +72,13 @@ if(! function_exists('get_redis')){
 function execute_sql($sql_path = '')
 {
     $sql = file_get_contents($sql_path);
-    $sql = str_replace("\r", "\n", $sql);
-    $sql = explode(";\n", $sql);
+    $sql = str_replace("\r", ";\n", $sql);
+    //$sql = explode(";\n", $sql);
     $original = '`__PREFIX__';
     $prefix = '`'.config('database.prefix');
     $sql = str_replace("{$original}", "{$prefix}", $sql); //替换掉表前缀
 
-    \think\Db::execute($sql);
-    return  true;
-    foreach ($sql as $k => $value) {
-        $value = trim($value, "\n");
-        if (!empty($value)) {
-            $sql[$k] = $value;
-        }
-    }
-    foreach ($sql as $value) {
-        if (empty($value) || strlen($value) < 2) { //过滤空行
-            continue;
-        }
-        \think\Db::execute($value);
-    }
+    \think\facade\Db::execute($sql);
     return true;
 }
 

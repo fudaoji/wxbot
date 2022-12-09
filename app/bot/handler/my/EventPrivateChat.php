@@ -152,7 +152,7 @@ class EventPrivateChat extends HandlerPrivateChat
                 'status' => 1
             ]
         ]);
-        
+
         $flag = false;
         foreach ($keywords as $keyword){
             if(empty($keyword['wxids'])){

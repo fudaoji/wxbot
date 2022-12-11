@@ -111,23 +111,32 @@
                                     </div>
                                     <div class="layui-col-md9 content">
                                         <blockquote class="layui-elem-quote">
+                                            <!-- 文本消息 -->
                                             <div v-if="item.msg_type == 1" :class="'send_1_'+item.msg_id"
-                                                v-html="item.content"></div>
+                                                v-html="item.content">
+                                            </div>
+                                            <!-- 图片消息 -->
                                             <div v-else-if="item.msg_type == 3" :class="'send_3_'+item.msg_id">
                                                 <div class="layer-photos">
                                                     <img :src="item.content" style="width:100px;"
                                                         :layer-src="item.content">
                                                 </div>
                                             </div>
+                                            <!-- 文件消息 -->
                                             <div v-else-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id">
                                                 <a :href="item.content" target="downloadFile">
                                                     <span>文件：</span>
                                                     <i class="layui-icon layui-icon-file-b"></i>
                                                 </a>
                                             </div>
+                                            <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'send_43_'+item.msg_id">
                                                 <embed :src="item.content" autostart=false width="300px"
                                                     height="400px">
+                                            </div>
+                                            <!-- 语音消息mp3 -->
+                                            <div v-else-if="item.msg_type == 34" :class="'receive_34_'+item.msg_id">
+                                                <embed :src="item.content" autostart=false>
                                             </div>
                                         </blockquote>
                                     </div>
@@ -177,8 +186,18 @@
                                                 <embed :src="item.content" autostart=false>
                                             </div>
                                             <!-- 名片消息 -->
-                                            <div v-else-if="item.msg_type == 42" :class="'receive_42_'+item.msg_id"
-                                                v-html="item.content">
+                                            <div v-else-if="item.msg_type == 42" :class="'receive_42_'+item.msg_id">
+                                                <a href="javascript::">
+                                                    <div class="layui-card">
+                                                        <div class="layui-card-header">
+                                                            <img :src="item.content.headimgurl" style="width:50px;">
+                                                            <span>{{item.content.nickname}}</span>
+                                                        </div>
+                                                        <div class="layui-card-body">
+                                                            <span>个人名片</span>
+                                                        </div>
+                                                    </div>
+                                                </a>
                                             </div>
                                             <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'receive_43_'+item.msg_id">
@@ -1019,8 +1038,10 @@
                             var content = $(dom).find('div').html();
                             var msg_type_class = $(dom).find('div').attr('class');
                             var msg_type_arr = msg_type_class.split("_");
+                            var type = msg_type_arr[0];
                             var msg_type = msg_type_arr[1];
-                            var class_name = $(dom).attr('class');
+                            var msg_id = msg_type_arr[2];
+                            // var class_name = $(dom).find('div').attr('class');
                             if (obj.id === 1) {
                                 self['copySpeechcraft'](content, '.copy_msg');
                             } else if (obj.id === 2) {
@@ -1030,12 +1051,10 @@
                                 // self['share_type'] = msg_type;
                                 console.log('转发');
                             } else if (obj.id === 3) {
-                                let class_name_arr = class_name.split("_");
-                                if (class_name_arr[0] == 'send') {
+                                if (type == 'send') {
                                     layer.msg("只能收藏接收的信息");
                                     return false;
                                 }
-                                let msg_id = class_name_arr[2];
                                 let param = { content: content, msg_type: msg_type, msg_id: msg_id };
                                 self['favoritesMsg'](param);
                                 console.log('收藏');

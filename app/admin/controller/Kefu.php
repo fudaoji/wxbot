@@ -17,6 +17,7 @@ use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Config;
 use app\constants\Bot;
 use ky\Logger;
+
 class Kefu extends Base
 {
     private $emoji;
@@ -117,7 +118,7 @@ class Kefu extends Base
                     $v['auto_pass'] = $auto_pass == '' ? false : $auto_pass;
                     $v['auto_reply'] = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $v['id']], 'auto_reply');
                     $v['new'] = 0;
-                    $list[$k] = $v;               
+                    $list[$k] = $v;
                 }
             } else {
                 $list = [];
@@ -214,7 +215,7 @@ class Kefu extends Base
                 $content = '[链接]';
                 $last_chat_content = '[链接]';
             }
-            $msgid = 'send_'.time() . $this->adminInfo['id'];
+            $msgid = 'send_' . time() . $this->adminInfo['id'];
             // $insert_data = [
             //     'from' => $bot['uin'],
             //     'to' => $post_data['to_wxid'],
@@ -252,6 +253,7 @@ class Kefu extends Base
             $redis = get_redis();
             $key = 'last_chat_log:' . $bot['uin'];
             $hkey = $post_data['to_wxid'];
+            $result['content'] = $last_chat_content;
             $redis->hSet($key, $hkey, json_encode($result));
             $this->success('success', '', $result);
         }
@@ -415,11 +417,14 @@ class Kefu extends Base
     {
         if (request()->isPost()) {
             $post_data = input('post.');
+            $bot_model = new ModelBot();
+            $bot = $bot_model->where(['uin' => $post_data['robot_wxid']])->find();
+            $bot_client = $bot_model->getRobotClient($bot);
             $params = [
                 'robot_wxid' => $post_data['robot_wxid'],
                 'msgid' => $post_data['msg_id'],
             ];
-            $res = $this->botClient->favoritesMsg($params);
+            $res = $bot_client->favoritesMsg($params);
             $this->success('收藏成功');
         }
     }
@@ -508,7 +513,8 @@ class Kefu extends Base
      * 
      * 检查转账是否已同意
      */
-    public function checkTransferMsg(){
+    public function checkTransferMsg()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $msg_id = $post_data['msg_id'];
@@ -526,7 +532,8 @@ class Kefu extends Base
      * 
      * 同意转账
      */
-    public function accepteTransfer(){
+    public function accepteTransfer()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $msg_id = $post_data['msg_id'];
@@ -550,7 +557,8 @@ class Kefu extends Base
      * 
      * 拒绝转账
      */
-    public function rejectTransfer(){
+    public function rejectTransfer()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $msg_id = $post_data['msg_id'];

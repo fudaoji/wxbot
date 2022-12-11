@@ -155,7 +155,7 @@ class ChatLog extends Kefu
                 $last_chat_content = "[语音消息]";
                 break;
             case 42:
-                $content = $msg;
+                $content = $this->convertShareLink($msg);
                 $last_chat_content = "[名片消息]";
                 break;
             case 43:
@@ -252,6 +252,7 @@ class ChatLog extends Kefu
                 //     $content = "[语音消息]";
                 //     break;
                 case 42:
+                    // [名片消息]
                     $content = json_decode($msg,true);
                     break;
                 // case 43:
@@ -369,5 +370,23 @@ class ChatLog extends Kefu
         }
         
         return ['title' => $title, 'des' => $des, 'url' => $url];
+    }
+    /**
+     * 
+     * 转换名片信息
+     * 
+     */
+    public function convertBusinessCard($msg){
+        preg_match('/bigheadimgurl="(.*?)"/ism', $msg, $headimgurl_res);
+        preg_match('/nickname="(.*?)"/ism', $msg, $nickname_res);
+        $headimgurl = '';
+        $nickname = '';
+        if (isset($headimgurl_res[1])) {
+            $headimgurl = $headimgurl_res[1];
+        }
+        if (isset($nickname_res[1])) {
+            $nickname = $nickname_res[1];
+        }
+        return ['headimgurl' => $headimgurl, 'nickname' => $nickname];
     }
 }

@@ -208,6 +208,8 @@ class Kefu extends Base
                 //     'path' => $post_data['content']
                 // ]);
                 $last_chat_content = '[文件]';
+            } else if ($post_data['type'] == 43) { //视频
+                $last_chat_content = '[视频]';
             } else {
                 $content = '[链接]';
                 $last_chat_content = '[链接]';
@@ -276,6 +278,12 @@ class Kefu extends Base
                 ]);
             } else if ($post_data['type'] == 2004) { //文件
                 $bot_client->sendFileToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 43) { //视频
+                $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']

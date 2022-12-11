@@ -125,6 +125,10 @@
                                                     <i class="layui-icon layui-icon-file-b"></i>
                                                 </a>
                                             </div>
+                                            <div v-else-if="item.msg_type == 43" :class="'send_43_'+item.msg_id">
+                                                <embed :src="item.content" autostart=false width="300px"
+                                                    height="400px">
+                                            </div>
                                         </blockquote>
                                     </div>
                                     <div class="layui-col-md1">
@@ -194,8 +198,15 @@
                                                 v-html="item.content">
                                             </div>
                                             <!-- 分享链接 -->
-                                            <div v-else-if="item.msg_type == 49" :class="'receive_49_'+item.msg_id"
-                                                v-html="item.content">
+                                            <div v-else-if="item.msg_type == 49" :class="'receive_49_'+item.msg_id">
+                                                <a :href="item.content.url" target="_blank">
+                                                    <div class="layui-card">
+                                                        <div class="layui-card-header">{{item.content.title}}</div>
+                                                        <div class="layui-card-body">
+                                                            {{item.content.des}}
+                                                        </div>
+                                                    </div>
+                                                </a>
                                             </div>
                                             <!-- 转账 -->
                                             <div v-else-if="item.msg_type == 2000" :class="'receive_2000_'+item.msg_id"
@@ -299,7 +310,8 @@
                                         class="info">{{friend_info.wxid}}</span>
                                 </div>
                                 <div>
-                                    <span class="info">男</span><span class="info">福建厦门</span>
+                                    <span class="info">{{friend_info.sex == 1 ? '男':'女'}}</span>
+                                    <span class="info">{{friend_info.province}}{{friend_info.city}}</span>
                                 </div>
                             </div>
                         </div>
@@ -664,7 +676,7 @@
                 if (self['friend_id'] != item.id) {
                     self['friend_id'] = item.id;
                     this.friend_info = {};
-                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid };
+                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid, sex:item.sex, province:item.province, city:item.city};
                     this.show_info = true;
                     this.show_chat = true;
                     this.friend_wxid = item.wxid;
@@ -956,9 +968,14 @@
                                 layer.alert(res.msg);
                                 return;
                             }
+                            let ext = res.data[0].ext;
                             let url = res.data[0].url;
                             self['content'] = url;
-                            self['content_type'] = 2004;
+                            if (ext == 'mp4') {
+                                self['content_type'] = 43;
+                            } else {
+                                self['content_type'] = 2004;
+                            }
                             self['sendMsg']();
                             self['content_type'] = 1;
                         }
@@ -1417,9 +1434,9 @@
             var massage = eval("(" + event.data + ")");
             //收到私聊信息
             if (massage.event == 'msg') {
-                //转账单独处理
-                if (massage.msg_type == 2000) {
-                    console.log("转账：");
+                //转账/分享链接单独处理
+                if (massage.msg_type == 2000 || massage.msg_type == 49) {
+                    // console.log("转账：");
                     console.log(massage.msg);
                     massage.msg = JSON.parse(massage.msg);
                 }

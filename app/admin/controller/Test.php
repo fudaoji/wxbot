@@ -340,7 +340,7 @@ class Test
             "to_name" => "crush",
             "clientid" => 0,
             "robot_type" => 0,
-            "msg_id" => "753273542".time(),
+            "msg_id" => "753273542" . time(),
         ];
         $botM = new Bot();
         $bot = $botM->where(['id' => 22])->find();
@@ -367,5 +367,55 @@ class Test
         $redis = get_redis();
         $key = 'receive_private_chat';
         $redis->rpush($key, $msg);
+    }
+
+
+    public function sendShareLink()
+    {
+        $msg = (new ChatLog())->where(['id' => 328])->value('content');
+        $convert = $this->convertShareLink($msg);
+        $member_model = new BotMember();
+        $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
+        $last_chat_content = "[分享链接]";
+        $member['last_chat_content'] = $last_chat_content;
+        $member['last_chat_time'] = time();
+        // $msg = json_decode($msg,true);
+        $msg = json_encode([
+            'msg' => $convert,
+            'date' => date("Y-m-d H:i:s"),
+            'msg_id' => '5791531156442254467',
+            'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/sGCpic6YuOTdGoYdslG1riaCj5Vly5P33FbXibfG1guiaXW5OokPr1ltt3nurPpCosQcgibQNic60pond25zBczooPialXG891Lxk19arf3RicLkbdk/0',
+            'from_wxid' => 'wxid_53fet7200ygs22',
+            'robot_wxid' => 'cengzhiyang4294',
+            'client' => 1,
+            'friend' => $member,
+            'msg_type' => 49,
+            'event' => 'msg',
+            'last_chat_content' => $last_chat_content,
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
+        echo "ok";
+    }
+
+    public function convertShareLink($msg){
+        preg_match('/<title><!\[CDATA\[(.*?)]]><\/title>/ism', $msg, $title_res);
+        preg_match('/<des><!\[CDATA\[(.*?)]]><\/des>/ism', $msg, $des_res);
+        preg_match('/<url><!\[CDATA\[(.*?)]]><\/url>/ism', $msg, $url_res);
+        $title = '';
+        $des = '';
+        $url = '';
+        if (isset($title_res[1])) {
+            $title = $title_res[1];
+        }
+        if (isset($des_res[1])) {
+            $des = $des_res[1];
+        }
+        if (isset($url_res[1])) {
+            $url = $url_res[1];
+        }
+        
+        return ['title' => $title, 'des' => $des, 'url' => $url];
     }
 }

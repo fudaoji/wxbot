@@ -155,7 +155,7 @@ class ChatLog extends Kefu
                 $last_chat_content = "[语音消息]";
                 break;
             case 42:
-                $content = "[名片消息]";
+                $content = $msg;
                 $last_chat_content = "[名片消息]";
                 break;
             case 43:
@@ -198,7 +198,7 @@ class ChatLog extends Kefu
                 $last_chat_content = "[地理位置]";
                 break;
             case 49:
-                $content = "[分享链接]";
+                $content = json_encode($this->convertShareLink($msg));
                 $last_chat_content = "[分享链接]";
                 break;
                 //转账
@@ -263,9 +263,9 @@ class ChatLog extends Kefu
                 // case 48:
                 //     $content = "[地理位置]";
                 //     break;
-                // case 49:
-                //     $content = "[分享链接]";
-                //     break;
+                case 49:
+                    $content = json_decode($msg,true);
+                    break;
                 // //转账
                 case 2000:
                     $content = json_decode($msg,true);
@@ -344,5 +344,30 @@ class ChatLog extends Kefu
         $key = 'receive_private_chat';
         $redis->rpush($key, $msg);
         Logger::write("保存发送的消息,推送前端:" . json_encode($msg) . "\n");
+    }
+
+
+    /**
+     * 
+     * 转换分享信息
+     */
+    public function convertShareLink($msg){
+        preg_match('/<title><!\[CDATA\[(.*?)]]><\/title>/ism', $msg, $title_res);
+        preg_match('/<des><!\[CDATA\[(.*?)]]><\/des>/ism', $msg, $des_res);
+        preg_match('/<url><!\[CDATA\[(.*?)]]><\/url>/ism', $msg, $url_res);
+        $title = '';
+        $des = '';
+        $url = '';
+        if (isset($title_res[1])) {
+            $title = $title_res[1];
+        }
+        if (isset($des_res[1])) {
+            $des = $des_res[1];
+        }
+        if (isset($url_res[1])) {
+            $url = $url_res[1];
+        }
+        
+        return ['title' => $title, 'des' => $des, 'url' => $url];
     }
 }

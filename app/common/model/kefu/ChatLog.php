@@ -127,6 +127,7 @@ class ChatLog extends Kefu
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
+                Logger::write("path:".$path."\n");
                 Logger::write("res:".json_encode($res)."\n");
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('pic_' . rand(1000, 9999) . '_' . time(), $base64);

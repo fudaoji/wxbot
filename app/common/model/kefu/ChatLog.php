@@ -155,7 +155,7 @@ class ChatLog extends Kefu
                 $last_chat_content = "[语音消息]";
                 break;
             case 42:
-                $content = $this->convertBusinessCard($msg);
+                $content = json_encode($this->convertBusinessCard($msg));
                 $last_chat_content = "[名片消息]";
                 break;
             case 43:

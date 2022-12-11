@@ -1454,7 +1454,7 @@
             //收到私聊信息
             if (massage.event == 'msg') {
                 //转账/分享链接单独处理
-                if (massage.msg_type == 2000 || massage.msg_type == 49) {
+                if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42) {
                     // console.log("转账：");
                     console.log(massage.msg);
                     massage.msg = JSON.parse(massage.msg);

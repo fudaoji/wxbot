@@ -42,7 +42,8 @@
                     <!-- <button type="button" class="layui-btn layui-btn-normal layui-btn-sm layui-btn-primary" lay-submit="" lay-filter="search"><i class="layui-icon layui-icon-search"></i></button> -->
                 </div>
                 <ul class="layui-menu friends_list" ref="friends_list_ref">
-                    <li v-for="(item, index) in friends_list" :key="item.id">
+                    <li v-for="(item, index) in friends_list" :key="item.id"
+                        :class="item.id == friend_id ? 'layui-menu-item-checked' : ''">
                         <div class="layui-row">
                             <div class=" sel_friend" v-show="sel_friend">
                                 <input type="checkbox" lay-ignore name="sel_friend" lay-skin="primary" :id="item.wxid"
@@ -131,8 +132,7 @@
                                             </div>
                                             <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'send_43_'+item.msg_id">
-                                                <embed :src="item.content" autostart=false width="300px"
-                                                    height="400px">
+                                                <embed :src="item.content" autostart=false width="300px" height="400px">
                                             </div>
                                             <!-- 语音消息mp3 -->
                                             <div v-else-if="item.msg_type == 34" :class="'receive_34_'+item.msg_id">
@@ -187,7 +187,7 @@
                                             </div>
                                             <!-- 名片消息 -->
                                             <div v-else-if="item.msg_type == 42" :class="'receive_42_'+item.msg_id">
-                                                <a href="javascript::">
+                                                <a href="javascript:" @click="openCard(item)">
                                                     <div class="layui-card">
                                                         <div class="layui-card-header">
                                                             <img :src="item.content.headimgurl" style="width:50px;">
@@ -695,7 +695,7 @@
                 if (self['friend_id'] != item.id) {
                     self['friend_id'] = item.id;
                     this.friend_info = {};
-                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid, sex:item.sex, province:item.province, city:item.city};
+                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid, sex: item.sex, province: item.province, city: item.city };
                     this.show_info = true;
                     this.show_chat = true;
                     this.friend_wxid = item.wxid;
@@ -1419,6 +1419,53 @@
                         layer.msg(res.msg);
                     }
                 }, 'json');
+            },
+            openCard(item) {
+                console.log('点击名片');
+                console.log(item);
+                //判断是否是好友
+                let bot_uin = this.bot_info.uin;
+                let check_url = '/admin/kefu/checkFirend';
+                let check_params = { bot_uin: bot_uin, wxid: item.content.username };
+                $.post(check_url, check_params, function (res) {
+                    if (res.code == 1) {
+                        let is_friend = res.data.is_friend;
+                        let html = '<div class="layui-card">' +
+                            '<div class= "layui-card-header" style="height:135px">' +
+                            '<div style="margin:10px">' +
+                            '<div><img src="' + item.content.headimgurl + '" style="width:50px;">' +
+                            '<span style="margin-left:5px">' + item.content.nickname + '</span>';
+                        if (item.content.sex == '男') {
+                            html += '<span><i class="layui-icon layui-icon-male" style="color:#469ddb"></i>   </span></div>';
+                        } else {
+                            html += '<span><i class="layui-icon layui-icon-female" style="color:pink"></i>   </span></div>';
+                        }
+                        html += '<div><span>微信号:' + item.content.username + '</span></div>' +
+                            '<div><span>地区:' + item.content.city + '</span></div>' +
+                            '</div>' +
+                            '</div>' +
+                            '<div class="layui-card-body" style="text-align: center;">';
+                        if (is_friend == 0) {
+                            let chat_item = res.data.friend;
+                            // console.log(chat_item);
+                            html += '<button type="button" lay-submit="" class="layui-btn" onclick="chatwith(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">发消息</button>';
+                        } else {
+                            html += '<button type="button" lay-submit="" class="layui-btn" onclick="addFriend(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">添加到通讯录</button>';
+                        }
+                        html += '</div>' +
+                            '</div >';
+                        // console.log(html);
+                        layer.open({
+                            title: false,
+                            type: 1,
+                            content: html,
+
+                        });
+
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
             }
 
         }
@@ -1456,8 +1503,10 @@
                 //转账/分享链接单独处理
                 if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42) {
                     // console.log("转账：");
-                    console.log(massage.msg);
+                    // console.log(massage.msg);
                     massage.msg = JSON.parse(massage.msg);
+                    // console.log("1234");
+                    console.log(massage.msg);
                 }
                 let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type };
                 console.log(msg);
@@ -1608,7 +1657,7 @@
                     vm['friends_list'].sort(compare("last_chat_time", "desc"));
                     vm['renderDropdown']();
                     return false;
-                    
+
                 }
             } else if (massage.event == 'delay') {
                 //延迟数据替换
@@ -1670,6 +1719,39 @@
 
         vm.$nextTick(() => { document.querySelector('.scroll').scrollIntoView(false); })
 
+    }
+
+    function chatwith(item) {
+        layer.closeAll();
+        //判断是否在当前好友列表
+        $in = false;
+        let time = new Date().getTime()+'';
+        item.last_chat_time = time.substr(0,10);
+        $.each(vm['friends_list'], function (i, v) {
+            if (item.wxid == v.wxid) {
+                $in = true;
+                v.last_chat_time = item.last_chat_time;
+                return false;
+            }
+        })
+        //不在好友列表
+        //更新这个号的聊天时间，置顶聊天
+        if (!$in) {
+            let url = '/admin/kefu/updateChatTime';
+            let param = { uin: vm['bot_uin'], wxid: wxid };
+            $.post(url, param, function (res) {
+                
+            }, 'json');
+            vm['friends_list'] = vm['friends_list'].concat([item]);
+        }
+        vm['friends_list'].sort(compare("last_chat_time", "desc"));
+
+        vm['chatWith'](item);
+    }
+
+    //添加好友
+    function addFriend(item){
+        
     }
     // });
 </script>

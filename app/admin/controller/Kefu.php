@@ -253,7 +253,8 @@ class Kefu extends Base
             $redis = get_redis();
             $key = 'last_chat_log:' . $bot['uin'];
             $hkey = $post_data['to_wxid'];
-            $result['content'] = $last_chat_content;
+            $h_data = $result;
+            $h_data['content'] = $last_chat_content;
             $redis->hSet($key, $hkey, json_encode($result));
             $this->success('success', '', $result);
         }
@@ -571,6 +572,47 @@ class Kefu extends Base
                 'receiver_pay_id' => $post_data['content']['receiver_pay_id'],
             ]);
             $this->success('success');
+        }
+    }
+
+    /**
+     * 
+     * 判断是否是好友
+     */
+    public function checkFirend(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $member_model = new BotMember();
+            $is_friend = 0;
+            $friend = [];
+            if ($friend = $member_model->where(['uin' => $post_data['bot_uin'], 'wxid' => $post_data['wxid']])->find()) {
+                $is_friend = 1;
+                $redis = get_redis();
+                $key = 'last_chat_log:' . $post_data['bot_uin'];
+                $chat_log = $redis->hGetAll($key);
+                    $hkey = $post_data['wxid'];
+                    $last_chat_content = '';
+                    if (isset($chat_log[$hkey])) {
+                        $log = json_decode($chat_log[$hkey], true);
+                        $last_chat_content = $log['content'];
+                    }
+                $friend['last_chat_content'] = $last_chat_content;
+            }
+            $this->success('success','',['is_friend' => $is_friend, 'friend' => $friend]);
+        }
+    }
+
+    /**
+     * 
+     * 更新好友聊天时间为最新
+     */
+    public function updateChatTime(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $member_model = new BotMember();
+            $time = time();
+            $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['wxid']])->update(['last_chat_time' => $time]);
+            $this->success('success','',['time' => $time]);
         }
     }
 }

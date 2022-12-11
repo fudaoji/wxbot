@@ -155,7 +155,8 @@ class ChatLog extends Kefu
                 $last_chat_content = "[语音消息]";
                 break;
             case 42:
-                $content = json_encode($this->convertBusinessCard($msg));
+                $convert = $this->convertBusinessCard($msg);
+                $content = json_encode($convert);
                 $last_chat_content = "[名片消息]";
                 break;
             case 43:
@@ -379,14 +380,34 @@ class ChatLog extends Kefu
     public function convertBusinessCard($msg){
         preg_match('/bigheadimgurl="(.*?)"/ism', $msg, $headimgurl_res);
         preg_match('/nickname="(.*?)"/ism', $msg, $nickname_res);
+        preg_match('/username="(.*?)"/ism', $msg, $username_res);
+        preg_match('/sex="(.*?)"/ism', $msg, $sex_res);
+        preg_match('/province="(.*?)"/ism', $msg, $province_res);
+        preg_match('/city="(.*?)"/ism', $msg, $city_res);
         $headimgurl = '';
         $nickname = '';
+        $username = '';
+        $sex = '';
+        $province = ''; 
+        $city='';
         if (isset($headimgurl_res[1])) {
             $headimgurl = $headimgurl_res[1];
         }
         if (isset($nickname_res[1])) {
             $nickname = $nickname_res[1];
         }
-        return ['headimgurl' => $headimgurl, 'nickname' => $nickname];
+        if (isset($username_res[1])) {
+            $username = $username_res[1];
+        }
+        if (isset($sex_res[1])) {
+            $sex = $sex_res[1] == 1 ? '男' : '女';
+        }
+        if (isset($province_res[1])) {
+            $province = $province_res[1];
+        }
+        if (isset($city_res[1])) {
+            $city = $city_res[1];
+        }
+        return ['headimgurl' => $headimgurl, 'nickname' => $nickname, 'username' => $username, 'sex' => $sex, 'province' => $province, 'city' => $city];
     }
 }

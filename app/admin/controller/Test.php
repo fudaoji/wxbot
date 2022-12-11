@@ -400,7 +400,8 @@ class Test
         echo "ok";
     }
 
-    public function convertShareLink($msg){
+    public function convertShareLink($msg)
+    {
         preg_match('/<title><!\[CDATA\[(.*?)]]><\/title>/ism', $msg, $title_res);
         preg_match('/<des><!\[CDATA\[(.*?)]]><\/des>/ism', $msg, $des_res);
         preg_match('/<url><!\[CDATA\[(.*?)]]><\/url>/ism', $msg, $url_res);
@@ -416,7 +417,7 @@ class Test
         if (isset($url_res[1])) {
             $url = $url_res[1];
         }
-        
+
         return ['title' => $title, 'des' => $des, 'url' => $url];
     }
 
@@ -425,34 +426,56 @@ class Test
      * 
      * 发送名片
      */
-    public function sendBusinessCard(){
+    public function sendBusinessCard()
+    {
         $msg = '<?xml version="1.0"?>
         <msg bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/5Wt9sZZ0leGpUAiaC9kZUnUqHc4QWPibic6lz6P5ic7T91qtiarOsMjTSUmh5GQOZgSv68XARWMfVvcD4tvLkyiabkDds2jbOicIpKFoqhY4BF6qMk/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/5Wt9sZZ0leGpUAiaC9kZUnUqHc4QWPibic6lz6P5ic7T91qtiarOsMjTSUmh5GQOZgSv68XARWMfVvcD4tvLkyiabkDds2jbOicIpKFoqhY4BF6qMk/132" username="cengzhiyang4294" nickname="zengzhiyang" fullpy="zengzhiyang" shortpy="" alias="" imagestatus="3" scene="17" province="冰岛" city="冰岛" sign="" sex="1" certflag="0" certinfo="" brandIconUrl="" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="0" regionCode="IS" biznamecardinfo="" antispamticket="cengzhiyang4294" />
         ';
-        $convert = $this->convertBusinessCard($msg);
-        $last_chat_content = '向你推荐了'.$convert['nickname'];
-        $msg_type = 42;
-        $this->send($convert, $last_chat_content,$msg_type);
-        
 
+        $convert = $this->convertBusinessCard($msg);
+        $last_chat_content = '向你推荐了' . $convert['nickname'];
+        $msg_type = 42;
+        $this->send(json_encode($convert), $last_chat_content, $msg_type);
     }
 
-    public function convertBusinessCard($msg){
+    public function convertBusinessCard($msg)
+    {
         preg_match('/bigheadimgurl="(.*?)"/ism', $msg, $headimgurl_res);
         preg_match('/nickname="(.*?)"/ism', $msg, $nickname_res);
+        preg_match('/username="(.*?)"/ism', $msg, $username_res);
+        preg_match('/sex="(.*?)"/ism', $msg, $sex_res);
+        preg_match('/province="(.*?)"/ism', $msg, $province_res);
+        preg_match('/city="(.*?)"/ism', $msg, $city_res);
         $headimgurl = '';
         $nickname = '';
+        $username = '';
+        $sex = '';
+        $province = ''; 
+        $city='';
         if (isset($headimgurl_res[1])) {
             $headimgurl = $headimgurl_res[1];
         }
         if (isset($nickname_res[1])) {
             $nickname = $nickname_res[1];
         }
-        return ['headimgurl' => $headimgurl, 'nickname' => $nickname];
+        if (isset($username_res[1])) {
+            $username = $username_res[1];
+        }
+        if (isset($sex_res[1])) {
+            $sex = $sex_res[1] == 1 ? '男' : '女';
+        }
+        if (isset($province_res[1])) {
+            $province = $province_res[1];
+        }
+        if (isset($city_res[1])) {
+            $city = $city_res[1];
+        }
+        return ['headimgurl' => $headimgurl, 'nickname' => $nickname, 'username' => $username, 'sex' => $sex, 'province' => $province, 'city' => $city];
     }
 
 
-    public function send($convert,$last_chat_content,$msg_type){
+    public function send($convert, $last_chat_content, $msg_type)
+    {
         $member_model = new BotMember();
         $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
         $member['last_chat_content'] = $last_chat_content;

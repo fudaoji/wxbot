@@ -1445,7 +1445,7 @@
                             '</div>' +
                             '</div>' +
                             '<div class="layui-card-body" style="text-align: center;">';
-                        if (is_friend == 0) {
+                        if (is_friend == 1) {
                             let chat_item = res.data.friend;
                             // console.log(chat_item);
                             html += '<button type="button" lay-submit="" class="layui-btn" onclick="chatwith(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">发消息</button>';

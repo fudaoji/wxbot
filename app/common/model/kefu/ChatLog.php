@@ -121,12 +121,13 @@ class ChatLog extends Kefu
                 //转base64上传七牛云获取url地址
                 //[pic=E:\北遇框架(兼容我的框架)\Data\wxid_eko8u5yga0jr22\4d6eb5054e05cef3ac288ca8423c6805.jpg]
             case 3:
+                Logger::write("收到图片消息"."\n");
                 echo "收到图片消息"."\n";
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
-                dump($res);
+                Logger::write("res:".json_encode($res)."\n");
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('pic_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;

@@ -408,6 +408,8 @@ class Kefu extends Base
                     'value' => $v
                 ]);
             }
+            //刷新缓存
+            $this->configM->getOneByMap(['admin_id' => $this->adminInfo['id'], 'key' => $k, 'bot_id' => $post_data['id']],  true, true);
         }
         $this->success('数据保存成功');
     }

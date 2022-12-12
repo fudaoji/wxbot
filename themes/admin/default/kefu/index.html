@@ -130,13 +130,38 @@
                                                     <i class="layui-icon layui-icon-file-b"></i>
                                                 </a>
                                             </div>
+                                            <!-- 名片消息 -->
+                                            <div v-else-if="item.msg_type == 42" :class="'send_42_'+item.msg_id">
+                                                <a href="javascript:" @click="openCard(item)">
+                                                    <div class="layui-card">
+                                                        <div class="layui-card-header">
+                                                            <img :src="item.content.headimgurl" style="width:50px;">
+                                                            <span>{{item.content.nickname}}</span>
+                                                        </div>
+                                                        <div class="layui-card-body">
+                                                            <span>个人名片</span>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
                                             <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'send_43_'+item.msg_id">
                                                 <embed :src="item.content" autostart=false width="300px" height="400px">
                                             </div>
                                             <!-- 语音消息mp3 -->
-                                            <div v-else-if="item.msg_type == 34" :class="'receive_34_'+item.msg_id">
+                                            <div v-else-if="item.msg_type == 34" :class="'send_34_'+item.msg_id">
                                                 <embed :src="item.content" autostart=false>
+                                            </div>
+                                            <!-- 分享链接 -->
+                                            <div v-else-if="item.msg_type == 49" :class="'send_49_'+item.msg_id">
+                                                <a :href="item.content.url" target="_blank">
+                                                    <div class="layui-card">
+                                                        <div class="layui-card-header">{{item.content.title}}</div>
+                                                        <div class="layui-card-body">
+                                                            {{item.content.des}}
+                                                        </div>
+                                                    </div>
+                                                </a>
                                             </div>
                                         </blockquote>
                                     </div>

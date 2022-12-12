@@ -203,7 +203,8 @@ class ChatLog extends Kefu
                 $last_chat_content = "[地理位置]";
                 break;
             case 49:
-                $content = json_encode($this->convertShareLink($msg));
+                // $content = json_encode($this->convertShareLink($msg));
+                $content = $msg;
                 $last_chat_content = "[分享链接]";
                 break;
                 //转账

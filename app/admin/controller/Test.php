@@ -372,8 +372,10 @@ class Test
 
     public function sendShareLink()
     {
-        $msg = (new ChatLog())->where(['id' => 328])->value('content');
+        $msg = (new ChatLog())->where(['id' => 420])->value('content');
+        dump($msg);
         $convert = $this->convertShareLink($msg);
+        dump($convert);exit;
         $last_chat_content = "[分享链接]";
         $msg_type = 49;
         $member_model = new BotMember();

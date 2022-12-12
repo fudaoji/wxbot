@@ -9,10 +9,10 @@
 
 namespace app\bot\handler\my;
 
-use app\bot\handler\Handler;
+use app\bot\handler\HandlerFriendVerify;
 use ky\Logger;
 
-class EventFriendVerify extends Handler
+class EventFriendVerify extends HandlerFriendVerify
 {
     /**
      * 设备回调消息接收器
@@ -45,7 +45,8 @@ class EventFriendVerify extends Handler
     }
      */
     public function handle(){
-        Logger::error($this->content);
+        $this->addon();
+        // Logger::error($this->content);
     }
 
     /*============好友请求几种情况=================================*/

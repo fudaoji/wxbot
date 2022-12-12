@@ -56,7 +56,7 @@ class Kefu extends Base
             Logger::write("content".json_encode($content)."\n");
             $v1 = $content['json_msg']['v1'];
             $v2 = $content['json_msg']['v2'];
-            $type = $content['json_msg']['type'];
+            $type = $content['type'];
             $res = $botClient->agreeFriendVerify([
                 'robot_wxid' => $content['robot_wxid'],
                 'v1' => $v1,

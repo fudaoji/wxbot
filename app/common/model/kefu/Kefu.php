@@ -53,6 +53,7 @@ class Kefu extends Base
         Logger::write("好友自动通过Config:---".json_encode($config)."\n");
         if ($config['auto_pass']) {
             Logger::write("好友自动通过---"."\n");
+            Logger::write("content".json_encode($content)."\n");
             $v1 = $content['json_msg']['v1'];
             $v2 = $content['json_msg']['v2'];
             $type = $content['json_msg']['type'];

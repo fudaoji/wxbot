@@ -222,6 +222,11 @@ class ChatLog extends Kefu
                 $content = "[群邀请]";
                 $last_chat_content = "[群邀请]";
                 break;
+            case 10000:
+                //可能是系统消息
+                $content = $msg;
+                $last_chat_content = $msg;
+                break;
             default:
                 $content = "[链接]";
                 $last_chat_content = "[链接]";

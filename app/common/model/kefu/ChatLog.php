@@ -367,14 +367,25 @@ class ChatLog extends Kefu
         $url = '';
         if (isset($title_res[1])) {
             $title = $title_res[1];
+        } else {
+            preg_match('/<title>(.*?)<\/title>/ism', $msg, $title_res2);
+            if (isset($title_res2[1])) {
+                $title = $title_res[2];
+            }
         }
         if (isset($des_res[1])) {
             $des = $des_res[1];
+        } else {
+            preg_match('/<des>(.*?)<\/des>/ism', $msg, $des_res2);
+            $des = $des_res2[1];
         }
         if (isset($url_res[1])) {
             $url = $url_res[1];
+        } else {
+            preg_match('/<url>(.*?)<\/url>/ism', $msg, $url_res2);
+            $url = $url_res2[1];
         }
-        
+
         return ['title' => $title, 'des' => $des, 'url' => $url];
     }
     /**

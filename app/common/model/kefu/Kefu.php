@@ -13,6 +13,8 @@ namespace app\common\model\kefu;
 use app\admin\controller\Kefu as ControllerKefu;
 use app\common\model\Base;
 use app\admin\model\BotMember;
+use app\admin\model\Bot as BotM;
+use app\common\model\kefu\ChatLog;
 use ky\Logger;
 class Kefu extends Base
 {
@@ -91,10 +93,11 @@ class Kefu extends Base
             $auto_reply = trim($config['auto_reply']);
             if($auto_reply) {
                 Logger::write("发送自动回复"."\n");
-                $ControllerKefu = new ControllerKefu();
+                // $ControllerKefu = new ControllerKefu();
                 $param = ['bot_id' => $bot['id'],'type' => 1, 'to_wxid' => $content['from_wxid'], 'content' => $auto_reply, 'friend_id' => $id];
-                $ControllerKefu->sendMsg($param);
-                $ControllerKefu->sendMsgPost($param);
+                // $ControllerKefu->sendMsg($param);
+                // $ControllerKefu->sendMsgPost($param);
+                $this->sendMsg($param);
                 //发一条好友请求事件到前端，刷新好友列表
                 $this->sendToClinet([
                     'event' => 'new_friend',
@@ -120,5 +123,89 @@ class Kefu extends Base
         ]);
         $redis->rpush($key,$msg);
         return true;
+    }
+
+    public function sendMsg($post_data){
+        $bot_model = new BotM();
+        $chat_model = new ChatLog();
+        $member_model = new BotMember();
+        $date = date("Y-m-d H:i:s");
+        $year = date("Y");
+        $time = time();
+        $bot = $bot_model->getOne($post_data['bot_id']);
+        $content = $post_data['content'];
+        // $content = $chat_model->convertMsg($content, $post_data['type']);
+        // $last_chat_content = $content;
+        $bot_client = $bot_model->getRobotClient($bot);
+        if ($post_data['type'] == 1) { //文本
+            $bot_client->sendTextToFriends([
+                'robot_wxid' => $bot['uin'],
+                'to_wxid' => $post_data['to_wxid'],
+                'msg' => $post_data['content']
+            ]);
+            // $content = $this->emojiM->emojiText($post_data['content']);
+            $last_chat_content = $content;
+        } else if ($post_data['type'] == 3) { //图片
+            // $bot_client->sendImgToFriends([
+            //     'robot_wxid' => $bot['uin'],
+            //     'to_wxid' => $post_data['to_wxid'],
+            //     'path' => $post_data['content']
+            // ]);
+            $last_chat_content = '[图片]';
+        } else if ($post_data['type'] == 2004) { //文件
+            // $bot_client->sendFileToFriends([
+            //     'robot_wxid' => $bot['uin'],
+            //     'to_wxid' => $post_data['to_wxid'],
+            //     'path' => $post_data['content']
+            // ]);
+            $last_chat_content = '[文件]';
+        } else if ($post_data['type'] == 43) { //视频
+            $last_chat_content = '[视频]';
+        } else {
+            $content = '[链接]';
+            $last_chat_content = '[链接]';
+        }
+        $msgid = 'send_' . time() . $bot['admin_id'];
+        // $insert_data = [
+        //     'from' => $bot['uin'],
+        //     'to' => $post_data['to_wxid'],
+        //     'create_time' => $time,
+        //     'content' => $post_data['content'],
+        //     'year' => $year,
+        //     'from_headimg' => $bot['headimgurl'],
+        //     'msg_id' => $msgid,
+        //     'type' => 'send',
+        //     'msg_type' => $post_data['type'] //文本
+        // ];
+        // $chat_model->partition('p' . $year)->insertGetId($insert_data);
+        //更改好友最后聊天时间
+        if (isset($post_data['friend_id']) && $post_data['friend_id'] > 0) {
+            $friend_id = $post_data['friend_id'];
+        } else {
+            $friend_id = $member_model->where(['uin' => $bot['uin'], 'wxid' => $post_data['to_wxid']])->order(['id' => 'desc'])->value('id');
+        }
+        $member_model->where(['id' => $friend_id])->update(['last_chat_time' => $time]);
+        $friend = $member_model->where(['id' => $friend_id])->find();
+        $friend['last_chat_content'] = $last_chat_content;
+
+        $result = [
+            'msg_id' => $msgid,
+            'date' => $date,
+            'content' => $content,
+            'type' => 'send',
+            'class' => 'my_chat_content',
+            'quote' => $post_data['quote'] ?? '',
+            'headimgurl' => $bot['headimgurl'],
+            'friend' => $friend,
+            'msg_type' => $post_data['type'],
+        ];
+        //最后一条聊天记录放redis
+        $redis = get_redis();
+        $key = 'last_chat_log:' . $bot['uin'];
+        $hkey = $post_data['to_wxid'];
+        $h_data = $result;
+        $h_data['content'] = $last_chat_content;
+        $redis->hSet($key, $hkey, json_encode($result));
+        Logger::write("自动回复发送成功"."\n");
     }
 }

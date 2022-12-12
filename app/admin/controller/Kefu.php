@@ -260,10 +260,12 @@ class Kefu extends Base
         }
     }
 
-    public function sendMsgPost()
+    public function sendMsgPost($post_data = [])
     {
         if (request()->isPost()) {
-            $post_data = input('post.');
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);

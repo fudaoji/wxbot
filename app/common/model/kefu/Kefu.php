@@ -92,6 +92,7 @@ class Kefu extends Base
                 $ControllerKefu = new ControllerKefu();
                 $param = ['bot_id' => $bot['id'],'type' => 1, 'to_wxid' => $content['from_wxid'], 'content' => $auto_reply, 'friend_id' => $id];
                 $ControllerKefu->sendMsg($param);
+                $ControllerKefu->sendMsgPost($param);
                 //发一条好友请求事件到前端，刷新好友列表
                 $this->sendToClinet([
                     'event' => 'new_friend',

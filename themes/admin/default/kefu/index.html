@@ -1106,6 +1106,13 @@
                     id: this.bot_id,
                     auto_reply: auto_reply,
                 }
+                //更新自动回复
+                $.each(this.bot_list,function(i,v){
+                    if (v.id == this.bot_id) {
+                        v.auto_reply = params.auto_reply;
+                        return false;
+                    }
+                });
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
                         layer.msg('保存成功');
@@ -1119,6 +1126,13 @@
                     id: this.bot_id,
                     auto_pass: this.auto_pass ? 1 : 0,
                 }
+                //更新自动回复
+                $.each(this.bot_list,function(i,v){
+                    if (v.id == this.bot_id) {
+                        v.auto_pass = params.auto_pass;
+                        return false;
+                    }
+                });
                 $.post(url, params, function (res) {
                     if (res.code == 1) {
                         layer.msg('保存成功');

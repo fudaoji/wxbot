@@ -114,9 +114,9 @@ class Kefu extends Base
                     true
                 );
                 foreach ($list as $k => $v) {
-                    $auto_pass = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $v['id']], 'auto_pass');
+                    $auto_pass = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $v['id']], 'auto_pass', true);
                     $v['auto_pass'] = $auto_pass == '' ? false : $auto_pass;
-                    $v['auto_reply'] = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $v['id']], 'auto_reply');
+                    $v['auto_reply'] = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $v['id']], 'auto_reply', true);
                     $v['new'] = 0;
                     $list[$k] = $v;
                 }
@@ -408,8 +408,6 @@ class Kefu extends Base
                     'value' => $v
                 ]);
             }
-            //刷新缓存
-            $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $post_data['id']], $k, true);
         }
         $this->success('数据保存成功');
     }

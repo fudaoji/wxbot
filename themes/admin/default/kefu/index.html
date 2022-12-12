@@ -1108,7 +1108,7 @@
                 }
                 //更新自动回复
                 $.each(this.bot_list,function(i,v){
-                    if (v.id == this.bot_id) {
+                    if (v.id == params.id) {
                         v.auto_reply = params.auto_reply;
                         return false;
                     }
@@ -1128,7 +1128,7 @@
                 }
                 //更新自动回复
                 $.each(this.bot_list,function(i,v){
-                    if (v.id == this.bot_id) {
+                    if (v.id == params.id) {
                         v.auto_pass = params.auto_pass;
                         return false;
                     }

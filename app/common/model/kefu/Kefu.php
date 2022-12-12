@@ -13,6 +13,7 @@ namespace app\common\model\kefu;
 use app\admin\controller\Kefu as ControllerKefu;
 use app\common\model\Base;
 use app\admin\model\BotMember;
+use ky\Logger;
 class Kefu extends Base
 {
     protected $isCache = false;
@@ -50,6 +51,7 @@ class Kefu extends Base
         //         "type": 3
         //     },  // 友验证信息JSON(群内添加时，包含群id) (名片推荐添加时，包含推荐人id及昵称) (微信号、手机号搜索等添加时,具体JSON结构请查看日志）
         if ($config['auto_pass']) {
+            Logger::write("好友自动通过---");
             $v1 = $content['json_msg']['v1'];
             $v2 = $content['json_msg']['v2'];
             $type = $content['json_msg']['type'];
@@ -59,6 +61,7 @@ class Kefu extends Base
                 'v2' => $v2,
                 'type' => $type
             ]);
+            Logger::write("好友自动通过接口返回:".json_encode($res));
             //插入用户表
             $bot_menber_model = new BotMember();
             if($data = $bot_menber_model->getOneByMap(['uin' => $bot['uin'], 'wxid' => $content['json_msg']['from_wxid']], ['id'])){
@@ -81,9 +84,10 @@ class Kefu extends Base
                     'headimgurl' => $content['json_msg']['headimgurl'],
                 ]);
             }
-            //发生自动回复
+            //发送自动回复
             $auto_reply = trim($config['auto_reply']);
             if($auto_reply) {
+                Logger::write("发送自动回复");
                 $ControllerKefu = new ControllerKefu();
                 $param = ['bot_id' => $bot['id'],'type' => 1, 'to_wxid' => $content['from_wxid'], 'content' => $auto_reply, 'friend_id' => $id];
                 $ControllerKefu->sendMsg($param);

@@ -370,7 +370,7 @@ class ChatLog extends Kefu
         } else {
             preg_match('/<title>(.*?)<\/title>/ism', $msg, $title_res2);
             if (isset($title_res2[1])) {
-                $title = $title_res[2];
+                $title = $title_res[1];
             }
         }
         if (isset($des_res[1])) {

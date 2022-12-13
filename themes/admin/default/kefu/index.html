@@ -1479,16 +1479,21 @@
                         } else {
                             html += '<span><i class="layui-icon layui-icon-female" style="color:pink"></i>   </span></div>';
                         }
-                        html += '<div><span>微信号:' + item.content.username + '</span></div>' +
+                        
+                        if (is_friend == 1) {
+                            html += '<div><span>微信号:' + item.content.username + '</span></div>' +
                             '<div><span>地区:' + item.content.city + '</span></div>' +
                             '</div>' +
                             '</div>' +
                             '<div class="layui-card-body" style="text-align: center;">';
-                        if (is_friend == 1) {
                             let chat_item = res.data.friend;
                             // console.log(chat_item);
                             html += '<button type="button" lay-submit="" class="layui-btn" onclick="chatwith(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">发消息</button>';
                         } else {
+                            html += '<div><span>地区:' + item.content.city + '</span></div>' +
+                            '</div>' +
+                            '</div>' +
+                            '<div class="layui-card-body" style="text-align: center;">';
                             html += '<button type="button" lay-submit="" class="layui-btn" onclick="addFriend(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">添加到通讯录</button>';
                         }
                         html += '</div>' +

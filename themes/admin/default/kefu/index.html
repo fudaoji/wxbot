@@ -1813,7 +1813,7 @@
         console.log(item);
         layer.closeAll();
         let url = '/admin/kefu/addFriend';
-        let param = { uin: vm['bot_uin'], wxid: item.content.username, bot_id: vm['bot_id'], msg: item.nickname };
+        let param = { uin: vm['bot_uin'], wxid: item.content.username, bot_id: vm['bot_id'], msg: item.content.nickname };
         $.post(url, param, function (res) {
             if (res.code == 1) {
                 layer.msg('已发送请求!');

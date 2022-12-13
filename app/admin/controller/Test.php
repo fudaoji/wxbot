@@ -523,7 +523,7 @@ class Test
         // msg: 假发教父：尚新假发创始人 郑启示
         $post_data = [
             'uin' => 'wxid_5fprdytoi1k612',
-            'content' => 'v3_020b3826fd03010000000000da49007ecff1d0000000501ea9a3dba12f95f6b60a0536a1adb6c5611a1f1a3700022df4a80f69c70d82b672be1adb5a9dc873492e572f9c6daed58594f4160913d24ab3b0ef27f1b35d27a17568512a2b7d62398577'
+            'content' => '假发教父：尚新假发创始人 郑启示'
         ];
         $bot_model = new Bot();
         $bot = $bot_model->getOne(54);

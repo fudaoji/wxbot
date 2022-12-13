@@ -1479,21 +1479,21 @@
                         } else {
                             html += '<span><i class="layui-icon layui-icon-female" style="color:pink"></i>   </span></div>';
                         }
-                        
+
                         if (is_friend == 1) {
                             html += '<div><span>微信号:' + item.content.username + '</span></div>' +
-                            '<div><span>地区:' + item.content.city + '</span></div>' +
-                            '</div>' +
-                            '</div>' +
-                            '<div class="layui-card-body" style="text-align: center;">';
+                                '<div><span>地区:' + item.content.city + '</span></div>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="layui-card-body" style="text-align: center;">';
                             let chat_item = res.data.friend;
                             // console.log(chat_item);
                             html += '<button type="button" lay-submit="" class="layui-btn" onclick="chatwith(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">发消息</button>';
                         } else {
                             html += '<div><span>地区:' + item.content.city + '</span></div>' +
-                            '</div>' +
-                            '</div>' +
-                            '<div class="layui-card-body" style="text-align: center;">';
+                                '</div>' +
+                                '</div>' +
+                                '<div class="layui-card-body" style="text-align: center;">';
                             html += '<button type="button" lay-submit="" class="layui-btn" onclick="addFriend(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">添加到通讯录</button>';
                         }
                         html += '</div>' +
@@ -1540,6 +1540,7 @@
     //监听消息
     webSocket.onmessage = function (event) {
         if (event.data) {
+            speak_cn('收到消息');
             console.log('收到客户端消息:' + event.data);
             var massage = eval("(" + event.data + ")");
             //收到私聊信息
@@ -1797,7 +1798,7 @@
     function addFriend(item) {
         layer.closeAll();
         let url = '/admin/kefu/addFriend';
-        let param = { uin: vm['bot_uin'], wxid: item.wxid,bot_id: vm['bot_id'],msg:item.nickname};
+        let param = { uin: vm['bot_uin'], wxid: item.wxid, bot_id: vm['bot_id'], msg: item.nickname };
         $.post(url, param, function (res) {
             if (res.code == 1) {
                 layer.msg('已发送请求!');
@@ -1805,6 +1806,17 @@
                 layer.alert(res.msg);
             }
         }, 'json');
+    }
+
+    //语音播报
+    function speak_cn(ttsText) {
+        //var mess = document.getElementById('ttsText').value;
+        var msg = new SpeechSynthesisUtterance(ttsText);
+        msg.volume = 100;
+        msg.rate = 1;
+        msg.pitch = 1.5;
+        console.log(msg);
+        window.speechSynthesis.speak(msg);
     }
     // });
 </script>

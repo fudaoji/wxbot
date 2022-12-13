@@ -639,7 +639,7 @@ class Kefu extends Base
                 'robot_wxid' => $post_data['uin'],
                 'v1' => $post_data['wxid'],
                 'msg' => $post_data['msg'],
-                'scene' => Bot::SCENE_WXNUM,
+                'scene' => Bot::SCENE_CARD,
                 'type' => 1
             ]);
             Log::write('添加好友:---------'.json_encode($res));

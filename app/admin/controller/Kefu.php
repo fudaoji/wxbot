@@ -17,6 +17,7 @@ use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Config;
 use app\constants\Bot;
 use ky\Logger;
+use think\facade\Log;
 
 class Kefu extends Base
 {
@@ -581,7 +582,8 @@ class Kefu extends Base
      * 
      * 判断是否是好友
      */
-    public function checkFirend(){
+    public function checkFirend()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $member_model = new BotMember();
@@ -592,15 +594,15 @@ class Kefu extends Base
                 $redis = get_redis();
                 $key = 'last_chat_log:' . $post_data['bot_uin'];
                 $chat_log = $redis->hGetAll($key);
-                    $hkey = $post_data['wxid'];
-                    $last_chat_content = '';
-                    if (isset($chat_log[$hkey])) {
-                        $log = json_decode($chat_log[$hkey], true);
-                        $last_chat_content = $log['content'];
-                    }
+                $hkey = $post_data['wxid'];
+                $last_chat_content = '';
+                if (isset($chat_log[$hkey])) {
+                    $log = json_decode($chat_log[$hkey], true);
+                    $last_chat_content = $log['content'];
+                }
                 $friend['last_chat_content'] = $last_chat_content;
             }
-            $this->success('success','',['is_friend' => $is_friend, 'friend' => $friend]);
+            $this->success('success', '', ['is_friend' => $is_friend, 'friend' => $friend]);
         }
     }
 
@@ -608,13 +610,45 @@ class Kefu extends Base
      * 
      * 更新好友聊天时间为最新
      */
-    public function updateChatTime(){
+    public function updateChatTime()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $member_model = new BotMember();
             $time = time();
             $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['wxid']])->update(['last_chat_time' => $time]);
-            $this->success('success','',['time' => $time]);
+            $this->success('success', '', ['time' => $time]);
+        }
+    }
+    /**
+     * 
+     * 添加好友
+     */
+    public function addFriend()
+    {
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $bot_model = $this->botM;
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            // $account = $bot_client->searchAccount([
+            //     'robot_wxid' => $post_data['uin'],
+            //     'content' => $post_data['wxid']
+            // ]);
+            $res = $bot_client->addFriendBySearch([
+                'robot_wxid' => $post_data['uin'],
+                'v1' => $post_data['wxid'],
+                'msg' => $post_data['msg'],
+                'scene' => Bot::SCENE_WXNUM,
+                'type' => 1
+            ]);
+            if ($res['Code'] != 0) {
+                $this->error(json_encode($res));
+                Log::write('添加好友错误:---------'.json_encode($res));
+            } else {
+                $this->success('success');
+            }
+            
         }
     }
 }

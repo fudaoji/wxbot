@@ -1107,7 +1107,7 @@
                     auto_reply: auto_reply,
                 }
                 //更新自动回复
-                $.each(this.bot_list,function(i,v){
+                $.each(this.bot_list, function (i, v) {
                     if (v.id == params.id) {
                         v.auto_reply = params.auto_reply;
                         return false;
@@ -1127,7 +1127,7 @@
                     auto_pass: this.auto_pass ? 1 : 0,
                 }
                 //更新自动回复
-                $.each(this.bot_list,function(i,v){
+                $.each(this.bot_list, function (i, v) {
                     if (v.id == params.id) {
                         v.auto_pass = params.auto_pass;
                         return false;
@@ -1764,8 +1764,8 @@
         layer.closeAll();
         //判断是否在当前好友列表
         $in = false;
-        let time = new Date().getTime()+'';
-        item.last_chat_time = time.substr(0,10);
+        let time = new Date().getTime() + '';
+        item.last_chat_time = time.substr(0, 10);
         $.each(vm['friends_list'], function (i, v) {
             if (item.wxid == v.wxid) {
                 $in = true;
@@ -1779,7 +1779,7 @@
             let url = '/admin/kefu/updateChatTime';
             let param = { uin: vm['bot_uin'], wxid: wxid };
             $.post(url, param, function (res) {
-                
+
             }, 'json');
             vm['friends_list'] = vm['friends_list'].concat([item]);
         }
@@ -1789,8 +1789,17 @@
     }
 
     //添加好友
-    function addFriend(item){
-        
+    function addFriend(item) {
+        layer.closeAll();
+        let url = '/admin/kefu/addFriend';
+        let param = { uin: vm['bot_uin'], wxid: wxid,bot_id: vm['bot_id'],msg:item.nickname};
+        $.post(url, param, function (res) {
+            if (res.code == 1) {
+                layer.msg('已发送请求!');
+            } else {
+                layer.alert(res.msg);
+            }
+        }, 'json');
     }
     // });
 </script>

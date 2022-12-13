@@ -1540,7 +1540,7 @@
     //监听消息
     webSocket.onmessage = function (event) {
         if (event.data) {
-            speak_cn('收到消息');
+            speak_cn('收到新消息');
             console.log('收到客户端消息:' + event.data);
             var massage = eval("(" + event.data + ")");
             //收到私聊信息

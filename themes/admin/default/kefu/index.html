@@ -1515,8 +1515,8 @@
             checkNewMsg() {
                 self = this;
                 setInterval(function () {
-                    let friend_list = self['friend_list'];
-                    $.each(friend_list, function (i,v) {
+                    let bot_list = self['bot_list'];
+                    $.each(bot_list, function (i,v) {
                         if (v.new == 1) {
                             speak_cn('有未处理的消息');
                             return false;

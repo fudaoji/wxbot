@@ -642,6 +642,7 @@ class Kefu extends Base
                 'scene' => Bot::SCENE_WXNUM,
                 'type' => 1
             ]);
+            Log::write('添加好友:---------'.json_encode($res));
             if ($res['Code'] != 0) {
                 $this->error(json_encode($res));
                 Log::write('添加好友错误:---------'.json_encode($res));

@@ -490,6 +490,7 @@
         created() {
             this.getBotData();
             this.renderUpload();
+            this.checkNewMsg();
         },
         mounted() {
             this.$refs.bot_list_ref.addEventListener('scroll', this.loadBot) // 滚动到底部，再加载的处理事件
@@ -1510,6 +1511,18 @@
                         layer.msg(res.msg);
                     }
                 }, 'json');
+            },
+            checkNewMsg() {
+                self = this;
+                setInterval(function () {
+                    let friend_list = self['friend_list'];
+                    $.each(friend_list, function (i,v) {
+                        if (v.new == 1) {
+                            speak_cn('有未处理的消息');
+                            return false;
+                        }
+                    });
+                }, 10000);
             }
 
         }

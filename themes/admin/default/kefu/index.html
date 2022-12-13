@@ -1811,7 +1811,7 @@
     function addFriend(item) {
         layer.closeAll();
         let url = '/admin/kefu/addFriend';
-        let param = { uin: vm['bot_uin'], wxid: item.wxid, bot_id: vm['bot_id'], msg: item.nickname };
+        let param = { uin: vm['bot_uin'], wxid: item.username, bot_id: vm['bot_id'], msg: item.nickname };
         $.post(url, param, function (res) {
             if (res.code == 1) {
                 layer.msg('已发送请求!');

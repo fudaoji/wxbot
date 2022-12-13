@@ -159,8 +159,8 @@ class ChatLog extends Kefu
                 $last_chat_content = "[语音消息]";
                 break;
             case 42:
-                Logger::write("收到图片消息".json_encode($msg)."\n");
-                echo "收到图片消息".json_encode($msg)."\n";
+                Logger::write("收到名片消息".json_encode($msg)."\n");
+                echo "收到名片消息".json_encode($msg)."\n";
                 $convert = $this->convertBusinessCard($msg);
                 $content = json_encode($convert);
                 $last_chat_content = '向你推荐了' . $convert['nickname'];

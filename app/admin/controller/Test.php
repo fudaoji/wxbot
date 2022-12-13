@@ -375,7 +375,8 @@ class Test
         $msg = (new ChatLog())->where(['id' => 420])->value('content');
         dump($msg);
         $convert = $this->convertShareLink($msg);
-        dump($convert);exit;
+        dump($convert);
+        exit;
         $last_chat_content = "[分享链接]";
         $msg_type = 49;
         $member_model = new BotMember();
@@ -463,8 +464,8 @@ class Test
         $nickname = '';
         $username = '';
         $sex = '';
-        $province = ''; 
-        $city='';
+        $province = '';
+        $city = '';
         if (isset($headimgurl_res[1])) {
             $headimgurl = $headimgurl_res[1];
         }
@@ -511,5 +512,33 @@ class Test
         $key = 'receive_private_chat';
         $redis->rpush($key, $msg);
         echo "ok";
+    }
+
+
+    public function addFriend()
+    {
+        //         uin: wxid_5fprdytoi1k612
+        // wxid: v3_020b3826fd03010000000000da49007ecff1d0000000501ea9a3dba12f95f6b60a0536a1adb6c5611a1f1a3700022df4a80f69c70d82b672be1adb5a9dc873492e572f9c6daed58594f4160913d24ab3b0ef27f1b35d27a17568512a2b7d62398577@stranger
+        // bot_id: 54
+        // msg: 假发教父：尚新假发创始人 郑启示
+        $post_data = [
+            'uin' => 'wxid_5fprdytoi1k612',
+            'content' => 'v3_020b3826fd03010000000000da49007ecff1d0000000501ea9a3dba12f95f6b60a0536a1adb6c5611a1f1a3700022df4a80f69c70d82b672be1adb5a9dc873492e572f9c6daed58594f4160913d24ab3b0ef27f1b35d27a17568512a2b7d62398577'
+        ];
+        $bot_model = new Bot();
+        $bot = $bot_model->getOne(54);
+        $bot_client = $bot_model->getRobotClient($bot);
+        $account = $bot_client->searchAccount([
+            'robot_wxid' => $post_data['uin'],
+            'content' => $post_data['wxid']
+        ]);
+        dump($account);
+        // $res = $bot_client->addFriendBySearch([
+        //     'robot_wxid' => $post_data['uin'],
+        //     'v1' => $post_data['wxid'],
+        //     'msg' => $post_data['msg'],
+        //     'scene' => Bot::SCENE_WXNUM,
+        //     'type' => 1
+        // ]);
     }
 }

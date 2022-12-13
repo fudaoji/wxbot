@@ -637,7 +637,7 @@ class Kefu extends Base
             // ]);
             $res = $bot_client->addFriendBySearch([
                 'robot_wxid' => $post_data['uin'],
-                'v1' => $post_data['wxid'],
+                'v2' => $post_data['wxid'],
                 'msg' => $post_data['msg'],
                 'scene' => Bot::SCENE_CARD,
                 'type' => 1

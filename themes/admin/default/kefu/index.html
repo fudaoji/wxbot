@@ -1489,7 +1489,7 @@
                             // console.log(chat_item);
                             html += '<button type="button" lay-submit="" class="layui-btn" onclick="chatwith(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">发消息</button>';
                         } else {
-                            html += '<button type="button" lay-submit="" class="layui-btn" onclick="addFriend(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">添加到通讯录</button>';
+                            html += '<button type="button" lay-submit="" class="layui-btn" onclick="addFriend(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">添加到通讯录</button>';
                         }
                         html += '</div>' +
                             '</div >';
@@ -1777,7 +1777,7 @@
         //更新这个号的聊天时间，置顶聊天
         if (!$in) {
             let url = '/admin/kefu/updateChatTime';
-            let param = { uin: vm['bot_uin'], wxid: wxid };
+            let param = { uin: vm['bot_uin'], wxid: item.wxid };
             $.post(url, param, function (res) {
 
             }, 'json');
@@ -1792,7 +1792,7 @@
     function addFriend(item) {
         layer.closeAll();
         let url = '/admin/kefu/addFriend';
-        let param = { uin: vm['bot_uin'], wxid: wxid,bot_id: vm['bot_id'],msg:item.nickname};
+        let param = { uin: vm['bot_uin'], wxid: item.wxid,bot_id: vm['bot_id'],msg:item.nickname};
         $.post(url, param, function (res) {
             if (res.code == 1) {
                 layer.msg('已发送请求!');

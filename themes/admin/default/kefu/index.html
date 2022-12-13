@@ -1809,6 +1809,8 @@
 
     //添加好友
     function addFriend(item) {
+        console.log('添加好友');
+        console.log(item);
         layer.closeAll();
         let url = '/admin/kefu/addFriend';
         let param = { uin: vm['bot_uin'], wxid: item.username, bot_id: vm['bot_id'], msg: item.nickname };

@@ -530,7 +530,7 @@ class Test
         $bot_client = $bot_model->getRobotClient($bot);
         $account = $bot_client->searchAccount([
             'robot_wxid' => $post_data['uin'],
-            'content' => $post_data['wxid']
+            'content' => $post_data['content']
         ]);
         dump($account);
         // $res = $bot_client->addFriendBySearch([

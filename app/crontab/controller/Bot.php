@@ -91,7 +91,7 @@ class Bot extends Base
                 if($redis->get($rKey)){
                     continue;
                 }
-                $redis->setex($rKey, 600, 1);
+                $redis->setex($rKey, 3600, 1);
 
                 if(!empty($task['wxids']) && !empty($task['medias'])){
                     $bot_client = model('admin/bot')->getRobotClient($task);

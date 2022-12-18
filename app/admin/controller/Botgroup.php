@@ -45,7 +45,7 @@ class Botgroup extends Botbase
             if ($total) {
                 $list = $this->model->getList([$post_data['page'], $post_data['limit']],
                     $where, ['id' => 'desc'],
-                    ['id', 'nickname', 'remark_name', 'wxid']
+                    ['id', 'nickname', 'remark_name', 'wxid'], true
                 );
             }else{
                 $list = [];

@@ -50,7 +50,7 @@ class Ai extends Addon
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function groupChatHandle(){
-        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->groupWxid) === false){
+        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->groupWxid) === false || $this->fromWxid == $this->botWxid){
             return false;
         }
         $this->toWxid = $this->groupWxid;
@@ -88,10 +88,11 @@ class Ai extends Addon
         if($res['code'] && !empty($res['answer_type'])){
             switch ($res['answer_type']){
                 case Base::ANSWER_TEXT:
+                    $answer = $msg . "\n----------------\n" . $res['answer'];
                     $this->botClient->sendTextToFriend([
                         'robot_wxid' => $this->botWxid,
                         'to_wxid' => $this->toWxid,
-                        'msg' => $res['answer']
+                        'msg' => $answer
                     ]);
                     break;
                 case Base::ANSWER_MUSIC:

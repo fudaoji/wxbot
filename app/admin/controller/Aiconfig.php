@@ -46,7 +46,12 @@ class Aiconfig extends Botbase
         $settings = $this->model->getConf(['bot_id' => $this->bot['id']]);
         if(!empty($settings['wxids'])){
             $settings['wxids'] = explode(',', $settings['wxids']);
-            $settings['driver'] = 'weixin';
+        }
+        if(empty($settings)){
+            $settings = [
+                'driver' => 'weixin',
+                'switch' => 1
+            ];
         }
 
         $builder = new FormBuilder();

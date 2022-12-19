@@ -589,7 +589,7 @@ class My extends Base
                 'data' => $data
             ]);*/
             echo 1 . "<br>";
-            $this->sleep();
+            //$this->sleep();
         }
         return ['code' => 1];
     }

@@ -89,7 +89,7 @@ class Bot extends Base
             foreach($task_list as $task){
                 $rKey = "task" . $task['id'];
                 if($redis->get($rKey)){
-                    continue;
+                    //continue;
                 }
                 $redis->setex($rKey, 3600, 1);
 

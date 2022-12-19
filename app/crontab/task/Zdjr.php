@@ -81,7 +81,10 @@ class Zdjr extends Base
                     break; //无线索
                 }
 
-                $bot = $this->botM->getOne($bot_id);
+                if(! $bot = $this->botM->getOne($bot_id)){
+                    continue;
+                }
+
                 $bot_client = $this->botM->getRobotClient($bot);
                 foreach ($clues as $clue){
                     //判断是否触发每日好友申请上限

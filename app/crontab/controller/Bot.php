@@ -102,13 +102,13 @@ class Bot extends Base
                         $extra = ['atall' => $task['atall']];
                         model('reply')->botReply($task, $bot_client, $task, $task['wxids'], $extra);
                     }
-                    $task = $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
-                    dump($task);
+                    $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
                 }
+                $redis->del($rKey);
             }
-            dump($task_list);
+            echo (count($task_list) . ' tasks run');
         }else{
-            dump(0);
+            echo (0);
         }
     }
 }

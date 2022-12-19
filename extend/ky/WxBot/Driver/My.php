@@ -163,7 +163,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            $this->sleep();
+            //$this->sleep();
         }
         return $res;
     }
@@ -318,7 +318,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            $this->sleep();
+            //$this->sleep();
         }
         return $res;
     }
@@ -337,7 +337,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            $this->sleep();
+            //$this->sleep();
         }
         return $res;
     }
@@ -371,7 +371,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            $this->sleep();
+            //$this->sleep();
         }
         return $res;
     }
@@ -425,7 +425,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            $this->sleep();
+            //$this->sleep();
         }
         return $res;
     }
@@ -585,10 +585,9 @@ class My extends Base
         $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
         foreach($to_wxid as $id){
             $data['to_wxid'] = $id;
-            /*$this->request([
+            $this->request([
                 'data' => $data
-            ]);*/
-            echo 1 . "<br>";
+            ]);
             //$this->sleep();
         }
         return ['code' => 1];
@@ -608,7 +607,7 @@ class My extends Base
             $this->request([
                 'data' => $data
             ]);
-            $this->sleep();
+            //$this->sleep();
         }
         return ['code' => 1];
     }

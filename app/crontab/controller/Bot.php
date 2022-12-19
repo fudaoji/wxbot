@@ -89,11 +89,12 @@ class Bot extends Base
             foreach($task_list as $task){
                 $rKey = "task" . $task['id'];
                 if($redis->get($rKey)){
-                    //continue;
+                    continue;
                 }
-                $redis->setex($rKey, 3600, 1);
+                //$redis->setex($rKey, 3600, 1);
 
                 if(!empty($task['wxids']) && !empty($task['medias'])){
+                    $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
                     $bot_client = model('admin/bot')->getRobotClient($task);
                     $medias = json_decode($task['medias'], true);
                     foreach ($medias as $media){
@@ -102,7 +103,6 @@ class Bot extends Base
                         $extra = ['atall' => $task['atall']];
                         model('reply')->botReply($task, $bot_client, $task, $task['wxids'], $extra);
                     }
-                    $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
                 }
                 $redis->del($rKey);
             }

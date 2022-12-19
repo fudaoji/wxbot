@@ -340,7 +340,7 @@ class Test
             "to_name" => "crush",
             "clientid" => 0,
             "robot_type" => 0,
-            "msg_id" => "753273542".time(),
+            "msg_id" => "753273542" . time(),
         ];
         $botM = new Bot();
         $bot = $botM->where(['id' => 22])->find();
@@ -367,5 +367,178 @@ class Test
         $redis = get_redis();
         $key = 'receive_private_chat';
         $redis->rpush($key, $msg);
+    }
+
+
+    public function sendShareLink()
+    {
+        $msg = (new ChatLog())->where(['id' => 420])->value('content');
+        dump($msg);
+        $convert = $this->convertShareLink($msg);
+        dump($convert);
+        exit;
+        $last_chat_content = "[分享链接]";
+        $msg_type = 49;
+        $member_model = new BotMember();
+        $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
+        $member['last_chat_content'] = $last_chat_content;
+        $member['last_chat_time'] = time();
+        // $msg = json_decode($msg,true);
+        $msg = json_encode([
+            'msg' => $convert,
+            'date' => date("Y-m-d H:i:s"),
+            'msg_id' => '5791531156442254467',
+            'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/sGCpic6YuOTdGoYdslG1riaCj5Vly5P33FbXibfG1guiaXW5OokPr1ltt3nurPpCosQcgibQNic60pond25zBczooPialXG891Lxk19arf3RicLkbdk/0',
+            'from_wxid' => 'wxid_53fet7200ygs22',
+            'robot_wxid' => 'cengzhiyang4294',
+            'client' => 1,
+            'friend' => $member,
+            'msg_type' => $msg_type,
+            'event' => 'msg',
+            'last_chat_content' => $last_chat_content,
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
+        echo "ok";
+    }
+
+    public function convertShareLink($msg)
+    {
+        preg_match('/<title><!\[CDATA\[(.*?)]]><\/title>/ism', $msg, $title_res);
+        preg_match('/<des><!\[CDATA\[(.*?)]]><\/des>/ism', $msg, $des_res);
+        preg_match('/<url><!\[CDATA\[(.*?)]]><\/url>/ism', $msg, $url_res);
+        $title = '';
+        $des = '';
+        $url = '';
+        if (isset($title_res[1])) {
+            $title = $title_res[1];
+        } else {
+            preg_match('/<title>(.*?)<\/title>/ism', $msg, $title_res2);
+            if (isset($title_res2[1])) {
+                $title = $title_res[2];
+            }
+        }
+        if (isset($des_res[1])) {
+            $des = $des_res[1];
+        } else {
+            preg_match('/<des>(.*?)<\/des>/ism', $msg, $des_res2);
+            $des = $des_res2[1];
+        }
+        if (isset($url_res[1])) {
+            $url = $url_res[1];
+        } else {
+            preg_match('/<url>(.*?)<\/url>/ism', $msg, $url_res2);
+            $url = $url_res2[1];
+        }
+
+        return ['title' => $title, 'des' => $des, 'url' => $url];
+    }
+
+
+    /**
+     * 
+     * 发送名片
+     */
+    public function sendBusinessCard()
+    {
+        $msg = '<?xml version="1.0"?>
+        <msg bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/5Wt9sZZ0leGpUAiaC9kZUnUqHc4QWPibic6lz6P5ic7T91qtiarOsMjTSUmh5GQOZgSv68XARWMfVvcD4tvLkyiabkDds2jbOicIpKFoqhY4BF6qMk/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/5Wt9sZZ0leGpUAiaC9kZUnUqHc4QWPibic6lz6P5ic7T91qtiarOsMjTSUmh5GQOZgSv68XARWMfVvcD4tvLkyiabkDds2jbOicIpKFoqhY4BF6qMk/132" username="cengzhiyang4294" nickname="zengzhiyang" fullpy="zengzhiyang" shortpy="" alias="" imagestatus="3" scene="17" province="冰岛" city="冰岛" sign="" sex="1" certflag="0" certinfo="" brandIconUrl="" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="0" regionCode="IS" biznamecardinfo="" antispamticket="cengzhiyang4294" />
+        ';
+
+        $convert = $this->convertBusinessCard($msg);
+        $last_chat_content = '向你推荐了' . $convert['nickname'];
+        $msg_type = 42;
+        $this->send(json_encode($convert), $last_chat_content, $msg_type);
+    }
+
+    public function convertBusinessCard($msg)
+    {
+        preg_match('/bigheadimgurl="(.*?)"/ism', $msg, $headimgurl_res);
+        preg_match('/nickname="(.*?)"/ism', $msg, $nickname_res);
+        preg_match('/username="(.*?)"/ism', $msg, $username_res);
+        preg_match('/sex="(.*?)"/ism', $msg, $sex_res);
+        preg_match('/province="(.*?)"/ism', $msg, $province_res);
+        preg_match('/city="(.*?)"/ism', $msg, $city_res);
+        $headimgurl = '';
+        $nickname = '';
+        $username = '';
+        $sex = '';
+        $province = '';
+        $city = '';
+        if (isset($headimgurl_res[1])) {
+            $headimgurl = $headimgurl_res[1];
+        }
+        if (isset($nickname_res[1])) {
+            $nickname = $nickname_res[1];
+        }
+        if (isset($username_res[1])) {
+            $username = $username_res[1];
+        }
+        if (isset($sex_res[1])) {
+            $sex = $sex_res[1] == 1 ? '男' : '女';
+        }
+        if (isset($province_res[1])) {
+            $province = $province_res[1];
+        }
+        if (isset($city_res[1])) {
+            $city = $city_res[1];
+        }
+        return ['headimgurl' => $headimgurl, 'nickname' => $nickname, 'username' => $username, 'sex' => $sex, 'province' => $province, 'city' => $city];
+    }
+
+
+    public function send($convert, $last_chat_content, $msg_type)
+    {
+        $member_model = new BotMember();
+        $member = $member_model->where(['wxid' => 'wxid_53fet7200ygs22'])->find();
+        $member['last_chat_content'] = $last_chat_content;
+        $member['last_chat_time'] = time();
+        // $msg = json_decode($msg,true);
+        $msg = json_encode([
+            'msg' => $convert,
+            'date' => date("Y-m-d H:i:s"),
+            'msg_id' => '5791531156442254467',
+            'headimgurl' => 'http://wx.qlogo.cn/mmhead/ver_1/sGCpic6YuOTdGoYdslG1riaCj5Vly5P33FbXibfG1guiaXW5OokPr1ltt3nurPpCosQcgibQNic60pond25zBczooPialXG891Lxk19arf3RicLkbdk/0',
+            'from_wxid' => 'wxid_53fet7200ygs22',
+            'robot_wxid' => 'cengzhiyang4294',
+            'client' => 1,
+            'friend' => $member,
+            'msg_type' => $msg_type,
+            'event' => 'msg',
+            'last_chat_content' => $last_chat_content,
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
+        echo "ok";
+    }
+
+
+    public function addFriend()
+    {
+        //         uin: wxid_5fprdytoi1k612
+        // wxid: v3_020b3826fd03010000000000da49007ecff1d0000000501ea9a3dba12f95f6b60a0536a1adb6c5611a1f1a3700022df4a80f69c70d82b672be1adb5a9dc873492e572f9c6daed58594f4160913d24ab3b0ef27f1b35d27a17568512a2b7d62398577@stranger
+        // bot_id: 54
+        // msg: 假发教父：尚新假发创始人 郑启示
+        $post_data = [
+            'uin' => 'wxid_5fprdytoi1k612',
+            'content' => '假发教父：尚新假发创始人 郑启示'
+        ];
+        $bot_model = new Bot();
+        $bot = $bot_model->getOne(54);
+        $bot_client = $bot_model->getRobotClient($bot);
+        $account = $bot_client->searchAccount([
+            'robot_wxid' => $post_data['uin'],
+            'content' => $post_data['content']
+        ]);
+        dump($account);
+        // $res = $bot_client->addFriendBySearch([
+        //     'robot_wxid' => $post_data['uin'],
+        //     'v1' => $post_data['wxid'],
+        //     'msg' => $post_data['msg'],
+        //     'scene' => Bot::SCENE_WXNUM,
+        //     'type' => 1
+        // ]);
     }
 }

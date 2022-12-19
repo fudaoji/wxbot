@@ -121,10 +121,14 @@ class ChatLog extends Kefu
                 //转base64上传七牛云获取url地址
                 //[pic=E:\北遇框架(兼容我的框架)\Data\wxid_eko8u5yga0jr22\4d6eb5054e05cef3ac288ca8423c6805.jpg]
             case 3:
+                Logger::write("收到图片消息"."\n");
+                echo "收到图片消息"."\n";
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 5, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
+                // Logger::write("path:".$path."\n");
+                // Logger::write("res:".json_encode($res)."\n");
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('pic_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;
@@ -155,8 +159,11 @@ class ChatLog extends Kefu
                 $last_chat_content = "[语音消息]";
                 break;
             case 42:
-                $content = "[名片消息]";
-                $last_chat_content = "[名片消息]";
+                Logger::write("收到名片消息".json_encode($msg)."\n");
+                echo "收到名片消息".json_encode($msg)."\n";
+                $convert = $this->convertBusinessCard($msg);
+                $content = json_encode($convert);
+                $last_chat_content = '向你推荐了' . $convert['nickname'];
                 break;
             case 43:
                 echo "视频消息"."\n";
@@ -198,7 +205,8 @@ class ChatLog extends Kefu
                 $last_chat_content = "[地理位置]";
                 break;
             case 49:
-                $content = "[分享链接]";
+                $content = json_encode($this->convertShareLink($msg));
+                // $content = $msg;
                 $last_chat_content = "[分享链接]";
                 break;
                 //转账
@@ -215,6 +223,11 @@ class ChatLog extends Kefu
             case 2003:
                 $content = "[群邀请]";
                 $last_chat_content = "[群邀请]";
+                break;
+            case 10000:
+                //可能是系统消息
+                $content = $msg;
+                $last_chat_content = $msg;
                 break;
             default:
                 $content = "[链接]";
@@ -251,9 +264,10 @@ class ChatLog extends Kefu
                 // case 34:
                 //     $content = "[语音消息]";
                 //     break;
-                // case 42:
-                //     $content = "[名片消息]";
-                //     break;
+                case 42:
+                    // [名片消息]
+                    $content = json_decode($msg,true);
+                    break;
                 // case 43:
                 //     $content = "[视频]";
                 //     break;
@@ -263,9 +277,9 @@ class ChatLog extends Kefu
                 // case 48:
                 //     $content = "[地理位置]";
                 //     break;
-                // case 49:
-                //     $content = "[分享链接]";
-                //     break;
+                case 49:
+                    $content = json_decode($msg,true);
+                    break;
                 // //转账
                 case 2000:
                     $content = json_decode($msg,true);
@@ -344,5 +358,79 @@ class ChatLog extends Kefu
         $key = 'receive_private_chat';
         $redis->rpush($key, $msg);
         Logger::write("保存发送的消息,推送前端:" . json_encode($msg) . "\n");
+    }
+
+
+    /**
+     * 
+     * 转换分享信息
+     */
+    public function convertShareLink($msg){
+        preg_match('/<title><!\[CDATA\[(.*?)]]><\/title>/ism', $msg, $title_res);
+        preg_match('/<des><!\[CDATA\[(.*?)]]><\/des>/ism', $msg, $des_res);
+        preg_match('/<url><!\[CDATA\[(.*?)]]><\/url>/ism', $msg, $url_res);
+        $title = '';
+        $des = '';
+        $url = '';
+        if (isset($title_res[1])) {
+            $title = $title_res[1];
+        } else {
+            preg_match('/<title>(.*?)<\/title>/ism', $msg, $title_res2);
+            if (isset($title_res2[1])) {
+                $title = $title_res2[1];
+            }
+        }
+        if (isset($des_res[1])) {
+            $des = $des_res[1];
+        } else {
+            preg_match('/<des>(.*?)<\/des>/ism', $msg, $des_res2);
+            $des = $des_res2[1];
+        }
+        if (isset($url_res[1])) {
+            $url = $url_res[1];
+        } else {
+            preg_match('/<url>(.*?)<\/url>/ism', $msg, $url_res2);
+            $url = $url_res2[1];
+        }
+
+        return ['title' => $title, 'des' => $des, 'url' => $url];
+    }
+    /**
+     * 
+     * 转换名片信息
+     * 
+     */
+    public function convertBusinessCard($msg){
+        preg_match('/bigheadimgurl="(.*?)"/ism', $msg, $headimgurl_res);
+        preg_match('/nickname="(.*?)"/ism', $msg, $nickname_res);
+        preg_match('/username="(.*?)"/ism', $msg, $username_res);
+        preg_match('/sex="(.*?)"/ism', $msg, $sex_res);
+        preg_match('/province="(.*?)"/ism', $msg, $province_res);
+        preg_match('/city="(.*?)"/ism', $msg, $city_res);
+        $headimgurl = '';
+        $nickname = '';
+        $username = '';
+        $sex = '';
+        $province = ''; 
+        $city='';
+        if (isset($headimgurl_res[1])) {
+            $headimgurl = $headimgurl_res[1];
+        }
+        if (isset($nickname_res[1])) {
+            $nickname = $nickname_res[1];
+        }
+        if (isset($username_res[1])) {
+            $username = $username_res[1];
+        }
+        if (isset($sex_res[1])) {
+            $sex = $sex_res[1] == 1 ? '男' : '女';
+        }
+        if (isset($province_res[1])) {
+            $province = $province_res[1];
+        }
+        if (isset($city_res[1])) {
+            $city = $city_res[1];
+        }
+        return ['headimgurl' => $headimgurl, 'nickname' => $nickname, 'username' => $username, 'sex' => $sex, 'province' => $province, 'city' => $city];
     }
 }

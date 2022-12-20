@@ -79,7 +79,7 @@ class ChatLog extends Kefu
         $redis->rpush($key, $msg);
         Logger::write("存储数据OK：" . json_encode($msg) . "\n");
         //视频转换失败
-        if ($data['type'] == 43 && $convert['content'] == '') {
+        if (in_array($data['type'],[43, 2004]) && $convert['content'] == '') {
             $delay_second = 10;
             $key_delay = 'receive_private_chat_delay';
             $r_data = [
@@ -96,7 +96,7 @@ class ChatLog extends Kefu
                 'from_wxid' => $data['from_wxid'],
             ];
             $redis->rpush($key_delay, json_encode($r_data));
-            Logger::write("视频转换失败,存延迟队列：" . json_encode($r_data) . "\n");
+            Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");
         }
 
     }
@@ -141,10 +141,16 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 6, -1);
+                $file_name = substr(strrchr($path, "\\"), 1);
                 $res = $bot_client->downloadFile(['path' => $path]);
-                Logger::write("res:".json_encode($res)."\n");
-                $base64 = $res['ReturnStr'];
-                $url = upload_base64('file_' . rand(1000, 9999) . '_' . time(), $base64);
+                if ($res['Code'] != 0) {
+                    echo "转换文件消息为base64错误:". json_encode($res) . "\n";
+                    Logger::write("转换文件消息为base64错误:" . json_encode($res) . "\n");
+                    $url = '';
+                } else {
+                    $base64 = $res['ReturnStr'];
+                    $url = upload_base64('file_' . rand(1000, 9999) . '_' . time().$file_name, $base64);
+                }
                 $content = $url;
                 $last_chat_content = "[文件]";
                 break;

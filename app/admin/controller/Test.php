@@ -232,7 +232,7 @@ class Test
         $msg = '[File=D:\weixinjilu\WeChat Files\wxid_5fprdytoi1k612\FileStorage\File\2022-12\test.xls]';
         $sub = 6;
         $bot_model = new Bot();
-        $bot = $bot_model->where(['id' => 40])->find();
+        $bot = $bot_model->where(['id' => 70])->find();
         dump($bot);
         dump($bot_model->getlastsql());
         $bot_client = $bot_model->getRobotClient($bot);

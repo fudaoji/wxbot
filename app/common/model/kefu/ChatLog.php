@@ -137,7 +137,7 @@ class ChatLog extends Kefu
                 //文件
                 //[file=E:\北遇框架(兼容我的框架)\Data\xxx]
             case 2004:
-                Logger::write("文件消息"."\n");
+                Logger::write("文件消息".json_encode($msg)."\n");
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 6, -1);

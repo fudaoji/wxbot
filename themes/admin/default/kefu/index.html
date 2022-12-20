@@ -1516,7 +1516,7 @@
                 self = this;
                 setInterval(function () {
                     let bot_list = self['bot_list'];
-                    $.each(bot_list, function (i,v) {
+                    $.each(bot_list, function (i, v) {
                         if (v.new == 1) {
                             speak_cn('有未处理的消息');
                             return false;
@@ -1747,11 +1747,14 @@
 
     //根据iframe传回的值进行当前页面的赋值
     function setPictureValue(value, field) {
-        var picture_url = value[0].url;
-        vm.content = picture_url;
-        vm.content_type = 3;
-        vm.sendMsg();
-        vm.content_type = 1;
+        $.each(value, function (i, v) {
+            let picture_url = v.url;
+            vm.content = picture_url;
+            vm.content_type = 3;
+            vm.sendMsg();
+            vm.content_type = 1;
+        });
+
 
     }
 

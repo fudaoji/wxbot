@@ -137,10 +137,12 @@ class ChatLog extends Kefu
                 //文件
                 //[file=E:\北遇框架(兼容我的框架)\Data\xxx]
             case 2004:
+                Logger::write("文件消息"."\n");
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 6, -1);
                 $res = $bot_client->downloadFile(['path' => $path]);
+                Logger::write("res:".json_encode($res)."\n");
                 $base64 = $res['ReturnStr'];
                 $url = upload_base64('file_' . rand(1000, 9999) . '_' . time(), $base64);
                 $content = $url;

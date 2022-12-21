@@ -141,17 +141,19 @@ class ChatLog extends Kefu
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 6, -1);
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
                 $file_name = substr(strrchr($path, "\\"), 1);
                 $res = $bot_client->downloadFile(['path' => $path]);
                 if ($res['Code'] != 0) {
                     echo "转换文件消息为base64错误:". json_encode($res) . "\n";
                     Logger::write("转换文件消息为base64错误:" . json_encode($res) . "\n");
-                    $url = '';
+                    $content = '';
                 } else {
                     $base64 = $res['ReturnStr'];
                     $url = upload_base64('file_' . rand(1000, 9999) . '_' . time().$file_name, $base64);
+                    $content = json_encode(['url' => $url, 'file_name' => $file_name, 'ext' => $ext]);
                 }
-                $content = $url;
+                
                 $last_chat_content = "[文件]";
                 break;
                 //语音

@@ -286,7 +286,7 @@ class Kefu extends Base
                 $bot_client->sendFileToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
-                    'path' => $post_data['content']
+                    'path' => $post_data['content']['url']
                 ]);
             } else if ($post_data['type'] == 43) { //视频
                 $bot_client->sendVideoMsg([

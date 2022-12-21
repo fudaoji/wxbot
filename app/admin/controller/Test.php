@@ -239,6 +239,8 @@ class Test
         $bot_client = $bot_model->getRobotClient($bot);
         $path = mb_substr($msg, $sub, -1);
         dump($path);
+        $ext = pathinfo($path, PATHINFO_EXTENSION);
+        dump($ext);
         $file_name = substr(strrchr($path, "\\"), 1);
         dump($file_name);
         $res = $bot_client->downloadFile(['path' => $path]);

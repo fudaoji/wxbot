@@ -9,6 +9,8 @@
 
 namespace app\crontab\task;
 
+use ky\Logger;
+
 class Bot extends Base
 {
     public function __construct(){
@@ -34,6 +36,7 @@ class Bot extends Base
         $reply = $params['reply'];
         $to_wxid = $params['to_wxid'];
         $extra = $params['extra'];
+        Logger::error(date('Y-m-d H:i:s'));
         model('common/reply')->botReply($task, $client, $reply, $to_wxid, $extra);
         $job->delete();
         dump(date('Y-m-d H:i:s'));

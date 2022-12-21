@@ -103,7 +103,7 @@ class Bot extends Base
                         $extra = ['atall' => $task['atall']];
                         $wxids = explode(',', $task['wxids']);
                         $delay = 0;
-                        var_dump($wxids);
+                        //var_dump($wxids);
                         foreach ($wxids as $to_wxid){
                             //放入任务队列
                             invoke('\\app\\common\\event\\TaskQueue')->push([

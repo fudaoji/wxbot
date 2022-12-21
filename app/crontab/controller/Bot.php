@@ -101,6 +101,7 @@ class Bot extends Base
                         $task['media_type'] = $media['type'];
                         $task['media_id'] = $media['id'];
                         $extra = ['atall' => $task['atall']];
+                        //$wxids = explode(',', implode(',', [$task['wxids'],$task['wxids'],$task['wxids'],$task['wxids'],$task['wxids']]));
                         $wxids = explode(',', $task['wxids']);
                         $delay = 0;
                         //var_dump($wxids);

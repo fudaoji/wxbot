@@ -268,9 +268,9 @@ class ChatLog extends Kefu
                 //     $content = $msg;
                 //     break;
                 //     //文件
-                // case 2004:
-                //     $content = $msg;
-                //     break;
+                case 2004:
+                    $content = json_decode($msg,true);
+                    break;
                 // case 34:
                 //     $content = "[语音消息]";
                 //     break;

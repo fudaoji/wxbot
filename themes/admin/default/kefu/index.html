@@ -207,7 +207,7 @@
                                             </div>
                                             <!-- 文件消息 -->
                                             <div v-else-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id">
-                                                <span v-if="item.content == ''">收到文件，正在加载中</span>
+                                                <span v-if="item.content != ''">收到文件，正在加载中</span>
                                                 <!-- <a v-else :href="item.content.url" target="downloadFile">
                                                     <div class="layui-card">
                                                         <div class="layui-card-header">{{item.content.file_name}}</div>

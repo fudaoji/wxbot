@@ -36,7 +36,7 @@ class Bot extends Base
         $extra = $params['extra'];
         model('common/reply')->botReply($task, $client, $reply, $to_wxid, $extra);
         $job->delete();
-        echo date('Y-m-d H:i:s') . PHP_EOL;
+        dump(date('Y-m-d H:i:s'));
     }
 
     /**

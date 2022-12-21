@@ -60,7 +60,7 @@ class Zdjr extends Base
         $tasks = $this->ruleM->getAll([
             'where' => ['status' => 1]
         ]);
-        dump($tasks);
+
         foreach ($tasks as $task){
             $rules = json_decode($task['rules'], true);
 

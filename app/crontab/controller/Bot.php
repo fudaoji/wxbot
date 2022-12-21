@@ -95,13 +95,30 @@ class Bot extends Base
 
                 if(!empty($task['wxids']) && !empty($task['medias'])){
                     $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
-                    $bot_client = model('admin/bot')->getRobotClient($task);
+                    //$bot_client = model('admin/bot')->getRobotClient($task);
                     $medias = json_decode($task['medias'], true);
                     foreach ($medias as $media){
                         $task['media_type'] = $media['type'];
                         $task['media_id'] = $media['id'];
                         $extra = ['atall' => $task['atall']];
-                        model('reply')->botReply($task, $bot_client, $task, $task['wxids'], $extra);
+                        $wxids = explode(',', $task['wxids']);
+                        $delay = 0;
+                        var_dump($wxids);
+                        foreach ($wxids as $to_wxid){
+                            //放入任务队列
+                            invoke('\\app\\common\\event\\TaskQueue')->push([
+                                'delay' => $delay,
+                                'params' => [
+                                    'do' => ['\\app\\crontab\\task\\Bot', 'sendMsgBatch'],
+                                    'task' => $task,
+                                    'reply' => $task,
+                                    'to_wxid' => $to_wxid,
+                                    'extra' => $extra
+                                ]
+                            ]);
+                            $delay += model('common/setting')->getStepTime();
+                        }
+                        //model('reply')->botReply($task, $bot_client, $task, $task['wxids'], $extra);
                     }
                 }
                 $redis->del($rKey);

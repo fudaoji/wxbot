@@ -163,7 +163,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            //$this->sleep();
+            $this->sleep();
         }
         return $res;
     }
@@ -318,7 +318,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            //$this->sleep();
+            $this->sleep();
         }
         return $res;
     }
@@ -337,7 +337,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            //$this->sleep();
+            $this->sleep();
         }
         return $res;
     }
@@ -371,7 +371,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            //$this->sleep();
+            $this->sleep();
         }
         return $res;
     }
@@ -425,7 +425,7 @@ class My extends Base
             $res = $this->request([
                 'data' => $data
             ]);
-            //$this->sleep();
+            $this->sleep();
         }
         return $res;
     }
@@ -588,7 +588,7 @@ class My extends Base
             $this->request([
                 'data' => $data
             ]);
-            //$this->sleep();
+            $this->sleep();
         }
         return ['code' => 1];
     }
@@ -607,7 +607,7 @@ class My extends Base
             $this->request([
                 'data' => $data
             ]);
-            //$this->sleep();
+            $this->sleep();
         }
         return ['code' => 1];
     }

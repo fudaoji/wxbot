@@ -27,6 +27,20 @@ class Setting extends BaseModel
     }
 
     /**
+     * 获取群发间隔时间
+     * @return int
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getStepTime(){
+        if(config('system.bot.step_time')){
+            $arr = explode('-', config('system.bot.step_time'));
+        }else{
+            $arr = [1, 4];
+        }
+        return sleep(rand($arr[0], $arr[1]));
+    }
+
+    /**
      * 设置配置值
      * @param $map
      * @param $data

@@ -288,7 +288,7 @@ class Kefu extends Base
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
                 ]);
-                dump($res);exit;
+                
             } else if ($post_data['type'] == 43) { //视频
                 $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],

@@ -25,7 +25,7 @@ class Kefu extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function privateChatHandle(){
-        Logger::write("私聊处理器---");
+        Logger::write("私聊处理器---".date("Y-m-d H:i:s"));
         if(empty($this->switch)){
             return false;
         }

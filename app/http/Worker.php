@@ -101,6 +101,21 @@ class Worker extends Server
 							//消息发送回调
 							Logger::write("定时器消息发送回调---" . json_encode($res));
 							echo "定时器消息发送回调---" . json_encode($res);
+							//最后一条聊天记录放redis
+							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
+							$last_chat_log = $res['friend']['last_chat_content'];
+							$hkey = $res['to'];
+							$date = date("Y-m-d H:i:s",$res['create_time']);
+							$result = [
+								'msg_id' => $res['msg_id'],
+								'date' => $date,
+								'content' => $last_chat_log,
+								'type' => 'send',
+								'headimgurl' => $res['headimgurl'],
+								'friend' => $res['friend'],
+								'msg_type' => $res['msg_type'],
+							];
+							$redis->hSet($last_log_key, $hkey, json_encode($result));
 							$conn->send($msg);
 						}
 					}

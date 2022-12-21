@@ -283,7 +283,6 @@ class Kefu extends Base
                     'path' => $post_data['content']
                 ]);
             } else if ($post_data['type'] == 2004) { //文件
-                dump($post_data['content']['url']);exit;
                 $bot_client->sendFileToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],

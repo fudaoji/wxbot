@@ -283,11 +283,12 @@ class Kefu extends Base
                     'path' => $post_data['content']
                 ]);
             } else if ($post_data['type'] == 2004) { //文件
-                $bot_client->sendFileToFriends([
+                $res = $bot_client->sendFileToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
                 ]);
+                dump($res);exit;
             } else if ($post_data['type'] == 43) { //视频
                 $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],

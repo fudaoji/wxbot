@@ -1028,8 +1028,6 @@
                             let ext = res.data[0].ext;
                             let url = res.data[0].url;
                             let file_name = res.data[0].original_name;
-                            
-                            self['content'] = content;
                             if (ext == 'mp4') {
                                 let content = url;
                                 self['content_type'] = 43;
@@ -1037,6 +1035,7 @@
                                 let content = { url: url, file_name: file_name, ext: ext };
                                 self['content_type'] = 2004;
                             }
+                            self['content'] = content;
                             self['sendMsg']();
                             self['content_type'] = 1;
                         }

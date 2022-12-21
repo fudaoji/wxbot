@@ -36,7 +36,7 @@ class Bot extends Base
         $reply = $params['reply'];
         $to_wxid = $params['to_wxid'];
         $extra = $params['extra'];
-        Logger::error(date('Y-m-d H:i:s'));
+        Logger::error(date('Y-m-d H:i:s') . '   ' . $to_wxid);
         model('common/reply')->botReply($task, $client, $reply, $to_wxid, $extra);
         $job->delete();
         dump(date('Y-m-d H:i:s'));

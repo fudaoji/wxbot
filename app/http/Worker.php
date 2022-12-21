@@ -148,6 +148,7 @@ class Worker extends Server
 					$chatLogM = new ChatLog();
 					// echo "开始转换数据：".$data['msg']."\n".$data['msg_type']."\n".json_encode($data['bot'])."\n";
 					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['msg_type'], $data['bot']);
+					echo "延迟队列转换数据结果：".json_encode($convert)."\n";
 					if ($convert['content'] != '') {
 						//视频转换成功
 						//更新数据库，发送到前端替换视频

@@ -1574,7 +1574,10 @@
                 if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42 || massage.msg_type == 2004) {
                     // console.log("转账：");
                     // console.log(massage.msg);
-                    massage.msg = JSON.parse(massage.msg);
+                    if (massage.msg!= '') {
+                        massage.msg = JSON.parse(massage.msg);
+                    }
+                    
                     // console.log("1234");
                     console.log(massage.msg);
                 }

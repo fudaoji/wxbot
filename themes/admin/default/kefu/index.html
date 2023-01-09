@@ -328,7 +328,7 @@
                                 </div>
                             </div>
                             <textarea style="height: 181px;" placeholder="" class="layui-textarea" v-model="content"
-                                id="content"></textarea>
+                                id="content" @keyup.enter.exact="sendMsg" @keyup.ctrl.enter="lineFeed()"></textarea>
                         </div>
                         <div class="input_area" style="text-align:right">
                             <button type="button" class="layui-btn layui-btn-primary" @click="clearMsg">清空</button>
@@ -1541,7 +1541,11 @@
                         }
                     });
                 }, 10000);
-            }
+            },
+            //换行
+            lineFeed () {
+                this.content = this.content + '\n';
+		    }
 
         }
     });

@@ -139,7 +139,7 @@ class Kefu extends Base
         if (request()->isPost()) {
             $post_data = input('post.');
             $this->bot = $bot_model->getOne($post_data['id']);
-            $where = [['type', '=', Bot::FRIEND], ['uin', '=', $this->bot['uin']]];
+            $where = [['type', 'in', [Bot::FRIEND,Bot::GROUP]], ['uin', '=', $this->bot['uin']]];
             !empty($post_data['search_key']) && $where[] = ['nickname|remark_name|username|wxid', 'like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->where($where)->count();
             if ($total) {

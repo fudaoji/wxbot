@@ -332,7 +332,8 @@
                         </div>
                         <div class="input_area" style="text-align:right">
                             <button type="button" class="layui-btn layui-btn-primary" @click="clearMsg">清空</button>
-                            <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"><i
+                            <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"
+                                id="id_send" @mouseover="sendTip()" @mouseout="closeTip()"><i
                                     class="layui-icon layui-icon-release"></i> 发送</button>
                         </div>
                     </div>
@@ -496,6 +497,7 @@
         sel_chat_content: [],//多选
         get_chat_log_param: get_chat_log_param,//获取聊天记录参数
         show_more_chat_log: true,
+        tip: ''
     };
     var vm = new Vue({
         el: '#app',
@@ -1543,9 +1545,17 @@
                 }, 10000);
             },
             //换行
-            lineFeed () {
+            lineFeed() {
                 this.content = this.content + '\n';
-		    }
+            },
+            sendTip() {
+                // layer.msg('按Enter键发送，按ctrl+Enter键换行');
+
+                this.tip = layer.tips('按Enter键发送，按ctrl+Enter键换行', '#id_send', { time: 0, tips: 1 });
+            },
+            closeTip() {
+                layer.close(this.tip);
+            }
 
         }
     });

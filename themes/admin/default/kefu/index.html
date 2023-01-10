@@ -1611,11 +1611,11 @@
     //监听消息
     webSocket.onmessage = function (event) {
         if (event.data) {
-            speak_cn('收到新消息');
             console.log('收到客户端消息:' + event.data);
             var massage = eval("(" + event.data + ")");
             //收到私聊信息
             if (massage.event == 'msg') {
+                speak_cn('收到新消息');
                 //数据类型转换
                 if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42 || massage.msg_type == 2004) {
                     // console.log("转账：");

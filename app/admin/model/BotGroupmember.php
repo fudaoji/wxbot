@@ -242,9 +242,9 @@ class BotGroupmember extends Base
                     $list = $res['ReturnJson']['member_list'];
                     $wxid_arr = [];
                     foreach ($list as $k => $v){
-                        Logger::write("拉取群成员" . json_encode($v) . "\n");
+                        // Logger::write("拉取群成员" . json_encode($v) . "\n");
                         $nickname = filter_emoji($v['nickname']);
-                        $group_nickname = filter_emoji($v['group_nickname']);
+                        $group_nickname = filter_emoji($v['nickname']);
                         $username = $v['wx_num'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;

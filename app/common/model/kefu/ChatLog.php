@@ -488,7 +488,7 @@ class ChatLog extends Kefu
         $year = date("Y");
         $chat_model = new ChatLog();
         $member_model = new BotMember();
-        $member = $member_model->where(['uin' => $bot['uin'],'wxid' => $data['to_wxid']])->find();
+        $member = $member_model->where(['uin' => $bot['uin'],'wxid' => $data['from_group']])->find();
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换
@@ -496,8 +496,8 @@ class ChatLog extends Kefu
         $member['last_chat_time'] = $time;
         $member['last_chat_content'] = $convert['last_chat_content'];
         $insert_data = [
-            'from' => $data['robot_wxid'],
-            'to' => $data['to_wxid'],
+            'from' => $data['from_group'],
+            'to' => $data['robot_wxid'],
             'create_time' => $time,
             'content' => $convert['content'],
             'year' => $year,

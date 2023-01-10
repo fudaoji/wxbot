@@ -322,9 +322,13 @@
                                             class="layui-icon layui-icon-face-smile-b"></i></div>
                                     <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"
                                         @click="choosePicture"><i class="layui-icon layui-icon-picture"></i></div>
-                                    <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
+                                    <div class="layui-inline" title="发送视频" lay-event="LAYTABLE_EXPORT"
+                                        @click="chooseVideo"><i class="layui-icon layui-icon-play"></i></div>
+                                    <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_EXPORT"
+                                        @click="chooseFile"><i class="layui-icon layui-icon-export"></i></div>
+                                    <!-- <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
                                         <i class="layui-icon layui-icon-export"></i></a>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <textarea style="height: 181px;" placeholder="" class="layui-textarea" v-model="content"
@@ -1000,6 +1004,28 @@
                     shade: 0.8,
                     area: ['100%', '100%'],
                     content: ['{:url("media/handle", ["type" => "image", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            },
+            //发送图片
+            chooseVideo(e) {
+                layer.open({
+                    type: 2,
+                    title: '视频',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['100%', '100%'],
+                    content: ['{:url("media/handle", ["type" => "video", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            },
+            //发送文件
+            chooseFile(e) {
+                layer.open({
+                    type: 2,
+                    title: '文件',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['100%', '100%'],
+                    content: ['{:url("media/handle", ["type" => "file", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                 });
             },
             //初始化layui上传
@@ -1802,7 +1828,29 @@
 
 
     }
+    
+    //根据iframe传回的值进行当前页面的赋值
+    function setVideoValue(value, field) {
+        $.each(value, function (i, v) {
+            let url = v.url;
+            vm.content = url;
+            vm.content_type = 43;
+            vm.sendMsg();
+            vm.content_type = 1;
+        });
+    }
 
+    //根据iframe传回的值进行当前页面的赋值
+    function setFileValue(value, field) {
+        $.each(value, function (i, v) {
+            let url = v.url;
+            let content = { url: url, file_name: v.title, ext: v.ext };
+            vm.content = content;
+            vm.content_type = 2004;
+            vm.sendMsg();
+            vm.content_type = 1;
+        });
+    }
     function compare(property, sort = 'asc') {
         return function (a, b) {
             var value1 = a[property];

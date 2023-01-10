@@ -549,4 +549,9 @@ class Test
         //     'type' => 1
         // ]);
     }
+
+
+    public function groupChat(){
+        
+    }
 }

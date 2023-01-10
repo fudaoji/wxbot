@@ -66,6 +66,21 @@ class Kefu extends Addon
 
     }
 
+
+    /**
+     * 
+     * 群聊接收回调处理器
+     */
+    public function groupChatHandle(){
+        Logger::write("群聊接收回调处理器---");
+        if(empty($this->switch)){
+            return false;
+        }
+        //群聊接收数据,发送客户端
+        $model_chat_log = new ChatLog();
+        $model_chat_log->saveGroupChat($this->content,$this->bot);
+    }
+
     
     
 }

@@ -463,4 +463,88 @@ class ChatLog extends Kefu
         }
         return ['headimgurl' => $headimgurl, 'nickname' => $nickname, 'username' => $username, 'sex' => $sex, 'province' => $province, 'city' => $city];
     }
+
+    /**
+     * 
+     * 保存群里数据
+     */
+    public function saveGroupChat($data, $bot){
+        return;
+        // {
+        //     "robot_wxid": "wxid_5fprdytoi1k612",
+        //     "type": 1,
+        //     "from_group": "34907960925@chatroom",
+        //     "from_group_name": "微信多客服测试优化",
+        //     "from_wxid": "cengzhiyang4294",
+        //     "from_name": "zengzhiyang",
+        //     "msg": "还没弄好",
+        //     "msg_source": null,
+        //     "clientid": 0,
+        //     "robot_type": 0,
+        //     "msg_id": "1591024870470498640"
+        // }
+        Logger::write("保存发送的消息" . json_encode($data) . "\n");
+        $time = time();
+        $year = date("Y");
+        $chat_model = new ChatLog();
+        $member_model = new BotMember();
+        $member = $member_model->where(['uin' => $bot['uin'],'wxid' => $data['to_wxid']])->find();
+        //更改好友最后聊天时间
+        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        //信息转换
+        $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
+        $member['last_chat_time'] = $time;
+        $member['last_chat_content'] = $convert['last_chat_content'];
+        $insert_data = [
+            'from' => $data['robot_wxid'],
+            'to' => $data['to_wxid'],
+            'create_time' => $time,
+            'content' => $convert['content'],
+            'year' => $year,
+            'from_headimg' => $bot['headimgurl'],
+            'msg_id' => $data['msg_id'],
+            'type' => 'send',
+            'msg_type' => $data['type'] //文本
+        ];
+        $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
+        
+        $msg = json_encode([
+            'robot_wxid' => $data['robot_wxid'],
+            'to' => $data['to_wxid'],
+            'create_time' => $time,
+            'content' => $convert['content'],
+            'year' => $year,
+            'headimgurl' => $bot['headimgurl'],
+            'msg_id' => $data['msg_id'],
+            'type' => 'send',
+            'msg_type' => $data['type'], //文本
+            'event' => 'callback',
+            'friend' => $member,
+            'client' => $bot['admin_id'], //对应用户id
+        ]);
+        $redis = get_redis();
+        $key = 'receive_private_chat';
+        $redis->rpush($key, $msg);
+        Logger::write("保存发送的消息,推送前端:" . json_encode($msg) . "\n");
+        //视频转换失败
+        if (in_array($data['type'],[43, 2004]) && $convert['content'] == '') {
+            $delay_second = 10;
+            $key_delay = 'receive_private_chat_delay';
+            $r_data = [
+                'msg_type' => $data['type'],
+                'msg' => $data['msg'],
+                'delay_second' => 10,
+                'start_time' => $time + $delay_second,
+                'num' => 0,//执行次数
+                'msg_id' => $data['msg_id'],
+                'id' => $id,
+                'bot' => $bot,
+                'client' => $bot['admin_id'], //对应用户id
+                'robot_wxid' => $data['robot_wxid'],
+                'from_wxid' => $data['from_wxid'],
+            ];
+            $redis->rpush($key_delay, json_encode($r_data));
+            Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");
+        }
+    }
 }

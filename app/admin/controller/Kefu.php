@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 use app\admin\controller\Bot as ControllerBot;
 use app\admin\model\Bot as ModelBot;
+use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
 use app\common\model\EmojiCode;
 use app\common\model\kefu\Speechcraft;
@@ -653,5 +654,20 @@ class Kefu extends Base
             }
             
         }
+    }
+
+    /**
+     * 
+     * 获取群成员
+     */
+    public function groupMember()
+    {
+        $this->model = new BotGroupmember();
+        $post_data = input();
+        $where = [['group_id', '=', $post_data['group_id']]];
+        !empty($post_data['uin']) && $where[] = ['uin', '<>', $post_data['uin']];
+        $list = $this->model->where($where)->select()->toArray();
+        $this->assign('list', $list);
+        return $this->show();
     }
 }

@@ -351,6 +351,8 @@
                             <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"
                                 id="id_send" @mouseover="sendTip()" @mouseout="closeTip()"><i
                                     class="layui-icon layui-icon-release"></i> 发送</button>
+                            <button type="button" class="layui-btn" lay-submit="" @click="sendMsgAndAt">
+                                <i class="layui-icon layui-icon-release"></i> 发送并@</button>
                         </div>
                     </div>
                 </div>
@@ -1593,6 +1595,22 @@
             },
             closeTip() {
                 layer.close(this.tip);
+            },
+            //发送信息并@
+            sendMsgAndAt() {
+                //获取群成员
+                self = this;
+                let group_id = this.friend_id;
+                let uin = this.bot_uin;
+                layer.open({
+                    type: 2,
+                    title: '@群成员',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['100', '100'],
+                    content: ['{:url("kefu/groupMember", ["uin" => '+uin+', "group_id" => "'+group_id+'"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            
             }
 
         }
@@ -1639,7 +1657,7 @@
                     console.log(massage.msg);
                 }
                 //转账/分享链接单独处理
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type,friend_type: massage.friend_type,group_headimg:massage.group_headimg,group_nickname:massage.group_nickname};
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type, friend_type: massage.friend_type, group_headimg: massage.group_headimg, group_nickname: massage.group_nickname };
                 console.log(msg);
                 if (!vm['chat_log'][[massage.robot_wxid]]) {
                     vm['chat_log'][[massage.robot_wxid]] = {};

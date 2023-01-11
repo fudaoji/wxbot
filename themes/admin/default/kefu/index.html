@@ -1602,13 +1602,14 @@
                 self = this;
                 let group_id = this.friend_id;
                 let uin = this.bot_uin;
+                let url = '/admin/kefu/groupMember?uin='+uin+'&group_id='+group_id;
                 layer.open({
                     type: 2,
                     title: '@群成员',
                     shadeClose: false,
                     shade: 0.8,
                     area: ['100', '100'],
-                    content: ['{:url("kefu/groupMember", ["uin" => '+uin+', "group_id" => "'+group_id+'"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                    content: [url, 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                 });
             
             }

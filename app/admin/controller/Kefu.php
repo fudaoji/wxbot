@@ -665,7 +665,7 @@ class Kefu extends Base
         $this->model = new BotGroupmember();
         $post_data = input();
         $where = [['group_id', '=', $post_data['group_id']]];
-        !empty($post_data['uin']) && $where[] = ['uin', '<>', $post_data['uin']];
+        !empty($post_data['uin']) && $where[] = ['wxid', '<>', $post_data['uin']];
         $list = $this->model->where($where)->select()->toArray();
         $this->assign('list', $list);
         return $this->show();

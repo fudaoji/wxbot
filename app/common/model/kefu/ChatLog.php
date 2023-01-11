@@ -35,6 +35,7 @@ class ChatLog extends Kefu
         //       "robot_type": 0,  // 来源微信类型 0 正常微信 / 1 企业微信
         //     "msg_id": 0  // 消息ID
         // }  // 内容（易语言模板的参数名）
+        echo "111";
         $redis = get_redis();
         $year = date("Y");
         $chat_model = new ChatLog();

@@ -246,7 +246,7 @@ class Test
         $res = $bot_client->downloadFile(['path' => $path]);
         dump($res);
         $base64 = $res['ReturnStr'];
-        $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time().$file_name, $base64);
+        $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time() . $file_name, $base64);
         dump($url);
         exit;
     }
@@ -551,7 +551,39 @@ class Test
     }
 
 
-    public function groupChat(){
-        
+    public function botSend()
+    {
+        // {
+        //     "sdkVer":6,
+        //     "Event":"EventPrivateChat",
+        //     "content":{
+        //         "robot_wxid":"wxid_5fprdytoi1k612",
+        //         "type":1,
+        //         "from_wxid":"cengzhiyang4294",
+        //         "from_name":"zengzhiyang",
+        //         "msg":"123",
+        //         "clientid":0,
+        //         "robot_type":0,
+        //         "msg_id":"7630416942713148939"
+        //     }
+        // }
+        $url = 'http://wx119.sxwig.com:809/bot/api/my';
+        $params = [
+            "sdkVer" => 6,
+            "Event" => "EventPrivateChat",
+            "content" => [
+                "robot_wxid" => "wxid_5fprdytoi1k612",
+                "type" => 1,
+                "from_wxid" => "cengzhiyang4294",
+                "from_name" => "zengzhiyang",
+                "msg" => "123",
+                "clientid" => 0,
+                "robot_type" => 0,
+                "msg_id" => "7630416942713148939"
+            ]
+        ];
+
+        $res = Curl_($url,json_encode($params));
+        dump($res);
     }
 }

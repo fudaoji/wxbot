@@ -81,7 +81,7 @@ class Worker extends Server
 							$res['msg'] = $content;
 							$conn->send(json_encode($res));
 							Logger::write("最终发送消息---" . json_encode($res));
-							echo "发送消息：" . json_encode($res);
+							echo "work发送消息：" . json_encode($res);
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$hkey = $res['from_wxid'];

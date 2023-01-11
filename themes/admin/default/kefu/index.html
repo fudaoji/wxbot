@@ -1639,7 +1639,7 @@
                     console.log(massage.msg);
                 }
                 //转账/分享链接单独处理
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type };
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type,friend_type: massage.friend_type,group_headimg:massage.group_headimg,group_nickname:massage.group_nickname};
                 console.log(msg);
                 if (!vm['chat_log'][[massage.robot_wxid]]) {
                     vm['chat_log'][[massage.robot_wxid]] = {};

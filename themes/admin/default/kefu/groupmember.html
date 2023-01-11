@@ -2,12 +2,6 @@
     <form class="layui-form" action="">
         <div class="layui-row">
             <table class="layui-table" lay-skin="line">
-                <colgroup>
-                    <col width="50">
-                    <col>
-                    <col>
-                    <col width="100">
-                </colgroup>
                 <tbody>
                     {volist name="list" id="item"}
                     <tr>
@@ -27,9 +21,9 @@
 <div class="bottom">
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn bg-success" onclick="clickSure();">确定</button>
-            <button class="layui-btn bg-success" onclick="atAll();">@所有人</button>
-            <button class="layui-btn layui-btn-primary js-cancel-btn">取消</button>
+            <button class="layui-btn bg-success layui-btn-xs" onclick="clickSure();">确定</button>
+            <button class="layui-btn bg-success layui-btn-xs" onclick="atAll();">@所有人</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn layui-btn-xs">取消</button>
         </div>
     </div>
 </div>

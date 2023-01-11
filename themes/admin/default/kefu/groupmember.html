@@ -1,24 +1,30 @@
-<div class="layui-row">
-    <table class="layui-table" lay-skin="line">
-        <colgroup>
-            <col width="50">
-            <col>
-            <col>
-            <col width="100">
-        </colgroup>
-        <tbody>
-            {volist name="list" id="item"}
-            <tr>
-                <td>
-                    <input type="checkbox" class="id" lay-filter="id" value="{$item.id}" lay-skin="primary"
-                        data-wxid="{$item.wxid}" data-group_nickname="{$item.group_nickname}" />
-                </td>
-                <td><img src="{$item.headimgurl}" style="width:25px;height:25px;border-radius:10%" /></td>
-                <td>{$item.group_nickname}</td>
-            </tr>
-            {/volist}
-        </tbody>
-    </table>
+<div class="layui-tab layui-tab-brief" lay-filter="tabBrief">
+    <div class="layui-tab-content">
+        <form class="layui-form" action="">
+            <div class="layui-row">
+                <table class="layui-table" lay-skin="line">
+                    <colgroup>
+                        <col width="50">
+                        <col>
+                        <col>
+                        <col width="100">
+                    </colgroup>
+                    <tbody>
+                        {volist name="list" id="item"}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="id" lay-filter="id" value="{$item.id}" lay-skin="primary"
+                                    data-wxid="{$item.wxid}" data-group_nickname="{$item.group_nickname}" />
+                            </td>
+                            <td><img src="{$item.headimgurl}" style="width:25px;height:25px;border-radius:10%" /></td>
+                            <td>{$item.group_nickname}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
 </div>
 <div class="bottom">
     <div class="layui-form-item">

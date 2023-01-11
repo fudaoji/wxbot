@@ -168,8 +168,8 @@ class BotMember extends Base
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
+                    Log::write(json_encode($list));
                     foreach ($list as $k => $v){
-                        Log::write(json_encode($v));
                         $nickname = filter_emoji($v['nickname']);
                         $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];

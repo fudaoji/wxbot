@@ -20,6 +20,7 @@ use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
 use ky\WxBot\Driver\Xbot;
+use think\facade\Log;
 
 class BotMember extends Base
 {
@@ -168,6 +169,7 @@ class BotMember extends Base
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
                     foreach ($list as $k => $v){
+                        Log::write(json_encode($v));
                         $nickname = filter_emoji($v['nickname']);
                         $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];

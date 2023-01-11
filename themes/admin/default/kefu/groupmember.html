@@ -36,6 +36,11 @@
         //刷新界面 所有元素
         form.render();
         parent_index = parent.layer.getFrameIndex(window.name);
+
+        //点击取消
+        $('.js-cancel-btn').on('click', function () {
+                parent.layer.close(parent_index);
+            });
         clickSure = function () {
             var list = [];
             $('.id:checked').each(function (i, item) {

@@ -61,12 +61,13 @@
             parent.layer.close(parent_index);
         };
         atAll = function () {
-            layer.confirm('确定@所有人吗?', function (index) {
+            let index = layer.confirm('确定@所有人吗?', function (index) {
                 //do something
                 parent.atAll();
                 layer.close(index);
+                parent.layer.close(parent_index);
             });
-            parent.layer.close(parent_index);
+            
         };
         //监听全选
         form.on('checkbox(ids)', function (data) {

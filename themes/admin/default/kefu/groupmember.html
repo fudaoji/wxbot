@@ -1,0 +1,66 @@
+<div class="layui-row">
+    <table class="layui-table" lay-skin="line">
+        <colgroup>
+            <col width="50">
+            <col>
+            <col>
+            <col width="100">
+        </colgroup>
+        <tbody>
+            {volist name="list" id="item"}
+            <tr>
+                <td>
+                    <input type="checkbox" class="id" lay-filter="id" value="{$item.id}" lay-skin="primary"
+                        data-wxid="{$item.wxid}" data-group_nickname="{$item.group_nickname}"/>
+                </td>
+                <td><img src="{$item.headimgurl}"/></td>
+                <td>{$item.group_nickname}</td>
+            </tr>
+            {/volist}
+        </tbody>
+    </table>
+</div>
+<div class="bottom">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn bg-success" onclick="clickSure();">确定</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn">取消</button>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['jquery','form', 'upload'],function(){
+        var form = layui.form
+        ,upload = layui.upload
+        , $ = layui.jquery;
+        //刷新界面 所有元素
+        form.render();
+        parent_index = parent.layer.getFrameIndex(window.name);
+        clickSure = function () {
+            var list = [];
+            $('.id:checked').each(function (i, item) {
+                list.push({id: $(item).val(), wxid: $(item).data('wxid'), group_nickname: $(item).data('group_nickname')});
+            });
+            if(list.length < 1){
+                layer.alert("请选择成员");
+                return;
+            }
+
+            parent.setAtValue(list);
+            parent.layer.close(parent_index);
+        };
+
+    });
+</script>
+
+
+<style>
+    body{background-color: #fff;}
+    .layui-card-body:hover .delete-btn,.layui-card-body:hover .check-btn{display: block;}
+    .layui-form-checkbox[lay-skin=primary]{height: 19px !important;margin-top: -12px;margin-left: -1px;}
+    #page{margin: 20px auto;text-align: center;}
+    .bottom{
+        background-color: #f8f8f8;line-height: 52px;height: 52px;position: fixed;text-align: center;
+        width: 100%; bottom: 0;
+    }
+</style>

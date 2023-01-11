@@ -241,6 +241,7 @@ class BotGroupmember extends Base
                 if($res['code'] && count($res['ReturnJson'])) {
                     $list = $res['ReturnJson']['member_list'];
                     $wxid_arr = [];
+                    Logger::write("拉取群成员" . json_encode($list) . "\n");
                     foreach ($list as $k => $v){
                         // Logger::write("拉取群成员" . json_encode($v) . "\n");
                         $nickname = filter_emoji($v['nickname']);

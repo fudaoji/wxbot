@@ -667,8 +667,6 @@ class Kefu extends Base
         $where = [['group_id', '=', $post_data['group_id']]];
         !empty($post_data['uin']) && $where[] = ['wxid', '<>', $post_data['uin']];
         $list = $this->model->where($where)->select()->toArray();
-        dump($list);
-        dump($this->model->getlastsql());
         $this->assign('list', $list);
         return $this->show();
     }

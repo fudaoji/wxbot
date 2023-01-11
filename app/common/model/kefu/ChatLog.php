@@ -10,9 +10,11 @@
 
 namespace app\common\model\kefu;
 
+use app\admin\controller\Groupmember;
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\model\EmojiCode;
+use app\admin\model\BotGroupmember;
 use ky\Logger;
 
 class ChatLog extends Kefu
@@ -62,7 +64,8 @@ class ChatLog extends Kefu
             'msg_type' => $data['type'],
             'event' => 'msg',
             'last_chat_content' => $convert['last_chat_content'],
-            'type' => 'receive'
+            'type' => 'receive',
+            'friend_type' => 'friend'
         ]);
         $insert_data = [
             'from' => $data['from_wxid'],
@@ -74,6 +77,7 @@ class ChatLog extends Kefu
             'msg_id' => $data['msg_id'],
             'type' => 'receive',
             'msg_type' => $data['type'],
+            'from_name' => $data['from_name'],
         ];
         $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
@@ -466,10 +470,9 @@ class ChatLog extends Kefu
 
     /**
      * 
-     * 保存群里数据
+     * 保存接收群里数据
      */
     public function saveGroupChat($data, $bot){
-        return;
         // {
         //     "robot_wxid": "wxid_5fprdytoi1k612",
         //     "type": 1,
@@ -483,49 +486,73 @@ class ChatLog extends Kefu
         //     "robot_type": 0,
         //     "msg_id": "1591024870470498640"
         // }
-        Logger::write("保存发送的消息" . json_encode($data) . "\n");
-        $time = time();
+        Logger::write("保存接收群里数据" . json_encode($data) . "\n");
+        $redis = get_redis();
         $year = date("Y");
         $chat_model = new ChatLog();
+        // $bot_model = new ModelBot();
+        $key = 'receive_private_chat';
+        $time = time();
         $member_model = new BotMember();
-        $member = $member_model->where(['uin' => $bot['uin'],'wxid' => $data['from_group']])->find();
+        $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_group']])->find();
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
+        Logger::write("收到群信息" . json_encode($data['msg']) . "\n");
+        Logger::write("转化群信息" . json_encode($convert) . "\n");
         $member['last_chat_time'] = $time;
         $member['last_chat_content'] = $convert['last_chat_content'];
+        // $bot = $bot_model->where(['uin' => $data['robot_wxid']])->find();
+        //获取群成员信息
+        $groupMemberM = new BotGroupmember();
+        $group_headimg = '';
+        $group_nickname = '';
+        $groupMember = $groupMemberM->where(['wxid' => $data['from_wxid'], 'bot_id' => $bot['id']])->find();
+        if ($groupMember) {
+            $group_headimg = $groupMember['headimgurl'];
+            $group_nickname = $groupMember['nickname'];
+        }
+        $msg = json_encode([
+            'msg' => $convert['content'],
+            'date' => date("Y-m-d H:i:s", $time),
+            'msg_id' => $data['msg_id'],
+            'headimgurl' => $member['headimgurl'],
+            'from_wxid' => $data['from_group'],
+            'robot_wxid' => $data['robot_wxid'],
+            'client' => $bot['admin_id'], //对应用户id
+            'friend' => $member,
+            'msg_type' => $data['type'],
+            'event' => 'msg',
+            'last_chat_content' => $convert['last_chat_content'],
+            'type' => 'receive',
+            'friend_type' => 'group',
+            'group_from_wxid' => $data['from_wxid'],
+            'group_from_name' => $data['from_name'],
+            'group_headimg' => $group_headimg,
+            'group_nickname' => $group_nickname,
+
+        ]);
         $insert_data = [
             'from' => $data['from_group'],
             'to' => $data['robot_wxid'],
             'create_time' => $time,
             'content' => $convert['content'],
             'year' => $year,
-            'from_headimg' => $bot['headimgurl'],
+            'from_headimg' => $member['headimgurl'],
             'msg_id' => $data['msg_id'],
-            'type' => 'send',
-            'msg_type' => $data['type'] //文本
+            'type' => 'receive',
+            'msg_type' => $data['type'],
+            'from_name' => $data['from_group_name'],
+            'friend_type' => 'group',
+            'group_from_wxid' => $data['from_wxid'],
+            'group_from_name' => $data['from_name'],
+            'group_headimg' => $group_headimg,
+            'group_nickname' => $group_nickname,
         ];
         $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
-        
-        $msg = json_encode([
-            'robot_wxid' => $data['robot_wxid'],
-            'to' => $data['to_wxid'],
-            'create_time' => $time,
-            'content' => $convert['content'],
-            'year' => $year,
-            'headimgurl' => $bot['headimgurl'],
-            'msg_id' => $data['msg_id'],
-            'type' => 'send',
-            'msg_type' => $data['type'], //文本
-            'event' => 'callback',
-            'friend' => $member,
-            'client' => $bot['admin_id'], //对应用户id
-        ]);
-        $redis = get_redis();
-        $key = 'receive_private_chat';
         $redis->rpush($key, $msg);
-        Logger::write("保存发送的消息,推送前端:" . json_encode($msg) . "\n");
+        Logger::write("存储数据OK：" . json_encode($msg) . "\n");
         //视频转换失败
         if (in_array($data['type'],[43, 2004]) && $convert['content'] == '') {
             $delay_second = 10;
@@ -541,7 +568,9 @@ class ChatLog extends Kefu
                 'bot' => $bot,
                 'client' => $bot['admin_id'], //对应用户id
                 'robot_wxid' => $data['robot_wxid'],
-                'from_wxid' => $data['from_wxid'],
+                'from_wxid' => $data['from_group'],
+                'friend_type' => 'group',
+                'group_from_wxid' => $data['from_wxid'],
             ];
             $redis->rpush($key_delay, json_encode($r_data));
             Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");

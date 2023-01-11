@@ -187,9 +187,21 @@
                                             v-model="sel_chat_content">
                                     </div>
                                     <div class="layui-col-md1">
-                                        <div class="headimg">
-                                            <img :src="item.headimgurl"
-                                                style="width:50px;height:50px;border-radius:10%">
+                                        <!-- 好友信息 -->
+                                        <div v-if="item.friend_type == 'friend'">
+                                            <div class="headimg">
+                                                <img :src="item.headimgurl"
+                                                    style="width:50px;height:50px;border-radius:10%">
+                                            </div>
+                                        </div>
+                                        <!-- 群聊信息 -->
+                                        <div v-if="item.friend_type == 'group'">
+                                            <div class="headimg">
+                                                <img :src="item.group_headimg"
+                                                    style="width:50px;height:50px;border-radius:10%">
+                                            </div>
+                                            <span v-if="item.group_nickname != ''">{{item.group_nickname}}</span>
+                                            <span v-else>{{item.group_from_name}}</span>
                                         </div>
                                     </div>
                                     <div class="layui-col-md9 content">
@@ -1828,7 +1840,7 @@
 
 
     }
-    
+
     //根据iframe传回的值进行当前页面的赋值
     function setVideoValue(value, field) {
         $.each(value, function (i, v) {

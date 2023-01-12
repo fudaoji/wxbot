@@ -699,7 +699,7 @@ class Kefu extends Base
                 //     'to_wxid' => $post_data['to_wxid'],
                 //     'msg' => $post_data['content']
                 // ]);
-                $content = $this->emojiM->emojiText($post_data['content']);
+                $content = $this->emojiM->emojiText($content);
                 $last_chat_content = $content;
             } else if ($post_data['type'] == 3) { //图片
                 // $bot_client->sendImgToFriends([

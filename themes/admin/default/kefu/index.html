@@ -1627,12 +1627,14 @@
                 let content = this.content;
                 let to_wxid = this.friend_info.wxid;
                 let friend_id = this.friend_id;
+                let type = this.content_type;
                 params.group_id = group_id;
                 params.uin = uin;
                 params.content = content;
                 params.bot_id = bot_id;
                 params.to_wxid = to_wxid;
                 params.friend_id = friend_id;
+                params.type = type;
                 let url = "/admin/kefu/sendMsgAndAt";
                 self['content'] = '';
                 $.post(url, params, function (res) {

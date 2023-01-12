@@ -689,7 +689,7 @@ class Kefu extends Base
             $year = date("Y");
             $time = time();
             $bot = $bot_model->getOne($post_data['bot_id']);
-            $content = $post_data['content'];
+            $content = $post_data['content'].$post_data['at_nickname'];
             // $content = $chat_model->convertMsg($content, $post_data['type']);
             // $last_chat_content = $content;
             // $bot_client = $bot_model->getRobotClient($bot);

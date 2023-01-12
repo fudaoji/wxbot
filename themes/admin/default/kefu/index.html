@@ -1941,7 +1941,7 @@
         var at_nickname = '';
         $.each(value, function (i, v) {
             at_wxid.push(v.wxid);
-            at_nickname = '@'+v.group_nickname;
+            at_nickname += '@'+v.group_nickname;
         });
         at_wxid_str = at_wxid.join(',');
         let params = {member_wxid:at_wxid_str,at_nickname:at_nickname};

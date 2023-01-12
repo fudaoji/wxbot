@@ -1971,11 +1971,13 @@
     //根据iframe传回的值进行当前页面的赋值
     function setVideoValue(value, field) {
         $.each(value, function (i, v) {
-            let url = v.url;
-            vm.content = url;
-            vm.content_type = 43;
-            setTimeout(vm.sendMsg(), 1000);
-            vm.content_type = 1;
+            setTimeout(function () {
+                let url = v.url;
+                vm.content = url;
+                vm.content_type = 43;
+                vm.sendMsg();
+                vm.content_type = 1;
+            }, 1000);
         });
     }
     //根据iframe传回的值进行当前页面的赋值

@@ -351,7 +351,8 @@
                             <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"
                                 id="id_send" @mouseover="sendTip()" @mouseout="closeTip()"><i
                                     class="layui-icon layui-icon-release"></i> 发送</button>
-                            <button v-if="friend_info.type == 'group'" type="button" class="layui-btn" lay-submit="" @click="openGroupMember">
+                            <button v-if="friend_info.type == 'group'" type="button" class="layui-btn" lay-submit=""
+                                @click="openGroupMember">
                                 <i class="layui-icon layui-icon-release"></i> 发送并@</button>
                         </div>
                     </div>
@@ -754,7 +755,7 @@
                 if (self['friend_id'] != item.id) {
                     self['friend_id'] = item.id;
                     this.friend_info = {};
-                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid, sex: item.sex, province: item.province, city: item.city, type: item.type};
+                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid, sex: item.sex, province: item.province, city: item.city, type: item.type };
                     this.show_info = true;
                     this.show_chat = true;
                     this.friend_wxid = item.wxid;
@@ -1607,7 +1608,7 @@
                 }
                 let group_id = this.friend_id;
                 let uin = this.bot_uin;
-                let url = '/admin/kefu/groupMember?uin='+uin+'&group_id='+group_id;
+                let url = '/admin/kefu/groupMember?uin=' + uin + '&group_id=' + group_id;
                 layer.open({
                     type: 2,
                     title: '@群成员',
@@ -1616,10 +1617,10 @@
                     area: ['320px', '320px'],
                     content: [url] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                 });
-            
+
             },
             //发送信息并@
-            sendMsgAndAt(params){
+            sendMsgAndAt(params) {
                 let self = this;
                 let group_id = this.friend_id;
                 let uin = this.bot_uin;
@@ -1660,15 +1661,15 @@
                     }
                 }, 'json');
             },
-            sendToWxAndAt(params){
+            sendToWxAndAt(params) {
                 let url = '/admin/kefu/sendMsgAndAtPost';
                 $.ajaxSettings.async = true;
                 $.post(url, params, function (res) {
-                    
+
                 }, 'json');
             },
             //发送信息并@所有人
-            sendMsgAndAtAll(){
+            sendMsgAndAtAll() {
                 let self = this;
                 let group_id = this.friend_id;
                 let uin = this.bot_uin;
@@ -1713,11 +1714,11 @@
                     }
                 }, 'json');
             },
-            sendToWxAndAtAll(params){
+            sendToWxAndAtAll(params) {
                 let url = '/admin/kefu/sendMsgAndAtAllPost';
                 $.ajaxSettings.async = true;
                 $.post(url, params, function (res) {
-                    
+
                 }, 'json');
             },
 
@@ -1973,7 +1974,7 @@
             let url = v.url;
             vm.content = url;
             vm.content_type = 43;
-            vm.sendMsg();
+            setTimeout(vm.sendMsg(), 1000);
             vm.content_type = 1;
         });
     }
@@ -1988,19 +1989,19 @@
             vm.content_type = 1;
         });
     }
-    function setAtValue(value){
+    function setAtValue(value) {
         var at_wxid = [];
         var at_wxid_str = '';
         var at_nickname = '';
         $.each(value, function (i, v) {
             at_wxid.push(v.wxid);
-            at_nickname += '@'+v.group_nickname;
+            at_nickname += '@' + v.group_nickname;
         });
         at_wxid_str = at_wxid.join(',');
-        let params = {member_wxid:at_wxid_str,at_nickname:at_nickname};
+        let params = { member_wxid: at_wxid_str, at_nickname: at_nickname };
         vm.sendMsgAndAt(params);
     }
-    function atAll(){
+    function atAll() {
         vm.sendMsgAndAtAll();
     }
     function compare(property, sort = 'asc') {

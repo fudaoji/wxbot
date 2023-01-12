@@ -1666,7 +1666,53 @@
                 $.post(url, params, function (res) {
                     
                 }, 'json');
-            }
+            },
+            //发送信息并@所有人
+            sendMsgAndAtAll(){
+                let self = this;
+                let group_id = this.friend_id;
+                let uin = this.bot_uin;
+                let bot_id = this.bot_id;
+                let content = this.content;
+                let to_wxid = this.friend_info.wxid;
+                let friend_id = this.friend_id;
+                let type = this.content_type;
+                let params = {
+                    content: content,
+                    uin: uin,
+                    to_wxid: to_wxid,
+                    bot_id: this.bot_id,
+                    bot_info: this.bot_info,
+                    quote: '引用内容引用内容',
+                    friend_id: this.friend_id,
+                    type: this.content_type
+                }
+
+                let url = "/admin/kefu/sendMsgAndAtAll";
+                self['content'] = '';
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][uin][[to_wxid]];
+                        //是当前的机器人,好友列表排序,最后聊天记录
+                        if (uin == res.data.friend.uin) {
+                            $.each(self['friends_list'], function (i, v) {
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
+                                }
+                            });
+                            self['friends_list'].sort(compare("last_chat_time", "desc"));
+
+                        }
+                        self['renderDropdown']();
+                        scroll();
+                        // self['searchFriend']();
+                        self['sendToWxAndAtAll'](params);
+
+                    }
+                }, 'json');
+            },
 
         }
     });
@@ -1946,6 +1992,9 @@
         at_wxid_str = at_wxid.join(',');
         let params = {member_wxid:at_wxid_str,at_nickname:at_nickname};
         vm.sendMsgAndAt(params);
+    }
+    function atAll(){
+        vm.sendMsgAndAtAll();
     }
     function compare(property, sort = 'asc') {
         return function (a, b) {

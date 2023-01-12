@@ -1713,6 +1713,13 @@
                     }
                 }, 'json');
             },
+            sendToWxAndAtAll(params){
+                let url = '/admin/kefu/sendMsgAndAtAllPost';
+                $.ajaxSettings.async = true;
+                $.post(url, params, function (res) {
+                    
+                }, 'json');
+            },
 
         }
     });

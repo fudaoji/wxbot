@@ -670,4 +670,139 @@ class Kefu extends Base
         $this->assign('list', $list);
         return $this->show();
     }
+
+
+    /**
+     * 
+     * 发送消息
+     */
+    public function sendMsgAndAt($post_data = [])
+    {
+        if (request()->isPost()) {
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
+            $bot_model = new ModelBot();
+            $chat_model = new ChatLog();
+            $member_model = new BotMember();
+            $date = date("Y-m-d H:i:s");
+            $year = date("Y");
+            $time = time();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $content = $post_data['content'].$post_data['at_nickname'];
+            // $content = $chat_model->convertMsg($content, $post_data['type']);
+            // $last_chat_content = $content;
+            // $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['type'] == 1) { //文本
+                // $bot_client->sendTextToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'msg' => $post_data['content']
+                // ]);
+                $content = $this->emojiM->emojiText($post_data['content']);
+                $last_chat_content = $content;
+            } else if ($post_data['type'] == 3) { //图片
+                // $bot_client->sendImgToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[图片]';
+            } else if ($post_data['type'] == 2004) { //文件
+                // $bot_client->sendFileToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[文件]';
+            } else if ($post_data['type'] == 43) { //视频
+                $last_chat_content = '[视频]';
+            } else {
+                $content = '[链接]';
+                $last_chat_content = '[链接]';
+            }
+            $msgid = 'send_' . time() . $this->adminInfo['id'];
+            // $insert_data = [
+            //     'from' => $bot['uin'],
+            //     'to' => $post_data['to_wxid'],
+            //     'create_time' => $time,
+            //     'content' => $post_data['content'],
+            //     'year' => $year,
+            //     'from_headimg' => $bot['headimgurl'],
+            //     'msg_id' => $msgid,
+            //     'type' => 'send',
+            //     'msg_type' => $post_data['type'] //文本
+            // ];
+            // $chat_model->partition('p' . $year)->insertGetId($insert_data);
+            //更改好友最后聊天时间
+            if (isset($post_data['friend_id']) && $post_data['friend_id'] > 0) {
+                $friend_id = $post_data['friend_id'];
+            } else {
+                $friend_id = $member_model->where(['uin' => $bot['uin'], 'wxid' => $post_data['to_wxid']])->order(['id' => 'desc'])->value('id');
+            }
+            $member_model->where(['id' => $friend_id])->update(['last_chat_time' => $time]);
+            $friend = $member_model->where(['id' => $friend_id])->find();
+            $friend['last_chat_content'] = $last_chat_content;
+
+            $result = [
+                'msg_id' => $msgid,
+                'date' => $date,
+                'content' => $content,
+                'type' => 'send',
+                'class' => 'my_chat_content',
+                'quote' => $post_data['quote'] ?? '',
+                'headimgurl' => $bot['headimgurl'],
+                'friend' => $friend,
+                'msg_type' => $post_data['type'],
+            ];
+            //最后一条聊天记录放redis
+            $redis = get_redis();
+            $key = 'last_chat_log:' . $bot['uin'];
+            $hkey = $post_data['to_wxid'];
+            $h_data = $result;
+            $h_data['content'] = $last_chat_content;
+            $redis->hSet($key, $hkey, json_encode($result));
+            $this->success('success', '', $result);
+        }
+    }
+
+    public function sendMsgAndAtPost($post_data = [])
+    {
+        if (request()->isPost()) {
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['type'] == 1) { //文本
+                $bot_client->sendGroupMsgAndAt([
+                    'robot_wxid' => $bot['uin'],
+                    'group_wxid' => $post_data['to_wxid'],
+                    'member_wxid' => $post_data['member_wxid'],
+                    'msg' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 3) { //图片
+                $bot_client->sendImgToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 2004) { //文件
+                $res = $bot_client->sendFileToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']['url']
+                ]);
+                
+            } else if ($post_data['type'] == 43) { //视频
+                $bot_client->sendVideoMsg([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            }
+            $this->success('success');
+        }
+    }
 }

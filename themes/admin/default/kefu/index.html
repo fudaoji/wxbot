@@ -351,7 +351,7 @@
                             <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"
                                 id="id_send" @mouseover="sendTip()" @mouseout="closeTip()"><i
                                     class="layui-icon layui-icon-release"></i> 发送</button>
-                            <button v-if="friend_info.type == 'group'" type="button" class="layui-btn" lay-submit="" @click="sendMsgAndAt">
+                            <button v-if="friend_info.type == 'group'" type="button" class="layui-btn" lay-submit="" @click="openGroupMember">
                                 <i class="layui-icon layui-icon-release"></i> 发送并@</button>
                         </div>
                     </div>
@@ -1596,8 +1596,8 @@
             closeTip() {
                 layer.close(this.tip);
             },
-            //发送信息并@
-            sendMsgAndAt() {
+            //显示群成员
+            openGroupMember() {
                 //获取群成员
                 let self = this;
                 let content = this.content;
@@ -1617,6 +1617,53 @@
                     content: [url] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                 });
             
+            },
+            //发送信息并@
+            sendMsgAndAt(params){
+                let self = this;
+                let group_id = this.friend_id;
+                let uin = this.bot_uin;
+                let bot_id = this.bot_id;
+                let content = this.content;
+                let to_wxid = this.friend_info.wxid;
+                let friend_id = this.friend_id;
+                params.group_id = group_id;
+                params.uin = uin;
+                params.content = content;
+                params.bot_id = bot_id;
+                params.to_wxid = to_wxid;
+                params.friend_id = friend_id;
+                let url = "/admin/kefu/sendMsgAndAt";
+                self['content'] = '';
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][uin][[to_wxid]];
+                        //是当前的机器人,好友列表排序,最后聊天记录
+                        if (uin == res.data.friend.uin) {
+                            $.each(self['friends_list'], function (i, v) {
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
+                                }
+                            });
+                            self['friends_list'].sort(compare("last_chat_time", "desc"));
+
+                        }
+                        self['renderDropdown']();
+                        scroll();
+                        // self['searchFriend']();
+                        self['sendToWxAndAt'](params);
+
+                    }
+                }, 'json');
+            },
+            sendToWxAndAt(params){
+                let url = '/admin/kefu/sendMsgAndAtPost';
+                $.ajaxSettings.async = true;
+                $.post(url, params, function (res) {
+                    
+                }, 'json');
             }
 
         }
@@ -1875,18 +1922,6 @@
             vm.content_type = 1;
         });
     }
-    function setAtValue(value){
-        var at_wxid = [];
-        var at_wxid_str = '';
-        var at_nickname = [];
-        $.each(value, function (i, v) {
-            at_wxid.push(v.wxid);
-            at_nickname.push(v.group_nickname);
-        });
-        at_wxid_str = at_wxid.join(',');
-        
-
-    }
     //根据iframe传回的值进行当前页面的赋值
     function setFileValue(value, field) {
         $.each(value, function (i, v) {
@@ -1897,6 +1932,18 @@
             vm.sendMsg();
             vm.content_type = 1;
         });
+    }
+    function setAtValue(value){
+        var at_wxid = [];
+        var at_wxid_str = '';
+        var at_nickname = '';
+        $.each(value, function (i, v) {
+            at_wxid.push(v.wxid);
+            at_nickname = '@'+v.group_nickname;
+        });
+        at_wxid_str = at_wxid.join(',');
+        let params = {member_wxid:at_wxid_str,at_nickname:at_nickname};
+        vm.sendMsgAndAt(params);
     }
     function compare(property, sort = 'asc') {
         return function (a, b) {

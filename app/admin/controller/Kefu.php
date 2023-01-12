@@ -916,7 +916,7 @@ class Kefu extends Base
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                $bot_client->sendMsgAtAll(['robot_wxid' => $bot['uin'], 'group_wxid' => $post_data['to_wxid'], 'msg' => $post_data['content']]);
+                $res = $bot_client->sendMsgAtAll(['robot_wxid' => $bot['uin'], 'group_wxid' => $post_data['to_wxid'], 'msg' => $post_data['content']]);
             } else if ($post_data['type'] == 3) { //图片
                 $bot_client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],
@@ -931,13 +931,13 @@ class Kefu extends Base
                 ]);
                 
             } else if ($post_data['type'] == 43) { //视频
-                $bot_client->sendVideoMsg([
+                $res = $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']
                 ]);
             }
-            $this->success('success');
+            $this->success('success','',$res);
         }
     }
 }

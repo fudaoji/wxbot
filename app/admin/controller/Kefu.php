@@ -140,7 +140,7 @@ class Kefu extends Base
         if (request()->isPost()) {
             $post_data = input('post.');
             $this->bot = $bot_model->getOne($post_data['id']);
-            $where = [['type', 'in', [Bot::FRIEND,Bot::GROUP]], ['uin', '=', $this->bot['uin']]];
+            $where = [['type', 'in', [Bot::FRIEND, Bot::GROUP]], ['uin', '=', $this->bot['uin']]];
             !empty($post_data['search_key']) && $where[] = ['nickname|remark_name|username|wxid', 'like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->where($where)->count();
             if ($total) {
@@ -289,7 +289,6 @@ class Kefu extends Base
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
                 ]);
-                
             } else if ($post_data['type'] == 43) { //视频
                 $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
@@ -645,14 +644,13 @@ class Kefu extends Base
                 'scene' => Bot::SCENE_CARD,
                 'type' => 1
             ]);
-            Log::write('添加好友:---------'.json_encode($res));
+            Log::write('添加好友:---------' . json_encode($res));
             if ($res['Code'] != 0) {
                 $this->error(json_encode($res));
-                Log::write('添加好友错误:---------'.json_encode($res));
+                Log::write('添加好友错误:---------' . json_encode($res));
             } else {
                 $this->success('success');
             }
-            
         }
     }
 
@@ -689,7 +687,7 @@ class Kefu extends Base
             $year = date("Y");
             $time = time();
             $bot = $bot_model->getOne($post_data['bot_id']);
-            $content = $post_data['content'].$post_data['at_nickname'];
+            $content = $post_data['content'] . $post_data['at_nickname'];
             // $content = $chat_model->convertMsg($content, $post_data['type']);
             // $last_chat_content = $content;
             // $bot_client = $bot_model->getRobotClient($bot);
@@ -764,7 +762,6 @@ class Kefu extends Base
             $redis->hSet($key, $hkey, json_encode($result));
             $this->success('success', '', $result);
         }
-
     }
 
     public function sendMsgAndAtPost($post_data = [])
@@ -795,7 +792,6 @@ class Kefu extends Base
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
                 ]);
-                
             } else if ($post_data['type'] == 43) { //视频
                 $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
@@ -825,7 +821,7 @@ class Kefu extends Base
             $year = date("Y");
             $time = time();
             $bot = $bot_model->getOne($post_data['bot_id']);
-            $content = $post_data['content'].'@所有人';
+            $content = $post_data['content'] . '@所有人';
             // $content = $chat_model->convertMsg($content, $post_data['type']);
             // $last_chat_content = $content;
             // $bot_client = $bot_model->getRobotClient($bot);
@@ -929,7 +925,6 @@ class Kefu extends Base
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
                 ]);
-                
             } else if ($post_data['type'] == 43) { //视频
                 $res = $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
@@ -937,7 +932,7 @@ class Kefu extends Base
                     'path' => $post_data['content']
                 ]);
             }
-            $this->success('success','',$res);
+            $this->success('success', '', $res);
         }
     }
 
@@ -946,18 +941,38 @@ class Kefu extends Base
      * 
      * 获取群成员信息
      */
-    public function getGroupMemberInfo(){
+    public function getGroupMemberInfo()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            $info = $bot_client->getGroupMemberInfo([
+            $res = $bot_client->getGroupMemberInfo([
                 'robot_wxid' => $bot['uin'],
                 'group_wxid' => $post_data['group_wxid'],
                 'member_wxid' => $post_data['member_wxid'],
             ]);
-            $this->success('success','',$info);
+
+            if ($res['Code'] == 0 && isset($res['ReturnJson'])) {
+                $info = $res['ReturnJson'];
+                // backgroundimgurl: ""
+                // city: "Xiamen"
+                // country: "Xiamen"
+                // group_name: "微信多客服测试优化"
+                // group_wxid: "34907960925@chatroom"
+                // headimgurl: "http://wx.qlogo.cn/mmhead/ver_1/rFBKIR8SsRnRPR18ftyqtToqyZxeYLqsRrg2o2z597cF1r69rRZHWEpRe1Nic2ukfpRzztENwP8cb0x2sichrshzojPXXmFLibuiasBibY5ge09c/0"
+                // nickname: "DJ"
+                // province: "Fujian"
+                // scene: 0
+                // sex: 1
+                // signature: ""
+                // wx_num: "doogiefu"
+                // wxid: "wxid_xokb2ezu1p6t21"
+                $this->success('success', '', $info);
+            } else {
+                $this->error('获取群成员信息错误');
+            }
         }
     }
 }

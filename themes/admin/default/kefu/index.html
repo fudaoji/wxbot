@@ -1724,22 +1724,33 @@
                 }, 'json');
             },
             //群用户名片
-            openGroupCard(item){
+            openGroupCard(item) {
                 console.log('群用户名片');
                 console.log(item);
+                let bot_id = this.bot_info.id;
+                let group_wxid = item.from;
+                let info_url = '/admin/kefu/getGroupMemberInfo';
+                let info_params = { bot_id: bot_id, group_wxid: group_wxid, member_wxid: item.group_from_wxid };
+                $.post(info_url, info_params, function (res) {
+                    if (res.code == 1) {
+                        
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
                 return false;
                 //判断是否是好友
-                let bot_uin = this.bot_info.uin;
-                let check_url = '/admin/kefu/checkFirend';
-                let check_params = { bot_uin: bot_uin, wxid: item.content.username };
+
+
+
                 $.post(check_url, check_params, function (res) {
                     if (res.code == 1) {
                         let is_friend = res.data.is_friend;
                         let html = '<div class="layui-card">' +
                             '<div class= "layui-card-header" style="height:135px">' +
                             '<div style="margin:10px">' +
-                            '<div><img src="' + item.content.headimgurl + '" style="width:50px;">' +
-                            '<span style="margin-left:5px">' + item.content.nickname + '</span>';
+                            '<div><img src="' + item.group_headimg + '" style="width:50px;">' +
+                            '<span style="margin-left:5px">' + item.group_nickname + '</span>';
                         if (item.content.sex == '男') {
                             html += '<span><i class="layui-icon layui-icon-male" style="color:#469ddb"></i>   </span></div>';
                         } else {

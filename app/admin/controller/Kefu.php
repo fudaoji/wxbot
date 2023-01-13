@@ -940,4 +940,24 @@ class Kefu extends Base
             $this->success('success','',$res);
         }
     }
+
+
+    /**
+     * 
+     * 获取群成员信息
+     */
+    public function getGroupMemberInfo(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            $info = $bot_client->getGroupMemberInfo([
+                'robot_wxid' => $bot['uin'],
+                'group_wxid' => $post_data['group_wxid'],
+                'member_wxid' => $post_data['member_wxid'],
+            ]);
+            $this->success('success','',$info);
+        }
+    }
 }

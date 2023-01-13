@@ -244,6 +244,11 @@ class ChatLog extends Kefu
                 $content = $msg;
                 $last_chat_content = $msg;
                 break;
+            case 10003:
+                //引用消息
+                $content = $msg;
+                $last_chat_content = $msg;
+                break;
             default:
                 $content = "[链接]";
                 $last_chat_content = "[链接]";

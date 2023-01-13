@@ -196,10 +196,12 @@
                                         </div>
                                         <!-- 群聊信息 -->
                                         <div v-if="item.friend_type == 'group'">
-                                            <div class="headimg">
-                                                <img :src="item.group_headimg"
-                                                    style="width:50px;height:50px;border-radius:10%">
-                                            </div>
+                                            <a href="javascript:" @click="openGroupCard(item)">
+                                                <div class="headimg">
+                                                    <img :src="item.group_headimg"
+                                                        style="width:50px;height:50px;border-radius:10%">
+                                                </div>
+                                            </a>
                                             <span v-if="item.group_nickname != ''">{{item.group_nickname}}</span>
                                             <span v-else>{{item.group_from_name}}</span>
                                         </div>
@@ -1721,6 +1723,60 @@
 
                 }, 'json');
             },
+            //群用户名片
+            openGroupCard(item){
+                console.log('群用户名片');
+                console.log(item);
+                return false;
+                //判断是否是好友
+                let bot_uin = this.bot_info.uin;
+                let check_url = '/admin/kefu/checkFirend';
+                let check_params = { bot_uin: bot_uin, wxid: item.content.username };
+                $.post(check_url, check_params, function (res) {
+                    if (res.code == 1) {
+                        let is_friend = res.data.is_friend;
+                        let html = '<div class="layui-card">' +
+                            '<div class= "layui-card-header" style="height:135px">' +
+                            '<div style="margin:10px">' +
+                            '<div><img src="' + item.content.headimgurl + '" style="width:50px;">' +
+                            '<span style="margin-left:5px">' + item.content.nickname + '</span>';
+                        if (item.content.sex == '男') {
+                            html += '<span><i class="layui-icon layui-icon-male" style="color:#469ddb"></i>   </span></div>';
+                        } else {
+                            html += '<span><i class="layui-icon layui-icon-female" style="color:pink"></i>   </span></div>';
+                        }
+
+                        if (is_friend == 1) {
+                            html += '<div><span>微信号:' + item.content.username + '</span></div>' +
+                                '<div><span>地区:' + item.content.city + '</span></div>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="layui-card-body" style="text-align: center;">';
+                            let chat_item = res.data.friend;
+                            // console.log(chat_item);
+                            html += '<button type="button" lay-submit="" class="layui-btn" onclick="chatwith(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">发消息</button>';
+                        } else {
+                            html += '<div><span>地区:' + item.content.city + '</span></div>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="layui-card-body" style="text-align: center;">';
+                            html += '<button type="button" lay-submit="" class="layui-btn" onclick="addFriend(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">添加到通讯录</button>';
+                        }
+                        html += '</div>' +
+                            '</div >';
+                        // console.log(html);
+                        layer.open({
+                            title: false,
+                            type: 1,
+                            content: html,
+
+                        });
+
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
+            }
 
         }
     });

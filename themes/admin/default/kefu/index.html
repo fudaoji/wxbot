@@ -213,9 +213,12 @@
                                                 v-html="item.content">
                                             </div>
                                             <!-- 引用消息 -->
-                                            <div v-else-if="item.msg_type == 10003" :class="'receive_10003_'+item.msg_id"
-                                                v-html="item.content.msg">
-                                                <div class="layui-form-mid layui-word-aux">{{item.content.displayname}}：{{item.content.content}}</div>
+                                            <div v-else-if="item.msg_type == 10003">
+                                                <div :class="'receive_10003_'+item.msg_id" v-html="item.content.msg">
+                                                </div>
+                                                <div class="layui-form-mid layui-word-aux">
+                                                    {{item.content.displayname}}：{{item.content.content}}
+                                                </div>
                                             </div>
                                             <!-- 图片消息 -->
                                             <div v-else-if="item.msg_type == 3" :class="'receive_3_'+item.msg_id">

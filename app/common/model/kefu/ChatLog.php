@@ -35,7 +35,6 @@ class ChatLog extends Kefu
         //       "robot_type": 0,  // 来源微信类型 0 正常微信 / 1 企业微信
         //     "msg_id": 0  // 消息ID
         // }  // 内容（易语言模板的参数名）
-        echo "111";
         $redis = get_redis();
         $year = date("Y");
         $chat_model = new ChatLog();
@@ -247,7 +246,8 @@ class ChatLog extends Kefu
                 //引用消息
                 //{"msg":"123","content":"6","svrid":"3026530822627612838","fromusr":"wxid_5fprdytoi1k612","chatusr":"","displayname":"zengzhiyang"}
                 $content = $msg;
-                $last_chat_content = $msg;
+                $json_msg = json_decode($content, true);
+                $last_chat_content = $json_msg['msg'];
                 break;
             default:
                 $content = "[链接]";

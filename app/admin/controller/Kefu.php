@@ -939,7 +939,7 @@ class Kefu extends Base
 
     /**
      * 
-     * 获取群成员信息
+     * wxid获取群成员信息
      */
     public function getGroupMemberInfo()
     {
@@ -952,6 +952,43 @@ class Kefu extends Base
                 'robot_wxid' => $bot['uin'],
                 'group_wxid' => $post_data['group_wxid'],
                 'member_wxid' => $post_data['member_wxid'],
+            ]);
+
+            if ($res['Code'] == 0 && isset($res['ReturnJson'])) {
+                $info = $res['ReturnJson'];
+                // backgroundimgurl: ""
+                // city: "Xiamen"
+                // country: "Xiamen"
+                // group_name: "微信多客服测试优化"
+                // group_wxid: "34907960925@chatroom"
+                // headimgurl: "http://wx.qlogo.cn/mmhead/ver_1/rFBKIR8SsRnRPR18ftyqtToqyZxeYLqsRrg2o2z597cF1r69rRZHWEpRe1Nic2ukfpRzztENwP8cb0x2sichrshzojPXXmFLibuiasBibY5ge09c/0"
+                // nickname: "DJ"
+                // province: "Fujian"
+                // scene: 0
+                // sex: 1
+                // signature: ""
+                // wx_num: "doogiefu"
+                // wxid: "wxid_xokb2ezu1p6t21"
+                $this->success('success', '', $info);
+            } else {
+                $this->error('获取群成员信息错误');
+            }
+        }
+    }
+
+    /**
+     * 
+     * wxid获取好友信息
+     */
+    public function getDetailInfoByWxid(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            $res = $bot_client->getDetailInfoByWxid([
+                'robot_wxid' => $bot['uin'],
+                'to_wxid' => $post_data['to_wxid'],
             ]);
 
             if ($res['Code'] == 0 && isset($res['ReturnJson'])) {

@@ -1747,14 +1747,14 @@
                                     '<div style="margin:10px">' +
                                     '<div><img src="' + info.headimgurl + '" style="width:50px;">' +
                                     '<span style="margin-left:5px">' + info.nickname + '</span>';
-                                if (info.sex == '男') {
+                                if (info.sex == 1) {
                                     html += '<span><i class="layui-icon layui-icon-male" style="color:#469ddb"></i>   </span></div>';
                                 } else {
                                     html += '<span><i class="layui-icon layui-icon-female" style="color:pink"></i>   </span></div>';
                                 }
 
                                 if (is_friend == 1) {
-                                    html += '<div><span>微信号:' + info.wxid + '</span></div>' +
+                                    html += '<div><span>微信号:' + info.wx_num + '</span></div>' +
                                         '<div><span>地区:' + info.city + '</span></div>' +
                                         '</div>' +
                                         '</div>' +

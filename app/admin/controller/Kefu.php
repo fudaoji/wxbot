@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 use app\admin\controller\Bot as ControllerBot;
 use app\admin\model\Bot as ModelBot;
+use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
 use app\common\model\EmojiCode;
 use app\common\model\kefu\Speechcraft;
@@ -139,7 +140,7 @@ class Kefu extends Base
         if (request()->isPost()) {
             $post_data = input('post.');
             $this->bot = $bot_model->getOne($post_data['id']);
-            $where = [['type', '=', Bot::FRIEND], ['uin', '=', $this->bot['uin']]];
+            $where = [['type', 'in', [Bot::FRIEND, Bot::GROUP]], ['uin', '=', $this->bot['uin']]];
             !empty($post_data['search_key']) && $where[] = ['nickname|remark_name|username|wxid', 'like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->where($where)->count();
             if ($total) {
@@ -283,7 +284,7 @@ class Kefu extends Base
                     'path' => $post_data['content']
                 ]);
             } else if ($post_data['type'] == 2004) { //文件
-                $bot_client->sendFileToFriends([
+                $res = $bot_client->sendFileToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
@@ -643,14 +644,372 @@ class Kefu extends Base
                 'scene' => Bot::SCENE_CARD,
                 'type' => 1
             ]);
-            Log::write('添加好友:---------'.json_encode($res));
+            Log::write('添加好友:---------' . json_encode($res));
             if ($res['Code'] != 0) {
                 $this->error(json_encode($res));
-                Log::write('添加好友错误:---------'.json_encode($res));
+                Log::write('添加好友错误:---------' . json_encode($res));
             } else {
                 $this->success('success');
             }
-            
+        }
+    }
+
+    /**
+     * 
+     * 获取群成员
+     */
+    public function groupMember()
+    {
+        $this->model = new BotGroupmember();
+        $post_data = input();
+        $where = [['group_id', '=', $post_data['group_id']]];
+        !empty($post_data['uin']) && $where[] = ['wxid', '<>', $post_data['uin']];
+        $list = $this->model->where($where)->select()->toArray();
+        $this->assign('list', $list);
+        return $this->show();
+    }
+
+
+    /**
+     * 
+     * 发送消息并@
+     */
+    public function sendMsgAndAt($post_data = [])
+    {
+        if (request()->isPost()) {
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
+            $bot_model = new ModelBot();
+            $chat_model = new ChatLog();
+            $member_model = new BotMember();
+            $date = date("Y-m-d H:i:s");
+            $year = date("Y");
+            $time = time();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $content = $post_data['content'] . $post_data['at_nickname'];
+            // $content = $chat_model->convertMsg($content, $post_data['type']);
+            // $last_chat_content = $content;
+            // $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['type'] == 1) { //文本
+                // $bot_client->sendTextToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'msg' => $post_data['content']
+                // ]);
+                $content = $this->emojiM->emojiText($content);
+                $last_chat_content = $content;
+            } else if ($post_data['type'] == 3) { //图片
+                // $bot_client->sendImgToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[图片]';
+            } else if ($post_data['type'] == 2004) { //文件
+                // $bot_client->sendFileToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[文件]';
+            } else if ($post_data['type'] == 43) { //视频
+                $last_chat_content = '[视频]';
+            } else {
+                $content = '[链接]';
+                $last_chat_content = '[链接]';
+            }
+            $msgid = 'send_' . time() . $this->adminInfo['id'];
+            // $insert_data = [
+            //     'from' => $bot['uin'],
+            //     'to' => $post_data['to_wxid'],
+            //     'create_time' => $time,
+            //     'content' => $post_data['content'],
+            //     'year' => $year,
+            //     'from_headimg' => $bot['headimgurl'],
+            //     'msg_id' => $msgid,
+            //     'type' => 'send',
+            //     'msg_type' => $post_data['type'] //文本
+            // ];
+            // $chat_model->partition('p' . $year)->insertGetId($insert_data);
+            //更改好友最后聊天时间
+            if (isset($post_data['friend_id']) && $post_data['friend_id'] > 0) {
+                $friend_id = $post_data['friend_id'];
+            } else {
+                $friend_id = $member_model->where(['uin' => $bot['uin'], 'wxid' => $post_data['to_wxid']])->order(['id' => 'desc'])->value('id');
+            }
+            $member_model->where(['id' => $friend_id])->update(['last_chat_time' => $time]);
+            $friend = $member_model->where(['id' => $friend_id])->find();
+            $friend['last_chat_content'] = $last_chat_content;
+
+            $result = [
+                'msg_id' => $msgid,
+                'date' => $date,
+                'content' => $content,
+                'type' => 'send',
+                'class' => 'my_chat_content',
+                'quote' => $post_data['quote'] ?? '',
+                'headimgurl' => $bot['headimgurl'],
+                'friend' => $friend,
+                'msg_type' => $post_data['type'],
+            ];
+            //最后一条聊天记录放redis
+            $redis = get_redis();
+            $key = 'last_chat_log:' . $bot['uin'];
+            $hkey = $post_data['to_wxid'];
+            $h_data = $result;
+            $h_data['content'] = $last_chat_content;
+            $redis->hSet($key, $hkey, json_encode($result));
+            $this->success('success', '', $result);
+        }
+    }
+
+    public function sendMsgAndAtPost($post_data = [])
+    {
+        if (request()->isPost()) {
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['type'] == 1) { //文本
+                $bot_client->sendGroupMsgAndAt([
+                    'robot_wxid' => $bot['uin'],
+                    'group_wxid' => $post_data['to_wxid'],
+                    'member_wxid' => $post_data['member_wxid'],
+                    'msg' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 3) { //图片
+                $bot_client->sendImgToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 2004) { //文件
+                $res = $bot_client->sendFileToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']['url']
+                ]);
+            } else if ($post_data['type'] == 43) { //视频
+                $bot_client->sendVideoMsg([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            }
+            $this->success('success');
+        }
+    }
+
+
+    /**
+     * 
+     * 发送消息并@所有人
+     */
+    public function sendMsgAndAtAll($post_data = [])
+    {
+        if (request()->isPost()) {
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
+            $bot_model = new ModelBot();
+            $chat_model = new ChatLog();
+            $member_model = new BotMember();
+            $date = date("Y-m-d H:i:s");
+            $year = date("Y");
+            $time = time();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $content = $post_data['content'] . '@所有人';
+            // $content = $chat_model->convertMsg($content, $post_data['type']);
+            // $last_chat_content = $content;
+            // $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['type'] == 1) { //文本
+                // $bot_client->sendTextToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'msg' => $post_data['content']
+                // ]);
+                $content = $this->emojiM->emojiText($content);
+                $last_chat_content = $content;
+            } else if ($post_data['type'] == 3) { //图片
+                // $bot_client->sendImgToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[图片]';
+            } else if ($post_data['type'] == 2004) { //文件
+                // $bot_client->sendFileToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']
+                // ]);
+                $last_chat_content = '[文件]';
+            } else if ($post_data['type'] == 43) { //视频
+                $last_chat_content = '[视频]';
+            } else {
+                $content = '[链接]';
+                $last_chat_content = '[链接]';
+            }
+            $msgid = 'send_' . time() . $this->adminInfo['id'];
+            // $insert_data = [
+            //     'from' => $bot['uin'],
+            //     'to' => $post_data['to_wxid'],
+            //     'create_time' => $time,
+            //     'content' => $post_data['content'],
+            //     'year' => $year,
+            //     'from_headimg' => $bot['headimgurl'],
+            //     'msg_id' => $msgid,
+            //     'type' => 'send',
+            //     'msg_type' => $post_data['type'] //文本
+            // ];
+            // $chat_model->partition('p' . $year)->insertGetId($insert_data);
+            //更改好友最后聊天时间
+            if (isset($post_data['friend_id']) && $post_data['friend_id'] > 0) {
+                $friend_id = $post_data['friend_id'];
+            } else {
+                $friend_id = $member_model->where(['uin' => $bot['uin'], 'wxid' => $post_data['to_wxid']])->order(['id' => 'desc'])->value('id');
+            }
+            $member_model->where(['id' => $friend_id])->update(['last_chat_time' => $time]);
+            $friend = $member_model->where(['id' => $friend_id])->find();
+            $friend['last_chat_content'] = $last_chat_content;
+
+            $result = [
+                'msg_id' => $msgid,
+                'date' => $date,
+                'content' => $content,
+                'type' => 'send',
+                'class' => 'my_chat_content',
+                'quote' => $post_data['quote'] ?? '',
+                'headimgurl' => $bot['headimgurl'],
+                'friend' => $friend,
+                'msg_type' => $post_data['type'],
+            ];
+            //最后一条聊天记录放redis
+            $redis = get_redis();
+            $key = 'last_chat_log:' . $bot['uin'];
+            $hkey = $post_data['to_wxid'];
+            $h_data = $result;
+            $h_data['content'] = $last_chat_content;
+            $redis->hSet($key, $hkey, json_encode($result));
+            $this->success('success', '', $result);
+        }
+    }
+
+    /**
+     * 
+     * 发送消息并@所有人
+     */
+    public function sendMsgAndAtAllPost($post_data = [])
+    {
+        if (request()->isPost()) {
+            if (!$post_data) {
+                $post_data = input('post.');
+            }
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['type'] == 1) { //文本
+                $res = $bot_client->sendMsgAtAll(['robot_wxid' => $bot['uin'], 'group_wxid' => $post_data['to_wxid'], 'msg' => $post_data['content']]);
+            } else if ($post_data['type'] == 3) { //图片
+                $bot_client->sendImgToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            } else if ($post_data['type'] == 2004) { //文件
+                $res = $bot_client->sendFileToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']['url']
+                ]);
+            } else if ($post_data['type'] == 43) { //视频
+                $res = $bot_client->sendVideoMsg([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']
+                ]);
+            }
+            $this->success('success', '', $res);
+        }
+    }
+
+
+    /**
+     * 
+     * wxid获取群成员信息
+     */
+    public function getGroupMemberInfo()
+    {
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            $res = $bot_client->getGroupMemberInfo([
+                'robot_wxid' => $bot['uin'],
+                'group_wxid' => $post_data['group_wxid'],
+                'member_wxid' => $post_data['member_wxid'],
+            ]);
+
+            if ($res['Code'] == 0 && isset($res['ReturnJson'])) {
+                $info = $res['ReturnJson'];
+                // backgroundimgurl: ""
+                // city: "Xiamen"
+                // country: "Xiamen"
+                // group_name: "微信多客服测试优化"
+                // group_wxid: "34907960925@chatroom"
+                // headimgurl: "http://wx.qlogo.cn/mmhead/ver_1/rFBKIR8SsRnRPR18ftyqtToqyZxeYLqsRrg2o2z597cF1r69rRZHWEpRe1Nic2ukfpRzztENwP8cb0x2sichrshzojPXXmFLibuiasBibY5ge09c/0"
+                // nickname: "DJ"
+                // province: "Fujian"
+                // scene: 0
+                // sex: 1
+                // signature: ""
+                // wx_num: "doogiefu"
+                // wxid: "wxid_xokb2ezu1p6t21"
+                $this->success('success', '', $info);
+            } else {
+                $this->error('获取群成员信息错误');
+            }
+        }
+    }
+
+    /**
+     * 
+     * wxid获取好友信息
+     */
+    public function getDetailInfoByWxid(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            $res = $bot_client->getDetailInfoByWxid([
+                'robot_wxid' => $bot['uin'],
+                'to_wxid' => $post_data['to_wxid'],
+            ]);
+
+            if ($res['Code'] == 0 && isset($res['ReturnJson'])) {
+                $info = $res['ReturnJson'];
+                // backgroundimgurl: ""
+                // city: "Xiamen"
+                // country: "Xiamen"
+                // group_name: "微信多客服测试优化"
+                // group_wxid: "34907960925@chatroom"
+                // headimgurl: "http://wx.qlogo.cn/mmhead/ver_1/rFBKIR8SsRnRPR18ftyqtToqyZxeYLqsRrg2o2z597cF1r69rRZHWEpRe1Nic2ukfpRzztENwP8cb0x2sichrshzojPXXmFLibuiasBibY5ge09c/0"
+                // nickname: "DJ"
+                // province: "Fujian"
+                // scene: 0
+                // sex: 1
+                // signature: ""
+                // wx_num: "doogiefu"
+                // wxid: "wxid_xokb2ezu1p6t21"
+                $this->success('success', '', $info);
+            } else {
+                $this->error('获取群成员信息错误');
+            }
         }
     }
 }

@@ -240,7 +240,7 @@ class Media extends Bbase
         $field = input('field', ''); //目标input框
         $where = ['admin_id' => $this->adminId];
 
-        $data_list = $this->fileM->page(10, $where, ['id' => 'desc'], 'id,title,url', 1);
+        $data_list = $this->fileM->page(10, $where, ['id' => 'desc'], 'id,title,url,ext', 1);
         $pager = $data_list->appends(['type' => __FUNCTION__])->render();
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
         return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);

@@ -1,0 +1,113 @@
+<div>
+    <form class="layui-form" action="">
+        <div class="layui-row">
+            <table class="layui-table" lay-skin="line">
+                <tbody>
+                    {volist name="list" id="item"}
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="id" lay-filter="id" value="{$item.id}" lay-skin="primary"
+                                data-wxid="{$item.wxid}" data-group_nickname="{$item.group_nickname}" />
+                        </td>
+                        <td><img src="{$item.headimgurl}" style="width:25px;height:25px;border-radius:10%" /></td>
+                        <td>{$item.group_nickname}</td>
+                    </tr>
+                    {/volist}
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+<div class="bottom">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn bg-success layui-btn-xs" onclick="clickSure();">确定</button>
+            <button class="layui-btn bg-success layui-btn-xs" onclick="atAll();">@所有人</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn layui-btn-xs">取消</button>
+        </div>
+    </div>
+</div>
+<script>
+    var parent_index //获取窗口索引
+        , ids = []
+        , $checkBoxes = []
+        , dataLen = parseInt("{:count($list)}")
+        , clickDelOne
+        , clickDelBatch
+        , clickSure
+        , atAll;
+    layui.use(['jquery', 'form', 'upload'], function () {
+        var form = layui.form
+            , upload = layui.upload
+            , $ = layui.jquery;
+        //刷新界面 所有元素
+        form.render();
+        parent_index = parent.layer.getFrameIndex(window.name);
+
+        //点击取消
+        $('.js-cancel-btn').on('click', function () {
+            parent.layer.close(parent_index);
+        });
+        clickSure = function () {
+            var list = [];
+            $('.id:checked').each(function (i, item) {
+                list.push({ id: $(item).val(), wxid: $(item).data('wxid'), group_nickname: $(item).data('group_nickname') });
+            });
+            if (list.length < 1) {
+                layer.alert("请选择成员");
+                return;
+            }
+
+            parent.setAtValue(list);
+            parent.layer.close(parent_index);
+        };
+        atAll = function () {
+            let index = layer.confirm('确定@所有人吗?', function (index) {
+                //do something
+                parent.atAll();
+                layer.close(index);
+                parent.layer.close(parent_index);
+            });
+            
+        };
+        //监听全选
+        form.on('checkbox(ids)', function (data) {
+            $checkBoxes.prop('checked', data.elem.checked);
+            layui.form.render('checkbox');
+        });
+        //监听单个选中
+        form.on('checkbox(id)', function (data) {
+            $("#ids").prop('checked', $('.id:checked').length < dataLen ? false : true);
+            layui.form.render('checkbox');
+        });
+
+    });
+</script>
+
+
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    .layui-card-body:hover .delete-btn,
+    .layui-card-body:hover .check-btn {
+        display: block;
+    }
+
+    .layui-form-checkbox[lay-skin=primary] {
+        height: 19px !important;
+        margin-top: -12px;
+        margin-left: -1px;
+    }
+
+    .bottom {
+        background-color: #f8f8f8;
+        line-height: 40px;
+        height: 40px;
+        position: fixed;
+        text-align: center;
+        width: 100%;
+        bottom: 0;
+    }
+</style>

@@ -20,6 +20,7 @@ use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
 use ky\WxBot\Driver\Xbot;
+use think\facade\Log;
 
 class BotMember extends Base
 {
@@ -169,19 +170,22 @@ class BotMember extends Base
                     $wxid_arr = [];
                     foreach ($list as $k => $v){
                         $nickname = filter_emoji($v['nickname']);
+                        $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
                         if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
+                                'headimgurl' => $headimgurl
                             ]);
                         }else{
                             $this->addOne([
                                 'uin' => $bot['uin'],
                                 'nickname' => $nickname,
                                 'wxid' => $wxid,
-                                'type' => Bot::GROUP
+                                'type' => Bot::GROUP,
+                                'headimgurl' => $headimgurl
                             ]);
                         }
                     }

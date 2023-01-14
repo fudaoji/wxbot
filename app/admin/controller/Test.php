@@ -227,18 +227,26 @@ class Test
     public function filetobase64()
     {
         model('common/setting')->settings();
-        $msg = '[mp4=D:\weixinjilu\WeChat Files\wxid_5fprdytoi1k612\FileStorage\Video\2022-12\d97e4708ae1f7b3947c2d38c7c6976a8.mp4]';
+        // $msg = '[mp4=D:\weixinjilu\WeChat Files\wxid_5fprdytoi1k612\FileStorage\Video\2022-12\d97e4708ae1f7b3947c2d38c7c6976a8.mp4]';
+        // $sub = 5;
+        $msg = '[File=D:\weixinjilu\WeChat Files\wxid_5fprdytoi1k612\FileStorage\File\2022-12\test.xls]';
+
+        $sub = 6;
         $bot_model = new Bot();
-        $bot = $bot_model->where(['id' => 40])->find();
+        $bot = $bot_model->where(['id' => 70])->find();
         dump($bot);
         dump($bot_model->getlastsql());
         $bot_client = $bot_model->getRobotClient($bot);
-        $path = mb_substr($msg, 5, -1);
+        $path = mb_substr($msg, $sub, -1);
         dump($path);
+        $ext = pathinfo($path, PATHINFO_EXTENSION);
+        dump($ext);
+        $file_name = substr(strrchr($path, "\\"), 1);
+        dump($file_name);
         $res = $bot_client->downloadFile(['path' => $path]);
         dump($res);
         $base64 = $res['ReturnStr'];
-        $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
+        $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time() . $file_name, $base64);
         dump($url);
         exit;
     }
@@ -540,5 +548,42 @@ class Test
         //     'scene' => Bot::SCENE_WXNUM,
         //     'type' => 1
         // ]);
+    }
+
+
+    public function botSend()
+    {
+        // {
+        //     "sdkVer":6,
+        //     "Event":"EventPrivateChat",
+        //     "content":{
+        //         "robot_wxid":"wxid_5fprdytoi1k612",
+        //         "type":1,
+        //         "from_wxid":"cengzhiyang4294",
+        //         "from_name":"zengzhiyang",
+        //         "msg":"123",
+        //         "clientid":0,
+        //         "robot_type":0,
+        //         "msg_id":"7630416942713148939"
+        //     }
+        // }
+        $url = 'http://wx119.sxwig.com:809/bot/api/my';
+        $params = [
+            "sdkVer" => 6,
+            "Event" => "EventPrivateChat",
+            "content" => [
+                "robot_wxid" => "wxid_5fprdytoi1k612",
+                "type" => 1,
+                "from_wxid" => "cengzhiyang4294",
+                "from_name" => "zengzhiyang",
+                "msg" => "123",
+                "clientid" => 0,
+                "robot_type" => 0,
+                "msg_id" => "7630416942713148939"
+            ]
+        ];
+
+        $res = Curl_($url,json_encode($params));
+        dump($res);
     }
 }

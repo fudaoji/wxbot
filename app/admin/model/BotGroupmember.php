@@ -225,7 +225,7 @@ class BotGroupmember extends Base
                                 'group_id' => $group['id'],
                                 'nickname' => $username,
                                 'group_nickname' => $nickname,
-                                'wxid' => $wxid
+                                'wxid' => $wxid,
                             ]);
                         }
                     }
@@ -241,10 +241,13 @@ class BotGroupmember extends Base
                 if($res['code'] && count($res['ReturnJson'])) {
                     $list = $res['ReturnJson']['member_list'];
                     $wxid_arr = [];
+                    // Logger::write("拉取群成员" . json_encode($list) . "\n");
                     foreach ($list as $k => $v){
+                        // Logger::write("拉取群成员" . json_encode($v) . "\n");
                         $nickname = filter_emoji($v['nickname']);
-                        $group_nickname = filter_emoji($v['group_nickname']);
+                        $group_nickname = filter_emoji($v['nickname']);
                         $username = $v['wx_num'];
+                        $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
                         if($data = $this->getOneByMap(['group_id' => $group['id'], 'wxid' => $wxid], ['id'])){
@@ -252,7 +255,8 @@ class BotGroupmember extends Base
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
                                 'group_nickname' => $group_nickname,
-                                'username' => $username
+                                'username' => $username,
+                                'headimgurl' => $headimgurl
                             ]);
                         }else{
                             $this->addOne([
@@ -261,7 +265,8 @@ class BotGroupmember extends Base
                                 'nickname' => $nickname,
                                 'group_nickname' => $group_nickname,
                                 'username' => $username,
-                                'wxid' => $wxid
+                                'wxid' => $wxid,
+                                'headimgurl' => $headimgurl
                             ]);
                         }
                     }

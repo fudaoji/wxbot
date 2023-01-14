@@ -14,5 +14,8 @@ use app\constants\Addon;
 
 class EventDeviceCallback extends HandlerDeviceCallback
 {
-
+    public function handle(){
+        $this->addon();
+        // Logger::error($this->content);
+    }
 }

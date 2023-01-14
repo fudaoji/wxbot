@@ -125,9 +125,15 @@
                                             </div>
                                             <!-- 文件消息 -->
                                             <div v-else-if="item.msg_type == 2004" :class="'send_2004_'+item.msg_id">
-                                                <a :href="item.content" target="downloadFile">
-                                                    <span>文件：</span>
-                                                    <i class="layui-icon layui-icon-file-b"></i>
+                                                <span v-if="item.content == ''|| !item.content">文件正在加载中</span>
+                                                <a v-else :href="item.content.url" target="downloadFile">
+                                                    <div class="layui-card">
+                                                        <div class="layui-card-header">{{item.content.file_name}}</div>
+                                                        <div class="layui-card-body">
+                                                            <i
+                                                                class="layui-icon layui-icon-file-b">{{item.content.ext}}</i>
+                                                        </div>
+                                                    </div>
                                                 </a>
                                             </div>
                                             <!-- 名片消息 -->
@@ -181,9 +187,23 @@
                                             v-model="sel_chat_content">
                                     </div>
                                     <div class="layui-col-md1">
-                                        <div class="headimg">
-                                            <img :src="item.headimgurl"
-                                                style="width:50px;height:50px;border-radius:10%">
+                                        <!-- 好友信息 -->
+                                        <div v-if="item.friend_type == 'friend'">
+                                            <div class="headimg">
+                                                <img :src="item.headimgurl"
+                                                    style="width:50px;height:50px;border-radius:10%">
+                                            </div>
+                                        </div>
+                                        <!-- 群聊信息 -->
+                                        <div v-if="item.friend_type == 'group'">
+                                            <a href="javascript:" @click="openGroupCard(item)">
+                                                <div class="headimg">
+                                                    <img :src="item.group_headimg"
+                                                        style="width:50px;height:50px;border-radius:10%">
+                                                </div>
+                                            </a>
+                                            <span v-if="item.group_nickname != ''">{{item.group_nickname}}</span>
+                                            <span v-else>{{item.group_from_name}}</span>
                                         </div>
                                     </div>
                                     <div class="layui-col-md9 content">
@@ -191,6 +211,14 @@
                                             <!-- 文本消息 -->
                                             <div v-if="item.msg_type == 1" :class="'receive_1_'+item.msg_id"
                                                 v-html="item.content">
+                                            </div>
+                                            <!-- 引用消息 -->
+                                            <div v-else-if="item.msg_type == 10003">
+                                                <div :class="'receive_10003_'+item.msg_id" v-html="item.content.msg">
+                                                </div>
+                                                <div class="layui-form-mid layui-word-aux">
+                                                    {{item.content.displayname}}：{{item.content.content}}
+                                                </div>
                                             </div>
                                             <!-- 图片消息 -->
                                             <div v-else-if="item.msg_type == 3" :class="'receive_3_'+item.msg_id">
@@ -201,10 +229,17 @@
                                             </div>
                                             <!-- 文件消息 -->
                                             <div v-else-if="item.msg_type == 2004" :class="'receive_2004_'+item.msg_id">
-                                                <a :href="item.content" target="downloadFile">
-                                                    <span>文件：</span>
-                                                    <i class="layui-icon layui-icon-file-b"></i>
+                                                <span v-if="item.content == '' || !item.content">收到文件，正在加载中</span>
+                                                <a v-else :href="item.content.url" target="downloadFile">
+                                                    <div class="layui-card">
+                                                        <div class="layui-card-header">{{item.content.file_name}}</div>
+                                                        <div class="layui-card-body">
+                                                            <i
+                                                                class="layui-icon layui-icon-file-b">{{item.content.ext}}</i>
+                                                        </div>
+                                                    </div>
                                                 </a>
+
                                             </div>
                                             <!-- 语音消息mp3 -->
                                             <div v-else-if="item.msg_type == 34" :class="'receive_34_'+item.msg_id">
@@ -309,18 +344,26 @@
                                             class="layui-icon layui-icon-face-smile-b"></i></div>
                                     <div class="layui-inline" title="发送图片" lay-event="LAYTABLE_EXPORT"
                                         @click="choosePicture"><i class="layui-icon layui-icon-picture"></i></div>
-                                    <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
+                                    <div class="layui-inline" title="发送视频" lay-event="LAYTABLE_EXPORT"
+                                        @click="chooseVideo"><i class="layui-icon layui-icon-play"></i></div>
+                                    <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_EXPORT"
+                                        @click="chooseFile"><i class="layui-icon layui-icon-export"></i></div>
+                                    <!-- <div class="layui-inline" title="发送文件" lay-event="LAYTABLE_PRINT" id="chooseFile">
                                         <i class="layui-icon layui-icon-export"></i></a>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <textarea style="height: 181px;" placeholder="" class="layui-textarea" v-model="content"
-                                id="content"></textarea>
+                                id="content" @keyup.enter.exact="sendMsg" @keyup.ctrl.enter="lineFeed()"></textarea>
                         </div>
                         <div class="input_area" style="text-align:right">
                             <button type="button" class="layui-btn layui-btn-primary" @click="clearMsg">清空</button>
-                            <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"><i
+                            <button type="button" class="layui-btn" lay-submit="" @click="sendMsg" lay-filter="send"
+                                id="id_send" @mouseover="sendTip()" @mouseout="closeTip()"><i
                                     class="layui-icon layui-icon-release"></i> 发送</button>
+                            <button v-if="friend_info.type == 'group'" type="button" class="layui-btn" lay-submit=""
+                                @click="openGroupMember">
+                                <i class="layui-icon layui-icon-release"></i> 发送并@</button>
                         </div>
                     </div>
                 </div>
@@ -483,6 +526,7 @@
         sel_chat_content: [],//多选
         get_chat_log_param: get_chat_log_param,//获取聊天记录参数
         show_more_chat_log: true,
+        tip: ''
     };
     var vm = new Vue({
         el: '#app',
@@ -721,7 +765,7 @@
                 if (self['friend_id'] != item.id) {
                     self['friend_id'] = item.id;
                     this.friend_info = {};
-                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid, sex: item.sex, province: item.province, city: item.city };
+                    this.friend_info = { id: item.id, nickname: item.nickname, remark_name: item.remark_name, wxid: item.wxid, sex: item.sex, province: item.province, city: item.city, type: item.type };
                     this.show_info = true;
                     this.show_chat = true;
                     this.friend_wxid = item.wxid;
@@ -792,7 +836,7 @@
             //发送信息
             sendMsg(e) {
                 let self = this;
-                let content = this.content.trim();
+                let content = this.content;
                 var uin = this.bot_info.uin;
                 var to_wxid = this.friend_info.wxid;
                 if (!content) {
@@ -987,6 +1031,28 @@
                     content: ['{:url("media/handle", ["type" => "image", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                 });
             },
+            //发送图片
+            chooseVideo(e) {
+                layer.open({
+                    type: 2,
+                    title: '视频',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['100%', '100%'],
+                    content: ['{:url("media/handle", ["type" => "video", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            },
+            //发送文件
+            chooseFile(e) {
+                layer.open({
+                    type: 2,
+                    title: '文件',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['100%', '100%'],
+                    content: ['{:url("media/handle", ["type" => "file", "field" => "content"])}', 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            },
             //初始化layui上传
             renderUpload() {
                 var self = this;
@@ -1013,14 +1079,19 @@
                                 layer.alert(res.msg);
                                 return;
                             }
+                            console.log(res.data);
                             let ext = res.data[0].ext;
                             let url = res.data[0].url;
-                            self['content'] = url;
+                            let file_name = res.data[0].original_name;
+                            let content = '';
                             if (ext == 'mp4') {
+                                content = url;
                                 self['content_type'] = 43;
                             } else {
+                                content = { url: url, file_name: file_name, ext: ext };
                                 self['content_type'] = 2004;
                             }
+                            self['content'] = content;
                             self['sendMsg']();
                             self['content_type'] = 1;
                         }
@@ -1516,14 +1587,215 @@
                 self = this;
                 setInterval(function () {
                     let bot_list = self['bot_list'];
-                    $.each(bot_list, function (i,v) {
+                    $.each(bot_list, function (i, v) {
                         if (v.new == 1) {
                             speak_cn('有未处理的消息');
                             return false;
                         }
                     });
                 }, 10000);
-            }
+            },
+            //换行
+            lineFeed() {
+                this.content = this.content + '\n';
+            },
+            sendTip() {
+                // layer.msg('按Enter键发送，按ctrl+Enter键换行');
+
+                this.tip = layer.tips('按Enter键发送，按ctrl+Enter键换行', '#id_send', { time: 0, tips: 1 });
+            },
+            closeTip() {
+                layer.close(this.tip);
+            },
+            //显示群成员
+            openGroupMember() {
+                //获取群成员
+                let self = this;
+                let content = this.content;
+                if (!content) {
+                    layer.msg('请输入内容');
+                    return false;
+                }
+                let group_id = this.friend_id;
+                let uin = this.bot_uin;
+                let url = '/admin/kefu/groupMember?uin=' + uin + '&group_id=' + group_id;
+                layer.open({
+                    type: 2,
+                    title: '@群成员',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['320px', '320px'],
+                    content: [url] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+
+            },
+            //发送信息并@
+            sendMsgAndAt(params) {
+                let self = this;
+                let group_id = this.friend_id;
+                let uin = this.bot_uin;
+                let bot_id = this.bot_id;
+                let content = this.content;
+                let to_wxid = this.friend_info.wxid;
+                let friend_id = this.friend_id;
+                let type = this.content_type;
+                params.group_id = group_id;
+                params.uin = uin;
+                params.content = content;
+                params.bot_id = bot_id;
+                params.to_wxid = to_wxid;
+                params.friend_id = friend_id;
+                params.type = type;
+                let url = "/admin/kefu/sendMsgAndAt";
+                self['content'] = '';
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][uin][[to_wxid]];
+                        //是当前的机器人,好友列表排序,最后聊天记录
+                        if (uin == res.data.friend.uin) {
+                            $.each(self['friends_list'], function (i, v) {
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
+                                }
+                            });
+                            self['friends_list'].sort(compare("last_chat_time", "desc"));
+
+                        }
+                        self['renderDropdown']();
+                        scroll();
+                        // self['searchFriend']();
+                        self['sendToWxAndAt'](params);
+
+                    }
+                }, 'json');
+            },
+            sendToWxAndAt(params) {
+                let url = '/admin/kefu/sendMsgAndAtPost';
+                $.ajaxSettings.async = true;
+                $.post(url, params, function (res) {
+
+                }, 'json');
+            },
+            //发送信息并@所有人
+            sendMsgAndAtAll() {
+                let self = this;
+                let group_id = this.friend_id;
+                let uin = this.bot_uin;
+                let bot_id = this.bot_id;
+                let content = this.content;
+                let to_wxid = this.friend_info.wxid;
+                let friend_id = this.friend_id;
+                let type = this.content_type;
+                let params = {
+                    content: content,
+                    uin: uin,
+                    to_wxid: to_wxid,
+                    bot_id: this.bot_id,
+                    bot_info: this.bot_info,
+                    quote: '引用内容引用内容',
+                    friend_id: this.friend_id,
+                    type: this.content_type
+                }
+
+                let url = "/admin/kefu/sendMsgAndAtAll";
+                self['content'] = '';
+                $.post(url, params, function (res) {
+                    if (res.code == 1) {
+                        self['chat_log'][uin][[to_wxid]] = self['chat_log'][uin][[to_wxid]].concat(res.data);
+                        self['current_chat'] = self['chat_log'][uin][[to_wxid]];
+                        //是当前的机器人,好友列表排序,最后聊天记录
+                        if (uin == res.data.friend.uin) {
+                            $.each(self['friends_list'], function (i, v) {
+                                if (v.wxid == res.data.friend.wxid) {
+                                    self['friends_list'][i] = res.data.friend;
+                                    return false;
+                                }
+                            });
+                            self['friends_list'].sort(compare("last_chat_time", "desc"));
+
+                        }
+                        self['renderDropdown']();
+                        scroll();
+                        // self['searchFriend']();
+                        self['sendToWxAndAtAll'](params);
+
+                    }
+                }, 'json');
+            },
+            sendToWxAndAtAll(params) {
+                let url = '/admin/kefu/sendMsgAndAtAllPost';
+                $.ajaxSettings.async = true;
+                $.post(url, params, function (res) {
+
+                }, 'json');
+            },
+            //群用户名片
+            openGroupCard(item) {
+                console.log('群用户名片');
+                console.log(item);
+                let self = this;
+                let bot_id = this.bot_info.id;
+                let group_wxid = item.from;
+                let bot_uin = this.bot_info.uin;
+                let info_url = '/admin/kefu/getGroupMemberInfo';
+                let info_params = { bot_id: bot_id, group_wxid: group_wxid, member_wxid: item.group_from_wxid };
+                $.post(info_url, info_params, function (res) {
+                    if (res.code == 1) {
+                        let info = res.data;
+                        //判断是否是好友
+                        let check_url = '/admin/kefu/checkFirend';
+                        let check_params = { bot_uin: bot_uin, wxid: info.wxid };
+                        $.post(check_url, check_params, function (res) {
+                            if (res.code == 1) {
+                                let is_friend = res.data.is_friend;
+                                let html = '<div class="layui-card">' +
+                                    '<div class= "layui-card-header" style="height:135px">' +
+                                    '<div style="margin:10px">' +
+                                    '<div><img src="' + info.headimgurl + '" style="width:50px;">' +
+                                    '<span style="margin-left:5px">' + info.nickname + '</span>';
+                                if (info.sex == 1) {
+                                    html += '<span><i class="layui-icon layui-icon-male" style="color:#469ddb"></i>   </span></div>';
+                                } else {
+                                    html += '<span><i class="layui-icon layui-icon-female" style="color:pink"></i>   </span></div>';
+                                }
+
+                                if (is_friend == 1) {
+                                    html += '<div><span>微信号:' + info.wx_num + '</span></div>' +
+                                        '<div><span>地区:' + info.city + '</span></div>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<div class="layui-card-body" style="text-align: center;">';
+                                    let chat_item = res.data.friend;
+                                    // console.log(chat_item);
+                                    html += '<button type="button" lay-submit="" class="layui-btn" onclick="chatwith(' + JSON.stringify(chat_item).replace(/"/g, '&quot;') + ')">发消息</button>';
+                                } else {
+                                    html += '<div><span>地区:' + info.city + '</span></div>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<div class="layui-card-body" style="text-align: center;">';
+                                    html += '<button type="button" lay-submit="" class="layui-btn" onclick="addGroupFriend(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">添加到通讯录</button>';
+                                }
+                                html += '</div>' +
+                                    '</div >';
+                                // console.log(html);
+                                layer.open({
+                                    title: false,
+                                    type: 1,
+                                    content: html,
+
+                                });
+
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }, 'json');
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
+            },
 
         }
     });
@@ -1553,20 +1825,23 @@
     //监听消息
     webSocket.onmessage = function (event) {
         if (event.data) {
-            speak_cn('收到新消息');
             console.log('收到客户端消息:' + event.data);
             var massage = eval("(" + event.data + ")");
             //收到私聊信息
             if (massage.event == 'msg') {
-                //转账/分享链接单独处理
-                if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42) {
+                speak_cn('收到新消息');
+                //数据类型转换
+                if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42 || massage.msg_type == 2004 || massage.msg_type == 10003) {
                     // console.log("转账：");
                     // console.log(massage.msg);
-                    massage.msg = JSON.parse(massage.msg);
-                    // console.log("1234");
+                    if (massage.msg != '') {
+                        massage.msg = JSON.parse(massage.msg);
+                    }
+                    console.log("JSON.parse");
                     console.log(massage.msg);
                 }
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type };
+                //转账/分享链接单独处理
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type, friend_type: massage.friend_type, group_headimg: massage.group_headimg, group_nickname: massage.group_nickname };
                 console.log(msg);
                 if (!vm['chat_log'][[massage.robot_wxid]]) {
                     vm['chat_log'][[massage.robot_wxid]] = {};
@@ -1718,6 +1993,16 @@
 
                 }
             } else if (massage.event == 'delay') {
+                //数据类型转换
+                if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42 || massage.msg_type == 2004) {
+                    // console.log("转账：");
+                    // console.log(massage.msg);
+                    if (massage.msg != '') {
+                        massage.msg = JSON.parse(massage.msg);
+                    }
+                    // console.log("1234");
+                    console.log(massage.msg);
+                }
                 //延迟数据替换
                 $.each(vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]], function (i, v) {
                     if (v.msg_id == massage.msg_id) {
@@ -1747,14 +2032,55 @@
 
     //根据iframe传回的值进行当前页面的赋值
     function setPictureValue(value, field) {
-        var picture_url = value[0].url;
-        vm.content = picture_url;
-        vm.content_type = 3;
-        vm.sendMsg();
-        vm.content_type = 1;
+        $.each(value, function (i, v) {
+            let picture_url = v.url;
+            vm.content = picture_url;
+            vm.content_type = 3;
+            vm.sendMsg();
+            vm.content_type = 1;
+        });
+
 
     }
 
+    //根据iframe传回的值进行当前页面的赋值
+    function setVideoValue(value, field) {
+        $.each(value, function (i, v) {
+            setTimeout(function () {
+                let url = v.url;
+                vm.content = url;
+                vm.content_type = 43;
+                vm.sendMsg();
+                vm.content_type = 1;
+            }, 1000);
+        });
+    }
+    //根据iframe传回的值进行当前页面的赋值
+    function setFileValue(value, field) {
+        $.each(value, function (i, v) {
+            let url = v.url;
+            let content = { url: url, file_name: v.title, ext: v.ext };
+            vm.content = content;
+            vm.content_type = 2004;
+            vm.sendMsg();
+            vm.content_type = 1;
+        });
+    }
+    function setAtValue(value) {
+        var at_wxid = [];
+        var at_wxid_str = '';
+        var at_nickname = '';
+        $.each(value, function (i, v) {
+            at_wxid.push(v.wxid);
+            at_nickname += '@' + v.group_nickname;
+        });
+        at_wxid_str = at_wxid.join(',');
+        let params = { member_wxid: at_wxid_str, at_nickname: at_nickname };
+        vm.sendMsgAndAt(params);
+    }
+    function atAll() {
+        vm.sendMsgAndAtAll();
+    }
     function compare(property, sort = 'asc') {
         return function (a, b) {
             var value1 = a[property];
@@ -1814,6 +2140,22 @@
         layer.closeAll();
         let url = '/admin/kefu/addFriend';
         let param = { uin: vm['bot_uin'], wxid: item.content.username, bot_id: vm['bot_id'], msg: item.content.nickname };
+        $.post(url, param, function (res) {
+            if (res.code == 1) {
+                layer.msg('已发送请求!');
+            } else {
+                layer.alert(res.msg);
+            }
+        }, 'json');
+    }
+
+    //添加群好友
+    function addGroupFriend(item) {
+        console.log('添加群好友');
+        console.log(item);
+        layer.closeAll();
+        let url = '/admin/kefu/addFriend';
+        let param = { uin: vm['bot_uin'], wxid: item.wxid, bot_id: vm['bot_id'], msg: item.nickname };
         $.post(url, param, function (res) {
             if (res.code == 1) {
                 layer.msg('已发送请求!');

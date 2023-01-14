@@ -562,3 +562,51 @@ function upload_base64($key = '', $string = ''){
     $qiniu = (new \app\common\event\Base())->getQiniu();
     return $qiniu->downLink($qiniu->uploadBase64($key, $string));
 }
+
+// curl请求
+function Curl_($targetUrl = "http://test.abuyun.com", $data = false, $cookie = false, $referer = '', $header = false)
+{
+    // 代理服务器
+    $proxyServer = "http://http-dyn.abuyun.com:9020";
+
+    // 隧道身份信息
+    $proxyUser   = "H012BVM3Y5KT532D";
+    $proxyPass   = "AFA2B120D071EAFE";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $targetUrl);
+    if ($data) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    }
+
+    // 设置cookie
+    if ($cookie) {
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+    }
+
+    curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+    // 设置代理服务器
+    #curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+    #curl_setopt($ch, CURLOPT_PROXY, $proxyServer);
+
+    // 设置隧道验证信息
+    #curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
+    #curl_setopt($ch, CURLOPT_PROXYUSERPWD, "{$proxyUser}:{$proxyPass}");
+
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36");
+    curl_setopt($ch, CURLOPT_REFERER, $referer);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    if ($header) {
+        curl_setopt($ch, CURLOPT_HEADER, true);
+    }
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $result = curl_exec($ch);
+    //        $info = curl_getinfo($ch);
+    curl_close($ch);
+
+    return ($result);
+}

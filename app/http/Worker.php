@@ -81,7 +81,7 @@ class Worker extends Server
 							$res['msg'] = $content;
 							$conn->send(json_encode($res));
 							Logger::write("最终发送消息---" . json_encode($res));
-							echo "发送消息：" . json_encode($res);
+							echo "work发送消息：" . json_encode($res);
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$hkey = $res['from_wxid'];
@@ -100,6 +100,22 @@ class Worker extends Server
 						} else if ($res['event'] == 'callback') {
 							//消息发送回调
 							Logger::write("定时器消息发送回调---" . json_encode($res));
+							echo "定时器消息发送回调---" . json_encode($res);
+							//最后一条聊天记录放redis
+							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
+							$last_chat_log = $res['friend']['last_chat_content'];
+							$hkey = $res['to'];
+							$date = date("Y-m-d H:i:s",$res['create_time']);
+							$result = [
+								'msg_id' => $res['msg_id'],
+								'date' => $date,
+								'content' => $last_chat_log,
+								'type' => 'send',
+								'headimgurl' => $res['headimgurl'],
+								'friend' => $res['friend'],
+								'msg_type' => $res['msg_type'],
+							];
+							$redis->hSet($last_log_key, $hkey, json_encode($result));
 							$conn->send($msg);
 						}
 					}
@@ -148,6 +164,7 @@ class Worker extends Server
 					$chatLogM = new ChatLog();
 					// echo "开始转换数据：".$data['msg']."\n".$data['msg_type']."\n".json_encode($data['bot'])."\n";
 					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['msg_type'], $data['bot']);
+					echo "延迟队列转换数据结果：".json_encode($convert)."\n";
 					if ($convert['content'] != '') {
 						//视频转换成功
 						//更新数据库，发送到前端替换视频

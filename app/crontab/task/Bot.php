@@ -9,11 +9,37 @@
 
 namespace app\crontab\task;
 
+use ky\Logger;
+
 class Bot extends Base
 {
     public function __construct(){
         parent::__construct();
         set_time_limit(0);
+    }
+
+    /**
+     * 发送消息
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendMsgBatch($params = []){
+        /**
+         * @var \think\queue\Job
+         */
+        $job = $params['job'];
+        if ($job->attempts() > 2) {
+            $job->delete();
+        }
+        $task = $params['task'];
+        $client = model('admin/bot')->getRobotClient($task);
+        $reply = $params['reply'];
+        $to_wxid = $params['to_wxid'];
+        $extra = $params['extra'];
+        Logger::error(date('Y-m-d H:i:s') . '   ' . $to_wxid);
+        model('common/reply')->botReply($task, $client, $reply, $to_wxid, $extra);
+        $job->delete();
+        dump(date('Y-m-d H:i:s'));
     }
 
     /**

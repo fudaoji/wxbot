@@ -25,7 +25,8 @@ class Kefu extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function privateChatHandle(){
-        Logger::write("私聊处理器---");
+        echo "私聊处理器---".date("Y-m-d H:i:s");
+        Logger::write("私聊处理器---".date("Y-m-d H:i:s"));
         if(empty($this->switch)){
             return false;
         }
@@ -64,6 +65,21 @@ class Kefu extends Addon
         $model_chat_log = new ChatLog();
         $model_chat_log->saveMobileMsg($this->content,$this->bot);
 
+    }
+
+
+    /**
+     * 
+     * 群聊接收回调处理器
+     */
+    public function groupChatHandle(){
+        Logger::write("群聊接收回调处理器---");
+        if(empty($this->switch)){
+            return false;
+        }
+        //群聊接收数据,发送客户端
+        $model_chat_log = new ChatLog();
+        $model_chat_log->saveGroupChat($this->content,$this->bot);
     }
 
     

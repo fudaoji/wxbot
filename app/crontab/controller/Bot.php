@@ -91,24 +91,42 @@ class Bot extends Base
                 if($redis->get($rKey)){
                     continue;
                 }
-                $redis->setex($rKey, 3600, 1);
+                //$redis->setex($rKey, 3600, 1);
 
                 if(!empty($task['wxids']) && !empty($task['medias'])){
-                    $bot_client = model('admin/bot')->getRobotClient($task);
+                    $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
+                    //$bot_client = model('admin/bot')->getRobotClient($task);
                     $medias = json_decode($task['medias'], true);
                     foreach ($medias as $media){
                         $task['media_type'] = $media['type'];
                         $task['media_id'] = $media['id'];
                         $extra = ['atall' => $task['atall']];
-                        model('reply')->botReply($task, $bot_client, $task, $task['wxids'], $extra);
+                        //$wxids = explode(',', implode(',', [$task['wxids'],$task['wxids'],$task['wxids'],$task['wxids'],$task['wxids']]));
+                        $wxids = explode(',', $task['wxids']);
+                        $delay = 0;
+                        //var_dump($wxids);
+                        foreach ($wxids as $to_wxid){
+                            //放入任务队列
+                            invoke('\\app\\common\\event\\TaskQueue')->push([
+                                'delay' => $delay,
+                                'params' => [
+                                    'do' => ['\\app\\crontab\\task\\Bot', 'sendMsgBatch'],
+                                    'task' => $task,
+                                    'reply' => $task,
+                                    'to_wxid' => $to_wxid,
+                                    'extra' => $extra
+                                ]
+                            ]);
+                            $delay += model('common/setting')->getStepTime();
+                        }
+                        //model('reply')->botReply($task, $bot_client, $task, $task['wxids'], $extra);
                     }
-                    $task = $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
-                    dump($task);
                 }
+                $redis->del($rKey);
             }
-            dump($task_list);
+            echo (count($task_list) . ' tasks run');
         }else{
-            dump(0);
+            echo (0);
         }
     }
 }

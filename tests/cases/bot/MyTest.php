@@ -367,4 +367,18 @@ class MyTest extends BotTest
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
     }
+
+    /**
+     * 发送文件消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendFileMsg() {
+        $res = $this->botClient2->sendFileMsg([
+            'robot_wxid' => $this->robotFjq,
+            'to_wxid' => $this->wxidDj,
+            'path' => 'https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
 }

@@ -273,13 +273,13 @@ class Kefu extends Base
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                $bot_client->sendTextToFriends([
+                $res = $bot_client->sendTextToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'msg' => $post_data['content']
                 ]);
             } else if ($post_data['type'] == 3) { //图片
-                $bot_client->sendImgToFriends([
+                $res = $bot_client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']
@@ -290,19 +290,14 @@ class Kefu extends Base
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
                 ]);
-                Log::write("发送文件接口参数：".json_encode([
-                    'robot_wxid' => $bot['uin'],
-                    'to_wxid' => $post_data['to_wxid'],
-                    'path' => $post_data['content']['url']
-                ])."---结果：".json_encode($res));
             } else if ($post_data['type'] == 43) { //视频
-                $bot_client->sendVideoMsg([
+                $res = $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']
                 ]);
             }
-            $this->success('success');
+            $this->success('success','',$res);
         }
     }
 

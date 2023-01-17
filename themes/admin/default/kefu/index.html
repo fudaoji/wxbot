@@ -1929,7 +1929,9 @@
                 console.log(msg);
                 if (massage.friend.dnd == 0) {
                     speak_cn('收到新消息');
+                    let dnd = 0;
                 } else {
+                    let dnd = 1;
                     console.log('免打扰');
                 }
                 if (!vm['chat_log'][[massage.robot_wxid]]) {
@@ -1944,7 +1946,7 @@
                 if (massage.from_wxid == vm['friend_wxid']) {
                     vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
                 }
-                if (!vm['new_bot'].includes(massage.robot_wxid)) {
+                if (!vm['new_bot'].includes(massage.robot_wxid) && dnd == 0) {
                     vm['new_bot'].push(massage.robot_wxid);
                 }
                 vm['renderDropdown']();
@@ -1952,7 +1954,7 @@
                 //如果消息不是当前机器人则点亮
                 var new_to_friend = true;
                 $.each(vm['bot_list'], function (i, v) {
-                    if (massage.robot_wxid == v.uin) {
+                    if (massage.robot_wxid == v.uin && dnd == 0) {
                         vm['bot_list'][i]['new'] = 1;
                         // let new_bot_arr = vm['new_bot'];
                         // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);

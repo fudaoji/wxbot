@@ -290,6 +290,11 @@ class Kefu extends Base
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']['url']
                 ]);
+                Log::write("发送文件接口参数：".json_encode([
+                    'robot_wxid' => $bot['uin'],
+                    'to_wxid' => $post_data['to_wxid'],
+                    'path' => $post_data['content']['url']
+                ])."---结果：".json_encode($res));
             } else if ($post_data['type'] == 43) { //视频
                 $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],

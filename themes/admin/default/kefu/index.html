@@ -1871,7 +1871,7 @@
                                     }
                                 });
                                 let url = '/admin/kefu/updateMemberDnd';
-                                let params = { id: friend_id, dnd: dnd_flag };
+                                let params = { id: friend_id, dnd: dnd_flag,bot_id:self['bot_id']};
                                 $.post(url, params, function (res) {
 
                                 }, 'json');

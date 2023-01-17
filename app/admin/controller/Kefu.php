@@ -1017,13 +1017,28 @@ class Kefu extends Base
 
     /**
      * 
-     * 更新消息免打扰设置
+     * 开启/关闭消息免打扰设置
      */
     public function updateMemberDnd(){
         if (request()->isPost()) {
             $post_data = input('post.');
             $this->model = new BotMember();
+            $member = $this->model->where(['id' => $post_data['id']])->find();
             $res = $this->model->where(['id' => $post_data['id']])->update(['dnd' => $post_data['dnd']]);
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['dnd']) {//开启
+                $bot_client->onNotDisturb([
+                    'robot_wxid' => $bot['uin'],
+                    'content' => $member['wxid'],
+                ]);
+            } else {
+                $bot_client->offNotDisturb([
+                    'robot_wxid' => $bot['uin'],
+                    'content' => $member['wxid'],
+                ]);
+            }
             $this->success('success', '', $res);
         }
     }

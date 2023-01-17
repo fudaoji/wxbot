@@ -79,6 +79,8 @@ class My extends Base
     const API_GET_FAVORITES = 'FavoritesGetList'; //获取收藏列表
     const API_SEND_FAVORITE_MSG = 'SendFavoritesMsg'; //发送收藏消息
 
+    const API_ON_NOT_DISTURB = 'OnNotDisturb'; //开启消息免打扰
+    const API_OFF_NOT_DISTURB = 'OffNotDisturb'; //关闭消息免打扰
     const FIELD_MAP = [
         "wxid" => "wxid"
     ];
@@ -1086,6 +1088,35 @@ class My extends Base
     public function downloadFile($params = []){
         return $this->request([
             'data' => $this->buildPostData($params, self::API_GET_FILE_FO_BASE64)
+        ]);
+    }
+
+    /**
+     * req:
+        robot_wxid (string)  // 机器人ID
+        content (string)  // 要开启消息免打扰的好友ID 或 群ID 或 公众号ID
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function onNotDisturb($params = []){
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_ON_NOT_DISTURB)
+        ]);
+    }
+
+
+    /**
+     * req:
+        robot_wxid (string)  // 机器人ID
+        content (string)  // 要关闭消息免打扰的好友ID 或 群ID 或 公众号ID
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $params
+     * @return bool
+     */
+    public function offNotDisturb($params = []){
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_OFF_NOT_DISTURB)
         ]);
     }
 }

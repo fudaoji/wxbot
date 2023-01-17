@@ -981,7 +981,8 @@ class Kefu extends Base
      * 
      * wxid获取好友信息
      */
-    public function getDetailInfoByWxid(){
+    public function getDetailInfoByWxid()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $bot_model = new ModelBot();
@@ -1019,22 +1020,23 @@ class Kefu extends Base
      * 
      * 开启/关闭消息免打扰设置
      */
-    public function updateMemberDnd(){
+    public function updateMemberDnd()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $this->model = new BotMember();
             $member = $this->model->where(['id' => $post_data['id']])->find();
-            $res = $this->model->where(['id' => $post_data['id']])->update(['dnd' => $post_data['dnd']]);
+            $this->model->where(['id' => $post_data['id']])->update(['dnd' => $post_data['dnd']]);
             $bot_model = new ModelBot();
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            if ($post_data['dnd']) {//开启
-                $bot_client->onNotDisturb([
+            if ($post_data['dnd']) { //开启
+                $res = $bot_client->onNotDisturb([
                     'robot_wxid' => $bot['uin'],
                     'content' => $member['wxid'],
                 ]);
             } else {
-                $bot_client->offNotDisturb([
+                $res = $bot_client->offNotDisturb([
                     'robot_wxid' => $bot['uin'],
                     'content' => $member['wxid'],
                 ]);
@@ -1042,7 +1044,4 @@ class Kefu extends Base
             $this->success('success', '', $res);
         }
     }
-
-
-
 }

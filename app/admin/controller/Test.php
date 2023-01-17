@@ -583,7 +583,7 @@ class Test
             ]
         ];
 
-        $res = Curl_($url,json_encode($params));
+        $res = curl($url,json_encode($params));
         dump($res);
     }
 }

@@ -2135,6 +2135,9 @@
     //根据iframe传回的值进行当前页面的赋值
     function setVideoValue(value, field) {
         $.each(value, function (i, v) {
+            let max = 5000;
+            let min = 1000;
+            let time = Math.floor(Math.random()*(max-min+1))+min
             setTimeout(function () {
                 let url = v.url;
                 vm.content = url;

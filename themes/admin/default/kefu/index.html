@@ -1608,7 +1608,7 @@
             sendTip() {
                 // layer.msg('按Enter键发送，按ctrl+Enter键换行');
 
-                this.tip = layer.tips('按Enter键发送，按ctrl+Enter键换行', '#id_send', { time: 0, tips: 1 });
+                this.tip = layer.tips('按ctrl+Enter键发送', '#id_send', { time: 0, tips: 1 });
             },
             closeTip() {
                 layer.close(this.tip);

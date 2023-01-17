@@ -1825,7 +1825,7 @@
                             title: '标记为未读'
                             , id: 1
                         }, {
-                            title: '消息免打扰'
+                            title: '开启/关闭消息免打扰'
                             , id: 2
                         }], click: function (obj, othis) {
                             var dom = this.elem;
@@ -1838,17 +1838,17 @@
                             // console.log(dnd);
                             //消息免打扰已打开
                             if (dnd == 1) {
-                                inst.reload({
-                                    data: [{
-                                        title: '标记为未读'
-                                        , id: 1
-                                    }, {
-                                        title: '开启新消息提醒'
-                                        , id: 2
-                                    }], // 新的数据
-                                    show: false, // 重载即显示
-                                    style: 'animation: none;' // 去除面板动画，防止高频重载时的抖动
-                                });
+                                // inst.reload({
+                                //     data: [{
+                                //         title: '标记为未读'
+                                //         , id: 1
+                                //     }, {
+                                //         title: '开启新消息提醒'
+                                //         , id: 2
+                                //     }], // 新的数据
+                                //     show: false, // 重载即显示
+                                //     style: 'animation: none;' // 去除面板动画，防止高频重载时的抖动
+                                // });
                                 var dnd_flag = 0;
                             } else {
                                 var dnd_flag = 1;

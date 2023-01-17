@@ -1929,9 +1929,9 @@
                 console.log(msg);
                 if (massage.friend.dnd == 0) {
                     speak_cn('收到新消息');
-                    let dnd = 0;
+                    var dnd = 0;
                 } else {
-                    let dnd = 1;
+                    var dnd = 1;
                     console.log('免打扰');
                 }
                 if (!vm['chat_log'][[massage.robot_wxid]]) {

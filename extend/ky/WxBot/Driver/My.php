@@ -81,6 +81,9 @@ class My extends Base
 
     const API_ON_NOT_DISTURB = 'OnNotDisturb'; //开启消息免打扰
     const API_OFF_NOT_DISTURB = 'OffNotDisturb'; //关闭消息免打扰
+
+    const API_ACCEPTE_TRANSFER = 'AccepteTransfer'; //同意转账
+    const API_REJECT_TRANSFER = 'RejectTransfer'; //拒收转账
     const FIELD_MAP = [
         "wxid" => "wxid"
     ];
@@ -1077,12 +1080,16 @@ class My extends Base
 
     public function acceptTransfer($params = [])
     {
-        return $this->apiUnSupport();
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_ACCEPTE_TRANSFER)
+        ]);
     }
 
     public function rejectTransfer($params = [])
     {
-        return $this->apiUnSupport();
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_REJECT_TRANSFER)
+        ]);
     }
 
     public function downloadFile($params = []){

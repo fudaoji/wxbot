@@ -297,7 +297,7 @@ class Kefu extends Base
                     'path' => $post_data['content']
                 ]);
             }
-            $this->success('success','',$res);
+            $this->success('success', '', $res);
         }
     }
 
@@ -547,7 +547,7 @@ class Kefu extends Base
             $bot_model = $this->botM;
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            $bot_client->acceptTransfer([
+            $res = $bot_client->acceptTransfer([
                 'robot_wxid' => $bot['uin'],
                 'from_wxid' => $post_data['from_wxid'],
                 'payer_pay_id' => $post_data['content']['payer_pay_id'],
@@ -555,7 +555,7 @@ class Kefu extends Base
                 'paysubtype' => $post_data['content']['paysubtype'],
                 'money' => $post_data['content']['money'],
             ]);
-            $this->success('success');
+            $this->success('success',$res);
         }
     }
 

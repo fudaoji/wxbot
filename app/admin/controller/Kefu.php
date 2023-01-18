@@ -555,7 +555,7 @@ class Kefu extends Base
                 'paysubtype' => $post_data['content']['paysubtype'],
                 'money' => $post_data['content']['money'],
             ]);
-            $this->success('success',$res);
+            $this->success('success', '', $res);
         }
     }
 

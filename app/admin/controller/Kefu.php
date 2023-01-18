@@ -258,7 +258,7 @@ class Kefu extends Base
             $hkey = $post_data['to_wxid'];
             $h_data = $result;
             $h_data['content'] = $last_chat_content;
-            $redis->hSet($key, $hkey, json_encode($result));
+            $redis->hSet($key, $hkey, json_encode($h_data));
             $this->success('success', '', $result);
         }
     }

@@ -572,11 +572,11 @@ class Kefu extends Base
             $bot_model = $this->botM;
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            $bot_client->rejectTransfer([
+            $res = $bot_client->rejectTransfer([
                 'robot_wxid' => $bot['uin'],
                 'receiver_pay_id' => $post_data['content']['receiver_pay_id'],
             ]);
-            $this->success('success');
+            $this->success('success', '', $res);
         }
     }
 

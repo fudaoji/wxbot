@@ -290,9 +290,12 @@ class Kefu extends Base
                 //     'to_wxid' => $post_data['to_wxid'],
                 //     'path' => $post_data['content']['url']
                 // ]);
+                $date = date("Y-m");
+                $file_name = time().$post_data['content']['file_name'];
+                $savePath = "D:\weixinjilu\WeChat Files\WeChat Files\\".$bot['uin']."\FileStorage\Video\\".$date."\\".$file_name;
                 $res = $bot_client->downloadAndSend([
                     'url' => $post_data['content']['url'],
-                    'savePath' => $post_data['content']['path'],
+                    'savePath' => $savePath,
                     'useApi' => 'SendFileMsg',
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],

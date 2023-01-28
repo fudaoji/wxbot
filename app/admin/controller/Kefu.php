@@ -292,7 +292,7 @@ class Kefu extends Base
                 // ]);
                 $date = date("Y-m");
                 $file_name = time().$post_data['content']['file_name'];
-                $savePath = "D:\weixinjilu\WeChat Files\WeChat Files\\".$bot['uin']."\FileStorage\Video\\".$date."\\".$file_name;
+                $savePath = "D:\weixinjilu\WeChat Files\WeChat Files\\".$bot['uin']."\FileStorage\File\\".$date."\\".$file_name;
                 $res = $bot_client->downloadAndSend([
                     'url' => $post_data['content']['url'],
                     'savePath' => $savePath,

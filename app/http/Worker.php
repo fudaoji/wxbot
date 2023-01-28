@@ -105,7 +105,7 @@ class Worker extends Server
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$last_chat_log = $res['friend']['last_chat_content'];
 							$hkey = $res['to'];
-							$date = date("Y-m-d H:i:s",$res['create_time']);
+							$date = date("Y-m-d H:i:s", $res['create_time']);
 							$result = [
 								'msg_id' => $res['msg_id'],
 								'date' => $date,
@@ -142,9 +142,9 @@ class Worker extends Server
 				if ($msg) {
 					$time = time();
 					$data = json_decode($msg, true);
-					echo "文件接收延迟---". json_encode($data)."\n";
+					echo "文件接收延迟---" . json_encode($data) . "\n";
 					if ($time < $data['start_time']) {
-						echo "延迟时间还没到,放回---". json_encode($data)."\n";
+						echo "延迟时间还没到,放回---" . json_encode($data) . "\n";
 						// Logger::write("延迟时间还没到,放回---" . json_encode($data));
 						//延迟时间还没到,放回
 						$redis->rpush($key, json_encode($data));
@@ -167,7 +167,8 @@ class Worker extends Server
 					$chatLogM = new ChatLog();
 					// echo "开始转换数据：".$data['msg']."\n".$data['msg_type']."\n".json_encode($data['bot'])."\n";
 					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['msg_type'], $data['bot']);
-					echo "延迟队列转换数据结果：".json_encode($convert)."\n";
+					echo "延迟队列转换数据结果：" . json_encode($convert) . "\n";
+					$data['num'] = $data['num'] + 1;
 					if ($convert['content'] != '') {
 						//视频转换成功
 						//更新数据库，发送到前端替换视频
@@ -177,14 +178,16 @@ class Worker extends Server
 							$data['msg'] = $convert['content'];
 							$data['event'] = 'delay';
 							$conn->send(json_encode($data));
-							echo "视频转换成功，发送前端：".json_encode($data)."\n";
+							echo "视频转换成功，发送前端：" . json_encode($data) . "\n";
 						}
 					} else {
-						echo "延迟数据转换失败". json_encode($convert)."\n";
-						//失败+10秒再补回
-						$data['start_time'] = $data['start_time'] + $data['delay_second'];
-						$redis->rpush($key, json_encode($data));
-						sleep(1);
+						echo "延迟数据转换失败" . json_encode($convert) . "\n";
+						if ($data['num'] < 10) {
+							//失败+10秒再补回
+							$data['start_time'] = $data['start_time'] + $data['delay_second'];
+							$redis->rpush($key, json_encode($data));
+							sleep(1);
+						}
 					}
 				}
 			}

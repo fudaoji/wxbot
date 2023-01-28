@@ -155,7 +155,7 @@ class ChatLog extends Kefu
                     } else {
                         $base64 = $res['ReturnStr'];
                         $url = upload_base64('file_' . rand(1000, 9999) . '_' . time() . $file_name, $base64);
-                        $content = json_encode(['url' => $url, 'file_name' => $file_name, 'ext' => $ext]);
+                        $content = json_encode(['url' => $url, 'file_name' => $file_name, 'ext' => $ext, 'path' => $path]);
                     }
                 } else {
                     echo "path地址为空:" . "\n";

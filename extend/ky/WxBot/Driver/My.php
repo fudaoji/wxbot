@@ -278,24 +278,24 @@ class My extends Base
         ]);
     }
 
-    // /**
-    //  *
-    // res:
-    // url (string)  // 文件下载直链，不可重定向，需要保证HEAD访问有返回
-    // savePath (string)  // 文件保存完整路径，目录不存在时会自动创建（如 E:\file\temp.exe）
-    // is_refresh (int)  // 1为下载或覆盖下载，0为本地存在该文件时不下载（以savePath判断），默认为0
-    // useApi (string)  // 下载完成 或 本地存在 时 快捷发送，为空则只下载  :SendFileMsg|SendVideoMsg
-    // robot_wxid (string)  // 机器人ID
-    // to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
-    //  * @param array $params
-    //  * @return bool
-    //  * Author: fudaoji<fdj@kuryun.cn>
-    //  */
-    // public function downloadFile($params = []){
-    //     return $this->request([
-    //         'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
-    //     ]);
-    // }
+    /**
+     *
+    res:
+    url (string)  // 文件下载直链，不可重定向，需要保证HEAD访问有返回
+    savePath (string)  // 文件保存完整路径，目录不存在时会自动创建（如 E:\file\temp.exe）
+    is_refresh (int)  // 1为下载或覆盖下载，0为本地存在该文件时不下载（以savePath判断），默认为0
+    useApi (string)  // 下载完成 或 本地存在 时 快捷发送，为空则只下载  :SendFileMsg|SendVideoMsg
+    robot_wxid (string)  // 机器人ID
+    to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function downloadAndSend($params = []){
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
+        ]);
+    }
 
     /**
      * req:

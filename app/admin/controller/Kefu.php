@@ -285,11 +285,20 @@ class Kefu extends Base
                     'path' => $post_data['content']
                 ]);
             } else if ($post_data['type'] == 2004) { //文件
-                $res = $bot_client->sendFileToFriends([
+                // $res = $bot_client->sendFileToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']['url']
+                // ]);
+                $res = $bot_client->downloadAndSend([
+                    'url' => $post_data['content']['url'],
+                    'savePath' => $post_data['content']['path'],
+                    'useApi' => 'SendFileMsg',
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
-                    'path' => $post_data['content']['url']
+                    
                 ]);
+
             } else if ($post_data['type'] == 43) { //视频
                 $res = $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
@@ -1045,4 +1054,3 @@ class Kefu extends Base
         }
     }
 }
-

@@ -118,6 +118,9 @@ class Worker extends Server
 							$redis->hSet($last_log_key, $hkey, json_encode($result));
 							$conn->send($msg);
 						}
+					} else {
+						dump("未找到客户端：");
+						dump($res['client']);
 					}
 				}
 			}

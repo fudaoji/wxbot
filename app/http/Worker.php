@@ -63,8 +63,8 @@ class Worker extends Server
 					$res = json_decode($msg, true);
 					Logger::write("发送消息---" . json_encode($res));
 					echo "用户：";
-					dump($this->worker->uidConnections);
-					if (isset($this->worker->uidConnections[$res['client']])) {
+					dump($this->worker);
+					if (isset($this->worker->uidConnections) && isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
 							// $convert = $chatLogM->convertReceiveMsg($res['msg'], $res['msg_type']);

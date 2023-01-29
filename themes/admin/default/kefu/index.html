@@ -45,12 +45,13 @@
                     <li v-for="(item, index) in friends_list" :key="item.id"
                         :class="item.id == friend_id ? 'layui-menu-item-checked' : ''">
                         <div class="layui-row">
-                            <div class=" sel_friend" v-show="sel_friend">
+                            <div class="sel_friend" v-show="sel_friend">
                                 <input type="checkbox" lay-ignore name="sel_friend" lay-skin="primary" :id="item.wxid"
                                     :value="item.wxid" style="width: 28px;height:28px;margin-top: 10px;"
                                     v-model="share_friends">
                             </div>
-                            <div class="layui-col-xs12 layui-menu-body-title" v-on:click="chatWith(item)">
+                            <div class="layui-col-xs12 layui-menu-body-title friend_right" v-on:click="chatWith(item)">
+                                <div :class="item.id+'_'+item.type+'_'+item.dnd"></div>
                                 <div class="layui-row">
                                     <div class="layui-col-xs4">
                                         <div class="headimg">
@@ -59,11 +60,14 @@
                                             <span class="layui-badge-dot" v-if="item.new"></span>
                                         </div>
                                     </div>
-                                    <div class="layui-col-xs8">
+                                    <div class="layui-col-xs6">
                                         <div class="name"><span>{{item.nickname}}</span></div>
                                         <div class="last_chat">
                                             <div class="layui-word-aux" v-html="item.last_chat_content"></div>
                                         </div>
+                                    </div>
+                                    <div class="layui-col-xs2">
+                                        <i class="layui-icon layui-icon-mute" v-if="item.dnd"></i>
                                     </div>
 
                                 </div>
@@ -354,7 +358,7 @@
                                 </div>
                             </div>
                             <textarea style="height: 181px;" placeholder="" class="layui-textarea" v-model="content"
-                                id="content" @keyup.enter.exact="sendMsg" @keyup.ctrl.enter="lineFeed()"></textarea>
+                                id="content" @keyup.ctrl.enter="sendMsg"></textarea>
                         </div>
                         <div class="input_area" style="text-align:right">
                             <button type="button" class="layui-btn layui-btn-primary" @click="clearMsg">清空</button>
@@ -669,6 +673,7 @@
                                 // self['new_friend'] = new_friend_arr;
                             }
                         })
+                        self['renderFriendRight']();
                     }
                     layer.close(index);
                 }, 'json');
@@ -735,6 +740,7 @@
                                 // self['new_friend'] = new_friend_arr;
                             }
                         })
+                        self['renderFriendRight']();
                     }
                     layer.close(index);
                 }, 'json');
@@ -1602,7 +1608,7 @@
             sendTip() {
                 // layer.msg('按Enter键发送，按ctrl+Enter键换行');
 
-                this.tip = layer.tips('按Enter键发送，按ctrl+Enter键换行', '#id_send', { time: 0, tips: 1 });
+                this.tip = layer.tips('按ctrl+Enter键发送', '#id_send', { time: 0, tips: 1 });
             },
             closeTip() {
                 layer.close(this.tip);
@@ -1796,6 +1802,84 @@
                     }
                 }, 'json');
             },
+            //好友右键
+            renderFriendRight(e) {
+                console.log("好友右键");
+                var self = this;
+                layui.use(['upload', 'jquery', 'dropdown', 'util', 'layer'], function () {
+                    var upload = layui.upload
+                        , $ = layui.jquery;
+                    var upload_index;
+                    var dropdown = layui.dropdown;
+                    var util = layui.util;
+                    var layer = layui.layer;
+                    layer.photos({
+                        photos: '.layer-photos'
+                        , anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                    });
+                    //执行菜单
+                    var inst = dropdown.render({
+                        elem: '.friend_right' //在 id="demo" 的元素中触发事件。也可以直接设置为 document，从而重置整个右键菜单
+                        , trigger: 'contextmenu' //右键事件
+                        , data: [{
+                            title: '标记为未读'
+                            , id: 1
+                        }, {
+                            title: '开启/关闭消息免打扰'
+                            , id: 2
+                        }], click: function (obj, othis) {
+                            var dom = this.elem;
+                            var content = $(dom).find('div').html();
+                            var id_type_dnd = $(dom).find('div').attr('class');
+                            var id_type_dnd_arr = id_type_dnd.split("_");
+                            var friend_id = id_type_dnd_arr[0];
+                            var friend_type = id_type_dnd_arr[1];
+                            var dnd = id_type_dnd_arr[2];
+                            // console.log(dnd);
+                            //消息免打扰已打开
+                            if (dnd == 1) {
+                                // inst.reload({
+                                //     data: [{
+                                //         title: '标记为未读'
+                                //         , id: 1
+                                //     }, {
+                                //         title: '开启新消息提醒'
+                                //         , id: 2
+                                //     }], // 新的数据
+                                //     show: false, // 重载即显示
+                                //     style: 'animation: none;' // 去除面板动画，防止高频重载时的抖动
+                                // });
+                                var dnd_flag = 0;
+                            } else {
+                                var dnd_flag = 1;
+                            }
+                            // console.log(dnd_flag);
+                            if (obj.id === 1) {
+                                console.log('标记为未读');
+                                $.each(self['friends_list'], function (i, v) {
+                                    if (friend_id == v.id) {
+                                        v.new = 1;
+                                        return false;
+                                    }
+                                });
+                                // console.log(self['friends_list']);
+                            } else if (obj.id === 2) {
+                                $.each(self['friends_list'], function (i, v) {
+                                    if (friend_id == v.id) {
+                                        v.dnd = dnd_flag;
+                                        return false;
+                                    }
+                                });
+                                let url = '/admin/kefu/updateMemberDnd';
+                                let params = { id: friend_id, dnd: dnd_flag,bot_id:self['bot_id']};
+                                $.post(url, params, function (res) {
+
+                                }, 'json');
+                            }
+                        }
+                    });
+                });
+            },
 
         }
     });
@@ -1829,7 +1913,7 @@
             var massage = eval("(" + event.data + ")");
             //收到私聊信息
             if (massage.event == 'msg') {
-                speak_cn('收到新消息');
+                
                 //数据类型转换
                 if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42 || massage.msg_type == 2004 || massage.msg_type == 10003) {
                     // console.log("转账：");
@@ -1841,8 +1925,15 @@
                     console.log(massage.msg);
                 }
                 //转账/分享链接单独处理
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type, friend_type: massage.friend_type, group_headimg: massage.group_headimg, group_nickname: massage.group_nickname };
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type, friend_type: massage.friend_type, group_headimg: massage.group_headimg, group_nickname: massage.group_nickname,friend:massage.friend };
                 console.log(msg);
+                if (massage.friend.dnd == 0) {
+                    speak_cn('收到新消息');
+                    var dnd = 0;
+                } else {
+                    var dnd = 1;
+                    console.log('免打扰');
+                }
                 if (!vm['chat_log'][[massage.robot_wxid]]) {
                     vm['chat_log'][[massage.robot_wxid]] = {};
                 }
@@ -1855,7 +1946,7 @@
                 if (massage.from_wxid == vm['friend_wxid']) {
                     vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
                 }
-                if (!vm['new_bot'].includes(massage.robot_wxid)) {
+                if (!vm['new_bot'].includes(massage.robot_wxid) && dnd == 0) {
                     vm['new_bot'].push(massage.robot_wxid);
                 }
                 vm['renderDropdown']();
@@ -1863,7 +1954,7 @@
                 //如果消息不是当前机器人则点亮
                 var new_to_friend = true;
                 $.each(vm['bot_list'], function (i, v) {
-                    if (massage.robot_wxid == v.uin) {
+                    if (massage.robot_wxid == v.uin && dnd == 0) {
                         vm['bot_list'][i]['new'] = 1;
                         // let new_bot_arr = vm['new_bot'];
                         // new_bot_arr.splice($.inArray(v.uin,new_bot_arr),1);
@@ -2046,6 +2137,9 @@
     //根据iframe传回的值进行当前页面的赋值
     function setVideoValue(value, field) {
         $.each(value, function (i, v) {
+            let max = 5000;
+            let min = 1000;
+            let time = Math.floor(Math.random()*(max-min+1))+min
             setTimeout(function () {
                 let url = v.url;
                 vm.content = url;

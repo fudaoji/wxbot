@@ -564,7 +564,7 @@ function upload_base64($key = '', $string = ''){
 }
 
 // curl请求
-function Curl_($targetUrl = "http://test.abuyun.com", $data = false, $cookie = false, $referer = '', $header = false)
+function curl($targetUrl = "http://test.abuyun.com", $data = false, $cookie = false, $referer = '', $header = false)
 {
     // 代理服务器
     $proxyServer = "http://http-dyn.abuyun.com:9020";

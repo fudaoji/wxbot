@@ -159,6 +159,7 @@ class Kefu extends Base
                         $last_chat_content = $log['content'];
                     }
                     $val['last_chat_content'] = $last_chat_content;
+                    $val['new'] = 0;
                 }
             } else {
                 $list = [];
@@ -257,7 +258,7 @@ class Kefu extends Base
             $hkey = $post_data['to_wxid'];
             $h_data = $result;
             $h_data['content'] = $last_chat_content;
-            $redis->hSet($key, $hkey, json_encode($result));
+            $redis->hSet($key, $hkey, json_encode($h_data));
             $this->success('success', '', $result);
         }
     }
@@ -272,31 +273,43 @@ class Kefu extends Base
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
             if ($post_data['type'] == 1) { //文本
-                $bot_client->sendTextToFriends([
+                $res = $bot_client->sendTextToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'msg' => $post_data['content']
                 ]);
             } else if ($post_data['type'] == 3) { //图片
-                $bot_client->sendImgToFriends([
+                $res = $bot_client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']
                 ]);
             } else if ($post_data['type'] == 2004) { //文件
-                $res = $bot_client->sendFileToFriends([
+                // $res = $bot_client->sendFileToFriends([
+                //     'robot_wxid' => $bot['uin'],
+                //     'to_wxid' => $post_data['to_wxid'],
+                //     'path' => $post_data['content']['url']
+                // ]);
+                $date = date("Y-m");
+                $file_name = time().$post_data['content']['file_name'];
+                $savePath = "D:\weixinjilu\WeChat Files\WeChat Files\\".$bot['uin']."\FileStorage\File\\".$date."\\".$file_name;
+                $res = $bot_client->downloadAndSend([
+                    'url' => $post_data['content']['url'],
+                    'savePath' => $savePath,
+                    'useApi' => 'SendFileMsg',
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
-                    'path' => $post_data['content']['url']
+                    
                 ]);
+
             } else if ($post_data['type'] == 43) { //视频
-                $bot_client->sendVideoMsg([
+                $res = $bot_client->sendVideoMsg([
                     'robot_wxid' => $bot['uin'],
                     'to_wxid' => $post_data['to_wxid'],
                     'path' => $post_data['content']
                 ]);
             }
-            $this->success('success');
+            $this->success('success', '', $res);
         }
     }
 
@@ -546,7 +559,7 @@ class Kefu extends Base
             $bot_model = $this->botM;
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            $bot_client->acceptTransfer([
+            $res = $bot_client->acceptTransfer([
                 'robot_wxid' => $bot['uin'],
                 'from_wxid' => $post_data['from_wxid'],
                 'payer_pay_id' => $post_data['content']['payer_pay_id'],
@@ -554,7 +567,7 @@ class Kefu extends Base
                 'paysubtype' => $post_data['content']['paysubtype'],
                 'money' => $post_data['content']['money'],
             ]);
-            $this->success('success');
+            $this->success('success', '', $res);
         }
     }
 
@@ -571,11 +584,11 @@ class Kefu extends Base
             $bot_model = $this->botM;
             $bot = $bot_model->getOne($post_data['bot_id']);
             $bot_client = $bot_model->getRobotClient($bot);
-            $bot_client->rejectTransfer([
+            $res = $bot_client->rejectTransfer([
                 'robot_wxid' => $bot['uin'],
                 'receiver_pay_id' => $post_data['content']['receiver_pay_id'],
             ]);
-            $this->success('success');
+            $this->success('success', '', $res);
         }
     }
 
@@ -980,7 +993,8 @@ class Kefu extends Base
      * 
      * wxid获取好友信息
      */
-    public function getDetailInfoByWxid(){
+    public function getDetailInfoByWxid()
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $bot_model = new ModelBot();
@@ -1010,6 +1024,36 @@ class Kefu extends Base
             } else {
                 $this->error('获取群成员信息错误');
             }
+        }
+    }
+
+
+    /**
+     * 
+     * 开启/关闭消息免打扰设置
+     */
+    public function updateMemberDnd()
+    {
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $this->model = new BotMember();
+            $member = $this->model->where(['id' => $post_data['id']])->find();
+            $this->model->where(['id' => $post_data['id']])->update(['dnd' => $post_data['dnd']]);
+            $bot_model = new ModelBot();
+            $bot = $bot_model->getOne($post_data['bot_id']);
+            $bot_client = $bot_model->getRobotClient($bot);
+            if ($post_data['dnd']) { //开启
+                $res = $bot_client->onNotDisturb([
+                    'robot_wxid' => $bot['uin'],
+                    'content' => $member['wxid'],
+                ]);
+            } else {
+                $res = $bot_client->offNotDisturb([
+                    'robot_wxid' => $bot['uin'],
+                    'content' => $member['wxid'],
+                ]);
+            }
+            $this->success('success', '', $res);
         }
     }
 }

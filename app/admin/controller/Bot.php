@@ -7,6 +7,7 @@ use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
 use ky\WxBot\Driver\Xbot;
+use think\facade\Log;
 
 class Bot extends Base
 {
@@ -661,11 +662,12 @@ class Bot extends Base
         //退掉遗留的弹框
         // $bot_client->exitLoginCode();
         $res = $bot_client->getLoginCode();
+        // Log::write("获取微信二维码：".json_encode($res));
         if($res['code'] == 0){
             $this->error($res['errmsg']);
         }
         if(empty($res['data'])){
-            $bot_client->exitLoginCode();
+            // $bot_client->exitLoginCode();
         }
         $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);
@@ -720,7 +722,7 @@ class Bot extends Base
             $this->error($res['errmsg']);
         }
         if(empty($res['data'])){
-            $bot_client->exitLoginCode();
+            // $bot_client->exitLoginCode();
         }
         $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);

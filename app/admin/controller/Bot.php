@@ -452,7 +452,7 @@ class Bot extends Base
         ])){
             $config = config('system.bot');
         }
-        return $config;
+        return empty($config) ? [] : $config;
     }
 
     /**

@@ -4725,7 +4725,7 @@ CREATE TABLE `__PREFIX__task` (
   `admin_id` int(10) unsigned NOT NULL DEFAULT '0',
   `bot_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '机器人id',
   `title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '任务名称',
-  `wxids` longblob COLLATE utf8mb4_unicode_ci COMMENT '接收者wxids，逗号隔开',
+  `wxids` longblob NULL COMMENT '接收者wxids，逗号隔开',
   `plan_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '计划发送时间',
   `complete_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '任务结束时间',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0',

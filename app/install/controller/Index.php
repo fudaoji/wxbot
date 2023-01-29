@@ -43,7 +43,7 @@ class Index extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
 	public function check() {
-		session('error', false);
+        session('error', null);
 		//环境检测
 		$env = check_env();
 		//目录文件读写检测
@@ -159,6 +159,7 @@ class Index extends Base
             }
             $this->success('数据库安装成功', url('complete'));
         }else{
+            session('error', null);
             cache('install_msg', []);
             $this->status['index']  = 'success';
             $this->status['check']  = 'success';

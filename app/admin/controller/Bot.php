@@ -667,7 +667,7 @@ class Bot extends Base
             $this->error($res['errmsg']);
         }
         if(empty($res['data'])){
-            $bot_client->exitLoginCode();
+            // $bot_client->exitLoginCode();
         }
         $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);
@@ -722,7 +722,7 @@ class Bot extends Base
             $this->error($res['errmsg']);
         }
         if(empty($res['data'])){
-            $bot_client->exitLoginCode();
+            // $bot_client->exitLoginCode();
         }
         $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);

@@ -662,7 +662,7 @@ class Bot extends Base
         //退掉遗留的弹框
         // $bot_client->exitLoginCode();
         $res = $bot_client->getLoginCode();
-        Log::write("获取微信二维码：".json_encode($res));
+        // Log::write("获取微信二维码：".json_encode($res));
         if($res['code'] == 0){
             $this->error($res['errmsg']);
         }

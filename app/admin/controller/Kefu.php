@@ -69,6 +69,7 @@ class Kefu extends Base
             ->addFormItem('switch', 'radio', '是否开启', '是否开启', [1 => '是', 0 => '否'])
             ->addFormItem('socket_ip', 'text', 'Socket主机', 'Socket主机地址', [], 'required')
             ->addFormItem('socket_port', 'text', '端口号', 'Socket端口号', [], 'required')
+            ->addFormItem('file_path', 'text', '微信文件地址', '微信文件地址如：D:\weixinjilu\WeChat Files', [], 'required')
             ->setFormData($base_config);
         return $builder->show();
     }
@@ -290,9 +291,11 @@ class Kefu extends Base
                 //     'to_wxid' => $post_data['to_wxid'],
                 //     'path' => $post_data['content']['url']
                 // ]);
+                $base_config = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => 0]);
                 $date = date("Y-m");
                 $file_name = time().$post_data['content']['file_name'];
-                $savePath = "D:\weixinjilu\WeChat Files\WeChat Files\\".$bot['uin']."\FileStorage\File\\".$date."\\".$file_name;
+                $file_path = $base_config['file_path'] ?? "D:\weixinjilu\WeChat Files\WeChat Files";
+                $savePath = $file_path."\\".$bot['uin']."\FileStorage\File\\".$date."\\".$file_name;
                 $res = $bot_client->downloadAndSend([
                     'url' => $post_data['content']['url'],
                     'savePath' => $savePath,

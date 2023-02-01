@@ -411,7 +411,7 @@ class ChatLog extends Kefu
                 'bot' => $bot,
                 'client' => $bot['admin_id'], //对应用户id
                 'robot_wxid' => $data['robot_wxid'],
-                'from_wxid' => $data['from_wxid'],
+                'from_wxid' => $data['to_wxid'],
             ];
             $redis->rpush($key_delay, json_encode($r_data));
             Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");

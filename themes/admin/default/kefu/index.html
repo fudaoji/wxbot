@@ -157,7 +157,7 @@
                                             <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'send_43_'+item.msg_id">
                                                 <div v-if="item.content"><embed :src="item.content" autostart=false width="300px" height="400px"></div>
-                                                <div v-else>视频加载中···</div>
+                                                <div v-else>视频加载中<i class="layui-icon layui-icon-loading"></i></div>
                                             </div>
                                             <!-- 语音消息mp3 -->
                                             <div v-else-if="item.msg_type == 34" :class="'send_34_'+item.msg_id">

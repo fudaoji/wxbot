@@ -193,6 +193,7 @@ class ChatLog extends Kefu
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 5, -1);
                 if ($path) {
+                    echo "视频消息path" .$path. "\n";
                     $res = $bot_client->downloadFile(['path' => $path]);
                     if ($res['Code'] != 0) {
                         echo "转换视频消息为base64错误:" . json_encode($res) . "\n";
@@ -213,6 +214,7 @@ class ChatLog extends Kefu
 
                 $content = $url;
                 $last_chat_content = "[视频]";
+                echo "视频消息OK" . "\n";
                 break;
             case 47:
                 //gif

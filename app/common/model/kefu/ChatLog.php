@@ -193,6 +193,7 @@ class ChatLog extends Kefu
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 5, -1);
                 if ($path) {
+                    echo "视频消息path" .$path. "\n";
                     $res = $bot_client->downloadFile(['path' => $path]);
                     if ($res['Code'] != 0) {
                         echo "转换视频消息为base64错误:" . json_encode($res) . "\n";
@@ -213,6 +214,7 @@ class ChatLog extends Kefu
 
                 $content = $url;
                 $last_chat_content = "[视频]";
+                echo "视频消息OK" . "\n";
                 break;
             case 47:
                 //gif
@@ -411,7 +413,7 @@ class ChatLog extends Kefu
                 'bot' => $bot,
                 'client' => $bot['admin_id'], //对应用户id
                 'robot_wxid' => $data['robot_wxid'],
-                'from_wxid' => $data['from_wxid'],
+                'from_wxid' => $data['to_wxid'],
             ];
             $redis->rpush($key_delay, json_encode($r_data));
             Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");

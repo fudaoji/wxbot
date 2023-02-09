@@ -11,15 +11,19 @@ namespace ky\OpenAI\Driver;
 
 use ky\OpenAI\Base;
 
-class Gpt extends Base
+class Gpt1 extends Base
 {
-    //https://chat.forchange.cn/
-    protected $baseUri = 'https://api.forchange.cn/';
+    //http://chat.h2ai.cn/api/trilateral/openAi/completions?prompt=%E7%94%A8PHP%E4%BB%A3%E7%A0%81%E6%BC%94%E7%A4%BA%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F&openaiId=126334723108039235977447039012068514425338170296383
+    protected $baseUri = 'http://chat.h2ai.cn/';
     protected $errMsg = '';
+    protected $appKey = 'free';
+
+    const API_SMART = '/api/trilateral/openAi/completions';
 
     public function __construct($options = [])
     {
         parent::__construct($options);
+        !empty($options['app_key']) && $this->appKey = $options['app_key'];
     }
 
     /**
@@ -29,15 +33,16 @@ class Gpt extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function smart($params){
-        return  $this->doRequest($params, '/');
+        return  $this->doRequest($params, self::API_SMART);
     }
 
     private function doRequest($params = [], $api = ''){
-        $params['prompt'] = "Human:{$params['msg']}\nAI:";
-        $params['tokensLength'] = mb_strlen($params['prompt']);
+        $params['prompt'] = $params['msg'];
+        $params['openaiId'] = $this->appId;
         return $this->request([
             'url' => $api,
-            'data' => $params
+            'data' => $params,
+            'method' => 'get'
         ]);
     }
 
@@ -53,14 +58,14 @@ class Gpt extends Base
 
     public function dealRes($params){
         $res['ori_res'] = $params;
-        if(!empty($params['choices'])){
+        if($params['code'] == 200){
             $res['code'] = 1;
             $res['answer_type'] = self::ANSWER_TEXT;
-            $text = isset($params['choices'][0]['text']) ? $params['choices'][0]['text'] : '';
+            $text = isset($params['data']['choices'][0]['text']) ? $params['data']['choices'][0]['text'] : '';
             $res['answer'] = str_replace('<br/>',"\n", trim($text, "<br/>"));
         }else{
             $res['code'] = 0;
-            $res['errmsg'] = $params['error'];
+            $res['errmsg'] = $params['msg'];
         }
         return $res;
     }

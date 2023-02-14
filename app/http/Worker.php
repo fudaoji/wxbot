@@ -182,7 +182,7 @@ class Worker extends Server
 						}
 					} else {
 						echo "延迟数据转换失败" . json_encode($convert) . "\n";
-						if ($data['num'] < 10) {
+						if ($data['num'] < 100) {
 							//失败+10秒再补回
 							$data['start_time'] = $data['start_time'] + $data['delay_second'];
 							$redis->rpush($key, json_encode($data));

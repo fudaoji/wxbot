@@ -39,4 +39,16 @@ class Reply
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
+
+    /**
+     * 动作响应类型
+     * @param null $id
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function actionTypes($id = null){
+        $list = self::handleTypes();
+        unset($list[self::HANDLE_MSG]);
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
 }

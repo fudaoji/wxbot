@@ -31,6 +31,8 @@ class Forward extends Base
         $where = ['f.status' => 1, 'f.officer' => $from_wxid, 'bot.uin' => $bot_wxid];
         if($group_wxid){
             $where['g.wxid'] = $group_wxid;
+        }else{
+            $where['f.group_id'] = 0;
         }
         return $this->getOneJoin([
             'alias' => 'f',

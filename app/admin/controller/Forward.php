@@ -180,7 +180,7 @@ class Forward extends Botbase
             $res = $this->model->updateOne($post_data);
         }
         if($res){
-            if($res['group_id']){
+            if(!empty($res['group_id'])){
                 $group = model('admin/botMember')->getOne($res['group_id']);
                 $group_wxid = $group['wxid'];
             }else{

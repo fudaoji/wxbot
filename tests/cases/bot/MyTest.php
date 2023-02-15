@@ -30,7 +30,7 @@ class MyTest extends BotTest
     public function __construct() {
         parent::__construct();
         $this->botClient2 = new My(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.222.4.168:8091']);
-        $this->botClient = new My(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
+        $this->botClient = new My(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.222.4.168:8091']);
         $this->botComClient = new Mycom(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
     }
 
@@ -299,10 +299,108 @@ class MyTest extends BotTest
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function testSendXmlMsg() {
-        $res = $this->botClient->sendLinkMsg([
+        $res = $this->botClient->sendXml([
             'robot_wxid' => $this->robotJane,
             'to_wxid' => $this->wxidDj,
-            'xml' => "",
+            'xml' => '<?xml version="1.0"?>
+<msg>
+	<appmsg appid="" sdkver="0">
+		<title>吃喝玩乐 尽在美团</title>
+		<des />
+		<username />
+		<action>view</action>
+		<type>33</type>
+		<showtype>0</showtype>
+		<content />
+		<url>https://mp.weixin.qq.com/mp/waerrpage?appid=wxde8ac0a21135c07d&amp;type=upgrade&amp;upgradetype=3#wechat_redirect</url>
+		<lowurl />
+		<forwardflag>0</forwardflag>
+		<dataurl />
+		<lowdataurl />
+		<contentattr>0</contentattr>
+		<appattach>
+			<attachid />
+			<cdnthumburl>3057020100044b30490201000204353f59cc02032f5dc90204d129e17c020463eb3c0d042462646434363337382d326535382d343561622d623566652d3232306266343533323362380204011800030201000405004c543d00</cdnthumburl>
+			<cdnthumbmd5>f3baf6a8a842594d7b7422d044f5843d</cdnthumbmd5>
+			<cdnthumblength>46256</cdnthumblength>
+			<cdnthumbheight>576</cdnthumbheight>
+			<cdnthumbwidth>720</cdnthumbwidth>
+			<cdnthumbaeskey>8cd7ce5f2832e93e834611ce7186b6ae</cdnthumbaeskey>
+			<aeskey>8cd7ce5f2832e93e834611ce7186b6ae</aeskey>
+			<encryver>1</encryver>
+			<fileext />
+			<islargefilemsg>0</islargefilemsg>
+		</appattach>
+		<extinfo />
+		<androidsource>0</androidsource>
+		<sourceusername>gh_870576f3c6f9@app</sourceusername>
+		<sourcedisplayname>美团丨外卖美食买菜酒店电影购物</sourcedisplayname>
+		<commenturl />
+		<thumburl />
+		<mediatagname />
+		<messageaction><![CDATA[]]></messageaction>
+		<messageext><![CDATA[]]></messageext>
+		<emoticongift>
+			<packageflag>0</packageflag>
+			<packageid />
+		</emoticongift>
+		<emoticonshared>
+			<packageflag>0</packageflag>
+			<packageid />
+		</emoticonshared>
+		<designershared>
+			<designeruin>0</designeruin>
+			<designername>null</designername>
+			<designerrediretcturl>null</designerrediretcturl>
+		</designershared>
+		<emotionpageshared>
+			<tid>0</tid>
+			<title>null</title>
+			<desc>null</desc>
+			<iconUrl>null</iconUrl>
+			<secondUrl>null</secondUrl>
+			<pageType>0</pageType>
+			<setKey>null</setKey>
+		</emotionpageshared>
+		<webviewshared>
+			<shareUrlOriginal />
+			<shareUrlOpen />
+			<jsAppId />
+			<publisherId>wxapp_wxde8ac0a21135c07dindex/pages/mt/mt.html</publisherId>
+		</webviewshared>
+		<template_id />
+		<md5>f3baf6a8a842594d7b7422d044f5843d</md5>
+		<websearch>
+			<rec_category>0</rec_category>
+			<channelId>0</channelId>
+		</websearch>
+		<weappinfo>
+			<pagepath><![CDATA[index/pages/mt/mt.html]]></pagepath>
+			<username>gh_870576f3c6f9@app</username>
+			<appid>wxde8ac0a21135c07d</appid>
+			<version>1114</version>
+			<type>2</type>
+			<weappiconurl><![CDATA[http://wx.qlogo.cn/mmhead/Q3auHgzwzM5IfaiappYJdWCApgZnQUtjqDLBOB2U2l4nsfASxgxkubQ/96]]></weappiconurl>
+			<shareId><![CDATA[1_wxde8ac0a21135c07d_48e268137e9ffa57796ac0ed54820cd0_1676360717_0]]></shareId>
+			<appservicetype>0</appservicetype>
+			<secflagforsinglepagemode>0</secflagforsinglepagemode>
+			<videopageinfo>
+				<thumbwidth>720</thumbwidth>
+				<thumbheight>576</thumbheight>
+				<fromopensdk>0</fromopensdk>
+			</videopageinfo>
+			<showRelievedBuyFlag>538</showRelievedBuyFlag>
+		</weappinfo>
+		<statextstr />
+	</appmsg>
+	<fromusername>wxid_xokb2ezu1p6t21</fromusername>
+	<scene>0</scene>
+	<appinfo>
+		<version>1</version>
+		<appname />
+	</appinfo>
+	<commenturl />
+</msg>',
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);

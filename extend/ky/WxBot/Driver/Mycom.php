@@ -843,4 +843,14 @@ class Mycom extends Base
     {
         return $this->apiUnSupport();
     }
+
+    public function sendXml($params = [])
+    {
+        return $this->apiUnSupport();
+    }
+
+    public function sendXmlToFriends($params = [])
+    {
+        return $this->apiUnSupport();
+    }
 }

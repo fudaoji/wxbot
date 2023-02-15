@@ -55,6 +55,11 @@ Abstract class Base
     abstract public function sendMomentsXml($params = []); // 发送xml朋友圈
 
     /*==========================消息类============================*/
+    //发送xml消息 req: {robot_wxid  xml:}
+    abstract public function sendXml($params = []);
+    //发送xml消息 req: {robot_wxid  xml:}
+    abstract public function sendXmlToFriends($params = []);
+
     //收藏消息 req: {robot_wxid  msgid:消息id}
     abstract public function favoritesMsg($params = []);
     //获取收藏列表  req: {robot_wxid}

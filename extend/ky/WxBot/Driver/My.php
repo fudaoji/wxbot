@@ -35,6 +35,7 @@ class My extends Base
     const API_SEND_MOMENTS_LINK = 'SendMoments_Like'; //
     const API_SEND_MOMENTS_XML = 'MomentsSend'; //
 
+    const API_SEND_XML = 'SendXmlMsg'; //发送xml消息
     const API_SEND_IMG = 'SendImageMsg'; //发送图片
     const API_SEND_TEXT = 'SendTextMsg'; //发送文本
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
@@ -369,13 +370,10 @@ class My extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendFileToFriends($params = []){
-        $data = $this->buildPostData($params, self::API_SEND_FILE_MSG);
-        $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
         foreach($to_wxid as $id){
-            $data['to_wxid'] = $id;
-            $res = $this->request([
-                'data' => $data
-            ]);
+            $params['to_wxid'] = $id;
+            $res = $this->sendFileMsg($params);
             $this->sleep();
         }
         return $res;
@@ -391,8 +389,20 @@ class My extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendFileMsg($params = []){
-        return $this->request([
+        /*
+         * 接口失效
+         * return $this->request([
             'data' => $this->buildPostData($params, self::API_SEND_FILE_MSG)
+        ]);*/
+        $params['useApi'] = 'SendFileMsg';
+        $params['url'] = $params['path'];
+        $url_arr = explode('/', $params['path']);
+        $base_path = empty($params['base_path']) ? ("C:\Users\Administrator\Documents\WeChat Files\\".$params['robot_wxid']."\FileStorage\File\\") : $params['base_path'];
+        $base_path = trim($base_path, "\\") . "\\";
+        $params['savePath'] = $base_path.$url_arr[count($url_arr)-1];
+
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
         ]);
     }
 
@@ -1078,6 +1088,12 @@ class My extends Base
         ]);
     }
 
+    /**
+     * 接收转账
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function acceptTransfer($params = [])
     {
         return $this->request([
@@ -1085,6 +1101,12 @@ class My extends Base
         ]);
     }
 
+    /**
+     * 拒收转账
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function rejectTransfer($params = [])
     {
         return $this->request([
@@ -1092,6 +1114,12 @@ class My extends Base
         ]);
     }
 
+    /**
+     * 下载文件
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function downloadFile($params = []){
         return $this->request([
             'data' => $this->buildPostData($params, self::API_GET_FILE_FO_BASE64)
@@ -1125,5 +1153,35 @@ class My extends Base
         return $this->request([
             'data' => $this->buildPostData($params, self::API_OFF_NOT_DISTURB)
         ]);
+    }
+
+    /**
+     * 发送xml给好友
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendXml($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_XML)
+        ]);
+    }
+
+    /**
+     * 批量发送xml
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendXmlToFriends($params = [])
+    {
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        foreach($to_wxid as $id){
+            $params['to_wxid'] = $id;
+            $res = $this->sendXml($params);
+            $this->sleep();
+        }
+        return $res;
     }
 }

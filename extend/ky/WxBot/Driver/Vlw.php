@@ -26,6 +26,7 @@ class Vlw extends Base
     const EVENT_LOGIN = 'Login';
     const EVENT_FRIEND_VERIFY = 'EventFrieneVerify';
 
+    const API_SEND_XML = 'SendXmlMsg'; //发送xml消息
     const API_SEND_IMG = 'SendImageMsg'; //发送图片
     const API_SEND_TEXT = 'SendTextMsg'; //发送文本
     const API_FORWARD_MSG = 'ForwardMsg'; //转发消息
@@ -853,5 +854,35 @@ class Vlw extends Base
     public function rejectTransfer($params = [])
     {
         return $this->apiUnSupport();
+    }
+
+    /**
+     * 发送xml给好友
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendXml($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SEND_XML)
+        ]);
+    }
+
+    /**
+     * 批量发送xml
+     * @param array $params
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function sendXmlToFriends($params = [])
+    {
+        $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        foreach($to_wxid as $id){
+            $params['to_wxid'] = $id;
+            $res = $this->sendXml($params);
+            $this->sleep();
+        }
+        return $res;
     }
 }

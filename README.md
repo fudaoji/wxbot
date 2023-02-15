@@ -1,4 +1,4 @@
-# [Wxbot](http://kyphp.kuryun.com/home/guide/bot.html)
+# [Wxbot](http://daoadmin.kuryun.com/home/guide/bot.html)
 
 #### 介绍
 基于thinkphp6的多商户多微信号的私域社群运营web系统。
@@ -38,7 +38,7 @@
 
 #### 安装及使用文档
 
-开发文档：[https://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html](https://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html)
+开发文档：[http://daoadmin.kuryun.com/home/guide/bot/id/74/v/1.x.html](https://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html)
 
 #### 参与贡献
 

@@ -70,7 +70,9 @@ class Zdjr extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function deviceCallbackHandle(){
-        $this->groupChatHandle();
+        if(!empty($this->groupWxid)){
+            $this->groupChatHandle();
+        }
     }
 
     /**

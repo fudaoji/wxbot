@@ -25,8 +25,8 @@ class Kefu extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function privateChatHandle(){
-        echo "私聊处理器---".date("Y-m-d H:i:s");
-        Logger::write("私聊处理器---".date("Y-m-d H:i:s"));
+//        echo "私聊处理器---".date("Y-m-d H:i:s");
+//        Logger::write("私聊处理器---".date("Y-m-d H:i:s"));
         if(empty($this->switch)){
             return false;
         }
@@ -41,7 +41,7 @@ class Kefu extends Addon
      * 好友请求处理器
      */
     public function friendVerifyHandle(){
-        Logger::write("好友请求处理器---");
+        //Logger::write("好友请求处理器---");
         if(empty($this->switch)){
             return false;
         }
@@ -56,7 +56,7 @@ class Kefu extends Addon
      * 回调处理器
      */
     public function deviceCallbackHandle(){
-        Logger::write("回调处理器---");
+        //Logger::write("回调处理器---");
         if(empty($this->switch)){
             return false;
         }
@@ -64,7 +64,6 @@ class Kefu extends Addon
         //保存手机发送消息
         $model_chat_log = new ChatLog();
         $model_chat_log->saveMobileMsg($this->content,$this->bot);
-
     }
 
 

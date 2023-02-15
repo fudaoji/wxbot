@@ -15,10 +15,10 @@ use think\facade\Log;
 
 class Upgrade extends Base
 {
-    private $uKey = 'kyphpToken';
+    private $uKey = 'daoadminToken';
     public $user = []; //开发者信息
     public $token = '';
-    static public $baseUrl = 'https://kyphp.kuryun.com';
+    static public $baseUrl = 'http://daoadmin.kuryun.com';
     static public $apis = [];
     private $client;
 

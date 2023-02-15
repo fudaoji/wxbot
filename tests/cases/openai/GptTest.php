@@ -24,7 +24,7 @@ class GptTest extends Base
      */
     public function testAIBot() {
         $res = $this->aiClient->smart([
-            'msg' => "我赚不到钱"
+            'msg' => "文心一言是什么?"
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);

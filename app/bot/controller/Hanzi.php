@@ -39,7 +39,7 @@ class Hanzi extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function deviceCallbackHandle(){
-        $this->groupChatHandle();
+
     }
 
     /**

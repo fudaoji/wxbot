@@ -19,6 +19,11 @@
                     <input type="password" name="password" lay-verify="required"  placeholder="请输入密码" maxlength="20">
                     <span class="bind-password icon icon-4"></span>
                 </div>
+                <div class="item">
+                    <span class="icon icon-3"></span>
+                    <input type="password" name="repeat_password" lay-verify="required|rePassword"  placeholder="再次输入密码" maxlength="20">
+                    <span class="bind-password icon icon-4"></span>
+                </div>
 
                 <div id="validatePanel" class="item" style="width: 137px;">
                     <input type="text" name="verify" lay-verify="required"
@@ -28,15 +33,10 @@
 
             </div>
             <div class="tip">
-                <span class="icon-nocheck"></span>
-                <span class="login-tip">保持登录</span>
-                <a href="javascript:" class="forget-password">忘记密码？</a>
+                <a href="{:url('login')}" class="forget-password">已有账号</a>
             </div>
             <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin:0px;">
-                <button class="login-btn" lay-submit="" lay-filter="login">立即登录</button>
-            </div>
-            <div class="layui-form-item" style="width: 288px;margin: 20px auto;">
-                <a href="{:url('reg')}" style="float: right;color: #459ae9;font-size: 12px;">无账号？去注册</a>
+                <button class="login-btn" lay-submit="" lay-filter="reg">立即注册</button>
             </div>
         </form>
     </div>
@@ -96,11 +96,15 @@
             , password: [
                 /^[\S]{6,20}$/
                 , '密码必须6到20位，且不能出现空格'
-            ]
+            ], rePassword: function (value, item) {
+                if (value !== $('input[name=password]').val()) {
+                    return '两次输入的密码不一致';
+                }
+            }
         });
 
         // 进行登录操作
-        form.on('submit(login)', function (data) {
+        form.on('submit(reg)', function (data) {
             data.field = Object.assign(data.field, {keeplogin: keepLogin});
             $.post(data.form.action, data.field, function (res) {
                 layer.msg(res.msg, {time: 1500}, function () {

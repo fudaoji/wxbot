@@ -50,22 +50,13 @@ class Bbase extends Base
                 case 'resume' :  // 启用条目
                     $data['status'] = 1;
                     break;
-                case 'hide' :  // 隐藏条目
-                    $data['status'] = 2;
-                    break;
-                case 'show' :  // 显示条目
-                    $data['status'] = 1;
-                    break;
-                case 'recycle' :  // 移动至回收站
-                    $data['status'] = 1;
-                    break;
-                case 'restore' :  // 从回收站还原
-                    $data['status'] = 1;
-                    break;
                 default:
                     $this->error('参数错误');
                     break;
             }
+            /*if(!is_null($val = input('val', null))){
+                $data['status'] = abs($val - 1);
+            }*/
             foreach($ids as $id){
                 $data[$this->pk] = $id;
                 $this->needAid && $data['admin_id'] = $this->adminInfo['id'];

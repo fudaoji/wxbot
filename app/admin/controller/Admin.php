@@ -9,6 +9,8 @@
 
 namespace app\admin\controller;
 
+use app\constants\Common;
+
 class Admin extends Base
 {
     /**
@@ -25,7 +27,7 @@ class Admin extends Base
         $this->model = new \app\admin\model\Admin();
         $this->groupM = new \app\admin\model\AdminGroup();
     }
-    
+
     /**
      * 管理员列表
      * Author: Jason<dcq@kuryun.cn>
@@ -33,7 +35,7 @@ class Admin extends Base
     public function index(){
         if(request()->isPost()){
             $post_data = input('post.');
-            $where = [];
+            $where = ['id|pid' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['username|mobile|realname'] = ['like', '%'.$post_data['search_key'].'%'];
             if(!empty($post_data['group_id'])) {
                 $where['group_id'] = $post_data['group_id'];
@@ -52,7 +54,7 @@ class Admin extends Base
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
-        $group_list = $this->groupM->getField('id,title', ['status' => 1]);
+        $group_list = $this->groupM->getGroupsIdToTitle($this->adminInfo['id']);
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '搜索词','placeholder' => '账号、手机号、姓名'],
@@ -65,7 +67,7 @@ class Admin extends Base
             ->addTableColumn(['title' => '手机号', 'field' => 'mobile'])
             ->addTableColumn(['title' => '姓名', 'field' => 'realname'])
             ->addTableColumn(['title' => '角色', 'field' => 'group_id', 'type' => 'enum', 'options' => $group_list])
-            ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => [0 => '禁用', 1 => '启用']])
+            ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status()])
             ->addTableColumn(['title' => '操作', 'width' => 220, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('self', ['title' => '修改密码','class' => 'layui-btn layui-btn-warm layui-btn-xs','href' => url('admin/setPassword', ['id' => '__data_id__'])])
@@ -77,11 +79,8 @@ class Admin extends Base
      * 添加
      */
     public function add(){
-        if($this->adminInfo['group_id'] == 1) {
-            $groups = $this->groupM->getField('id,title', ['status' => 1]);
-        }else {
-            $groups = $this->groupM->getField('id,title', ['status' => 1, 'id' => ['>', 1]]);
-        }
+        $groups = $this->groupM->getGroupsIdToTitle($this->adminInfo['id']);
+
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')  //设置页面标题
@@ -105,11 +104,7 @@ class Admin extends Base
         if(! $data){
             $this->error('id参数错误');
         }
-        if($this->adminInfo['group_id'] == 1) {
-            $groups = $this->groupM->getField('id,title', ['status' => 1]);
-        }else {
-            $groups = $this->groupM->getField('id,title', ['status' => 1, 'id' => ['>', 1]]);
-        }
+        $groups = $this->groupM->getGroupsIdToTitle($this->adminInfo['id']);
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑')  //设置页面标题
@@ -158,6 +153,9 @@ class Admin extends Base
         $post_data = input('post.');
         if(!empty($post_data['password'])){
             $post_data['password'] = ky_generate_password($post_data['password']);
+        }
+        if(empty($post_data[$this->pk])){
+            $post_data['pid'] = $this->adminInfo['id'];
         }
         return parent::savePost($url, $post_data);
     }

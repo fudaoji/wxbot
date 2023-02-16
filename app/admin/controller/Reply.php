@@ -10,6 +10,7 @@
 
 namespace app\admin\controller;
 use app\common\model\Reply as ReplyM;
+use app\constants\Common;
 use app\constants\Media;
 use app\constants\Reply as ReplyConst;
 
@@ -122,7 +123,7 @@ class Reply extends Botbase
                 break;
         }
         $builder->addTableColumn(['title' => '优先级', 'field' => 'sort', 'minWidth' => 80])
-            ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 80,'type' => 'enum','options' => [0 => '禁用', 1=> '启用']])
+            ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 80,'type' => 'switch','options' => Common::status()])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('delete', ['title'=>'移除']);

@@ -16,6 +16,14 @@ class Common
     const MAN = 1;
     const FEMALE = 2;
 
+    public static function status($id = null){
+        $list = [
+            self::YES => '启用',
+            self::NO => '禁用'
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
     public static function yesOrNo($id = null){
         $list = [
             self::YES => '是',

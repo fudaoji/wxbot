@@ -10,6 +10,7 @@
 
 namespace app\admin\controller;
 use app\common\model\Task as TaskM;
+use app\constants\Common;
 use app\constants\Media;
 use app\constants\Task as TaskConst;
 
@@ -135,7 +136,7 @@ class Task extends Botbase
                 ->addTableColumn(['title' => '操作', 'minWidth' => 90, 'type' => 'toolbar'])
                 ->addRightButton('self',['title' => '重发', 'href' => url('resetPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1]);
         }else{
-            $builder->addTableColumn(['title' => '是否开启', 'field' => 'status', 'minWidth' => 70, 'type' => 'enum', 'options' => [0 => '停止', 1 => '开启']])
+            $builder->addTableColumn(['title' => '是否开启', 'field' => 'status', 'minWidth' => 70, 'type' => 'switch', 'options' => Common::status()])
                 ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
                 ->addRightButton('edit')
                 ->addRightButton('self',['title' => '禁用/启用', 'href' => url('forbidPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1]);

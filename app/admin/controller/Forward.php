@@ -14,6 +14,7 @@ use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
 use app\common\model\Forward as ForwardM;
 use app\constants\Bot;
+use app\constants\Common;
 
 class Forward extends Botbase
 {
@@ -104,7 +105,7 @@ class Forward extends Botbase
                 ->addTableColumn(['title' => '主讲群', 'field' => 'group_title', 'minWidth' => 150])
                 ->addTableColumn(['title' => '主讲人', 'field' => 'officer_names', 'minWidth' => 200])
                 ->addTableColumn(['title' => '发送对象', 'field' => 'wxids', 'minWidth' => 200])
-                ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => [0 => '禁用', 1 => '启用'],'minWidth' => 60])
+                ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status(),'minWidth' => 60])
                 ->addTableColumn(['title' => '操作', 'minWidth' => 70, 'type' => 'toolbar'])
                 ->addRightButton('edit');
         return $builder->show();

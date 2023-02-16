@@ -196,7 +196,7 @@ Abstract class Base
 
         if($response->getStatusCode() !== 200){
             $this->setError($response->getStatusCode());
-            return false;
+            return ['code' => 0, 'errmsg' => $this->errMsg];
         }
         //return $response->getBody()->getContents();
         return $this->dealRes(json_decode($response->getBody()->getContents(), true));

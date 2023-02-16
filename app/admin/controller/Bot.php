@@ -3,11 +3,11 @@
 namespace app\admin\controller;
 
 use app\admin\model\Bot as BotM;
+use app\admin\model\Admin as AdminM;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
 use ky\WxBot\Driver\Xbot;
-use think\facade\Log;
 
 class Bot extends Base
 {
@@ -54,7 +54,10 @@ class Bot extends Base
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['admin_id' => $this->adminInfo['id'],'protocol' => ['<>', BotConst::PROTOCOL_WEB]];
+            $where = array_merge($this->staffWhere(), [
+                'protocol' => ['<>', BotConst::PROTOCOL_WEB]
+            ]);
+
             !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
@@ -68,7 +71,7 @@ class Bot extends Base
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
-        $bot = $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'is_current' => 1]);
+        $bot = $this->getCurrentBot();
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '名称|昵称|微信号']
@@ -83,7 +86,6 @@ class Bot extends Base
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 100])
             ->addTableColumn(['title' => 'appKey', 'field' => 'app_key', 'minWidth' => 200])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 80])
-            ->addTableColumn(['title' => '操作中', 'field' => 'is_current', 'type' => 'enum', 'options' => Common::yesOrNo(), 'minWidth' => 70])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '操作', 'minWidth' => 240, 'type' => 'toolbar'])
@@ -104,16 +106,17 @@ class Bot extends Base
      */
     public function console(){
         $id = input('id', null);
-        $data = $this->model->getOne($id);
+        $data = $this->model->where($this->staffWhere())
+            ->find($id);
 
         if (!$data) {
             $this->error('参数错误');
         }
-
-        $this->model->updateByMap(['is_current' => 1, 'admin_id' => $this->adminInfo['id']],
+        session(SESSION_BOT, $data);
+        /*$this->model->updateByMap(['is_current' => 1, 'admin_id' => $this->adminInfo['id']],
             ['is_current' => 0]
         );
-        $this->model->updateOne(['id' => $data['id'], 'is_current' => 1, 'admin_id' => $this->adminInfo['id']]);
+        $this->model->updateOne(['id' => $data['id'], 'is_current' => 1, 'admin_id' => $this->adminInfo['id']]);*/
         $this->redirect(url('botfriend/index'));
     }
 
@@ -129,7 +132,7 @@ class Bot extends Base
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = ['admin_id' => $this->adminInfo['id'], 'protocol' => BotConst::PROTOCOL_WEB];
+            $where = array_merge($this->staffWhere(), ['protocol' => BotConst::PROTOCOL_WEB]);
             !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
@@ -152,7 +155,7 @@ class Bot extends Base
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
-        $bot = $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'is_current' => 1]);
+        $bot = $this->getCurrentBot();
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '名称|昵称']
@@ -166,7 +169,6 @@ class Bot extends Base
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 120])
             ->addTableColumn(['title' => 'appKey', 'field' => 'app_key', 'minWidth' => 120])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 120])
-            ->addTableColumn(['title' => '操作中', 'field' => 'is_current', 'type' => 'enum', 'options' => Common::yesOrNo(), 'minWidth' => 70])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
@@ -353,10 +355,11 @@ class Bot extends Base
 
     public function savePost($jump_to = "/undefined", $data = []){
         $post_data = input('post.');
-        $post_data['admin_id'] = $this->adminInfo['id'];
+        $post_data['admin_id'] = AdminM::getCompanyId($this->adminInfo);
         $login_code = $post_data['login_code'];
         unset($post_data['login_code']);
         if (empty($post_data[$this->pk])) {
+            $post_data['staff_id'] = $this->adminInfo['id'];
             $res = $this->model->addOne($post_data);
         } else {
             $res = $this->model->updateOne($post_data);

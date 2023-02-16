@@ -37,14 +37,18 @@ $configs = [
         'type' => 'redis',
         // 服务器地址
         'host' => env('redis.host', 'localhost'),
-        'port' => env('redis.port', '6379')
+        'port' => env('redis.port', '6379'),
+        // 缓存有效期 0表示永久缓存
+        'expire' => 86400,
     ],
     'memcache' => [
         'type'  => 'memcached',
         // 缓存前缀
         'prefix' => env('app_prefix', 'ky_'),
         'host'  => env('memcached.host', 'localhost'),
-        'port'  => env('memcached.port', 11211)
+        'port'  => env('memcached.port', 11211),
+        // 缓存有效期 0表示永久缓存
+        'expire' => 86400,
     ],
 ];
 

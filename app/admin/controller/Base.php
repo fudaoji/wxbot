@@ -10,6 +10,7 @@
 namespace app\admin\controller;
 
 use app\common\controller\BaseCtl;
+use app\admin\model\Admin as AdminM;
 
 class Base extends BaseCtl
 {
@@ -49,6 +50,54 @@ class Base extends BaseCtl
     }
 
     /**
+     * 商户id条件
+     * @param string $alias
+     * @param null $admin_info
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function adminWhere($alias = '', $admin_info = null){
+        $alias = $alias ? $alias.'.' : '';
+        $admin_info = empty($admin_info) ? $this->adminInfo : $admin_info;
+        return [$alias . 'admin_id' => empty($admin_info['pid']) ? $admin_info['id'] : $admin_info['pid']];
+    }
+
+    /**
+     * 员工条件
+     * @param string $alias
+     * @param array $admin_info
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function staffWhere($alias = '', $admin_info = []){
+        $alias = $alias ? $alias.'.' : '';
+        $admin_info = empty($admin_info) ? $this->adminInfo : $admin_info;
+        if(AdminM::isLeader($admin_info)){
+            return [$alias . 'admin_id' => AdminM::getCompanyId($admin_info)];
+        }
+        return [$alias . 'staff_id' => $admin_info['id']];
+    }
+
+    /**
+     * 员工所属bot ids
+     * @param string $alias
+     * @param array $admin_info
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function staffBotWhere($alias = '', $admin_info = []){
+        $alias = $alias ? $alias.'.' : '';
+        $admin_info = empty($admin_info) ? $this->adminInfo : $admin_info;
+        if(AdminM::isLeader($admin_info)){
+            $where = ['admin_id' => AdminM::getCompanyId($admin_info)];
+        }else{
+            $where = ['staff_id' => $admin_info['id']];
+        }
+        $bot_ids = model('admin/bot')->getField('id', $where);
+        return [$alias . 'bot_id' => ['in', count($bot_ids) ? $bot_ids : [0]]];
+    }
+
+    /**
      * 设置一条或者多条数据的状态
      * @Author  fudaoji<fdj@kuryun.cn>
      */
@@ -80,22 +129,13 @@ class Base extends BaseCtl
                 case 'resume' :  // 启用条目
                     $data['status'] = 1;
                     break;
-                case 'hide' :  // 隐藏条目
-                    $data['status'] = 2;
-                    break;
-                case 'show' :  // 显示条目
-                    $data['status'] = 1;
-                    break;
-                case 'recycle' :  // 移动至回收站
-                    $data['status'] = 1;
-                    break;
-                case 'restore' :  // 从回收站还原
-                    $data['status'] = 1;
-                    break;
                 default:
                     $this->error('参数错误');
                     break;
             }
+            /*if(!is_null($val = input('val', null))){
+                $data['status'] = abs($val - 1);
+            }*/
             foreach($ids as $id){
                 $data[$this->pk] = $id;
                 $arr[] = $data;
@@ -128,5 +168,9 @@ class Base extends BaseCtl
         }else{
             $this->error('数据保存出错');
         }
+    }
+
+    protected function getCurrentBot(){
+        return session(SESSION_BOT);
     }
 }

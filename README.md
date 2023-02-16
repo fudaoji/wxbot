@@ -53,11 +53,10 @@
 QQ交流群：
 726177820
 
-![输入图片说明](https://zyx.images.huihuiba.net/1-5f8afb8796b2f.png "KyPHP微信开发框架QQ群聊二维码.png")
+![输入图片说明](https://zyx.images.huihuiba.net/1-5f8afb8796b2f.png "WxBot微信开发框架QQ群聊二维码.png")
 
 微信交流群：
-添加好友再拉入群
-![输入图片说明](group.png)
+![输入图片说明](wx_group.png)
 
 #### 声明
 本项目仅供技术研究，请勿用于任何商业用途，请勿用于非法用途，如有任何人凭此做何非法事情，均于作者无关，特此声明。

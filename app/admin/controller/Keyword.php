@@ -10,6 +10,7 @@
 
 namespace app\admin\controller;
 use app\common\model\Keyword as KeywordM;
+use app\constants\Common;
 use app\constants\Media;
 use app\constants\Reply as ReplyConst;
 
@@ -82,7 +83,7 @@ class Keyword extends Botbase
             ->addTableColumn(['title' => '回复内容', 'field' => 'media_title', 'minWidth' => 100])
             ->addTableColumn(['title' => '批量指定', 'field' => 'user_type', 'type' => 'enum','options' => \app\constants\Task::userTypes(),'minWidth' => 100])
             ->addTableColumn(['title' => '自由指定', 'field' => 'wxids', 'minWidth' => 100])
-            ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 50, 'type' => 'enum', 'options' => [0 => '禁用', 1 => '启用']])
+            ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 50, 'type' => 'switch', 'options' => Common::status()])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 170])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 170])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])

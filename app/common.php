@@ -9,6 +9,8 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+!defined('SESSION_BOT') && define('SESSION_BOT', 'currentBot');
+
 if(!function_exists('generate_qr')){
     function generate_qr($params = []){
         try {

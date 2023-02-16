@@ -1151,9 +1151,14 @@ ADD COLUMN `last_chat_time` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '最后�
 ADD COLUMN `sex` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '1男 2女' AFTER `last_chat_time`,
 ADD COLUMN `province` varchar(50) NOT NULL DEFAULT '' AFTER `sex`,
 ADD COLUMN `city` varchar(50) NOT NULL DEFAULT '' AFTER `province`;
-
 ALTER TABLE `__PREFIX__bot`
 ADD COLUMN `username` varchar(20) NOT NULL DEFAULT '';
-
 ALTER TABLE `__PREFIX__bot_groupmember`
 ADD COLUMN `headimgurl` varchar(200) NOT NULL DEFAULT '';
+-- ----------------------------
+-- 2.1.0
+-- ----------------------------
+ALTER TABLE `__PREFIX__admin`  ADD COLUMN `pid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '所属商户ID' AFTER `update_time`;
+ALTER TABLE `__PREFIX__bot` MODIFY COLUMN `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 1 COMMENT '商户ID' AFTER `id`, ADD COLUMN `staff_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '员工ID' AFTER `admin_id`,DROP INDEX `admin_id`,ADD INDEX `admin_id`(`admin_id`, `staff_id`) USING BTREE;
+ALTER TABLE `__PREFIX__admin_group` ADD COLUMN `tenant_group` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 AFTER `update_time`;
+ALTER TABLE `__PREFIX__admin_group` ADD COLUMN `admin_id` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 AFTER `update_time`;

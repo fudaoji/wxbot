@@ -13,6 +13,7 @@ use app\common\model\Reply as ReplyM;
 use app\constants\Common;
 use app\constants\Media;
 use app\constants\Reply as ReplyConst;
+use app\constants\Bot as BotConst;
 
 class Reply extends Botbase
 {
@@ -105,9 +106,10 @@ class Reply extends Botbase
         $builder->setTabNav($this->tabList, $current_name)
             ->setDataUrl(url('index', ['event' => $current_name]))
             ->addTopButton('addnew', ['title' => '新增消息响应','href' => url('add', ['event' => $current_name])])
+            ->addTableColumn(['title' => '消息类型', 'field' => 'msg_type', 'type' => 'enum','options'=>BotConst::msgTypes(),'minWidth' => 80])
             ->addTableColumn(['title' => '响应类型', 'field' => 'handle_type', 'type' => 'enum','options'=>ReplyConst::handleTypes(),'minWidth' => 80])
-            ->addTableColumn(['title' => '内容类型', 'field' => 'media_type', 'type' => 'enum','options'=>Media::types(),'minWidth' => 80])
-            ->addTableColumn(['title' => '名称', 'field' => 'title', 'minWidth' => 80]);
+            ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'type' => 'enum','options'=>Media::types(),'minWidth' => 80])
+            ->addTableColumn(['title' => '内容名称', 'field' => 'title', 'minWidth' => 80]);
         switch ($current_name){
             case Media::IMAGE:
                 $builder->addTableColumn(['title' => '图片', 'field' => 'url', 'minWidth' => 100]);

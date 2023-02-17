@@ -9,6 +9,7 @@
 
 namespace app\admin\controller;
 
+use app\common\model\TjGroup;
 use think\facade\Cache;
 use app\constants\Bot;
 use app\admin\model\Bot as BotM;
@@ -42,7 +43,7 @@ class Index extends Base
         $group_member_m = new \app\admin\model\BotGroupmember();
         $member_m = new \app\admin\model\BotMember();
         $bot_list = $bot_m->getAll([
-            'where' => $this->staffWhere(),
+            'where' => array_merge($this->staffWhere(), ['status' => 1]),
             'field' => 'id,title,uin'
         ]);
         if(request()->isPost()){
@@ -76,7 +77,7 @@ class Index extends Base
             ];
             $this->success('', null, $return);
         }
-        $bots = $bot_m->getField('id,uin', $this->staffWhere());
+        $bots = $bot_m->getField('id,uin', array_merge($this->staffWhere(), ['status' => 1]));
         $bot_ids = array_keys($bots);
         $bot_wxids = array_values($bots);
         $where_member = ['uin' => ['in', $bot_wxids ? $bot_wxids : [0]], 'type' => Bot::FRIEND];
@@ -107,7 +108,7 @@ class Index extends Base
     public function getGroupData(){
         if(request()->isPost()){
             $bot_ids = input('post.botid');
-            if(empty($bot_ids) && $this->botM->total($this->staffWhere())){
+            if(empty($bot_ids) && $this->botM->total(array_merge($this->staffWhere(), ['status' => 1]))){
                 $this->error('至少选择一个机器人');
             }
             $end = strtotime(date('Ymd 00:00:00'));
@@ -121,11 +122,12 @@ class Index extends Base
             $decr_data = ['name' => '退群人数', 'data' => []];
             $netinc_data = ['name' => '净增人数', 'data' => []];
             $where = ['admin_id' => $this->adminInfo['id'], 'bot_id' => ['in', $bot_ids]];
+            $tj_m = new TjGroup();
             for($i = $begin; $i <= $end; $i+=86400){
                 $x_data[] = date('m-d', $i);
                 $where['day'] = date('Y-m-d', $i);
-                $add_data['data'][] = model('tjGroup')->sums('add_num', $where);
-                $decr_data['data'][] = model('tjGroup')->sums('decr_num', $where);
+                $add_data['data'][] = $tj_m->sums('add_num', $where);
+                $decr_data['data'][] = $tj_m->sums('decr_num', $where);
                 $index = count($add_data['data']) - 1;
                 $netinc_data['data'][] = $add_data['data'][$index] - $decr_data['data'][$index];
             }

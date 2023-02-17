@@ -20,6 +20,8 @@ class Reply
     const HANDLE_RM = 'rm';
     const HANDLE_DEL = 'del';
     const HANDLE_MSG = 'msg';
+    const HANDLE_TRANSFER_ACCEPT = 'transfer_accept';
+    const HANDLE_TRANSFER_REFUSE = 'transfer_refuse';
 
     public static function events($id = null){
         $list = [
@@ -36,6 +38,8 @@ class Reply
             self::HANDLE_MSG => '消息回复',
             self::HANDLE_DEL => '删除好友',
             self::HANDLE_RM => '移出群聊',
+            self::HANDLE_TRANSFER_ACCEPT => '接收转账',
+            self::HANDLE_TRANSFER_REFUSE => '拒收转账'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

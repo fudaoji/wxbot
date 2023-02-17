@@ -171,6 +171,12 @@ class Base extends BaseCtl
     }
 
     protected function getCurrentBot(){
-        return session(SESSION_BOT);
+        if(! $bot = session(SESSION_BOT)){
+            $bot = model('admin/bot')->getOneByOrder([
+                'where' => array_merge($this->staffWhere(), ['status' => 1]),
+                'order' => ['alive' => 'desc', 'id' => 'desc']
+            ]);
+        }
+        return $bot;
     }
 }

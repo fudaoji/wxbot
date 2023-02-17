@@ -55,7 +55,8 @@ class Bot extends Base
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = array_merge($this->staffWhere(), [
-                'protocol' => ['<>', BotConst::PROTOCOL_WEB]
+                'protocol' => ['<>', BotConst::PROTOCOL_WEB],
+                'status' => 1
             ]);
 
             !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
@@ -106,17 +107,13 @@ class Bot extends Base
      */
     public function console(){
         $id = input('id', null);
-        $data = $this->model->where($this->staffWhere())
+        $data = $this->model->where(array_merge($this->staffWhere(), ['status' => 1]))
             ->find($id);
 
         if (!$data) {
             $this->error('参数错误');
         }
         session(SESSION_BOT, $data);
-        /*$this->model->updateByMap(['is_current' => 1, 'admin_id' => $this->adminInfo['id']],
-            ['is_current' => 0]
-        );
-        $this->model->updateOne(['id' => $data['id'], 'is_current' => 1, 'admin_id' => $this->adminInfo['id']]);*/
         $this->redirect(url('botfriend/index'));
     }
 
@@ -132,7 +129,10 @@ class Bot extends Base
     {
         if (request()->isPost()) {
             $post_data = input('post.');
-            $where = array_merge($this->staffWhere(), ['protocol' => BotConst::PROTOCOL_WEB]);
+            $where = array_merge($this->staffWhere(), [
+                'protocol' => BotConst::PROTOCOL_WEB,
+                'status' => 1
+            ]);
             !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
@@ -382,6 +382,10 @@ class Bot extends Base
                 if(is_string($info)){
                     $msg .= "，但是绑定机器人错误：".$info;
                 }else if(!empty($info)){
+                    $this->model->updateByMap(['uin' => $info['wxid'], 'id' => ['<>', $res['id']]],
+                        ['alive' => 0]
+                    );
+
                     $this->model->updateOne([
                         'id' => $res['id'],
                         'uin' => $info['wxid'],

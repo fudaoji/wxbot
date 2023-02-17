@@ -42,7 +42,7 @@ class HandlerGroupChat extends Handler
                     case Reply::HANDLE_RM:
                         $this->botClient->removeGroupMember(['robot_wxid' => $this->botWxid, 'group_wxid' => $this->groupWxid, 'to_wxid' => $this->fromWxid]);
                         break;
-                    default:
+                    case Reply::HANDLE_MSG:
                         model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid);
                         break;
                 }

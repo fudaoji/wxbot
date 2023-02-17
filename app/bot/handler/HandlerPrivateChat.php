@@ -34,11 +34,17 @@ class HandlerPrivateChat extends Handler
         ]);
         foreach ($replys as $k => $reply){
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false){
-                switch ($reply['handle_type']){
+                switch ($reply['handle_type']){ //todo
+                    case Reply::HANDLE_TRANSFER_REFUSE:
+
+                        break;
+                    case Reply::HANDLE_TRANSFER_ACCEPT:
+
+                        break;
                     case Reply::HANDLE_DEL:
                         $this->botClient->deleteFriend(['robot_wxid' => $this->botWxid, 'to_wxid' => $this->fromWxid]);
                         break;
-                    default:
+                    case Reply::HANDLE_MSG:
                         model('reply')->botReply($this->bot, $this->botClient, $reply, $this->fromWxid);
                         break;
                 }

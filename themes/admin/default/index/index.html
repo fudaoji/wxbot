@@ -57,6 +57,22 @@
                         <!--<li class="layui-nav-item">
                             <a href="{:url('home/index/index')}" title="前台" target="_blank"><i class="fa fa-home"></i></a>
                         </li>-->
+                        {if !empty($bot_info)}
+                        <li class="layui-nav-item layuimini-setting" style="margin-right: 100px;">
+                            <a href="javascript:;">当前微信：{$bot_info.title}</a>
+                            {if count($bot_list) > 1}
+                            <dl class="layui-nav-child">
+                                {foreach $bot_list as $k => $v }
+                                {if $k neq $bot_info.id}
+                                <dd>
+                                    <a href="{:url('index/index', ['id' => $k])}">{$v}</a>
+                                </dd>
+                                {/if}
+                                {/foreach}
+                            </dl>
+                            {/if}
+                        </li>
+                        {/if}
                         <li class="layui-nav-item" lay-unselect>
                             <a href="javascript:;" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
                         </li>

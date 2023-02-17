@@ -9,13 +9,12 @@ use app\constants\Bot as BotConst;
 use ky\Logger;
 use ky\WxBot\Driver\Xbot;
 
-class Bot extends Base
+class Bot extends Bbase
 {
     /**
      * @var BotM
      */
     protected $model;
-    protected $insertAdminId = true;
     private $tabs = [];
     /**
      * @var string

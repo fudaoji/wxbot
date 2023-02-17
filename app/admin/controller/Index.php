@@ -28,6 +28,17 @@ class Index extends Base
     }
 
     public function index(){
+        if($id = input('id', null)){
+            $data = $this->botM->where(array_merge($this->staffWhere(), ['status' => 1]))
+                ->find($id);
+
+            if (!$data) {
+                $this->error('参数错误');
+            }
+            $this->bot = $data;
+            $this->assign['bot_info'] = $this->bot;
+            session(SESSION_BOT, $data);
+        }
         return $this->show();
     }
 

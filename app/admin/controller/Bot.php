@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot as BotM;
 use app\admin\model\Admin as AdminM;
+use app\common\model\AdminSeat;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
@@ -758,5 +759,18 @@ class Bot extends Bbase
             $this->success('操作成功');
         }
         $this->error('操作失败：' . $res['errmsg']);
+    }
+
+    /**
+     * 检查席位的额度
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function checkSeat(){
+        if(! AdminSeat::getRemain($this->adminInfo)){
+            $this->error('请先购买席位', url('adminseat/order'));
+        }
     }
 }

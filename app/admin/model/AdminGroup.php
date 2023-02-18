@@ -25,7 +25,7 @@ class AdminGroup extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     function checkAuth($node = '', $admin_info = []){
-        if(! $rule = AdminRule::where('href', 'like', '%'.$node)->find()){
+        if(Admin::isFounder($admin_info) || ! $rule = AdminRule::where('href', 'like', '%'.$node)->find()){
             return true;
         }
         $group = $this->getOne($admin_info['group_id']);

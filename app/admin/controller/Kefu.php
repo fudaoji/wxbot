@@ -19,17 +19,21 @@ use app\common\model\kefu\Config;
 use app\constants\Bot;
 use ky\Logger;
 use think\facade\Log;
+use app\admin\model\Admin as AdminM;
 
 class Kefu extends Base
 {
     private $emoji;
-    private $configM;
     private $botM;
     private $emojiM;
     /**
      * @var ChatLog
      */
     private $chatLogM;
+    /**
+     * @var Config
+     */
+    private $configM;
 
     public function initialize()
     {
@@ -44,10 +48,11 @@ class Kefu extends Base
 
     public function index()
     {
-        $base_config = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => 0]);
+        $base_config = $this->configM->getConf(['admin_id' => AdminM::getCompanyId($this->adminInfo), 'bot_id' => 0]);
         if (empty($base_config) || !isset($base_config['socket_ip']) || !isset($base_config['socket_port'])) {
             $this->error('请先设置应用配置');
         }
+        
         $this->assign('from_id', $this->adminInfo['id']);
         $this->assign('socket_ip', $base_config['socket_ip']);
         $this->assign('socket_port', $base_config['socket_port']);
@@ -60,7 +65,7 @@ class Kefu extends Base
      */
     public function config()
     {
-        if (!$base_config = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => 0])) {
+        if (!$base_config = $this->configM->getConf(['admin_id' => AdminM::getCompanyId($this->adminInfo), 'bot_id' => 0])) {
             $base_config = [
                 'switch' => 1,
                 'socket_ip' => '',
@@ -85,11 +90,11 @@ class Kefu extends Base
         $post_data = $data ? $data : input('post.');
         unset($post_data['__token__']);
         foreach ($post_data as $k => $v) {
-            if ($config = $this->configM->getOneByMap(['admin_id' => $this->adminInfo['id'], 'key' => $k, 'bot_id' => 0],  true, true)) {
+            if ($config = $this->configM->getOneByMap(['admin_id' => AdminM::getCompanyId($this->adminInfo), 'key' => $k, 'bot_id' => 0],  true, true)) {
                 $this->configM->updateOne(['id' => $config['id'], 'value' => $v]);
             } else {
                 $this->configM->addOne([
-                    'admin_id' => $this->adminInfo['id'],
+                    'admin_id' => AdminM::getCompanyId($this->adminInfo),
                     'bot_id' => 0,
                     'key' => $k,
                     'value' => $v

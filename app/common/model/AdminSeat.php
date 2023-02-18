@@ -44,9 +44,4 @@ class AdminSeat extends Base
         $data = self::find($admin_id);
         return empty($data) ? 0 : $data['remain'];
     }
-
-    //验证是否有席位
-    static function check(){
-
-    }
 }

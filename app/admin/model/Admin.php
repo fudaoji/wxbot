@@ -15,6 +15,18 @@ use app\common\model\Base;
 class Admin extends Base
 {
     /**
+     * 站长id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function getFounderId(){
+        return self::limit(1)->select()[0]['id'];
+    }
+
+    /**
      * 是否站长
      * @param array $admin_info
      * @return mixed

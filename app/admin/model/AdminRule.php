@@ -53,5 +53,4 @@ class AdminRule extends Base
         }
         return $res;
     }
-
 }

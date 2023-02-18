@@ -406,7 +406,7 @@ class Bot extends Bbase
     }
 
     /**
-     * 添加
+     * 扫码添加
      * @return mixed
      * @throws \think\db\exception\DbException
      */

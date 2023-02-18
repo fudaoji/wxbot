@@ -15,6 +15,25 @@ use app\common\model\Base;
 class AdminGroup extends Base
 {
     /**
+     * 判断是否有权限
+     * @param string $node
+     * @param array $admin_info
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function checkAuth($node = '', $admin_info = []){
+        if(! $rule = AdminRule::where('href', 'like', '%'.$node)->find()){
+            return true;
+        }
+        $group = $this->getOne($admin_info['group_id']);
+        $group_rules = empty($group['rules']) ? [] : explode(',', $group['rules']);
+        return in_array($rule['id'], $group_rules);
+    }
+
+    /**
      * 获取角色列表[id => title]
      * @param int $admin_id
      * @return array

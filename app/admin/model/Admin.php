@@ -9,6 +9,7 @@
 
 namespace app\admin\model;
 
+use app\common\model\AdminSeat;
 use app\common\model\Base;
 
 class Admin extends Base
@@ -41,5 +42,17 @@ class Admin extends Base
      */
     static function isLeader($admin_info = []){
         return empty($admin_info['pid']);
+    }
+
+    /**
+     * 注册后动作
+     * @param array $admin
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function afterReg($admin = []){
+        AdminSeat::initSeat($admin);
     }
 }

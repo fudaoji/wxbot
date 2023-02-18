@@ -83,6 +83,7 @@ class Auth extends Base
             $data['group_id'] = \app\admin\model\AdminGroup::getTenantGroup('id')['id'];
 
             if ($user = $this->model->addOne($data)) {
+                $this->model->afterReg($user);
                 session($this->sKey, $user['id']);
                 $this->success('注册成功!', url('index/index'));
             }else{

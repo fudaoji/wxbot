@@ -82,9 +82,14 @@ class Setting extends Base
         $builder = new FormBuilder();
         switch ($current_name){
             case 'bot':
+                !isset($data['seat_default']) && $data['seat_default'] = 0;
+                !isset($data['seat_price']) && $data['seat_price'] = 0.0;
                 $builder->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒')
                     ->addFormItem('app_key', 'text', '默认AppKey', '机器人框架的appkey')
-                    ->addFormItem('url', 'text', '默认回调地址', '默认回调地址');
+                    ->addFormItem('url', 'text', '默认回调地址', '默认回调地址')
+                    ->addFormItem('seat', 'legend', '微信号席位', '微信号席位')
+                    ->addFormItem('seat_default', 'number', '默认额度', '注册客户默认有几个微信号席位', [], 'min=0')
+                    ->addFormItem('seat_price', 'text', '售价', '每个号每月的费用', [], 'min=0');
                 break;
             case 'site':
                 empty($data) && $data['close'] = 0;

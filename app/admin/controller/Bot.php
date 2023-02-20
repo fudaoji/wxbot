@@ -640,7 +640,8 @@ class Bot extends Bbase
                     }else{
                         $data = $this->model->addOne([
                             'uin' => $v['wxid'],
-                            'admin_id' => $this->adminInfo['id'],
+                            'admin_id' => AdminM::getCompanyId($this->adminInfo),
+                            'staff_id' => $this->adminInfo['id'],
                             'title' => $v['nickname'],
                             'username' => $v['username'],
                             'app_key' => $data['app_key'],
@@ -651,6 +652,10 @@ class Bot extends Bbase
                             'alive' => 1
                         ]);
                     }
+                    //把其他机器人下线
+                    $this->model->updateByMap(['uin' => $data['wxid'], 'id' => ['<>', $data['id']]],
+                        ['alive' => 0]
+                    );
                     //同步好友任务
                     invoke('\\app\\common\\event\\TaskQueue')->push([
                         'delay' => 3,

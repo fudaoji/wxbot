@@ -629,7 +629,7 @@ class Bot extends Bbase
             $return = $bot_client->getRobotList();
             if($return['code'] && !empty($return['data'])){
                 foreach ($return['data'] as $v){
-                    if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'admin_id' => $this->adminInfo['id']])){
+                    if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'staff_id' => $this->adminInfo['id']])){
                         $data = $this->model->updateOne([
                             'id' => $bot['id'],
                             'username' => $v['username'],

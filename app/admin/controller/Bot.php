@@ -653,7 +653,7 @@ class Bot extends Bbase
                         ]);
                     }
                     //把其他机器人下线
-                    $this->model->updateByMap(['uin' => $data['wxid'], 'id' => ['<>', $data['id']]],
+                    $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
                         ['alive' => 0]
                     );
                     //同步好友任务

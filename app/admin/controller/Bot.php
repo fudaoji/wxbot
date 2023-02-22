@@ -630,7 +630,7 @@ class Bot extends Bbase
             $return = $bot_client->getRobotList();
             if($return['code'] && !empty($return['data'])){
                 foreach ($return['data'] as $v){
-                    if(!AdminM::isFounder($this->adminInfo) && ! in_array($v['username'], \app\common\model\BotApply::getActiveWx(AdminM::getCompanyId($this->adminInfo)))){
+                    if(AdminM::getCompanyId($this->adminInfo) != AdminM::getFounderId() && ! in_array($v['username'], \app\common\model\BotApply::getActiveWx(AdminM::getCompanyId($this->adminInfo)))){
                         continue;  //不在白名单中的机器人不拉取
                     }
                     if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'staff_id' => $this->adminInfo['id']])){

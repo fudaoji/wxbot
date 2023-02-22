@@ -62,7 +62,7 @@ class Admingroup extends Base
                 ->addTableColumn(['title' => '权限名称', 'field' => 'title'])
             ->addTableColumn(['title' => '备注信息', 'field' => 'remark'])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status()])
-            ->addTableColumn(['title' => '操作', 'width' => 120, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'width' => 180, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('self', ['title' => '授权','class' => 'layui-btn layui-btn-success layui-btn-xs','lay-event' => 'auth', 'href' => url('admingroup/auth', ['group_id' => '__data_id__'])]);
         //超管拥有删除权限

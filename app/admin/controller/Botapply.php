@@ -107,9 +107,9 @@ class Botapply extends Bbase
     public function applyList(){
         if(request()->isPost()){
             $post_data = input('post.');
-            $where = ['apply.admin_id' => $this->adminInfo['id']];
+            $where = [];
             !empty($post_data['search_key']) && $where['apply.wx_num|admin.username|admin.mobile'] = ['like', '%'.$post_data['search_key'].'%'];
-
+            isset($post_data['status']) && $post_data['status'] != -1 && $where['apply.status'] = $post_data['status'];
             $params = [
                 'alias' => 'apply',
                 'join' => [
@@ -138,7 +138,8 @@ class Botapply extends Bbase
 
         $builder = new ListBuilder();
         $builder->setSearch([
-            ['type' => 'text', 'name' => 'search_key', 'title' => '搜索词','placeholder' => '微信号/客户手机号/客户账号']
+            ['type' => 'text', 'name' => 'search_key', 'title' => '搜索词','placeholder' => '微信号/客户手机号/客户账号'],
+            ['type' => 'select', 'name' => 'status', 'title' => '状态','options' => [-1 => '所有'] + Common::verifies()]
         ])
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '序号', 'type' => 'index'])

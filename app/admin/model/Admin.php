@@ -15,6 +15,16 @@ use app\common\model\Base;
 class Admin extends Base
 {
     /**
+     * 获取当前登陆账号的团队字典
+     * @param array $admin_info
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function getTeamIdToName($admin_info = []){
+        return self::where('id|pid', $admin_info['id'])->column('username', 'id');
+    }
+
+    /**
      * 站长id
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException

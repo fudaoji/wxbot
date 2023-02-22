@@ -9,7 +9,7 @@
 
 namespace app\common\model;
 
-
+use app\admin\model\Admin as AdminM;
 use app\constants\Common;
 
 class BotApply extends Base
@@ -17,12 +17,12 @@ class BotApply extends Base
 
     /**
      * 获取审核通过的微信号
-     * @param int $admin_id
+     * @param int $staff_id
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    static function getActiveWx($admin_id = 0){
-        $data = self::where('admin_id', $admin_id)
+    static function getActiveWx($staff_id = 0){
+        $data = self::where('staff_id', $staff_id)
             ->where('deadline', '>', time())
             ->where('status', Common::VERIFY_SUCCESS)
             ->column('wx_num');

@@ -81,8 +81,8 @@ class Bbase extends Base
     public function savePost($jump_to = '/undefined', $data=[]){
         empty($jump_to) && $jump_to = '/undefined';
         $post_data = $data ? $data : input('post.');
-        $this->needAid && $post_data['admin_id'] = $this->adminInfo['id'];
         if(empty($post_data[$this->pk])){
+            $this->needAid && $post_data['admin_id'] = $this->adminInfo['id'];
             $res = $this->model->addOne($post_data);
         }else {
             $res = $this->model->updateOne($post_data);

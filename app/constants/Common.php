@@ -15,6 +15,19 @@ class Common
     const NO = 0;
     const MAN = 1;
     const FEMALE = 2;
+    const VERIFY_WAIT = 0;
+    const VERIFY_SUCCESS = 1;
+    const VERIFY_FAIL = 2;
+    const VERIFY_CANCEL = 3;
+
+    public static function verifies($id = null){
+        $list = [
+            self::VERIFY_WAIT => '待审核',
+            self::VERIFY_SUCCESS => '通过',
+            self::VERIFY_FAIL => '拒绝',
+        ];
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
 
     public static function status($id = null){
         $list = [

@@ -30,7 +30,10 @@ class Server extends Base
             'field' => ['url', 'count(id) as num']
         ]);
         foreach ($bots as $conf){
-            if(isset($servers[$conf['url']]['num']) && $conf['num'] < $servers[$conf['url']]['num']){
+            if(isset($servers[$conf['url']]['num'])){
+                if($conf['num'] < $servers[$conf['url']]['num'])
+                    return $servers[$conf['url']];
+            }else{
                 return $servers[$conf['url']];
             }
         }

@@ -59,7 +59,7 @@ class ChatLog extends Kefu
             'headimgurl' => $member['headimgurl'],
             'from_wxid' => $data['from_wxid'],
             'robot_wxid' => $data['robot_wxid'],
-            'client' => $bot['admin_id'], //对应用户id
+            'client' => $bot['staff_id'], //对应用户id
             'friend' => $member,
             'msg_type' => $data['type'],
             'event' => 'msg',
@@ -95,7 +95,7 @@ class ChatLog extends Kefu
                 'msg_id' => $data['msg_id'],
                 'id' => $id,
                 'bot' => $bot,
-                'client' => $bot['admin_id'], //对应用户id
+                'client' => $bot['staff_id'], //对应用户id
                 'robot_wxid' => $data['robot_wxid'],
                 'from_wxid' => $data['from_wxid'],
             ];
@@ -392,7 +392,7 @@ class ChatLog extends Kefu
             'msg_type' => $data['type'], //文本
             'event' => 'callback',
             'friend' => $member,
-            'client' => $bot['admin_id'], //对应用户id
+            'client' => $bot['staff_id'], //对应用户id
         ]);
         $redis = get_redis();
         $key = 'receive_private_chat';
@@ -411,7 +411,7 @@ class ChatLog extends Kefu
                 'msg_id' => $data['msg_id'],
                 'id' => $id,
                 'bot' => $bot,
-                'client' => $bot['admin_id'], //对应用户id
+                'client' => $bot['staff_id'], //对应用户id
                 'robot_wxid' => $data['robot_wxid'],
                 'from_wxid' => $data['to_wxid'],
             ];
@@ -549,7 +549,7 @@ class ChatLog extends Kefu
             'headimgurl' => $member['headimgurl'],
             'from_wxid' => $data['from_group'],
             'robot_wxid' => $data['robot_wxid'],
-            'client' => $bot['admin_id'], //对应用户id
+            'client' => $bot['staff_id'], //对应用户id
             'friend' => $member,
             'msg_type' => $data['type'],
             'event' => 'msg',
@@ -595,7 +595,7 @@ class ChatLog extends Kefu
                 'msg_id' => $data['msg_id'],
                 'id' => $id,
                 'bot' => $bot,
-                'client' => $bot['admin_id'], //对应用户id
+                'client' => $bot['staff_id'], //对应用户id
                 'robot_wxid' => $data['robot_wxid'],
                 'from_wxid' => $data['from_group'],
                 'friend_type' => 'group',

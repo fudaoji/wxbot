@@ -567,19 +567,33 @@ class Test
         //         "msg_id":"7630416942713148939"
         //     }
         // }
-        $url = 'http://wx119.sxwig.com:809/bot/api/my';
+        // {
+        //     "sdkVer":6,
+        //     "Event":"EventDeviceCallback",
+        //     "content":{
+        //         "robot_wxid":"wxid_3zmct0u931c522",
+        //         "type":1,
+        //         "msg":"123456",
+        //         "to_wxid":"wxid_uzmmu9jzsvjn12",
+        //         "to_name":"尚新假发 郑启示 新号",
+        //         "clientid":0,
+        //         "robot_type":0,
+        //         "msg_id":"8770263085659840075"
+        //     }
+        // }
+        $url = 'http://ty.sxwig.com:8181/bot/api/my';
         $params = [
             "sdkVer" => 6,
-            "Event" => "EventPrivateChat",
+            "Event" => "EventDeviceCallback",
             "content" => [
-                "robot_wxid" => "wxid_5fprdytoi1k612",
+                "robot_wxid" => "wxid_3zmct0u931c522",
                 "type" => 1,
-                "from_wxid" => "cengzhiyang4294",
-                "from_name" => "zengzhiyang",
-                "msg" => "123",
+                "to_wxid" => "wxid_uzmmu9jzsvjn12",
+                "to_name" => "尚新假发 郑启示 新号",
+                "msg" => "123456",
                 "clientid" => 0,
                 "robot_type" => 0,
-                "msg_id" => "7630416942713148939"
+                "msg_id" => "8770263085659840075"
             ]
         ];
 

@@ -29,12 +29,17 @@ class Server extends Base
             'group' => 'url',
             'field' => ['url', 'count(id) as num']
         ]);
-        foreach ($bots as $conf){
-            if(isset($servers[$conf['url']]['num'])){
-                if($conf['num'] < $servers[$conf['url']]['num'])
-                    return $servers[$conf['url']];
+        $bots_hash = [];
+        foreach ($bots as $bot){
+            $bots_hash[$bot['url']] = $bot['num'];
+        }
+
+        foreach ($servers as $k => $server){
+            if(isset($bots_hash[$k])){
+                if($bots_hash[$k] < $server['num'])
+                    return $server;
             }else{
-                return $servers[$conf['url']];
+                return $server;
             }
         }
         return [];

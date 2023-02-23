@@ -54,6 +54,9 @@ class Server extends Base
             ->addTableColumn(['title' => '操作', 'width' => 220, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('delete');
+        if(! ServerM::getServer()){
+            $builder->setTip("<p style='color: red;'>告警：当前无可用服务器，请及时增加服务器！</p>");
+        }
         return $builder->show();
     }
 

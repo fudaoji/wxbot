@@ -4,7 +4,6 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot as BotM;
 use app\admin\model\Admin as AdminM;
-use app\common\model\Server;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
@@ -51,7 +50,7 @@ class Bot extends Bbase
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function index()
-    {dump(Server::getServer());exit;
+    {
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = array_merge($this->staffWhere(), [

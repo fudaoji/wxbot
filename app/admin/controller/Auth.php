@@ -143,7 +143,8 @@ class Auth extends Base
                     if(!empty($post_data['keeplogin'])){
                         cookie('record_admin', $post_data['username']);
                     }
-                    $this->success('登录成功!', cookie('redirect_url') ? cookie('redirect_url') : url('index/index'));
+                    $redirect = cookie('redirect_url') ? cookie('redirect_url') : url('index/index');
+                    $this->success('登录成功!', $redirect);
                 }else{
                     $this->error('账号或密码错误', '', ['token' => token()]);
                 }

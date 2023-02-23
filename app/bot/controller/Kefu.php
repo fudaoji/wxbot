@@ -60,7 +60,7 @@ class Kefu extends Addon
         if(empty($this->switch)){
             return false;
         }
-
+        echo 111;
         //保存手机发送消息
         $model_chat_log = new ChatLog();
         $model_chat_log->saveMobileMsg($this->content,$this->bot);

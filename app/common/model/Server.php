@@ -22,7 +22,7 @@ class Server extends Base
      */
     static function getServer(){
         //设定额度
-        $servers = self::where('status', 1)->column('num', 'url');
+        $servers = self::where('status', 1)->column(['num','app_key'], 'url');
         //实际使用
         $bots = model('admin/bot')->getGroupAll([
             'where' => ['alive' => 1],
@@ -30,8 +30,8 @@ class Server extends Base
             'field' => ['url', 'count(id) as num']
         ]);
         foreach ($bots as $conf){
-            if(isset($servers[$conf['url']]) && $conf['num'] < $servers[$conf['url']]){
-                return $conf;
+            if(isset($servers[$conf['url']]['num']) && $conf['num'] < $servers[$conf['url']]['num']){
+                return $servers[$conf['url']];
             }
         }
         return [];

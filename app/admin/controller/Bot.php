@@ -51,7 +51,7 @@ class Bot extends Bbase
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function index()
-    {
+    {dump(Server::getServer());exit;
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = array_merge($this->staffWhere(), [
@@ -767,18 +767,5 @@ class Bot extends Bbase
             $this->success('操作成功');
         }
         $this->error('操作失败：' . $res['errmsg']);
-    }
-
-    /**
-     * 检查席位的额度
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    private function checkSeat(){
-        if(! Server::getRemain($this->adminInfo)){
-            $this->error('请先购买席位', url('adminseat/order'));
-        }
     }
 }

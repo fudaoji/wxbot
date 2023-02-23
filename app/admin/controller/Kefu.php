@@ -16,6 +16,7 @@ use app\common\model\EmojiCode;
 use app\common\model\kefu\Speechcraft;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Config;
+use app\common\model\Server;
 use app\constants\Bot;
 use ky\Logger;
 use think\facade\Log;
@@ -515,16 +516,19 @@ class Kefu extends Base
      */
     public function loginBot()
     {
-        $ControllerBot = new ControllerBot;
-        $data = array_merge([
+        $data = [
             'protocol' => Bot::PROTOCOL_MY,
             'app_key' => get_rand_char(32),
             'jump' => '/admin/kefu'
-        ], $ControllerBot->getConfig());
+        ];
+        if($server = Server::getServer()){
+            $data = array_merge($data, $server);
+        }else{
+            $this->error('无可用服务器，请联系站长补充弹药！');
+        }
 
         cache('botadd' . $this->adminInfo['id'], $data);
         $this->redirect(url('/admin/Bot/loginmy', $data));
-        // $this->success('请打开微信扫码登录', url('/admin/Bot/loginmy', $data));
     }
 
     /**

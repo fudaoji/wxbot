@@ -12,7 +12,7 @@ v2.1.0
 * 表bot增加staff_id字段
 * 表admin增加pid
 * 表admin_group新增admin_id、tenant_group字段
-* 新增admin_seat表
+* 新增server表
 
 2022-10-13
 v2.0.5

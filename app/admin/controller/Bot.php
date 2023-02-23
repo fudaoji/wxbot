@@ -4,7 +4,7 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot as BotM;
 use app\admin\model\Admin as AdminM;
-use app\common\model\AdminSeat;
+use app\common\model\Server;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
@@ -777,7 +777,7 @@ class Bot extends Bbase
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function checkSeat(){
-        if(! AdminSeat::getRemain($this->adminInfo)){
+        if(! Server::getRemain($this->adminInfo)){
             $this->error('请先购买席位', url('adminseat/order'));
         }
     }

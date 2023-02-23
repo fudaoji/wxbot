@@ -21,7 +21,6 @@
     <![endif]-->
     <style id="layuimini-bg-color"></style>
     <link rel="stylesheet" href="__CSS__/admin/common.css" media="all">
-
     <script src="__LIB__/layui-v2.7.6/layui.js" charset="utf-8"></script>
     <script src="__LIB__/layuimini/js/lay-config.js" charset="utf-8"></script>
     <script src="__JS__/admin/common.js"></script>
@@ -29,21 +28,16 @@
 <body class="layui-layout-body layuimini-all">
 <div class="layuimini-container">
     <div class="layuimini-main">
-
         <div class="layui-layout layui-layout-admin">
-
             <div class="layui-header header">
                 <div class="layui-logo layuimini-logo"></div>
-
                 <div class="layuimini-header-content">
                     <a>
                         <div class="layuimini-tool"><i title="展开" class="fa fa-outdent" data-side-fold="1"></i></div>
                     </a>
-
                     <!--电脑端头部菜单-->
                     <ul class="layui-nav layui-layout-left layuimini-header-menu layuimini-menu-header-pc layuimini-pc-show">
                     </ul>
-
                     <!--手机端头部菜单-->
                     <ul class="layui-nav layui-layout-left layuimini-header-menu layuimini-mobile-show">
                         <li class="layui-nav-item">
@@ -52,13 +46,12 @@
                             </dl>
                         </li>
                     </ul>
-
-                    <ul class="layui-nav layui-layout-right" style="margin-right: 20px;">
+                    <ul class="layui-nav layui-layout-right">
                         <!--<li class="layui-nav-item">
                             <a href="{:url('home/index/index')}" title="前台" target="_blank"><i class="fa fa-home"></i></a>
                         </li>-->
                         {if !empty($bot_info)}
-                        <li class="layui-nav-item layuimini-setting" style="margin-right: 100px;">
+                        <li class="layui-nav-item layuimini-setting" style="margin-right: 40px;">
                             <a href="javascript:;">当前微信：{$bot_info.title}</a>
                             {if count($bot_list) > 1}
                             <dl class="layui-nav-child">
@@ -96,9 +89,11 @@
                                 </dd>
                             </dl>
                         </li>
-                        <!--<li class="layui-nav-item layuimini-select-bgcolor" lay-unselect>
+                        {if $admin.id == 1}
+                        <li class="layui-nav-item layuimini-select-bgcolor" lay-unselect>
                             <a href="javascript:;" data-bgcolor="配色方案"><i class="fa fa-ellipsis-v"></i></a>
-                        </li>-->
+                        </li>
+                        {/if}
                     </ul>
                 </div>
             </div>

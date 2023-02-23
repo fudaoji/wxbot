@@ -9,7 +9,6 @@
 
 namespace app\admin\model;
 
-use app\common\model\AdminSeat;
 use app\common\model\Base;
 
 class Admin extends Base
@@ -75,6 +74,6 @@ class Admin extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     function afterReg($admin = []){
-        AdminSeat::initSeat($admin);
+
     }
 }

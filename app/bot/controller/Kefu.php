@@ -56,7 +56,7 @@ class Kefu extends Addon
      * 回调处理器
      */
     public function deviceCallbackHandle(){
-        //Logger::write("回调处理器---");
+        Logger::write("回调处理器---");
         if(empty($this->switch)){
             return false;
         }

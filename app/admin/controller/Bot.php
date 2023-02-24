@@ -638,7 +638,9 @@ class Bot extends Bbase
                             'username' => $v['username'],
                             'nickname' => $v['nickname'],
                             'headimgurl' => $v['headimgurl'],
-                            'alive' => 1
+                            'alive' => 1,
+                            'url' => $data['url'],
+                            'app_key' => $data['app_key'],
                         ]);
                     }else{
                         $data = $this->model->addOne([
@@ -647,11 +649,11 @@ class Bot extends Bbase
                             'staff_id' => $this->adminInfo['id'],
                             'title' => $v['nickname'],
                             'username' => $v['username'],
-                            'app_key' => $data['app_key'],
                             'nickname' => $v['nickname'],
                             'headimgurl' => $v['headimgurl'],
                             'protocol' => $data['protocol'],
                             'url' => $data['url'],
+                            'app_key' => $data['app_key'],
                             'alive' => 1
                         ]);
                     }

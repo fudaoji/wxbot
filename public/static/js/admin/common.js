@@ -174,7 +174,7 @@ window.viewImg = function (img) {
 
 //全局字典
 window.kyDicts = {
-    emptyData: '<div style="padding: 18px 0;"><p>暂无数据</p>,<p>本系统由 KyAdmin v1.0.0 强力驱动</p></div>'
+    emptyData: '<div style="padding: 18px 0;"><p>暂无数据</p>,<p>本系统由 DaoAdmin 强力驱动</p></div>'
 };
 
 //表格单元渲染

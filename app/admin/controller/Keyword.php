@@ -127,7 +127,7 @@ class Keyword extends Botbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')
             ->setPostUrl(url('savePost'))
-            ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'required maxlength=30')
+            ->addFormItem('keyword', 'text', '关键词', '多个关键词用|分割', [], 'required maxlength=200')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types()], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
@@ -158,7 +158,7 @@ class Keyword extends Botbase
         $builder->setMetaTitle('编辑')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('keyword', 'text', '关键词', '30字内', [], 'required maxlength=30')
+            ->addFormItem('keyword', 'text', '关键词', '编辑状态不支持多个关键词', [], 'required maxlength=30')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types(), 'id' => $data['media_id'], 'type' => $data['media_type']], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
@@ -174,27 +174,32 @@ class Keyword extends Botbase
     public function savePost($jump_to = '/undefined', $data = [])
     {
         $post_data = input('post.');
-        $post_data['admin_id'] = $this->adminInfo['id'];
         $post_data['bot_id'] = $this->bot['id'];
+        $keywords = trim($post_data['keyword'], '|');
+        $keyword_arr = explode('|', $keywords);
         if(empty($post_data[$this->pk])){
-            $res = $this->model->addOne($post_data);
+            $post_data['admin_id'] = $this->adminInfo['id'];
+            if(strpos($keywords, '|') !== false){
+                foreach ($keyword_arr as $keyword){
+                    $post_data['keyword'] = $keyword;
+                    $this->model->addOne($post_data);
+                }
+            }
         }else {
-            $res = $this->model->updateOne($post_data);
+            $this->model->updateOne($post_data);
         }
-        if($res){
+        foreach ($keyword_arr as $keyword){
             //refresh
             $this->model->getAll([
                 'order' => ['sort' => 'desc'],
                 'where' => [
                     'bot_id' => $this->bot['id'],
-                    'keyword' => $res['keyword'],
+                    'keyword' => $keyword,
                     'status' => 1
                 ],
                 'refresh' => true
             ]);
-            $this->success('数据保存成功', $jump_to);
-        }else{
-            $this->error('数据保存出错');
         }
+        $this->success('数据保存成功', $jump_to);
     }
 }

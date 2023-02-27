@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\common\model\tpzs\Config;
 use app\common\model\tpzs\Grouppos;
 use app\common\model\tpzs\Position;
 use app\common\model\tpzs\Union;
@@ -23,6 +24,10 @@ class Tpzspos extends Botbase
      * @var Grouppos
      */
     private $groupPosM;
+    /**
+     * @var Config
+     */
+    private $configM;
 
     public function initialize()
     {
@@ -30,6 +35,7 @@ class Tpzspos extends Botbase
         $this->model = new Position();
         $this->unionM = new Union();
         $this->groupPosM = new Grouppos();
+        $this->configM = new Config();
     }
 
     /**
@@ -174,6 +180,7 @@ class Tpzspos extends Botbase
     {
         $post_data = input('post.');
         if (empty($post_data[$this->pk])) {
+            $conf = $this->configM->getConf(['admin_id' => $this->bot['admin_id']]);
             //创建京东推广位
             $union = $this->unionM->getOne($post_data['union_id']);
             $param = [
@@ -187,7 +194,7 @@ class Tpzspos extends Botbase
                 $param['siteId'] = $post_data['siteid'];
             }
 
-            $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
+            $jtt = new Jtt(['appid' => $conf['jtt_appid'], 'appkey' => $conf['jtt_appkey']]);
             if(($res = $jtt->newPosition($param)) !== false){
                 $post_data['position_id'] = $res['positionid'];
                 $res = $this->model->addOne($post_data);
@@ -217,7 +224,7 @@ class Tpzspos extends Botbase
      */
     public function syncPost()
     {
-        $config = config('system.site');
+        $config = $this->configM->getConf(['admin_id' => $this->bot['admin_id']]);
         if (empty($config['jd_appkey']) || empty($config['jd_appsecret'])) {
             $this->error('请先配置京东开放平台参数');
         }

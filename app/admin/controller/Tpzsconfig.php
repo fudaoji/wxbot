@@ -30,10 +30,10 @@ class Tpzsconfig extends Botbase
                 'title' => '发单时间',
                 'href' => url('index', ['name' => 'time'])
             ],
-            /*'union' => [
-                'title' => '联盟账号',
-                'href' => url('index', ['name' => 'union'])
-            ],*/
+            'open' => [
+                'title' => '开放平台',
+                'href' => url('index', ['name' => 'open'])
+            ],
         ];
     }
 
@@ -111,6 +111,14 @@ class Tpzsconfig extends Botbase
 
         $builder = new FormBuilder();
         switch ($current_name){
+            case 'open':
+                $builder->addFormItem('jdunion', 'legend', '京东开放平台', '京东开放平台')
+                    ->addFormItem('jd_appkey', 'text', 'Appkey', '开放平台AppKey')
+                    ->addFormItem('jd_appsecret', 'text', 'AppSecret', '开放平台AppSecret')
+                    ->addFormItem('jtt', 'legend', '京推推开发者', '京推推开发者')
+                    ->addFormItem('jtt_appid', 'text', 'Appid', '京推推Appid')
+                    ->addFormItem('jtt_appkey', 'text', 'Appkey', '京推推Appkey');
+                break;
             default:
                 if(empty($settings['step_tasktime'])){
                     $settings['step_tasktime'] = 600;

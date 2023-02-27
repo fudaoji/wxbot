@@ -93,14 +93,13 @@ class Setting extends Base
                 break;
             case 'site':
                 empty($data) && $data['close'] = 0;
-                $builder->addFormItem('version', 'text', '系统版本', '系统版本', [], 'readonly')
-                    ->addFormItem('company_title', 'text', '平台名称', '平台名称')
-                    ->addFormItem('jdunion', 'legend', '京东开放平台', '京东开放平台')
+                $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
+                    /*->addFormItem('jdunion', 'legend', '京东开放平台', '京东开放平台')
                     ->addFormItem('jd_appkey', 'text', 'Appkey', '开放平台AppKey')
                     ->addFormItem('jd_appsecret', 'text', 'AppSecret', '开放平台AppSecret')
                     ->addFormItem('jtt', 'legend', '京推推开发者', '京推推开发者')
                     ->addFormItem('jtt_appid', 'text', 'Appid', '京推推Appid')
-                    ->addFormItem('jtt_appkey', 'text', 'Appkey', '京推推Appkey');
+                    ->addFormItem('jtt_appkey', 'text', 'Appkey', '京推推Appkey')*/;
                 break;
             case 'upload':
                 empty($data) && $data = [

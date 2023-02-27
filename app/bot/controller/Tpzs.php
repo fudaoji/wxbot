@@ -88,7 +88,7 @@ class Tpzs extends Addon
             switch($content['type']){
                 case Bot::MSG_TEXT:
                     if(strpos($content['msg'], 'jd.com') !== false){//jd
-                        $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
+                        $jtt = new Jtt(['appid' => $conf['jtt_appid'], 'appkey' => $conf['jtt_appkey']]);
                         $reply_content = $content['msg'];
                         foreach ($groups as $gid){
                             if($dest_group = $this->memberM->getOneJoin([
@@ -251,13 +251,16 @@ class Tpzs extends Addon
      * @param array $params
      * @return string
      * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     private function searchGoods($params = []){
+        $conf = $this->configM->getConf(['admin_id' => $this->bot['admin_id']]);
         $keyword = $params['keyword'];
         $page_size = empty($params['page_size']) ? 3 : $params['page_size'];
         $unionid = $params['unionid'];
         $positionid = $params['positionid'];
-        $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
+        $jtt = new Jtt(['appid' => $conf['jtt_appid'], 'appkey' => $conf['jtt_appkey']]);
         $res = $jtt->jdGoodsQuery([
             'v' => 'v3', 'keyword' => $keyword, 'sortName' => 'inOrderCount30Days', 'sort' => 'desc', 'isCoupon' => 1,
             'pageSize' => $page_size

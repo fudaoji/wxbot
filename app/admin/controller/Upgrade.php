@@ -114,7 +114,7 @@ class Upgrade extends Base
         }
 
         $builder = new ListBuilder();
-        $builder->setTip("当前版本：<em class='layui-btn layui-badge layui-bg-blue'>".config('system.site.version')."</em>")
+        $builder->setTip("当前版本：<em class='layui-btn layui-badge layui-bg-blue'>".config('app.version')."</em>")
             //->addTopButton('self', ['title' => '升级到最新版本'])
             ->addTableColumn(['title' => '版本', 'field' => 'version'])
             ->addTableColumn(['title' => '版本描述', 'field' => 'desc'])

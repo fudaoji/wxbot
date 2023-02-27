@@ -220,11 +220,15 @@ class Tpzstask extends Botbase
     /**
      * 快速新增
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function quickAdd(){
+        $config = $this->configM->getConf(['admin_id' => $this->bot['admin_id']]);
         $tab = input('tab', 'check');
-        $jtt = new Jtt(['appid' => config('system.site.jtt_appid'), 'appkey' => config('system.site.jtt_appkey')]);
+        $jtt = new Jtt(['appid' => $config['jtt_appid'], 'appkey' => $config['jtt_appkey']]);
 
         $builder = new FormBuilder();
         if($tab == 'check'){
@@ -279,7 +283,7 @@ class Tpzstask extends Botbase
                 'img' => $goods['goods_img'],
                 'content' => $goods['link_content']
             ];
-            if($gid = model('botConfig')->getConf(['admin_id' => $this->adminInfo['id']], 'central_group')){
+            if($gid = $this->configM->getConf(['admin_id' => $this->adminInfo['id']], 'central_group')){
                 $group = model('admin/botMember')->getOne($gid);
                 $data['members'] = [$group['wxid']];
             }

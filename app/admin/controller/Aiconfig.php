@@ -29,7 +29,8 @@ class Aiconfig extends Botbase
             'gpt' => 'ChatGpt'
         ];
         $this->tabList = [
-
+            'basic' => ['title' => '基础设置', 'href' => url('index', ['name' => 'basic'])],
+            'driver' => ['title' => '驱动设置', 'href' => url('index', ['name' => 'driver'])]
         ];
     }
 
@@ -40,6 +41,7 @@ class Aiconfig extends Botbase
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function index(){
+        $name = input('name', 'basic');
         $tip = "<ul><li>微信OpenAi: <a target='_blank' href='https://openai.weixin.qq.com/'>https://openai.weixin.qq.com/</a></li>
 <li>青云客Ai: <a target='_blank' href='http://api.qingyunke.com/'>http://api.qingyunke.com/</a></li>
 </ul>";
@@ -50,29 +52,40 @@ class Aiconfig extends Botbase
         if(empty($settings)){
             $settings = [
                 'driver' => 'weixin',
-                'switch' => 1
+                'switch' => 1,
+                'need_at' => 1,
+                'show_question' => 1
             ];
         }
 
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
-            ->setTip($tip)
-            ->addFormItem('basic_legend', 'legend', '基础配置','基础配置' )
-            ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('switch', 'radio', '开启', '是否开启', [1=>'是', 0 => '否'])
-            ->addFormItem('need_at', 'radio', '被@后触发', '群聊中是否需要被at才回答', [1=>'是', 0 => '否'])
-            ->addFormItem('driver', 'radio', 'AI驱动', 'AI驱动', $this->aiDrivers)
-            ->addFormItem('wxids', 'chosen_multi', '作用对象', '指定的作用对象才会生效', $this->getMembers(), 'required')
-            ->addFormItem('weixin_legend', 'legend', '微信智能对话','微信智能对话' )
-            ->addFormItem('wx_appid', 'text', 'Appid', '微信智能对话的Appid')
-            ->addFormItem('wx_token', 'text', 'Token', '微信智能对话的Token')
-            ->addFormItem('wx_encoding_aes_key', 'text', 'EncodingAesKey', '微信智能对话的EncodingAesKey')
-            ->addFormItem('qyk_legend', 'legend', '青云客','青云客' )
-            ->addFormItem('qyk_appid', 'text', 'Appid', '填0就好')
-            ->addFormItem('gpt_legend', 'legend', 'chatGpt','chatGpt' )
-            ->addFormItem('gpt_appid', 'text', 'OpenaiId', 'OpenaiId的OpenaiId')
-            ->setFormData($settings);
-        return $builder->show();
+            ->setTabNav($this->tabList, $name)
+            ->addFormItem('id', 'hidden', 'id', 'id');
+            switch ($name){
+                case 'driver':
+                    $builder->setTip($tip)
+                        ->addFormItem('weixin_legend', 'legend', '微信智能对话','微信智能对话' )
+                        ->addFormItem('wx_appid', 'text', 'Appid', '微信智能对话的Appid')
+                        ->addFormItem('wx_token', 'text', 'Token', '微信智能对话的Token')
+                        ->addFormItem('wx_encoding_aes_key', 'text', 'EncodingAesKey', '微信智能对话的EncodingAesKey')
+                        ->addFormItem('qyk_legend', 'legend', '青云客','青云客' )
+                        ->addFormItem('qyk_appid', 'text', 'Appid', '填0就好');
+                        /*->addFormItem('gpt_legend', 'legend', 'chatGpt','chatGpt' )
+                        ->addFormItem('gpt_appid', 'text', 'OpenaiId', 'OpenaiId的OpenaiId')*/
+                    break;
+                default:
+                    $builder->addFormItem('switch', 'radio', '开启', '是否开启', [1=>'是', 0 => '否'], 'required')
+                        ->addFormItem('need_at', 'radio', '被@后触发', '群聊中是否需要被at才回答', [1=>'是', 0 => '否'])
+                        ->addFormItem('show_question', 'radio', '答案是否带上问题', '答案是否带上问题', [1=>'是', 0 => '否'])
+                        ->addFormItem('driver', 'radio', 'AI驱动', 'AI驱动', $this->aiDrivers)
+                        ->addFormItem('wxids', 'chosen_multi', '作用对象', '指定的作用对象才会生效', $this->getMembers(), 'required')
+                        ->addFormItem('time_on', 'time', '上班时间', '最早的时间', [], 'required')
+                        ->addFormItem('time_off', 'time', '下班时间', '晚上最迟', [], 'required');
+                    break;
+            }
+
+        return $builder->setFormData($settings)->show();
     }
 
     public function savePost($jump_to = '/undefined', $data = [])

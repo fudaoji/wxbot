@@ -52,8 +52,7 @@ class Ai extends Addon
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function groupChatHandle(){
-        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->groupWxid) === false || $this->fromWxid == $this->botWxid
-            || (!empty($this->configs['need_at']) && strpos($this->content['msg'], $this->beAtStr) === false)){
+        if(!$this->groupChatCheck()){
             return false;
         }
         $this->toWxid = $this->groupWxid;
@@ -61,17 +60,47 @@ class Ai extends Addon
         $this->keyword();
     }
 
+    private function groupChatCheck(){
+        if(!$this->workTimeCheck() || $this->fromWxid == $this->botWxid
+            || (!empty($this->configs['need_at']) && strpos($this->content['msg'], $this->beAtStr) === false)){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 工作时间检验
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function workTimeCheck(){
+        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->fromWxid) === false){
+            return false;
+        }
+        if(empty($this->configs['time_on']) || empty($this->configs['time_off'])){
+            return true;
+        }
+        return  date('H:i:s') >= $this->configs['time_on'] && date('H:i:s') <= $this->configs['time_off'];
+    }
+
     /**
      * 私聊处理器
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function privateChatHandle(){
-        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->fromWxid) === false){
+        if(!$this->privateChatCheck()){
             return false;
         }
         $this->toWxid = $this->fromWxid;
         //一、关键词
         $this->keyword();
+    }
+
+    private function privateChatCheck(){
+        if(! $this->workTimeCheck()){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -91,8 +120,8 @@ class Ai extends Addon
         if($res['code'] && !empty($res['answer_type'])){
             switch ($res['answer_type']){
                 case Base::ANSWER_TEXT:
-                    $answer = $msg . "\n----------------\n" . $res['answer'];
-                    if(empty($this->configs['need_at'])){
+                    $answer = (!empty($this->configs['show_question']) ? ($msg . "\n----------------\n") :'') . $res['answer'];
+                    if(empty($this->groupWxid) || empty($this->configs['need_at'])){
                         $this->botClient->sendTextToFriend([
                             'robot_wxid' => $this->botWxid,
                             'to_wxid' => $this->toWxid,

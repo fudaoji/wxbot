@@ -26,7 +26,7 @@ class Aiconfig extends Botbase
         $this->aiDrivers = [
             'weixin' => '微信AI',
             'qyk' => '青云客',
-            'gpt' => 'chatGpt'
+            'gpt' => 'ChatGpt'
         ];
         $this->tabList = [
 
@@ -60,6 +60,7 @@ class Aiconfig extends Botbase
             ->addFormItem('basic_legend', 'legend', '基础配置','基础配置' )
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('switch', 'radio', '开启', '是否开启', [1=>'是', 0 => '否'])
+            ->addFormItem('need_at', 'radio', '被@后触发', '群聊中是否需要被at才回答', [1=>'是', 0 => '否'])
             ->addFormItem('driver', 'radio', 'AI驱动', 'AI驱动', $this->aiDrivers)
             ->addFormItem('wxids', 'chosen_multi', '作用对象', '指定的作用对象才会生效', $this->getMembers(), 'required')
             ->addFormItem('weixin_legend', 'legend', '微信智能对话','微信智能对话' )

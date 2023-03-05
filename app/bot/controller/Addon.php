@@ -26,6 +26,7 @@ class Addon extends Handler
         $this->ajaxData = $options['ajax_data'];
         $this->event = $options['event'];
         $this->bot = $options['bot'];
+        $this->beAtStr = $options['be_at_str'];
         return $this;
     }
 }

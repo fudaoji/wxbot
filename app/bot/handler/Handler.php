@@ -59,6 +59,7 @@ class Handler extends BaseCtl
     protected $addonOptions;
     protected $groupName = '';
     protected $isNewFriend = false;
+    protected $beAtStr = '';
 
     /**
      * 入口
@@ -138,6 +139,7 @@ class Handler extends BaseCtl
             $this->getBot($this->botWxid);
             $this->botClient = $this->botM->getRobotClient($this->bot);
         }
+        $this->beAtStr = '[at='.$this->botWxid.']';
     }
 
     public function checkEvent(){
@@ -270,6 +272,7 @@ class Handler extends BaseCtl
         $this->addonOptions['group'] = $this->group;
         $this->addonOptions['content'] = $this->content;
         $this->addonOptions['is_new_friend'] = $this->isNewFriend;
+        $this->addonOptions['be_at_str'] = $this->beAtStr;
         return $this->addonOptions;
     }
 

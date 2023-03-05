@@ -42,7 +42,7 @@ class Ai extends Addon
      */
     public function deviceCallbackHandle(){
         if(!empty($this->groupWxid)){
-            $this->groupChatHandle();
+            //$this->groupChatHandle();
         }
     }
 
@@ -52,7 +52,8 @@ class Ai extends Addon
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function groupChatHandle(){
-        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->groupWxid) === false || $this->fromWxid == $this->botWxid){
+        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->groupWxid) === false || $this->fromWxid == $this->botWxid
+            || (!empty($this->configs['need_at']) && strpos($this->content['msg'], $this->beAtStr) === false)){
             return false;
         }
         $this->toWxid = $this->groupWxid;
@@ -81,21 +82,30 @@ class Ai extends Addon
      */
     private function keyword(){
         $this->aiClient = $this->configM->getAiClient($this->bot, $this->configs['driver']);
-        $msg = trim($this->content['msg']);
+        $msg = str_replace($this->beAtStr, "", trim($this->content['msg']));
         $res = $this->aiClient->smart([
             'userid' => $this->fromWxid,
             'msg' => $msg,
         ]);
-        //Logger::error($res);
+        //Logger::error($msg);
         if($res['code'] && !empty($res['answer_type'])){
             switch ($res['answer_type']){
                 case Base::ANSWER_TEXT:
                     $answer = $msg . "\n----------------\n" . $res['answer'];
-                    $this->botClient->sendTextToFriend([
-                        'robot_wxid' => $this->botWxid,
-                        'to_wxid' => $this->toWxid,
-                        'msg' => $answer
-                    ]);
+                    if(empty($this->configs['need_at'])){
+                        $this->botClient->sendTextToFriend([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $this->toWxid,
+                            'msg' => $answer
+                        ]);
+                    }else{
+                        $this->botClient->sendGroupMsgAndAt([
+                            'group_wxid' => $this->groupWxid,
+                            'robot_wxid' => $this->botWxid,
+                            'member_wxid' => $this->fromWxid,
+                            'msg' => $answer
+                        ]);
+                    }
                     break;
                 case Base::ANSWER_MUSIC:
                     if(!empty($res['more_info']['music_ans_detail'])){

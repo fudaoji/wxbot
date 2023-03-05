@@ -302,7 +302,7 @@ class Kefu extends Base
                 //     'to_wxid' => $post_data['to_wxid'],
                 //     'path' => $post_data['content']['url']
                 // ]);
-                $base_config = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => 0]);
+                $base_config = $this->configM->getConf(['admin_id' => AdminM::getFounderId(), 'bot_id' => 0]);
                 $date = date("Y-m");
                 $file_name = time().$post_data['content']['file_name'];
                 $file_path = $base_config['file_path'] ?? "D:\weixinjilu\WeChat Files\WeChat Files";

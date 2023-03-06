@@ -179,11 +179,9 @@ class Keyword extends Botbase
         $keyword_arr = explode('|', $keywords);
         if(empty($post_data[$this->pk])){
             $post_data['admin_id'] = $this->adminInfo['id'];
-            if(strpos($keywords, '|') !== false){
-                foreach ($keyword_arr as $keyword){
-                    $post_data['keyword'] = $keyword;
-                    $this->model->addOne($post_data);
-                }
+            foreach ($keyword_arr as $keyword){
+                $post_data['keyword'] = $keyword;
+                $this->model->addOne($post_data);
             }
         }else {
             $this->model->updateOne($post_data);

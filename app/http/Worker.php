@@ -70,6 +70,7 @@ class Worker extends Server
 						echo "用户锁：".$lock_key;
 						sleep(1);
 						$redis->rpush($key, json_encode($res));
+						continue;
 					} else {
 						$redis->setex($lock_key,600, 1);
 					}
@@ -169,6 +170,7 @@ class Worker extends Server
 						echo "用户锁：".$lock_key;
 						sleep(1);
 						$redis->rpush($key, json_encode($data));
+						continue;
 					} else {
 						$redis->setex($lock_key,600, 1);
 					}

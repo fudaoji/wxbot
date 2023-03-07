@@ -2123,6 +2123,7 @@
                 //未替换成功，视频比提示先执行，直接加入
                 if (!replace) {
                     console.log(vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]]);
+                    let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type, friend_type: massage.friend_type, group_headimg: massage.group_headimg, group_nickname: massage.group_nickname, friend: massage.friend };
                     vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
                 }
                 vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];

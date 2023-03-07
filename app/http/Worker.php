@@ -172,7 +172,7 @@ class Worker extends Server
 						$redis->rpush($key, json_encode($data));
 						continue;
 					} else {
-						$redis->setex($lock_key,600, 1);
+						$redis->setex($lock_key,60, 1);
 					}
 					// $r_data = [
 					// 	'msg_type' => $data['type'],

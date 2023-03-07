@@ -156,8 +156,11 @@
                                             </div>
                                             <!-- 视频消息mp4 -->
                                             <div v-else-if="item.msg_type == 43" :class="'send_43_'+item.msg_id">
-                                                <div v-if="item.content"><embed :src="item.content" autostart=false width="300px" height="400px"></div>
-                                                <div v-else>视频加载中<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i></div>
+                                                <div v-if="item.content"><embed :src="item.content" autostart=false
+                                                        width="300px" height="400px"></div>
+                                                <div v-else>视频加载中<i
+                                                        class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                                                </div>
                                             </div>
                                             <!-- 语音消息mp3 -->
                                             <div v-else-if="item.msg_type == 34" :class="'send_34_'+item.msg_id">
@@ -1872,7 +1875,7 @@
                                     }
                                 });
                                 let url = '/admin/kefu/updateMemberDnd';
-                                let params = { id: friend_id, dnd: dnd_flag,bot_id:self['bot_id']};
+                                let params = { id: friend_id, dnd: dnd_flag, bot_id: self['bot_id'] };
                                 $.post(url, params, function (res) {
 
                                 }, 'json');
@@ -1914,7 +1917,7 @@
             var massage = eval("(" + event.data + ")");
             //收到私聊信息
             if (massage.event == 'msg') {
-                
+
                 //数据类型转换
                 if (massage.msg_type == 2000 || massage.msg_type == 49 || massage.msg_type == 42 || massage.msg_type == 2004 || massage.msg_type == 10003) {
                     // console.log("转账：");
@@ -1926,7 +1929,7 @@
                     console.log(massage.msg);
                 }
                 //转账/分享链接单独处理
-                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type, friend_type: massage.friend_type, group_headimg: massage.group_headimg, group_nickname: massage.group_nickname,friend:massage.friend };
+                let msg = { content: massage.msg, class: 'friends_chat_content', date: massage.date, headimgurl: massage.headimgurl, msg_id: massage.msg_id, msg_type: massage.msg_type, friend_type: massage.friend_type, group_headimg: massage.group_headimg, group_nickname: massage.group_nickname, friend: massage.friend };
                 console.log(msg);
                 if (massage.friend.dnd == 0) {
                     speak_cn('收到新消息');
@@ -1943,10 +1946,22 @@
                     vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = [];
                 }
                 // console.log(vm['chat_log']);
-                vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
-                if (massage.from_wxid == vm['friend_wxid']) {
-                    vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+                //已存在且不为空则不添加
+                let add_flag = true;
+                $.each(vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]], function (i, v) {
+                    if (v.msg_id == massage.msg_id && v.content != '') {
+                        add_flag = false;
+                        return false;
+                    }
+                });
+                if (add_flag) {
+                    vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
+                    if (massage.from_wxid == vm['friend_wxid']) {
+                        vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
+                    }
                 }
+
+
                 if (!vm['new_bot'].includes(massage.robot_wxid) && dnd == 0) {
                     vm['new_bot'].push(massage.robot_wxid);
                 }
@@ -2096,12 +2111,19 @@
                     console.log(massage.msg);
                 }
                 //延迟数据替换
+                let replace = false;
+                //是否替换成功
                 $.each(vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]], function (i, v) {
                     if (v.msg_id == massage.msg_id) {
                         v.content = massage.msg;
+                        replace = true;
                         return false;
                     }
                 });
+                //未替换成功，视频比提示先执行，直接加入
+                if (!replace) {
+                    vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]].concat([msg]);
+                }
                 vm['current_chat'] = vm['chat_log'][[massage.robot_wxid]][[massage.from_wxid]];
                 vm['renderDropdown']();
             }
@@ -2140,7 +2162,7 @@
         $.each(value, function (i, v) {
             let max = 5000;
             let min = 1000;
-            let time = Math.floor(Math.random()*(max-min+1))+min
+            let time = Math.floor(Math.random() * (max - min + 1)) + min
             setTimeout(function () {
                 let url = v.url;
                 vm.content = url;

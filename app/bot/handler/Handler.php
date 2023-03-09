@@ -46,7 +46,7 @@ class Handler extends BaseCtl
     protected $groupMemberM;
     protected $bot;
     /**
-     * @var Vlw|Wxwork|Cat|Webgo|My|Mycom|Xbot
+     * @var Vlw|Wxwork|Cat|Webgo|My|Mycom|Xbot|Extian
      */
     protected $botClient;
     protected $fromWxid = '';
@@ -149,6 +149,13 @@ class Handler extends BaseCtl
             $this->botClient = $this->botM->getRobotClient($this->bot);
         }
         $this->beAtStr = '[at='.$this->botWxid.']';
+
+        $this->content['from_group'] = $this->groupWxid;
+        $this->content['from_wxid'] = $this->fromWxid;
+        $this->content['from_group_name'] = $this->groupName;
+        $this->content['from_name'] = $this->fromName;
+        $this->content['robot_wxid'] = $this->botWxid;
+        //Logger::error($this->content);
     }
 
     public function checkEvent(){
@@ -239,12 +246,6 @@ class Handler extends BaseCtl
                 }
                 break;
         }
-        //Logger::error($this->content);
-        $this->content['from_group'] = $this->groupWxid;
-        $this->content['from_wxid'] = $this->fromWxid;
-        $this->content['from_group_name'] = $this->groupName;
-        $this->content['from_name'] = $this->fromName;
-        $this->content['robot_wxid'] = $this->botWxid;
     }
 
     public function isGroupEvent(){

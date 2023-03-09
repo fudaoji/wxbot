@@ -56,7 +56,9 @@ class Bot extends Base
                 $return = $bot_client->getRobotInfo(['client_id' => $params['uuid']]);
                 if($return['code'] && !empty($return['data'])){
                     $data = $return['data'];
-
+                    if(empty($data['isLogin'])){
+                        return 'not logon';
+                    }
                     return [
                         'wxid' => $data['wxid'],
                         'nickname' => $data['nickName'],

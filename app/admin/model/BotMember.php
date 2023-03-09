@@ -282,7 +282,7 @@ class BotMember extends Base
                     $wxid_arr = [];
                     $count = 0;
                     foreach ($list as $k => $v){
-                        if($v['type'] != 1){
+                        if($v['type'] != 3){
                             continue;
                         }
                         $count++;

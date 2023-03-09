@@ -41,8 +41,8 @@ class ChatLog extends Kefu
         // $bot_model = new ModelBot();
         $key = 'receive_private_chat';
         $time = time();
-        $member_model = new BotMember();Logger::write("111111");
-        $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();
+        $member_model = new BotMember();
+        $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();Logger::write("111111");
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换

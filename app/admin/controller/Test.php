@@ -229,11 +229,11 @@ class Test
         model('common/setting')->settings();
         // $msg = '[mp4=D:\weixinjilu\WeChat Files\wxid_5fprdytoi1k612\FileStorage\Video\2022-12\d97e4708ae1f7b3947c2d38c7c6976a8.mp4]';
         // $sub = 5;
-        $msg = '[File=D:\weixinjilu\WeChat Files\wxid_5fprdytoi1k612\FileStorage\File\2022-12\test.xls]';
+        $msg = '[mp4=E:\weixinjilu\WeChat Files\wxid_3zmct0u931c522\FileStorage\Video\2023-03\5054599134b17483a67bd8f5975a2845.mp4]';
 
         $sub = 6;
         $bot_model = new Bot();
-        $bot = $bot_model->where(['id' => 70])->find();
+        $bot = $bot_model->where(['id' => 132])->find();
         dump($bot);
         dump($bot_model->getlastsql());
         $bot_client = $bot_model->getRobotClient($bot);

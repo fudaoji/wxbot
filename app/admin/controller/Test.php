@@ -242,7 +242,7 @@ class Test
         $ext = pathinfo($path, PATHINFO_EXTENSION);
         dump($ext);
         $file_name = substr(strrchr($path, "\\"), 1);
-        dump($file_name);
+        dump($file_name);exit;
         $res = $bot_client->downloadFile(['path' => $path]);
         dump($res);
         $base64 = $res['ReturnStr'];

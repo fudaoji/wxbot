@@ -64,6 +64,16 @@ class Worker extends Server
 					Logger::write("发送消息---" . json_encode($res));
 					echo "用户：";
 					dump($this->worker);
+					$lock_key = 'lock_'.$res['client'];
+					$lock = $redis->get($lock_key);
+					if ($lock) {
+						echo "用户锁：".$lock_key;
+						sleep(1);
+						$redis->rpush($key, json_encode($res));
+						continue;
+					} else {
+						$redis->setex($lock_key,600, 1);
+					}
 					if (isset($this->worker->uidConnections) && isset($this->worker->uidConnections[$res['client']])) {
 						$conn = $this->worker->uidConnections[$res['client']];
 						if ($res['event'] == 'msg') {
@@ -122,6 +132,9 @@ class Worker extends Server
 						dump("未找到客户端：");
 						dump($res['client']);
 					}
+
+					$redis->del($lock_key);
+
 				}
 			}
 
@@ -150,6 +163,16 @@ class Worker extends Server
 						$redis->rpush($key, json_encode($data));
 						sleep(1);
 						continue;
+					}
+					$lock_key = 'lock_'.$data['client'];
+					$lock = $redis->get($lock_key);
+					if ($lock) {
+						echo "用户锁：".$lock_key;
+						sleep(1);
+						$redis->rpush($key, json_encode($data));
+						continue;
+					} else {
+						$redis->setex($lock_key,60, 1);
 					}
 					// $r_data = [
 					// 	'msg_type' => $data['type'],
@@ -189,6 +212,8 @@ class Worker extends Server
 							sleep(1);
 						}
 					}
+
+					$redis->del($lock_key);
 				}
 			}
 		});

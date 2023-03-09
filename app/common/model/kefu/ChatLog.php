@@ -48,7 +48,7 @@ class ChatLog extends Kefu
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         //Logger::write("收到信息" . json_encode($data['msg']) . "\n");
-        //Logger::write("转化信息" . json_encode($convert) . "\n");
+        Logger::write("转化信息" . json_encode($convert) . "\n");
         $member['last_chat_time'] = $time;
         $member['last_chat_content'] = $convert['last_chat_content'];
         // $bot = $bot_model->where(['uin' => $data['robot_wxid']])->find();
@@ -81,7 +81,7 @@ class ChatLog extends Kefu
         ];
         $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
-        //Logger::write("存储数据OK：" . json_encode($msg) . "\n");
+        Logger::write("存储数据OK：" . json_encode($msg) . "\n");
         //视频转换失败
         if (in_array($data['type'], [43, 2004]) && $convert['content'] == '') {
             $delay_second = 10;
@@ -100,7 +100,7 @@ class ChatLog extends Kefu
                 'from_wxid' => $data['from_wxid'],
             ];
             $redis->rpush($key_delay, json_encode($r_data));
-            //Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");
+            Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");
         }
     }
 
@@ -191,6 +191,7 @@ class ChatLog extends Kefu
                 break;
             case 43:
                 echo "视频消息" . "\n";
+                Logger::write("视频消息转换");
                 //视频消息
                 //[mp4=C:\Users\Administrator\Documents\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-11\0777bb2b86444a5ac848234dd1071683.mp4]
                 $bot_model = new Bot();
@@ -198,19 +199,24 @@ class ChatLog extends Kefu
                 $path = mb_substr($msg, 5, -1);
                 if ($path) {
                     echo "视频消息path" .$path. "\n";
+                    Logger::write("视频消息path" .$path."\n");
                     $res = $bot_client->downloadFile(['path' => $path]);
+                    Logger::write("res:" .json_encode($res));
                     if ($res['Code'] != 0) {
                         echo "转换视频消息为base64错误:" . json_encode($res) . "\n";
+                        Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                         // Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                         $url = '';
                     } else {
                         echo "转换成功11111" . "\n";
+                        Logger::write("转换成功11111" . "\n");
                         $base64 = $res['ReturnStr'];
                         $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                         // dump('url');
                         // dump($url);
                     }
                 } else {
+                    Logger::write("视频地址为空:" . "\n");
                     echo "视频地址为空:" . "\n";
                     $url = '';
                 }
@@ -219,6 +225,7 @@ class ChatLog extends Kefu
                 $content = $url;
                 $last_chat_content = "[视频]";
                 echo "视频消息OK" . "\n";
+                Logger::write("视频消息OK" . "\n");
                 break;
             case 47:
                 //gif

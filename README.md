@@ -6,7 +6,7 @@
 #### 系统特性
 
 - 基础功能： 好友操作相关功能、群聊操作相关功能
-- 多驱动：系统支持多机器人框架驱动，目前支持了西瓜框架、可爱猫、我的（个微和企微）、VLW（个微和企微）、Web微信。
+- 多驱动：系统支持多机器人框架驱动，目前支持了西瓜框架、可爱猫、e小天、我的（个微和企微）、VLW（个微和企微）、Web微信。
 - 多商户： 开放注册，站长可以设置商户默认支持的微信个数和时长
 - 变现：支持按微信号席位收费（席位+时长）
 - 权限管理：完整的权限管理，每个客户拥有自己的组织权限管理
@@ -44,6 +44,7 @@
 - Memcached & Redis
 - [Layui](https://www.layui.com/) 
 - [Layuimini](http://layuimini.99php.cn/)
+- [e小天](http://www.wxext.cn)
 - [Vlw](http://a.vlwai.cn/)
 - [Vlw配套接口Xyo](https://www.yuque.com/httpapi/)
 - [Web微信(Go-wxbot)](https://gitee.com/fudaoji/go-wxbot)

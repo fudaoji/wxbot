@@ -48,7 +48,7 @@ class ChatLog extends Kefu
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         //Logger::write("收到信息" . json_encode($data['msg']) . "\n");
-        //Logger::write("转化信息" . json_encode($convert) . "\n");
+        Logger::write("转化信息" . json_encode($convert) . "\n");
         $member['last_chat_time'] = $time;
         $member['last_chat_content'] = $convert['last_chat_content'];
         // $bot = $bot_model->where(['uin' => $data['robot_wxid']])->find();
@@ -81,7 +81,7 @@ class ChatLog extends Kefu
         ];
         $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
-        //Logger::write("存储数据OK：" . json_encode($msg) . "\n");
+        Logger::write("存储数据OK：" . json_encode($msg) . "\n");
         //视频转换失败
         if (in_array($data['type'], [43, 2004]) && $convert['content'] == '') {
             $delay_second = 10;
@@ -100,7 +100,7 @@ class ChatLog extends Kefu
                 'from_wxid' => $data['from_wxid'],
             ];
             $redis->rpush($key_delay, json_encode($r_data));
-            //Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");
+            Logger::write("视频/文件转换失败,存延迟队列：" . json_encode($r_data) . "\n");
         }
     }
 

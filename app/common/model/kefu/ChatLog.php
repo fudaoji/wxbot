@@ -197,6 +197,7 @@ class ChatLog extends Kefu
                     echo "视频消息path" .$path. "\n";
                     Logger::write("视频消息path" .$path."\n");
                     $res = $bot_client->downloadFile(['path' => $path]);
+                    Logger::write("res:" .json_encode($res));
                     if ($res['Code'] != 0) {
                         echo "转换视频消息为base64错误:" . json_encode($res) . "\n";
                         Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");

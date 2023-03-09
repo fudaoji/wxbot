@@ -24,7 +24,7 @@ class ChatLog extends Kefu
 
 
     public function saveChat($data, $bot)
-    {
+    {Logger::write("saveChat");
         // "content": {
         //     "robot_wxid": "",  // 机器人账号id
         //     "type": 1,  // 1/文本消息 3/图片消息 34/语音消息  42/名片消息  43/视频 47/动态表情 48/地理位置  49/分享链接  2001/红包  2002/小程序  2003/群邀请  更多请参考常量表

@@ -46,7 +46,7 @@ class ChatLog extends Kefu
         //更改好友最后聊天时间
         $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);Logger::write("111111");
         //信息转换
-        $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);Logger::write("22222");
+        $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         //Logger::write("收到信息" . json_encode($data['msg']) . "\n");
         Logger::write("转化信息" . json_encode($convert) . "\n");
         $member['last_chat_time'] = $time;
@@ -187,6 +187,7 @@ class ChatLog extends Kefu
                 break;
             case 43:
                 echo "视频消息" . "\n";
+                Logger::write("视频消息转换");
                 //视频消息
                 //[mp4=C:\Users\Administrator\Documents\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-11\0777bb2b86444a5ac848234dd1071683.mp4]
                 $bot_model = new Bot();

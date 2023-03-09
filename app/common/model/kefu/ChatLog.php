@@ -44,7 +44,7 @@ class ChatLog extends Kefu
         $member_model = new BotMember();
         $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();
         //更改好友最后聊天时间
-        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);Logger::write("111111");
+        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         //Logger::write("收到信息" . json_encode($data['msg']) . "\n");
@@ -195,19 +195,23 @@ class ChatLog extends Kefu
                 $path = mb_substr($msg, 5, -1);
                 if ($path) {
                     echo "视频消息path" .$path. "\n";
+                    Logger::write("视频消息path" .$path."\n");
                     $res = $bot_client->downloadFile(['path' => $path]);
                     if ($res['Code'] != 0) {
                         echo "转换视频消息为base64错误:" . json_encode($res) . "\n";
+                        Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                         // Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                         $url = '';
                     } else {
                         echo "转换成功11111" . "\n";
+                        Logger::write("转换成功11111" . "\n");
                         $base64 = $res['ReturnStr'];
                         $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                         // dump('url');
                         // dump($url);
                     }
                 } else {
+                    Logger::write("视频地址为空:" . "\n");
                     echo "视频地址为空:" . "\n";
                     $url = '';
                 }
@@ -216,6 +220,7 @@ class ChatLog extends Kefu
                 $content = $url;
                 $last_chat_content = "[视频]";
                 echo "视频消息OK" . "\n";
+                Logger::write("视频消息OK" . "\n");
                 break;
             case 47:
                 //gif

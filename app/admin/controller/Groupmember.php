@@ -82,6 +82,14 @@ class Groupmember extends Botbase
         return $builder->show();
     }
 
+    /**
+     * 移除群成员
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function removeMemberPost(){
         $id = input('post.id');
         if(! $friend = $this->model->getOneJoin([

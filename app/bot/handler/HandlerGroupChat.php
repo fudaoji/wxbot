@@ -155,7 +155,7 @@ class HandlerGroupChat extends Handler
                 'status' => 1
             ]
         ]);
-
+        //Logger::error($keywords);
         $flag = false;
         foreach ($keywords as $keyword){
             if(empty($keyword['wxids'])){
@@ -169,7 +169,7 @@ class HandlerGroupChat extends Handler
             }
             if(strpos($keyword['wxids'], $this->groupWxid) !== false){
                 model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid,
-                    ['nickname' => $this->content['from_name'], 'need_at' => $keyword['need_at'], 'member_wxid' => $this->fromWxid]
+                    ['nickname' => $this->fromName, 'need_at' => $keyword['need_at'], 'member_wxid' => $this->fromWxid]
                 );
                 $flag = true;
             }

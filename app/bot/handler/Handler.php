@@ -19,6 +19,7 @@ use app\bot\handler\vlw\EventLogin;
 use app\common\controller\BaseCtl;
 use app\constants\Bot as BotConst;
 use ky\Helper;
+use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Vlw;
@@ -49,15 +50,16 @@ class Handler extends BaseCtl
      */
     protected $botClient;
     protected $fromWxid = '';
+    protected $fromName = '';
     protected $botWxid = '';
     protected $groupWxid = '';
+    protected $groupName = '';
     protected $content;
     protected $group;
     protected $driver;
     protected $event;
     protected $ajaxData;
     protected $addonOptions;
-    protected $groupName = '';
     protected $isNewFriend = false;
     protected $beAtStr = '';
 
@@ -109,6 +111,13 @@ class Handler extends BaseCtl
 
         $this->checkEvent();
         switch ($this->driver){
+            case BotConst::PROTOCOL_EXTIAN:
+                $this->botWxid = $this->ajaxData['myid'] ?? '';
+                $this->fromWxid = empty($this->content['memid']) ? $this->content['fromid'] : $this->content['memid'];
+                $this->fromName = $this->content['nickName'] ?? $this->content['memname'];
+                !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
+                !empty($this->content['id']) && $this->content['msg_id'] = $this->content['id'];
+                break;
             case BotConst::PROTOCOL_XBOT:
                 $this->botWxid = empty($this->ajaxData['wxid']) ? (empty($this->content['wxid'])?'':$this->content['wxid']) : $this->ajaxData['wxid'];
                 $this->fromWxid = empty($this->content['from_wxid']) ? '' : $this->content['from_wxid'];
@@ -144,6 +153,21 @@ class Handler extends BaseCtl
 
     public function checkEvent(){
         switch ($this->driver){
+            case BotConst::PROTOCOL_EXTIAN:
+                $this->content = $this->ajaxData['data'] ?? [];
+                $map = [
+                    Extian::EVENT_GROUP_MEMBER_ADD => BotConst::EVENT_GROUP_MEMBER_ADD,
+                    Extian::EVENT_GROUP_MEMBER_DEC => BotConst::EVENT_GROUP_MEMBER_DEC
+                ];
+                $this->event = isset($map[$this->ajaxData['method']]) ? $map[$this->ajaxData['method']] : $this->ajaxData['method'];
+                if($this->ajaxData['method'] == Extian::EVENT_NEW_MSG){
+                    $this->event = empty($this->content['memid']) ? BotConst::EVENT_PRIVATE_CHAT : BotConst::EVENT_GROUP_CHAT;
+                }
+                if($this->isGroupEvent()){
+                    $this->groupWxid = $this->content['fromid'];
+                    $this->groupName = $this->content['nickName'];
+                }
+                break;
             case BotConst::PROTOCOL_XBOT:
                 $this->content = $this->ajaxData['data'] ?? [];
                 $map = [
@@ -215,6 +239,12 @@ class Handler extends BaseCtl
                 }
                 break;
         }
+        //Logger::error($this->content);
+        $this->content['from_group'] = $this->groupWxid;
+        $this->content['from_wxid'] = $this->fromWxid;
+        $this->content['from_group_name'] = $this->groupName;
+        $this->content['from_name'] = $this->fromName;
+        $this->content['robot_wxid'] = $this->botWxid;
     }
 
     public function isGroupEvent(){
@@ -253,7 +283,7 @@ class Handler extends BaseCtl
             unset($map['alive']);
         }
         if(! $this->bot = $this->botM->getOneByMap($map)) {
-            Logger::error($this->botM->getlastsql());
+            //Logger::error($this->botM->getlastsql());
             Logger::error('Bot not exists or not logged in: ' . $uin);
             exit(0);
         }
@@ -267,7 +297,9 @@ class Handler extends BaseCtl
         $this->addonOptions['bot_client'] = $this->botClient;
         $this->addonOptions['bot_wxid'] = $this->botWxid;
         $this->addonOptions['from_wxid'] = $this->fromWxid;
+        $this->addonOptions['from_name'] = $this->fromName;
         $this->addonOptions['group_wxid'] = $this->groupWxid;
+        $this->addonOptions['group_name'] = $this->groupName;
         $this->addonOptions['event'] = $this->event;
         $this->addonOptions['group'] = $this->group;
         $this->addonOptions['content'] = $this->content;
@@ -281,6 +313,8 @@ class Handler extends BaseCtl
         switch ($this->driver){
             case BotConst::PROTOCOL_QXUN:
                 return Qianxun::response();
+            case BotConst::PROTOCOL_EXTIAN:
+                return Extian::response();
         }
     }
 }

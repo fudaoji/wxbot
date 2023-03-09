@@ -79,7 +79,8 @@ class Botfriend extends Botbase
         }
         $res = model('admin/bot')->getRobotClient($this->bot)->deleteFriend([
             'robot_wxid' => $this->bot['uin'],
-            'to_wxid' => $friend['wxid']
+            'to_wxid' => $friend['wxid'],
+            'uuid' => $this->bot['uuid']
         ]);
         if($res['code']){
             $this->model->delOne($id);

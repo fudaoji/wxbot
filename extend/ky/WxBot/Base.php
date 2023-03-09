@@ -98,7 +98,7 @@ Abstract class Base
     //拒绝好友转账 {'robot_wxid','receiver_pay_id'}
     abstract public function rejectTransfer($params = []);
     /*==========================好友操作类============================*/
-    //设置好友备注名 note
+    //设置好友备注名 note  to_wxid
     abstract public function setFriendRemarkName($params = []);
     abstract public function deleteFriend($params = []);
     abstract public function agreeFriendVerify($params = []);

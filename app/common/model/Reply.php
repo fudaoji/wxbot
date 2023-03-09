@@ -13,6 +13,7 @@ namespace app\common\model;
 use app\constants\Media;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Qianxun;
@@ -26,7 +27,7 @@ class Reply extends Base
     /**
      * 封装素材回复
      * @param $bot
-     * @param $client Vlw|Wxwork|Cat|My|Mycom|Qianxun
+     * @param $client Vlw|Wxwork|Cat|My|Mycom|Qianxun|Extian
      * @param $reply
      * @param string $to_wxid
      * @param array $extra

@@ -13,6 +13,7 @@ use app\common\model\Base;
 use app\constants\Bot;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Qianxun;
@@ -43,6 +44,36 @@ class BotMember extends Base
         ]);
 
         switch ($bot['protocol']) {
+            case Bot::PROTOCOL_EXTIAN:
+                if($res['code'] && count($res['data'])){
+                    $list = $res['data'];
+                    $wxid_arr = [];
+                    foreach ($list as $k => $v){
+                        $nickname = filter_emoji($v['name']);
+                        $wxid = $v['wxid'];
+                        $remark_name = filter_emoji($v['reMark']);
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'remark_name' => $remark_name,
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'uin' => $bot['uin'],
+                                'nickname' => $nickname,
+                                'wxid' => $wxid,
+                                'remark_name' => $remark_name,
+                                'type' => Bot::GROUP
+                            ]);
+                        }
+                    }
+                    //删除无效
+                    $this->delByMap(['uin' => $bot['uin'], 'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
+                    return count($list);
+                }
+                break;
             case Bot::PROTOCOL_XBOT:
                 if($res['code'] && count($res['data'])){
                     $list = $res['data'];
@@ -116,7 +147,7 @@ class BotMember extends Base
                         $nickname = filter_emoji($v['nickname']);
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -144,7 +175,7 @@ class BotMember extends Base
                         $nickname = filter_emoji($v['nickname']);
                         $wxid = $v['conversation_id'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -173,7 +204,7 @@ class BotMember extends Base
                         $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -202,7 +233,7 @@ class BotMember extends Base
                         $nickname = filter_emoji($v['nickname']);
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -237,7 +268,7 @@ class BotMember extends Base
      */
     public function pullFriends($bot){
         /**
-         * @var $client Vlw|Wxwork|Cat|Webgo|Qianxun|My|Mycom|Xbot
+         * @var $client Vlw|Wxwork|Cat|Webgo|Qianxun|My|Mycom|Xbot|Extian
          */
         $client = model('admin/bot')->getRobotClient($bot);
         $res = $client->getFriends([
@@ -245,6 +276,47 @@ class BotMember extends Base
         ]);
 
         switch ($bot['protocol']){
+            case Bot::PROTOCOL_EXTIAN:
+                if($res['code'] && count($res['data'])){
+                    $list = $res['data'];
+                    $wxid_arr = [];
+                    $count = 0;
+                    foreach ($list as $k => $v){
+                        if($v['type'] != 1){
+                            continue;
+                        }
+                        $count++;
+                        $nickname = filter_emoji($v['nickName']);
+                        $remark_name = filter_emoji($v['reMark']);
+                        $username = $v['alias'] ?? '';
+                        $headimgurl = $v['headImg'] ?? '';
+                        $wxid = $v['wxid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'remark_name' => $remark_name,
+                                'username' => $username,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'uin' => $bot['uin'],
+                                'nickname' => $nickname,
+                                'remark_name' => $remark_name,
+                                'username' => $username,
+                                'wxid' => $wxid,
+                                'type' => Bot::FRIEND,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }
+                    }
+                    //删除无效好友
+                    $this->delByMap(['uin' => $bot['uin'],'type' => Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
+                    return $count;
+                }
+                break;
             case Bot::PROTOCOL_XBOT:
                 if($res['code'] && count($res['data'])){
                     $list = $res['data'];
@@ -256,7 +328,7 @@ class BotMember extends Base
                         $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -292,7 +364,7 @@ class BotMember extends Base
                         $nickname_arr[] = $nickname;
                         $wxid = $v['user_name'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -328,7 +400,7 @@ class BotMember extends Base
                         $username = $v['wx_num'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -363,7 +435,7 @@ class BotMember extends Base
                         $wxid = $v['user_id'];
                         $wxid_arr[] = $wxid;
                         $internal = $v['internal'];
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -401,7 +473,7 @@ class BotMember extends Base
                         $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -440,7 +512,7 @@ class BotMember extends Base
                         $username = $v['username'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'])){
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,

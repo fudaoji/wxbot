@@ -19,6 +19,7 @@ class Bot
     const PROTOCOL_MYCOM = 'mycom'; //西瓜企微
     const PROTOCOL_QXUN = 'qianxun'; //千寻个微
     const PROTOCOL_XBOT = 'xbot'; //XBOT个微
+    const PROTOCOL_EXTIAN = 'extian'; //e小天个微
 
     const FRIEND = 'friend';
     const GROUP = 'group';
@@ -111,6 +112,7 @@ class Bot
             self::PROTOCOL_VLW => 'VLW个微',
             self::PROTOCOL_WXWORK => 'VLW企微',
             self::PROTOCOL_XBOT => 'XBOT个微',
+            self::PROTOCOL_EXTIAN => 'e小天个微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
@@ -140,7 +142,8 @@ class Bot
         $list = [
             self::PROTOCOL_MY => '西瓜个微',
             self::PROTOCOL_MYCOM => '西瓜企微',
-            self::PROTOCOL_CAT => '可爱猫个微'
+            self::PROTOCOL_CAT => '可爱猫个微',
+            self::PROTOCOL_EXTIAN => 'e小天个微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
@@ -155,6 +158,7 @@ class Bot
     {
         $list = [
             self::PROTOCOL_MY => '我的个微',
+            self::PROTOCOL_EXTIAN=> 'e小天个微',
             self::PROTOCOL_XBOT=> 'XBot个微'
         ];
         return isset($list[$id]) ? $list[$id] : $list;

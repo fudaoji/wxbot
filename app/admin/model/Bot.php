@@ -16,6 +16,7 @@ use ky\WxBot\Client;
 use app\constants\Bot as BotConst;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Qianxun;
@@ -47,10 +48,26 @@ class Bot extends Base
      */
     public function getRobotInfo($params = []){
         /**
-         * @var $bot_client Vlw|Cat|Wxwork|My|Qianxun
+         * @var $bot_client Vlw|Cat|Wxwork|My|Qianxun|Extian
          */
         $bot_client = $this->getRobotClient($params);
         switch ($params['protocol']){
+            case BotConst::PROTOCOL_EXTIAN:
+                $return = $bot_client->getRobotInfo(['client_id' => $params['uuid']]);
+                if($return['code'] && !empty($return['data'])){
+                    $data = $return['data'];
+
+                    return [
+                        'wxid' => $data['wxid'],
+                        'nickname' => $data['nickName'],
+                        'username' => $data['alias']??'',
+                        'headimgurl' => $data['headImg'],
+                        'uuid' => $params['uuid']
+                    ];
+                }else{
+                    return $bot_client->getError();
+                }
+                break;
             case BotConst::PROTOCOL_XBOT:
                 $return = $bot_client->getRobotInfo(['client_id' => $params['uuid']]);
                 if($return['code'] && !empty($return['data'])){

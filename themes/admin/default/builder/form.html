@@ -122,6 +122,8 @@
                                     }else{
                                         miniTab.deleteCurrentByIframe();
                                     }
+                                }else if(res.url.indexOf('/index/index') !== -1){
+                                    top.location.href = res.url;
                                 }else if(res.url){
                                     location.href = res.url;
                                 }

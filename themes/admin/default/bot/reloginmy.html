@@ -31,9 +31,18 @@
                 miniTab = layui.miniTab;
 
         $('#btn-login').on('click', () => {
-            requestPost("", {id: "{$id}"}, () => {
-                parent.location.reload();
-                miniTab.deleteCurrentByIframe();
+            requestPost("", {id: "{$id}"}, (res) => {
+                if(res.url === '/undefined'){
+                    if(parent.layer.getFrameIndex(window.name)){ //表单页为内页的情况
+                        parent.location.reload();
+                    }else{
+                        miniTab.deleteCurrentByIframe();
+                    }
+                }else if(res.url.indexOf('/index/index') !== -1){
+                    top.location.href = res.url;
+                }else if(res.url){
+                    location.href = res.url;
+                }
             });
         });
     });

@@ -60,8 +60,9 @@ class Botapply extends Bbase
             ->addTableColumn(['title' => '绑定员工', 'field' => 'staff_id', 'type' => 'enum', 'options' => AdminM::getTeamIdToName($this->adminInfo)])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => Common::verifies()])
             ->addTableColumn(['title' => '申请时间', 'field' => 'create_time', 'type' => 'datetime'])
-            ->addTableColumn(['title' => '操作', 'width' => 100, 'type' => 'toolbar'])
-            ->addRightButton('edit');
+            ->addTableColumn(['title' => '操作', 'width' => 120, 'type' => 'toolbar'])
+            ->addRightButton('edit')
+            ->addRightButton('delete');
         return $builder->show();
     }
 

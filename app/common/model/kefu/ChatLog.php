@@ -42,11 +42,11 @@ class ChatLog extends Kefu
         $key = 'receive_private_chat';
         $time = time();
         $member_model = new BotMember();
-        $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();Logger::write("111111");
+        $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();
         //更改好友最后聊天时间
-        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);Logger::write("111111");
         //信息转换
-        $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
+        $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);Logger::write("22222");
         //Logger::write("收到信息" . json_encode($data['msg']) . "\n");
         Logger::write("转化信息" . json_encode($convert) . "\n");
         $member['last_chat_time'] = $time;

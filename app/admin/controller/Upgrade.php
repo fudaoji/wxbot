@@ -183,7 +183,7 @@ class Upgrade extends Base
             }else{
                 $this->error($res['msg']);
             }
-            if($upgrade['version'] <= config('system.site.version')){
+            if($upgrade['version'] <= config('app.version')){
                 $this->error('请选择大于系统当前版本的项进行升级！');
             }
 

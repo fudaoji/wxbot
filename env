@@ -1,7 +1,7 @@
 ;安装时把这个文件改成.env，并根据自身情况修改配置值，配置键不许更改
 ;是否开发模式
-APP_DEBUG = false
-APP_TITLE=微精灵
+APP_DEBUG = true
+APP_TITLE= WxBot
 APP_NAME = wxbot
 CACHE_TYPE=[cache_type]
 

@@ -40,7 +40,7 @@ CREATE TABLE `__PREFIX__admin_group`  (
   UNIQUE INDEX `title`(`title`) USING BTREE
 ) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
-INSERT INTO `__PREFIX__admin_group` VALUES ('1', 'super_admin', '超级管理员', '1', '', '0', '0', '1445158837', '拥有系统最高管理权限', '1626581117');
+INSERT INTO `__PREFIX__admin_group` VALUES ('1', '1','super_admin', '超级管理员', '1', '', '0', '0', '1445158837', '拥有系统最高管理权限', '1626581117', 0);
 
 
 -- ----------------------------

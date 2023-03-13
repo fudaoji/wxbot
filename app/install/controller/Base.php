@@ -47,7 +47,7 @@ class Base extends BaseController
         $assign['controller'] = $this->controller;
         $assign['action'] = $this->action;
         $assign['company'] = '厦门酷云网络科技有限公司';
-        $assign['official_web'] = 'https://kyphp.kuryun.com/home/guide/bot.html';
+        $assign['official_web'] = 'https://daoadmin.kuryun.com/home/guide/bot.html';
         $assign['app_name'] = env('app_name', 'WxBot');
 
         $this->assign = array_merge($this->assign, $assign);

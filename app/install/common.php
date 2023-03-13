@@ -244,6 +244,7 @@ function show_msg($msg, $class = 'primary')
 {
     $msg_list = (array)cache('install_msg');
     array_push($msg_list, ['msg' => $msg, 'class' => $class]);
+    \ky\Logger::error($msg);
     cache('install_msg', $msg_list);
 }
 function show_msgBak($msg, $class = 'primary')

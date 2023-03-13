@@ -808,7 +808,9 @@
                             self['new_friend'] = new_friend_arr;
                             return false;
                         }
-                    })
+                    });
+                    //数据库更新已读
+                    this.read(item.id);
                 }
 
                 this.renderElement();
@@ -1883,6 +1885,14 @@
                         }
                     });
                 });
+            },
+            //消息已读
+            read(id) {
+                let url = '/admin/kefu/updateMemberNew';
+                let params = {id: id};
+                $.post(url, params, function (res) {
+
+                }, 'json');
             },
 
         }

@@ -171,7 +171,7 @@ class Kefu extends Base
                         $last_chat_content = $log['content'];
                     }
                     $val['last_chat_content'] = $last_chat_content;
-                    $val['new'] = 0;
+                    // $val['new'] = 0;
                 }
             } else {
                 $list = [];
@@ -1071,6 +1071,19 @@ class Kefu extends Base
                 ]);
             }
             $this->success('success', '', $res);
+        }
+    }
+
+    /**
+     * 
+     * 好友新消息已读
+     */
+    public function updateMemberNew(){
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $this->model = new BotMember();
+            $this->model->where(['id' => $post_data['id']])->update(['new' => 0]);
+            $this->success('success');
         }
     }
 }

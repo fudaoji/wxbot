@@ -44,7 +44,7 @@ class ChatLog extends Kefu
         $member_model = new BotMember();
         $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_wxid']])->find();
         //更改好友最后聊天时间
-        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time, 'new' => 1]);
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         //Logger::write("收到信息" . json_encode($data['msg']) . "\n");
@@ -377,7 +377,7 @@ class ChatLog extends Kefu
         $member_model = new BotMember();
         $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['to_wxid']])->find();
         //更改好友最后聊天时间
-        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time, 'new' => 1]);
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         $member['last_chat_time'] = $time;
@@ -540,7 +540,7 @@ class ChatLog extends Kefu
         $member_model = new BotMember();
         $member = $member_model->where(['uin' => $bot['uin'], 'wxid' => $data['from_group']])->find();
         //更改好友最后聊天时间
-        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time]);
+        $member_model->where(['id' => $member['id']])->update(['last_chat_time' => $time, 'new' => 1]);
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         //Logger::write("收到群信息" . json_encode($data['msg']) . "\n");

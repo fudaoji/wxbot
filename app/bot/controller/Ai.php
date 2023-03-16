@@ -52,17 +52,18 @@ class Ai extends Addon
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function groupChatHandle(){
+        $this->toWxid = $this->groupWxid;
         if(!$this->groupChatCheck()){
             return false;
         }
-        $this->toWxid = $this->groupWxid;
         //一、关键词
         $this->keyword();
     }
 
     private function groupChatCheck(){
         if(!$this->workTimeCheck() || $this->fromWxid == $this->botWxid
-            || (!empty($this->configs['need_at']) && strpos($this->content['msg'], $this->beAtStr) === false)){
+            || (!empty($this->configs['need_at']) && (strpos($this->content['msg'], $this->beAtStr[0]) === false
+                && strpos($this->content['msg'], $this->beAtStr[1]) === false))){
             return false;
         }
         return true;
@@ -74,7 +75,7 @@ class Ai extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function workTimeCheck(){
-        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->fromWxid) === false){
+        if(empty($this->configs['switch']) || strpos($this->configs['wxids'], $this->toWxid) === false){
             return false;
         }
         if(empty($this->configs['time_on']) || empty($this->configs['time_off'])){
@@ -88,10 +89,10 @@ class Ai extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function privateChatHandle(){
+        $this->toWxid = $this->fromWxid;
         if(!$this->privateChatCheck()){
             return false;
         }
-        $this->toWxid = $this->fromWxid;
         //一、关键词
         $this->keyword();
     }

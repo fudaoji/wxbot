@@ -58,6 +58,7 @@ class BotMember extends Base
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
                                 'remark_name' => $remark_name,
+                                'type' => Bot::GROUP
                             ]);
                         }else{
                             $this->addOne([

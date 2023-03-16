@@ -49,7 +49,7 @@ class EventGroupChat extends HandlerGroupChat
      * 消息转播
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    private function forward(){
+    public function forward(){
         if($group = model('common/Forward')->getGather([
             'group_wxid' => $this->groupWxid,
             'from_wxid' => $this->fromWxid,

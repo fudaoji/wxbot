@@ -46,26 +46,6 @@ class EventGroupChat extends HandlerGroupChat
     }
 
     /**
-     * 消息转播
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    private function forward(){
-        if($group = model('common/Forward')->getGather([
-            'group_wxid' => $this->groupWxid,
-            'from_wxid' => $this->fromWxid,
-            'bot_wxid' => $this->botWxid
-        ])) {
-            //2.取出机器人负责的群并转发
-            $groups = explode(',', $group['wxids']);
-            $this->botClient->forwardMsgToFriends([
-                'robot_wxid' => $this->botWxid,
-                'to_wxid' => $groups,
-                'msg' => $this->content['msgid']
-            ]);
-        }
-    }
-
-    /**
      * 关键词回复
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException

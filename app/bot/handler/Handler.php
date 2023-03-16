@@ -61,7 +61,7 @@ class Handler extends BaseCtl
     protected $ajaxData;
     protected $addonOptions;
     protected $isNewFriend = false;
-    protected $beAtStr = '';
+    protected $beAtStr = [];
 
     /**
      * 入口
@@ -148,7 +148,10 @@ class Handler extends BaseCtl
             $this->getBot($this->botWxid);
             $this->botClient = $this->botM->getRobotClient($this->bot);
         }
-        $this->beAtStr = '[at='.$this->botWxid.']';
+        $this->beAtStr = [
+            '[at='.$this->botWxid.']',
+            "@{$this->bot['nickname']}"
+        ];
 
         $this->content['from_group'] = $this->groupWxid;
         $this->content['from_wxid'] = $this->fromWxid;

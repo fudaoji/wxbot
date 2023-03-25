@@ -1,0 +1,171 @@
+<meta name="referrer" content="never">
+<div class="header">
+    <div class="layui-card">
+        <div class="layui-card-header layui-row">
+            <div class="layui-col-xs9">
+                {$member.nickname_show}的朋友圈
+            </div>
+            <div class="layui-col-xs3">
+                <a href="javascript:;" class="js-publish layui-btn layui-btn-normal layui-btn-sm">
+                    <i class="layui-icon layui-icon-add-1"></i>发圈
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-panel moment-wrap">
+    <div class="layui-card">
+        <div class="layui-card-body moment-list">
+            {if count($list)}
+            {foreach $list as $k => $item}
+            <div class="layui-row moment-item">
+                <div class="layui-col-xs2 layui-col-md2 layui-col-lg1">
+                    <img class="headimgurl" src="{$heads[$item.username] ?? ''}" />
+                </div>
+                <div class="layui-col-xs10">
+                    <div class="layui-card">
+                        <div class="layui-card-header">{$item.nickname}</div>
+                        <div class="layui-card-body">
+                            {if $item.text}
+                            <div><pre>{$item.text}</pre></div>
+                            {/if}
+                            <div class="media-content">
+                                {if $item.type != 0}
+                                {switch $item.type}
+                                {case 1}
+                                <div class="layui-row">
+                                    {foreach $item.image_list as $image}
+                                    <div class="layui-col-xs3">
+                                        <img src="{$image.thumb}" onclick="viewImg('{$image.url}')" alt="" class="media-image">
+                                    </div>
+                                    {/foreach}
+                                </div>
+                                {/case}
+                                {case 3}
+                                <div class="layui-row media-link" onclick="jump('{$item.url}', '_blank')">
+                                    <div class="layui-col-xs2">
+                                        <img src="{$item.thumb}" alt="" style="width: 50px;">
+                                    </div>
+                                    <div class="layui-col-xs7">
+                                        <p class="link-title">{$item.title}</p>
+                                        <p class="link-desc" style="color: #a29c9c;">{$item.description}</p>
+                                    </div>
+                                </div>
+                                {/case}
+                                {case 15}
+                                <video style="width: 210px;height: 169px;" controls poster="{$item.thumb}">
+                                    <source src="{$item.url}"  type="video/mp4">
+                                    <source src="{$item.url}"  type="video/ogg">
+                                    您的浏览器不支持 HTML5 video 标签。
+                                </video>
+                                {/case}
+                                {case 28}
+                                <img src="{$item.cover}" onclick="viewImg('{$item.cover}')" alt="" class="media-image">
+                                {/case}
+                                {case 34}
+                                <img src="{$item.cover}" onclick="viewImg('{$item.cover}')" alt="" class="media-image">
+                                {/case}
+                                {case 42}
+                                <div class="layui-row music-link" onclick="jump('{$item.url}', '_blank')">
+                                    <div class="layui-col-xs2">
+                                        <img src="{$item.thumb}" alt="" style="width: 50px;">
+                                    </div>
+                                    <div class="layui-col-xs5">
+                                        <p class="link-title">{$item.title}</p>
+                                        <p class="link-desc" style="color: #a29c9c;">{$item.author}</p>
+                                    </div>
+                                    <div class="layui-col-xs1" style="line-height: 45px;">
+                                        <i class="layui-icon layui-icon-play"></i>
+                                    </div>
+                                </div>
+                                {/case}
+                                {/switch}
+                                {/if}
+                                {if $item.location}
+                                <div class="location">{$item.location.poiName}</div>
+                                {/if}
+
+                                <div class="layui-row bottom">
+                                    <div class="layui-col-xs1 create-time">
+                                        {:ky_publish_time($item.create_time)}
+                                    </div>
+                                    <div class="layui-col-xs3 appname">
+                                        {if !empty($item.appname)}{$item.appname}{/if}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            {/foreach}
+            {else /}
+            <p class="empty">暂无数据</p>
+            {/if}
+        </div>
+    </div>
+    {if $has_more}
+    <div id="btn-load">
+        <p class="hide">加载中...</p>
+        <a href="javascript:;" data-href="{:url('moments', ['pyq_id' => $list[count($list) - 1]['pyq_id']])}" class="layui-btn layui-btn-sm layui-btn-normal layui-btn-fluid">下一页</a>
+    </div>
+    {/if}
+</div>
+<script>
+    layui.use(['jquery', 'layer'], function () {
+        var $ = layui.jquery
+        , layer = layui.layer;
+        $('#btn-load').on('click', function () {
+            $(this).find('p').removeClass('hide');
+            $(this).find('a').addClass('hide');
+            location.href = $(this).find('a').data('href');
+        });
+
+        $('.js-publish').on('click', function () {
+            var index = layer.open({
+                title: '发朋友圈',
+                type: 2,
+                shade: 0.2,
+                maxmin:true,
+                area: ['95%', '95%'],
+                content: "{:url('add')}",
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        });
+    })
+</script>
+<style>
+    .header{
+        position: fixed;
+        width: 100%;
+        z-index: 100;
+        top: 0;
+    }
+    .moment-wrap{margin-top: 50px;}
+    .moment-list .layui-card{box-shadow: none;}
+    .moment-list .layui-card-header{border: none;color: #00b7ee;}
+    .headimgurl{width: 50px; height: 50px; border-radius: 10%;}
+    #btn-load{position: fixed; bottom: 0;width: 100%;text-align: center;padding: 10px;background-color: #fff;}
+    .empty{text-align: center;font-weight: lighter;}
+
+    .moment-item .media-link,.moment-item .music-link{
+        background: #F2F2F2;
+        padding: 3px;
+        border-radius: 2px;
+    }
+    .moment-item .media-image{max-height: 60px;}
+    .moment-item .location,.moment-item .appname{
+        font-size: 12px;
+        color: #00b7ee;
+        font-weight: lighter;
+    }
+    .moment-item .create-time{
+        font-size: 12px;
+        font-weight: lighter;
+        color: gray;
+    }
+</style>

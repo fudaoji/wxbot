@@ -11,10 +11,12 @@ namespace app\bot\handler;
 
 use app\constants\Addon;
 use app\constants\Reply;
+use app\common\model\Reply as ReplyM;
 use ky\Logger;
 
 class HandlerGroupMemberAdd extends Handler
 {
+    public $replyM;
     /**
      *
     {
@@ -46,6 +48,7 @@ class HandlerGroupMemberAdd extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function handle(){
+        $this->replyM = new ReplyM();
         $this->group = $this->memberM->getOneByMap(['uin' => $this->botWxid, 'wxid' => $this->groupWxid]);
         $this->basic();
         $this->addon();
@@ -56,16 +59,16 @@ class HandlerGroupMemberAdd extends Handler
         $guest = $this->botClient->getGuest($this->content);
         $nickname = $guest['nickname'];
         $member_wxid = empty($guest['wxid']) ? '' : $guest['wxid'];
-
-        $nickname && $this->groupMemberM->addMember([
+        Logger::error($guest);
+        $member_wxid && $this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
-            'wxid' => $guest['wxid'],
+            'wxid' => $member_wxid,
             'group_id' => $this->group['id'],
             'nickname' => $nickname,
             'group_nickname' => $nickname
         ]);
         //回复消息
-        $replys = model('reply')->getAll([
+        $replys = $this->replyM->getAll([
             'order' => ['sort' => 'desc'],
             'where' => [
                 'bot_id' => $this->bot['id'],
@@ -75,7 +78,7 @@ class HandlerGroupMemberAdd extends Handler
         ]);
         foreach ($replys as $k => $reply){
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false){
-                model('reply')->botReply(
+                $this->replyM->botReply(
                     $this->bot, $this->botClient, $reply, $this->groupWxid,
                     ['nickname' => $nickname, 'need_at' => $reply['need_at'], 'member_wxid' => $member_wxid]
                 );

@@ -944,14 +944,14 @@ class My extends Base
      * 获取朋友圈
      * Author: fudaoji<fdj@kuryun.cn>
      * @param array $params
-     * @return bool
+     * @return array
      */
     public function getMoments($params = [])
     {
         $res = $this->request([
             'data' => $this->buildPostData($params, self::API_GET_MOMENTS)
         ]);
-        if($res['code']){
+        if($res['code'] && !empty($res['ReturnJson']['pyq_list'])){
             $res['data'] = $res['ReturnJson']['pyq_list'];
             unset($res['ReturnJson']['pyq_list']);
         }else{
@@ -963,14 +963,21 @@ class My extends Base
     /**
      * 获取好友朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getFriendMoments($params = [])
     {
-        return $this->request([
+        $res = $this->request([
             'data' => $this->buildPostData($params, self::API_GET_FRIEND_MOMENTS)
         ]);
+        if($res['code'] && !empty($res['ReturnJson']['pyq_list'])){
+            $res['data'] = $res['ReturnJson']['pyq_list'];
+            unset($res['ReturnJson']['pyq_list']);
+        }else{
+            $res['data'] = [];
+        }
+        return  $res;
     }
 
     /**

@@ -49,10 +49,10 @@ class Hanzi extends Addon
      * @throws \think\exception\DbException
      */
     public function groupChatHandle(){
+        $this->toWxid = $this->groupWxid;
         if(empty($this->switch) || strpos($this->switch['wxids'], $this->groupWxid) === false){
             return false;
         }
-        $this->toWxid = $this->groupWxid;
         //一、关键词
         $this->keyword();
     }
@@ -62,10 +62,10 @@ class Hanzi extends Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function privateChatHandle(){
+        $this->toWxid = $this->fromWxid;
         if(empty($this->switch) || strpos($this->switch['wxids'], $this->fromWxid) === false){
             return false;
         }
-        $this->toWxid = $this->fromWxid;
         //一、关键词
         $this->keyword();
     }
@@ -80,6 +80,7 @@ class Hanzi extends Addon
     private function keyword(){
         $msg = trim($this->content['msg']);
         $arr = explode("的笔顺", $msg);
+        
         if(strpos($msg, "的笔顺") !== false && $this->fromWxid != $this->botWxid && strpos($msg, "\r\r") === false && empty($arr[1])){
             $text = trim($arr[0]);
             $reply = '点击链接查看【'.$text . '】的笔画笔顺：' . request()->domain() . url('wap/hanzi/index', ['text' => $text]);

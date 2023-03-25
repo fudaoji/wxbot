@@ -29,7 +29,7 @@ class Bot extends Base
     /**
      * 获取机器人客户端
      * @param array $bot
-     * @return Cat|Vlw|Wxwork|Webgo|Qianxun|My|Mycom
+     * @return Cat|Vlw|Wxwork|Webgo|Qianxun|My|Mycom|Extian
      * @throws \Exception
      * Author: fudaoji<fdj@kuryun.cn>
      */

@@ -204,7 +204,8 @@ function fetch_to_qiniu($url = '', $key = '')
  */
 function ky_publish_time($time, $str = '')
 {
-    isset($str) ? $str : $str = 'm-d';
+    $time = is_string($time) ? strtotime($time) : $time;
+    $str = $str ?: 'm-d';
     $way = time() - $time;
     if ($way < 60) {
         $r = '刚刚';

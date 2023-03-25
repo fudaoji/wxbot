@@ -28,6 +28,17 @@ class BotMember extends Base
     protected $isCache = true;
 
     /**
+     * {wxid: headimgurl, ...}
+     * @param null $bot_info
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function wxidToHead($bot_info = null){
+        is_null($bot_info) && $bot_info = session(SESSION_BOT);
+        return $this->getField(['wxid','headimgurl'], ['uin' => $bot_info['uin']], true);
+    }
+
+    /**
      * 拉取最新群组列表
      * @param $bot
      * @return int

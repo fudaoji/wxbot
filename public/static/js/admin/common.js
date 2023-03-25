@@ -152,6 +152,14 @@ window.viewArticle = function (html = '') {
     });
 };
 
+window.jump = function (href = '', target = '_self') {
+    if(target === '_self'){
+        location.href = href;
+    }else{
+        window.open(href);
+    }
+};
+
 /**
  * 预览图片
  * @param string/array img src字符串或src数组

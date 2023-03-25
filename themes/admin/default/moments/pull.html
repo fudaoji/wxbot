@@ -1,0 +1,70 @@
+<div class="layui-row">
+    <div class="layui-col-md3 layui-col-xs4" >
+        <div class="layui-panel friends-panel">
+            <form action="">
+                <div class="layui-form-item" style="padding: 15px;">
+                    <div class="layui-row">
+                        <div class="layui-col-xs9">
+                            <input type="input" name="search_key" autocomplete="off" placeholder="输入昵称或备注" class="layui-input">
+                        </div>
+                        <div class="layui-col-xs3">
+                            <button type="submit" class="layui-btn layui-btn-sm" style="height: 38px;">搜索</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <ul class="layui-menu friends_list">
+                {foreach $friend_list as $item}
+                <li class="item" data-wxid="{$item.wxid}">
+                    <div class="layui-row">
+                        <div class="layui-col-xs12 layui-menu-body-title friend_right">
+                            <div class="layui-row">
+                                <div class="layui-col-xs4">
+                                    <div class="headimg"><img src="{$item.headimgurl}"></div>
+                                </div>
+                                <div class="layui-col-xs6">
+                                    <div class="name"><span>{$item.nickname}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {/foreach}
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-col-md9 layui-col-xs8" >
+        <iframe src="{:url('moments')}" frameborder="0" style="width: 100%" id="frame-moments"></iframe>
+    </div>
+</div>
+
+<script>
+    layui.use(['jquery'], function () {
+        var $ = layui.jquery;
+        $('.item').on('click', function () {
+            $("#frame-moments").attr('src', "{:url('moments')}?wxid=" + $(this).data('wxid'));
+        });
+    })
+</script>
+
+<style>
+    .friends_list {
+        max-height: 800px;
+        overflow: scroll;
+    }
+    .friend_right {
+        position: relative;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .headimg {
+        padding-right: 5px;
+    }
+    .headimg img{width: 50px; height: 50px; border-radius: 10%;}
+    #frame-moments{
+        overflow: scroll;
+        width: 100%;
+        height: 890px;
+    }
+</style>

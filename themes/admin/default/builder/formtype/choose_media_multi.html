@@ -1,19 +1,5 @@
 <!--控制组件显示隐藏-->
 <div class="layui-form-item media-box" id="media-box-{$form.name}">
-    <style>
-        .media-box .layui-card{padding-top: 30px;}
-        .media-box .box{
-            font-size: 16px;line-height: 80px;text-align: center;width: 90%;border: #e7e7eb 1px solid;margin-bottom: 7px;
-            cursor: pointer;
-        }
-        .media-box .box i{color: #B2B2B2;}
-        .media-box .box:hover{background-color: #f4f6f9; color: var(--green);}
-        .media-box .box:hover i{color: var(--green);}
-        .media-content img{width: 180px;border: #e7e7eb 1px solid;}
-        .media-content .addon-logo{width: 30px;margin-right: 15px;}
-        .media-box video{width: 210px;height: 169px;}
-        .media-box .layui-icon-delete{color: red;}
-    </style>
     <label class="layui-form-label {$form['extra_class']??''}">
         {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
         <span class="text-danger">*</span>
@@ -162,4 +148,19 @@
             });
         });
     </script>
+
+    <style>
+        .media-box .layui-card{padding-top: 30px;}
+        .media-box .box{
+            font-size: 16px;line-height: 80px;text-align: center;width: 90%;border: #e7e7eb 1px solid;margin-bottom: 7px;
+            cursor: pointer;
+        }
+        .media-box .box i{color: #B2B2B2;}
+        .media-box .box:hover{background-color: #f4f6f9; color: var(--green);}
+        .media-box .box:hover i{color: var(--green);}
+        .media-content img{width: 180px;border: #e7e7eb 1px solid;}
+        .media-content .addon-logo{width: 30px;margin-right: 15px;}
+        .media-box video{width: 210px;height: 169px;}
+        .media-box .layui-icon-delete{color: red;}
+    </style>
 </div>

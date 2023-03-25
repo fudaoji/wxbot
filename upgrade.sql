@@ -1,0 +1,2 @@
+ALTER TABLE `__PREFIX__moments` ADD COLUMN `plan_time` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT ' 计划发圈时间' AFTER `publish_time`;
+ALTER TABLE `__PREFIX__moments` CHANGE COLUMN `media_id` `media_id` varchar(200) NOT NULL DEFAULT 0 COMMENT '触发应用';

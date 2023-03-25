@@ -15,6 +15,10 @@ use app\constants\Reply;
 
 class HandlerFriendVerify extends Handler
 {
+    public function handle(){
+        $this->addon();
+    }
+
     /**
      * 插件处理
      * Author: fudaoji<fdj@kuryun.cn>

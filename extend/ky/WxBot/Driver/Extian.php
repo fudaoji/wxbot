@@ -36,6 +36,7 @@ class Extian extends Base
     const API_DELETE_FRIEND = 'deleteUser';
     const API_CLEAN_CHAT_HISTORY = 'ClearMsgList';
     const API_SET_GROUP_NAME = 'setRoomName';
+    const API_GET_MEMBER_INFO = 'getUserInfo';
 
     const API_SEND_XML = 'sendAppmsgForward'; //发送xml消息
     const API_SEND_IMG = 'sendImage'; //发送图片
@@ -51,6 +52,10 @@ class Extian extends Base
     const API_SEND_CARD_MSG = "sendCard"; //发送名片消息
     const API_INVITE_IN_GROUP_BY_LINK = 'sendGroupInvite';
     const API_SEND_GROUP_MSG_AND_AT = 'sendText';
+    const API_BUILDING_GROUP = 'createRoom'; //建群
+
+    const API_ACCEPTE_TRANSFER = 'agreeCash'; //同意转账
+    const API_REJECT_TRANSFER = ''; //拒收转账
 
     public function __construct($options = [])
     {
@@ -103,62 +108,62 @@ class Extian extends Base
 
     public function getMoments($params = [])
     {
-        // TODO: Implement getMoments() method.
+        return $this->apiUnSupport();
     }
 
     public function getFriendMoments($params = [])
     {
-        // TODO: Implement getFriendMoments() method.
+        return $this->apiUnSupport();
     }
 
     public function likeMoments($params = [])
     {
-        // TODO: Implement likeMoments() method.
+        return $this->apiUnSupport();
     }
 
     public function commentMoments($params = [])
     {
-        // TODO: Implement commentMoments() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsText($params = [])
     {
-        // TODO: Implement sendMomentsText() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsImg($params = [])
     {
-        // TODO: Implement sendMomentsImg() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsVideo($params = [])
     {
-        // TODO: Implement sendMomentsVideo() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsLink($params = [])
     {
-        // TODO: Implement sendMomentsLink() method.
+        return $this->apiUnSupport();
     }
 
     public function sendMomentsXml($params = [])
     {
-        // TODO: Implement sendMomentsXml() method.
+        return $this->apiUnSupport();
     }
 
     public function favoritesMsg($params = [])
     {
-        // TODO: Implement favoritesMsg() method.
+        return $this->apiUnSupport();
     }
 
     public function getFavorites($params = [])
     {
-        // TODO: Implement getFavorites() method.
+        return $this->apiUnSupport();
     }
 
     public function sendFavoritesMsg($params = [])
     {
-        // TODO: Implement sendFavoritesMsg() method.
+        return $this->apiUnSupport();
     }
 
     public function forwardMsgToFriends($params = [])
@@ -310,22 +315,24 @@ class Extian extends Base
 
     public function sendMusicLinkMsg($params = [])
     {
-        // TODO: Implement sendMusicLinkMsg() method.
+        return $this->apiUnSupport();
     }
 
     public function sendLinkMsg($params = [])
     {
-        // TODO: Implement sendLinkMsg() method.
+        return $this->apiUnSupport();
     }
 
     public function acceptTransfer($params = [])
     {
-        // TODO: Implement acceptTransfer() method.
+        $params['wxid'] = $params['from_wxid'];
+        $params['transferid'] = $params['payer_pay_id'];
+        return $this->doRequest(self::API_ACCEPTE_TRANSFER, $params);
     }
 
     public function rejectTransfer($params = [])
     {
-        // TODO: Implement rejectTransfer() method.
+        return $this->apiUnSupport();
     }
 
     public function setFriendRemarkName($params = [])
@@ -343,17 +350,17 @@ class Extian extends Base
 
     public function agreeFriendVerify($params = [])
     {
-        // TODO: Implement agreeFriendVerify() method.
+        return $this->apiUnSupport();
     }
 
     public function searchAccount($params = [])
     {
-        // TODO: Implement searchAccount() method.
+        return $this->apiUnSupport();
     }
 
     public function addFriendBySearch($params = [])
     {
-        // TODO: Implement addFriendBySearch() method.
+        return $this->apiUnSupport();
     }
 
     public function getFriends($params = [])
@@ -364,17 +371,30 @@ class Extian extends Base
 
     public function getMemberInfo($params = [])
     {
-        // TODO: Implement getMemberInfo() method.
+        $params['wxid'] = $params['to_wxid'];
+        return $this->doRequest(self::API_GET_MEMBER_INFO, $params);
     }
 
     public function buildingGroup($params = [])
     {
-        // TODO: Implement buildingGroup() method.
+        $params['msg'] = implode('|', $params['wxids']);
+        return $this->doRequest(self::API_BUILDING_GROUP, $params);
     }
 
     public function getGuest($content = [], $field = '')
     {
-        // TODO: Implement getGuest() method.
+        if(!empty($content['member'][0])){
+            $guest = $content['member'][0];
+            $guest['nickname'] = $guest['nickName'];
+            $guest['headimgurl'] = $guest['img'];
+        }else{
+            $guest = [
+                'nickname' => '',
+                'wxid' => '',
+                'headimgurl' => ''
+            ];
+        }
+        return isset($guest[$field]) ? $guest[$field] : $guest;
     }
 
     public function getGroupMembers($params = [])
@@ -403,7 +423,7 @@ class Extian extends Base
 
     public function sendMsgAtAll($params = [])
     {
-        // TODO: Implement sendMsgAtAll() method.
+        return $this->apiUnSupport();
     }
 
     public function removeGroupMember($params = [])
@@ -455,7 +475,7 @@ class Extian extends Base
 
     public function setGroupNotice($params = [])
     {
-        // TODO: Implement setGroupNotice() method.
+        return $this->apiUnSupport();
     }
 
     public function cleanChatHistory($params = [])
@@ -465,7 +485,7 @@ class Extian extends Base
 
     public function downloadFile($params = [])
     {
-
+        return $this->apiUnSupport();
     }
 
     public function dealRes($res)

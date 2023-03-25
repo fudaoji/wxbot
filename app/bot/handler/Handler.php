@@ -113,8 +113,14 @@ class Handler extends BaseCtl
         switch ($this->driver){
             case BotConst::PROTOCOL_EXTIAN:
                 $this->botWxid = $this->ajaxData['myid'] ?? '';
-                $this->fromWxid = empty($this->content['memid']) ? $this->content['fromid'] : $this->content['memid'];
-                $this->fromName = $this->content['nickName'] ?? $this->content['memname'];
+                if(in_array($this->event, [BotConst::EVENT_GROUP_MEMBER_ADD])){
+                    $new = $this->content['member'][0];
+                    $this->fromWxid = $new['wxid'];
+                    $this->fromName = $new['nickName'];
+                }else{
+                    $this->fromWxid = empty($this->content['memid']) ? $this->content['fromid'] : $this->content['memid'];
+                    $this->fromName = $this->content['nickName'] ?? $this->content['memname'];
+                }
                 !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
                 !empty($this->content['id']) && $this->content['msg_id'] = $this->content['id'];
                 break;
@@ -173,9 +179,12 @@ class Handler extends BaseCtl
                 if($this->ajaxData['method'] == Extian::EVENT_NEW_MSG){
                     $this->event = empty($this->content['memid']) ? BotConst::EVENT_PRIVATE_CHAT : BotConst::EVENT_GROUP_CHAT;
                 }
+                if($this->ajaxData['type'] == 701){
+                    $this->event = BotConst::EVENT_GROUP_MEMBER_ADD;
+                }
                 if($this->isGroupEvent()){
-                    $this->groupWxid = $this->content['fromid'];
-                    $this->groupName = $this->content['nickName'];
+                    $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
+                    $this->groupName = $this->content['nickName'] ?? '';
                 }
                 break;
             case BotConst::PROTOCOL_XBOT:

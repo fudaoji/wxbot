@@ -25,7 +25,7 @@ class Addon
             self::YHQ => '优惠券助手',
             self::AI => '智能对话',
             self::ZDJR => '自动加人',
-            self::KEFU => '客服',
+            //self::KEFU => '微信多客服',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

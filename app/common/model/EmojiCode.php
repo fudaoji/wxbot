@@ -17,12 +17,18 @@ class EmojiCode extends Base
 
 
     /**
-     * 
+     *
      * 转换带emoji的文本为图片/标签代码
      * type:img/emoji
+     * @param $text
+     * @param string $to
+     * @return string|string[]
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     function emojiText($text, $to = 'img')
-    {   
+    {
         $KyEmoji = new \ky\Emoji();
         // $text = '事实上[emoji=\ue04a]阿萨[emoji=\ue04a]';
         // $text = '事实上<span class="emoji-outer emoji-sizer"><span class="emoji-inner emoji2600"></span></span>阿萨<span class="emoji-outer emoji-sizer"><span class="emoji-inner emoji2600"></span></span>';
@@ -33,6 +39,7 @@ class EmojiCode extends Base
             if (isset($res[1])) {
                 $softb_unicode_arr = $res[1];
                 $emoji_data = $this->where(['softb_unicode' => $softb_unicode_arr])->select()->toArray();
+
                 foreach ($emoji_data as &$v) {
                     $bytes = $KyEmoji->utf8Bytes($KyEmoji->unifiedToHex($v['unified']));
                     $image = $KyEmoji->emojiUnifiedToHtml($bytes);

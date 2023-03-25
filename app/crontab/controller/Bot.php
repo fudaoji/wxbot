@@ -21,11 +21,16 @@ class Bot extends Base
      * @var \app\common\model\Task
      */
     private $taskM;
+    /**
+     * @var \app\common\model\Moments
+     */
+    private $momentsM;
 
     public function initialize()
     {
         parent::initialize();
         $this->taskM = new \app\common\model\Task();
+        $this->momentsM = new \app\common\model\Moments();
     }
 
     /**
@@ -51,6 +56,7 @@ class Bot extends Base
      */
     public function basicMinute(){
         $this->sendBatch();
+        $this->sendMoments();
     }
 
     /**
@@ -60,6 +66,23 @@ class Bot extends Base
     public function minuteTask(){
         $this->basicMinute();
         $this->addonMinute();
+    }
+
+    /**
+     * 发送朋友圈
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function sendMoments(){
+        if(count($list = $this->momentsM->where('status', 1)
+            ->whereNotNull('media_id')
+            ->where("plan_time", "<=", time())
+            ->where("publish_time", "=", 0)
+            ->select())){
+            foreach ($list as $item){
+                $this->momentsM->publishMoments($item);
+            }
+        }
+        echo count($list);
     }
 
     /**

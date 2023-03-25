@@ -1226,3 +1226,9 @@ CREATE TABLE `__PREFIX__zdjr_rule`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `status`(`status`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '策略表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- 2.1.1
+-- ----------------------------
+ALTER TABLE `__PREFIX__moments` ADD COLUMN `plan_time` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT ' 计划发圈时间' AFTER `publish_time`;
+ALTER TABLE `__PREFIX__moments` CHANGE COLUMN `media_id` `media_id` varchar(200) NOT NULL DEFAULT 0 COMMENT '触发应用';

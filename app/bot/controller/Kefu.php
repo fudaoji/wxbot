@@ -54,7 +54,7 @@ class Kefu extends Addon
         }
         //自动通过好友验证
         $model_kefu = new KefuModel();
-        $botConfigs = $this->configM->getConf(['admin_id' => $this->bot['admin_id'],'bot_id' => $this->bot['id']]);//机器人配置
+        $botConfigs = $this->configM->getConf(['admin_id' => AdminM::getFounderId(),'bot_id' => $this->bot['id']]);//机器人配置
         $model_kefu->autoPass($this->content,$this->bot,$this->botClient,$botConfigs);
     }
 

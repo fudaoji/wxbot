@@ -13,7 +13,7 @@ use app\admin\model\Admin as AdminM;
 use app\admin\model\BotMember;
 use app\common\model\Moments as MomentsM;
 use app\constants\Common;
-use app\constants\Media;
+use app\common\model\MomentsFollow;
 use app\constants\Pyq;
 use app\constants\Bot as BotConst;
 use ky\Logger;
@@ -32,6 +32,10 @@ class Moments extends Botbase
      * @var BotMember
      */
     private $memberM;
+    /**
+     * @var MomentsFollow
+     */
+    private $momentsFollowM;
 
     /**
      * 初始化
@@ -42,6 +46,7 @@ class Moments extends Botbase
         $this->model = new MomentsM();
         $this->botM = new \app\admin\model\Bot();
         $this->memberM = new BotMember();
+        $this->momentsFollowM = new MomentsFollow();
     }
 
     /**
@@ -245,6 +250,7 @@ class Moments extends Botbase
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '']
         ])
             ->addTopButton('addnew', ['title' => '发朋友圈'])
+            ->addTopButton('addnew', ['title' => '跟圈设置', 'href' => url('follow'), 'class' => 'layui-btn-warm'])
             ->addTableColumn(['title' => '机器人', 'field' => 'bot_id', 'minWidth' => 90])
             ->addTableColumn(['title' => '类型', 'field' => 'media_type', 'minWidth' => 80])
             ->addTableColumn(['title' => '配文', 'field' => 'content', 'minWidth' => 120])
@@ -378,4 +384,43 @@ class Moments extends Botbase
         }
     }
 
+    /**
+     * 跟圈设置
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\Exception
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function follow()
+    {
+        $company_id = AdminM::getCompanyId($this->adminInfo);
+        if(request()->isPost()){
+            $post_data = input('post.');
+            if(empty($post_data[$this->pk])){
+                $post_data['admin_id'] = $company_id;
+                $post_data['bot_id'] = $this->bot['id'];
+                $this->momentsFollowM->addOne($post_data);
+            }else{
+                $this->momentsFollowM->updateOne($post_data);
+            }
+            $this->success('设置成功!', '/undefined');
+        }
+        $data = $this->momentsFollowM->getOneByMap(['bot_id' => $this->bot['id'], 'admin_id' => $company_id], true, true);
+
+        !isset($data['status']) && $data['status'] = 1;
+        $data['wxids'] = empty($data['wxids']) ? [] : explode(',', $data['wxids']);
+        $members = $this->getMembers(['type' => BotConst::FRIEND]);
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('跟圈对象')
+            ->setPostUrl(url('follow'))
+            ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('wxids', 'chosen_multi', '指定对象', '指定需要跟圈的好友', $members, 'required')
+            ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
+            ->setFormData($data);
+
+        return $builder->show();
+    }
 }

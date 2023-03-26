@@ -95,8 +95,6 @@ class ListBuilder extends Base
                 if ($attribute && is_array($attribute)) {
                     $my_attribute = array_merge($my_attribute, $attribute);
                 }
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_top_button_list[] = $my_attribute;
                 break;
             case 'delete': // 添加删除按钮(我没有反操作，删除了就没有了，就真的找不回来了)
                 // 预定义按钮属性以简化使用
@@ -110,8 +108,6 @@ class ListBuilder extends Base
                     $my_attribute = array_merge($my_attribute, $attribute);
                 }
 
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_top_button_list[] = $my_attribute;
                 break;
             case 'resume':  // 添加启用按钮(禁用的反操作)
                 //预定义按钮属性以简化使用
@@ -124,8 +120,7 @@ class ListBuilder extends Base
                 if ($attribute && is_array($attribute)) {
                     $my_attribute = array_merge($my_attribute, $attribute);
                 }
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_top_button_list[] = $my_attribute;
+
                 break;
             case 'forbid':  // 添加禁用按钮(启用的反操作)
                 // 预定义按钮属性以简化使用
@@ -139,9 +134,6 @@ class ListBuilder extends Base
                 if ($attribute && is_array($attribute)) {
                     $my_attribute = array_merge($my_attribute, $attribute);
                 }
-
-                //这个按钮定义好了把它丢进按钮池里
-                $this->_top_button_list[] = $my_attribute;
                 break;
             case 'self': //添加自定义按钮(第一原则使用上面预设的按钮，如果有特殊需求不能满足则使用此自定义按钮方法)
                 // 预定义按钮属性以简化使用
@@ -155,10 +147,10 @@ class ListBuilder extends Base
                     $my_attribute['title'] = '该自定义按钮未配置属性';
                 }
 
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_top_button_list[] = $my_attribute;
                 break;
         }
+        $my_attribute['class'] .= ' layui-btn layui-btn-sm ';
+        $this->_top_button_list[] = $my_attribute;
         return $this;
     }
 
@@ -242,7 +234,7 @@ class ListBuilder extends Base
             case 'edit':  // 编辑按钮
                 // 预定义按钮属性以简化使用
                 $my_attribute['title'] = '编辑';
-                $my_attribute['class'] = 'layui-btn layui-btn-normal layui-btn-xs';
+                $my_attribute['class'] = 'layui-btn-normal';
                 $my_attribute['lay-event']  = 'edit';
                 $my_attribute['href']  = url('edit', [], '');
 
@@ -255,13 +247,11 @@ class ListBuilder extends Base
                 if ($attribute && is_array($attribute)) {
                     $my_attribute = array_merge($my_attribute, $attribute);
                 }
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_right_button_list[] = $my_attribute;
                 break;
             case 'delete':
                 // 预定义按钮属性以简化使用
                 $my_attribute['title'] = '删除';
-                $my_attribute['class'] = 'layui-btn layui-btn-danger layui-btn-xs';
+                $my_attribute['class'] = 'layui-btn-danger ';
                 $my_attribute['lay-event']  = 'delete';
                 $my_attribute['href']  = url($set_status_url, ['status' => 'delete']);
 
@@ -269,9 +259,6 @@ class ListBuilder extends Base
                 if ($attribute && is_array($attribute)) {
                     $my_attribute = array_merge($my_attribute, $attribute);
                 }
-
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_right_button_list[] = $my_attribute;
                 break;
             case 'forbid':  // 改变记录状态按钮，会更具数据当前的状态自动选择应该显示启用/禁用
                 //预定义按钮属
@@ -290,53 +277,6 @@ class ListBuilder extends Base
                     !empty($attribute['0']) && $my_attribute['0'] = array_merge($my_attribute['0'], $attribute['0']);
                     !empty($attribute['1']) && $my_attribute['1'] = array_merge($my_attribute['1'], $attribute['1']);
                 }
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_right_button_list[] = $my_attribute;
-                break;
-            case 'hide':  // 改变记录状态按钮，会更具数据当前的状态自动选择应该显示隐藏/显示
-                // 预定义按钮属
-                $my_attribute['type'] = 'hide';
-                $my_attribute['2']['title'] = '显示';
-                $my_attribute['2']['class'] = 'label label-success ajax-get confirm';
-                $my_attribute['2']['__href__']  = url($set_status_url, ['status' => 'show', 'ids' => '__data_id__']);
-                //$my_attribute['2']['href'] = 'javascript:void(0)';
-                $my_attribute['1']['title'] = '隐藏';
-                $my_attribute['1']['class'] = 'label label-info ajax-get confirm';
-                $my_attribute['1']['__href__']  = url($set_status_url, ['status' => 'hide', 'ids' => '__data_id__']);
-                //$my_attribute['1']['href']  = 'javascript:void(0)';
-
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_right_button_list[] = $my_attribute;
-                break;
-            case 'recycle':
-                // 预定义按钮属性以简化使用
-                $my_attribute['title'] = '回收';
-                $my_attribute['class'] = 'label label-danger ajax-get confirm';
-                $my_attribute['__href__']  = url($set_status_url, ['status' => 'recycle', 'ids' => '__data_id__']);
-                //$my_attribute['href'] = 'javascript:void(0)';
-
-                // 如果定义了属性数组则与默认的进行合并，详细使用方法参考上面的顶部按钮
-                if ($attribute && is_array($attribute)) {
-                    $my_attribute = array_merge($my_attribute, $attribute);
-                }
-
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_right_button_list[] = $my_attribute;
-                break;
-            case 'restore':
-                // 预定义按钮属性以简化使用
-                $my_attribute['title'] = '还原';
-                $my_attribute['class'] = 'label label-success ajax-get confirm';
-                $my_attribute['__href__']  = url($set_status_url, ['status' => 'restore', 'ids' => '__data_id__']);
-                //$my_attribute['href'] = 'javascript:void(0)';
-
-                // 如果定义了属性数组则与默认的进行合并，详细使用方法参考上面的顶部按钮
-                if ($attribute && is_array($attribute)) {
-                    $my_attribute = array_merge($my_attribute, $attribute);
-                }
-
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_right_button_list[] = $my_attribute;
                 break;
             case 'self':
                 // 预定义按钮属性以简化使用
@@ -349,10 +289,11 @@ class ListBuilder extends Base
                 } else {
                     $my_attribute['title'] = '该自定义按钮未配置属性';
                 }
-                // 这个按钮定义好了把它丢进按钮池里
-                $this->_right_button_list[] = $my_attribute;
                 break;
         }
+        $my_attribute['class'] .= ' layui-btn layui-btn-xs ';
+        // 这个按钮定义好了把它丢进按钮池里
+        $this->_right_button_list[] = $my_attribute;
         return $this;
     }
 

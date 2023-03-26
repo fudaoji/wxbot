@@ -25,12 +25,17 @@ class Bot extends Base
      * @var \app\common\model\Moments
      */
     private $momentsM;
+    /**
+     * @var \app\common\model\MomentsFollow
+     */
+    private $momentsFollowM;
 
     public function initialize()
     {
         parent::initialize();
         $this->taskM = new \app\common\model\Task();
         $this->momentsM = new \app\common\model\Moments();
+        $this->momentsFollowM = new \app\common\model\MomentsFollow();
     }
 
     /**
@@ -57,6 +62,7 @@ class Bot extends Base
     public function basicMinute(){
         $this->sendBatch();
         $this->sendMoments();
+        $this->followMoments();
     }
 
     /**
@@ -66,6 +72,31 @@ class Bot extends Base
     public function minuteTask(){
         $this->basicMinute();
         $this->addonMinute();
+    }
+
+    /**
+     * 跟圈
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function followMoments(){
+        if(! count($list = $this->momentsFollowM->where('status', 1)
+            //->where("last_time", "<=", time() - 60)
+            ->select())){
+            return true;
+        }
+        $delay = 0;
+        foreach ($list as $item){
+            //放入任务队列
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => $delay,
+                'params' => [
+                    'do' => ['\\app\\crontab\\task\\Bot', 'followMoments'],
+                    'task' => $item
+                ]
+            ]);
+            $delay += 1;
+        }
+        echo count($list);
     }
 
     /**

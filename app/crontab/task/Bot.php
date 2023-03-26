@@ -9,6 +9,7 @@
 
 namespace app\crontab\task;
 
+use app\constants\Pyq;
 use ky\Logger;
 
 class Bot extends Base
@@ -17,6 +18,55 @@ class Bot extends Base
         parent::__construct();
         set_time_limit(0);
     }
+
+    /**
+     * 跟圈
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function followMoments($params = []){
+        /**
+         * @var \think\queue\Job
+         */
+        $job = $params['job'];
+        if ($job->attempts() > 2) {
+            $job->delete();
+        }
+        $task = $params['task'];
+        $bot_info = model('admin/bot')->getOne($task['bot_id']);
+        $client = model('admin/bot')->getRobotClient($bot_info);
+        $wxid_arr = explode(',', $task['wxids']);
+        foreach ($wxid_arr as $wxid){
+            $res = $client->getFriendMoments([
+                'robot_wxid' => $bot_info['uin'],
+                'to_wxid' => $wxid,
+                'num' => 1
+            ]);
+            if(empty($res['data'])){
+                continue;
+            }
+
+            $list = $res['data'];
+            foreach ($list as $item){
+                $timeline = Pyq::decodeObject($item['object']);
+                if(strtotime($timeline['create_time']) > $task['last_time']){
+                    $client->sendMomentsXml([
+                        'robot_wxid' => $bot_info['uin'],
+                        'xml' => $item['object']
+                    ]);
+                }
+            }
+        }
+
+        model('momentsFollow')->updateOne(['id' => $task['id'], 'last_time' => time()]);
+        $job->delete();
+        dump(date('Y-m-d H:i:s'));
+    }
+
 
     /**
      * 发送消息

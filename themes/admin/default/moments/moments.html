@@ -6,6 +6,11 @@
                 {$member.nickname_show}的朋友圈
             </div>
             <div class="layui-col-xs3">
+                {if !empty($member.wxid)}
+                <a href="{:url('moments')}" class="layui-btn layui-btn-sm">
+                    查看我的朋友圈
+                </a>
+                {/if}
                 <a href="javascript:;" class="js-publish layui-btn layui-btn-normal layui-btn-sm">
                     <i class="layui-icon layui-icon-add-1"></i>发圈
                 </a>

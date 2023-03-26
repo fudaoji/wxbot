@@ -127,6 +127,24 @@ class MyTest extends BotTest
     }
 
     /**
+     * 发送xml盆友圈
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendMomentsXml() {
+        $list = $this->botClient->getFriendMoments([
+            'robot_wxid' => $this->robotJane,
+            'to_wxid' => 'Emilyshuangren',
+            'num' => 1
+        ]);
+        $res = $this->botClient->sendMomentsXml([
+            'robot_wxid' => $this->robotJane,
+            'xml' => $list['data'][0]['object']
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
      * 评论盆友圈
      * Author: fudaoji<fdj@kuryun.cn>
      */
@@ -160,7 +178,7 @@ class MyTest extends BotTest
     public function testGetFriendMoments() {
         $res = $this->botClient->getFriendMoments([
             'robot_wxid' => $this->robotJane,
-            'to_wxid' => 'Emilyshuangren',
+            'to_wxid' => 'wxid_xokb2ezu1p6t21',
             'num' => 2
         ]);
         dump($res);

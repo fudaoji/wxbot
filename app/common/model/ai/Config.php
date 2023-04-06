@@ -9,6 +9,7 @@
 
 namespace app\common\model\ai;
 
+use ky\OpenAI\Driver\AIEdu;
 use ky\OpenAI\Driver\Gpt;
 use ky\OpenAI\Driver\Qyk;
 use ky\OpenAI\Driver\Weixin;
@@ -21,12 +22,17 @@ class Config extends Ai
      * 获取AI client
      * @param $bot
      * @param string $driver
-     * @return Weixin
+     * @return AIEdu
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getAiClient($bot, $driver = 'weixin'){
         $configs = $this->getConf(['bot_id' => $bot['id']]);
         switch ($driver){
+            case 'aiedu':
+                $client = new AIEdu([
+                    'key' => $configs['aiedu_key']
+                ]);
+                break;
             case 'gpt':
                 $client = new Gpt([
                     'appid' => $configs['gpt_appid']

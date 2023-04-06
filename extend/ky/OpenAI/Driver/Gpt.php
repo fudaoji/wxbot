@@ -9,6 +9,7 @@
 
 namespace ky\OpenAI\Driver;
 
+use ky\Logger;
 use ky\OpenAI\Base;
 
 class Gpt extends Base
@@ -34,7 +35,7 @@ class Gpt extends Base
 
     private function doRequest($params = [], $api = ''){
         $params['prompt'] = "Human:{$params['msg']}\nAI:";
-        $params['tokensLength'] = mb_strlen($params['prompt']);
+        //$params['tokensLength'] = mb_strlen($params['prompt']);
         return $this->request([
             'url' => $api,
             'data' => $params

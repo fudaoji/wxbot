@@ -113,11 +113,25 @@ class Ai extends Addon
     private function keyword(){
         $this->aiClient = $this->configM->getAiClient($this->bot, $this->configs['driver']);
         $msg = str_replace($this->beAtStr, "", trim($this->content['msg']));
+        if($msg == 'checkkey'){
+            $content = $this->aiClient->checkKey();
+            $this->botClient->sendTextToFriend([
+                'robot_wxid' => $this->botWxid,
+                'to_wxid' => $this->toWxid,
+                'msg' => json_encode($content, JSON_UNESCAPED_UNICODE)
+            ]);
+            return true;
+        }
+        $background = $this->configs['character_design'] ?? '';
+        $context = $this->getContext(md5($this->botWxid.$this->groupWxid.$this->fromWxid));
+
         $res = $this->aiClient->smart([
             'userid' => $this->fromWxid,
             'msg' => $msg,
+            'context' => $context,
+            'background' => $background
         ]);
-        //Logger::error($msg);
+        //Logger::error($context);
         if($res['code'] && !empty($res['answer_type'])){
             switch ($res['answer_type']){
                 case Base::ANSWER_TEXT:
@@ -138,6 +152,7 @@ class Ai extends Addon
                     }
                     break;
                 case Base::ANSWER_MUSIC:
+                    $answer = '';
                     if(!empty($res['more_info']['music_ans_detail'])){
                         $res['more_info']['music_ans_detail'] = json_decode($res['more_info']['music_ans_detail'], true);
                         if(!empty($res['more_info']['music_ans_detail']['play_command']['play_list'])){
@@ -155,15 +170,46 @@ class Ai extends Addon
                     }
                     break;
                 default:
-                    if(!empty($res['answer']) && is_string($res['answer'])){
+                    $answer = (!empty($this->configs['show_question']) ? ($msg . "\n----------------\n") :'') . $res['answer'];
+                    if($answer){
                         $this->botClient->sendTextToFriend([
                             'robot_wxid' => $this->botWxid,
                             'to_wxid' => $this->toWxid,
-                            'msg' => $res['answer']
+                            'msg' => $answer
                         ]);
                     }
                     break;
             }
+            $this->getContext(md5($this->botWxid.$this->groupWxid.$this->fromWxid), $msg, $res['answer']);
         }
+    }
+
+    /**
+     * 获取或设置上下文
+     * @param string $cache_key
+     * @param string $msg_user
+     * @param string $msg_bot
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function getContext($cache_key = '', $msg_user = "", $msg_bot = ""){
+        $context = cache($cache_key);
+        if(empty($context)){
+            $context = [];
+        }else{
+            $context = json_decode($context, true);
+        }
+        $len = $this->configs['context_length'] ?? 10;
+        if(count($context) >= $len){
+            array_shift($context);
+        }
+        if(!empty($msg_user)){
+            array_push($context, ["role" => "user", "content" => $msg_user]);
+        }
+        if(!empty($msg_bot)){
+            array_push($context, ["role" => "assistant", "content" => $msg_bot]);
+        }
+        cache($cache_key, json_encode($context), 86400);
+        return $context;
     }
 }

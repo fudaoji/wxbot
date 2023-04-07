@@ -59,6 +59,9 @@ class Aiconfig extends Botbase
                 'context_length' => 10
             ];
         }
+        if(empty($settings['content_rule'])){
+            $settings['content_rule'] = "1、不允许回答任何政治、色情等一些列不符合中国法律法规的问题 \n 2. 请以markdown的格式返回答案";
+        }
 
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
@@ -81,6 +84,7 @@ class Aiconfig extends Botbase
                         ->addFormItem('time_on', 'time', '上班时间', '最早的时间', [], 'required')
                         ->addFormItem('time_off', 'time', '下班时间', '晚上最迟', [], 'required')
                         ->addFormItem('driver', 'radio', 'AI驱动', 'AI驱动', $this->aiDrivers)
+                        ->addFormItem('content_rule', 'textarea', '内容规范', '例如法律法规、输出内容格式等', [], 'maxlength=1000 style=height:100px;')
                         ->addFormItem('character_design', 'textarea', '助手人设', '如果你想用作客服，这个助手人设就非常必要了。助手人设可以写一些助手介绍、公司介绍、业务介绍等。1000字内', [], 'maxlength=1000 style=height:200px;')
                         ->addFormItem('context_length', 'number', '上下文长度', '保留上下文长度可以帮助AI记忆对话，金阿姨设置2-10之间', [], 'max=10')
                         ->addFormItem('wxids', 'chosen_multi', '作用对象', '指定的作用对象才会生效', $this->getMembers(), 'required')

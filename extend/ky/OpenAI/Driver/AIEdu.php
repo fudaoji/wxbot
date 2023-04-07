@@ -37,13 +37,16 @@ class AIEdu extends Base
      */
     public function smart($params){
         $message = [
-            ['role' => 'system', 'content' => "1. 你是一个智能助手assistant \n2. 不允许回答任何政治、色情等一些列不符合中国法律法规的问题 \n 3. 请以markdown的格式返回答案"],
+            ['role' => 'system', 'content' => "你是一个智能助手assistant"],
         ];
+        if(! empty($params['content_rule'])){
+            array_push($message, ['role' => 'system', 'content' => $params['content_rule']]);
+        }
         if(! empty($params['background'])){
             array_push($message, ['role' => 'system', 'content' => $params['background']]);
         }
         if(! empty($params['context'])){
-            $message += $params['context'];
+            $message = array_merge_recursive($message, $params['context']);
         }
 
         array_push($message, ['role' => 'user', 'content' => $params['msg']]);

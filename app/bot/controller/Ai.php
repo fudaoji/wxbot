@@ -122,14 +122,16 @@ class Ai extends Addon
             ]);
             return true;
         }
+        $content_rule = $this->configs['content_rule'] ?? '';
         $background = $this->configs['character_design'] ?? '';
         $context = $this->getContext(md5($this->botWxid.$this->groupWxid.$this->fromWxid));
 
         $res = $this->aiClient->smart([
             'userid' => $this->fromWxid,
             'msg' => $msg,
+            'content_rule' => $content_rule,
+            'background' => $background,
             'context' => $context,
-            'background' => $background
         ]);
         //Logger::error($context);
         if($res['code'] && !empty($res['answer_type'])){

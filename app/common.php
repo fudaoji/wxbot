@@ -77,7 +77,7 @@ function execute_sql($sql_path = '')
     $sql = str_replace("\r", ";\n", $sql);
     //$sql = explode(";\n", $sql);
     $original = '`__PREFIX__';
-    $prefix = '`'.config('database.prefix');
+    $prefix = '`'.env('database.prefix', '');
     $sql = str_replace("{$original}", "{$prefix}", $sql); //替换掉表前缀
 
     \think\facade\Db::execute($sql);

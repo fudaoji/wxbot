@@ -42,7 +42,9 @@ class Moments extends Base
         }
         $bots = explode(',', $data['bot_id']);
         foreach ($bots as $bot_id){
-            $bot = model('admin/bot')->getOne($bot_id);
+            if(! $bot = model('admin/bot')->getOne($bot_id)){
+                continue;
+            }
             /**
              * @var $client My
              */

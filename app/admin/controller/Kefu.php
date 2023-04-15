@@ -120,13 +120,10 @@ class Kefu extends Base
             !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
-                $list = $this->model->getList(
-                    [$post_data['page'], $post_data['limit']],
-                    $where,
-                    ['alive' => 'desc'],
-                    true,
-                    true
-                );
+                $list = $this->model->getAll([
+                    'where' => $where,
+                    'order' => ['alive' => 'desc']
+                ]);
                 foreach ($list as $k => $v) {
                     $auto_pass = $this->configM->getConf(['admin_id' => $this->adminInfo['id'], 'bot_id' => $v['id']], 'auto_pass', true);
                     $v['auto_pass'] = $auto_pass == '' ? false : $auto_pass;

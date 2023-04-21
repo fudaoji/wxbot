@@ -4,7 +4,7 @@ namespace app\admin\controller;
 
 use app\common\model\bgf\Config;
 
-class Bgfconfig extends Botbase
+class Bgfconfig extends Bbase
 {
     /**
      * @var Config

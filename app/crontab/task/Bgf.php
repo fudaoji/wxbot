@@ -52,7 +52,7 @@ class Bgf extends Base
         ]))){
             foreach($task_list as $task){
                 if(!empty($task['wxids']) && !empty($task['xml'])){
-                    //$this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
+                    $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
                     $wxids = explode(',', $task['wxids']);
                     $delay = 0;
                     foreach ($wxids as $to_wxid){

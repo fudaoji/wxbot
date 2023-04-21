@@ -33,6 +33,7 @@ class Client
             throw new \Exception("base_uri参数缺失");
         }
         $class = '\\ky\\WxBot\\Driver\\' . ucfirst(strtolower($this->driver));
+
         $this->bot = new $class($options);
         if(!$this->bot){
             throw new \Exception("不存在的机器人驱动：{$driver}");

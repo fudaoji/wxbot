@@ -292,6 +292,168 @@ class Bot extends Bbase
     }
 
     /**
+     * My扫码登录
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\Exception
+     */
+    public function loginMy(){
+        $data = cache('botadd' . $this->adminInfo['id']);
+        $jump = $data['jump'] ?? '';
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $data['uuid'] = '';
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            sleep(2);
+            $return = $bot_client->getRobotList();
+            if($return['code'] && !empty($return['data'])){
+                foreach ($return['data'] as $v){
+                    if(! in_array($v['username'], \app\common\model\BotApply::getActiveWx($this->adminInfo['id']))){
+                        continue;  //不在白名单中的机器人不拉取
+                    }
+                    if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'staff_id' => $this->adminInfo['id']])){
+                        $data = $this->model->updateOne([
+                            'id' => $bot['id'],
+                            'username' => $v['username'],
+                            'nickname' => $v['nickname'],
+                            'headimgurl' => $v['headimgurl'],
+                            'alive' => 1,
+                            'url' => $data['url'],
+                            'app_key' => $data['app_key'],
+                            'protocol' => $data['protocol'],
+                        ]);
+                    }else{
+                        $data = $this->model->addOne([
+                            'uin' => $v['wxid'],
+                            'admin_id' => AdminM::getCompanyId($this->adminInfo),
+                            'staff_id' => $this->adminInfo['id'],
+                            'title' => $v['nickname'],
+                            'username' => $v['username'],
+                            'nickname' => $v['nickname'],
+                            'headimgurl' => $v['headimgurl'],
+                            'protocol' => $data['protocol'],
+                            'url' => $data['url'],
+                            'app_key' => $data['app_key'],
+                            'alive' => 1
+                        ]);
+                    }
+                    //把其他机器人下线
+                    $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
+                        ['alive' => 0]
+                    );
+                    //同步好友任务
+                    invoke('\\app\\common\\event\\TaskQueue')->push([
+                        'delay' => 3,
+                        'params' => [
+                            'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                            'bot' => $data
+                        ]
+                    ]);
+                }
+                $this->success('登录成功',$jump);
+            }else{
+                $this->success('登录失败：' . $bot_client->getError());
+            }
+        }
+        //退掉遗留的弹框
+        // $bot_client->exitLoginCode();
+        $res = $bot_client->getLoginCode();
+        // Log::write("获取微信二维码：".json_encode($res));
+        if($res['code'] == 0){
+            $this->error($res['errmsg']);
+        }
+        if(empty($res['data'])){
+            // $bot_client->exitLoginCode();
+        }
+        $data['code'] = base64_to_pic($res['data']);
+        return $this->show($data);
+    }
+
+    /**
+     * 编辑情况下的扫码登录
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function reLoginMy(){
+        $id = input('id', null);
+        $data = $this->model->getOne($id);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            if($data['alive']){
+                //获取机器人信息
+                $info = $this->model->getRobotInfo($data);
+                if(!empty($info) && !is_string($info)){
+                    $this->model->updateOne([
+                        'id' => $data['id'],
+                        'username' => $info['username'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl']
+                    ]);
+                }
+
+                //同步好友任he
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                        'bot' => $data
+                    ]
+                ]);
+                $this->success('登录成功');
+            }
+        }
+
+        //退掉遗留的弹框
+        //$bot_client->exitLoginCode();
+        $res = $bot_client->getLoginCode();
+        if($res['code'] == 0){
+            $this->error($res['errmsg']);
+        }
+        //dump($res);exit;
+        if(empty($res['data'])){
+            // $bot_client->exitLoginCode();
+        }
+        $data['code'] = base64_to_pic($res['data']);
+        return $this->show($data);
+    }
+
+    /**
+     * 清空聊天记录
+     * @throws \think\Exception
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function cleanChatPost()
+    {
+        $id = input('id', null);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']], true, true);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $client = $this->model->getRobotClient($data);
+        $res = $client->cleanChatHistory([
+            'robot_wxid' => $data['uin'],
+            'uuid' => $data['uuid']
+        ]);
+        if($res['code']){
+            $this->success('操作成功');
+        }
+        $this->error('操作失败：' . $res['errmsg']);
+    }
+
+    /**
      * e小天机器人
      * @return mixed
      * @throws \think\Exception
@@ -434,167 +596,6 @@ class Bot extends Bbase
         }
         $data['code'] = generate_qr(['text' => 'http://weixin.qq.com/x/' . $login_code['data']]);
         return $this->show($data, 'bot/reloginmy');
-    }
-
-    /**
-     * My扫码登录
-     * @return mixed
-     * Author: fudaoji<fdj@kuryun.cn>
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\Exception
-     */
-    public function loginMy(){
-        $data = cache('botadd' . $this->adminInfo['id']);
-        $jump = $data['jump'] ?? '';
-        if (!$data) {
-            $this->error('参数错误');
-        }
-        $data['uuid'] = '';
-        $bot_client = $this->model->getRobotClient($data);
-        if(request()->isPost()){
-            sleep(2);
-            $return = $bot_client->getRobotList();
-            if($return['code'] && !empty($return['data'])){
-                foreach ($return['data'] as $v){
-                    if(! in_array($v['username'], \app\common\model\BotApply::getActiveWx($this->adminInfo['id']))){
-                        continue;  //不在白名单中的机器人不拉取
-                    }
-                    if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'staff_id' => $this->adminInfo['id']])){
-                        $data = $this->model->updateOne([
-                            'id' => $bot['id'],
-                            'username' => $v['username'],
-                            'nickname' => $v['nickname'],
-                            'headimgurl' => $v['headimgurl'],
-                            'alive' => 1,
-                            'url' => $data['url'],
-                            'app_key' => $data['app_key'],
-                            'protocol' => $data['protocol'],
-                        ]);
-                    }else{
-                        $data = $this->model->addOne([
-                            'uin' => $v['wxid'],
-                            'admin_id' => AdminM::getCompanyId($this->adminInfo),
-                            'staff_id' => $this->adminInfo['id'],
-                            'title' => $v['nickname'],
-                            'username' => $v['username'],
-                            'nickname' => $v['nickname'],
-                            'headimgurl' => $v['headimgurl'],
-                            'protocol' => $data['protocol'],
-                            'url' => $data['url'],
-                            'app_key' => $data['app_key'],
-                            'alive' => 1
-                        ]);
-                    }
-                    //把其他机器人下线
-                    $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
-                        ['alive' => 0]
-                    );
-                    //同步好友任务
-                    invoke('\\app\\common\\event\\TaskQueue')->push([
-                        'delay' => 3,
-                        'params' => [
-                            'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
-                            'bot' => $data
-                        ]
-                    ]);
-                }
-                $this->success('登录成功',$jump);
-            }else{
-                $this->success('登录失败：' . $bot_client->getError());
-            }
-        }
-        //退掉遗留的弹框
-        // $bot_client->exitLoginCode();
-        $res = $bot_client->getLoginCode();
-        // Log::write("获取微信二维码：".json_encode($res));
-        if($res['code'] == 0){
-            $this->error($res['errmsg']);
-        }
-        if(empty($res['data'])){
-            // $bot_client->exitLoginCode();
-        }
-        $data['code'] = base64_to_pic($res['data']);
-        return $this->show($data);
-    }
-
-    /**
-     * 编辑情况下的扫码登录
-     * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function reLoginMy(){
-        $id = input('id', null);
-        $data = $this->model->getOne($id);
-
-        if (!$data) {
-            $this->error('参数错误');
-        }
-        $bot_client = $this->model->getRobotClient($data);
-        if(request()->isPost()){
-            if($data['alive']){
-                //获取机器人信息
-                $info = $this->model->getRobotInfo($data);
-                if(!empty($info) && !is_string($info)){
-                    $this->model->updateOne([
-                        'id' => $data['id'],
-                        'username' => $info['username'],
-                        'nickname' => $info['nickname'],
-                        'headimgurl' => $info['headimgurl']
-                    ]);
-                }
-
-                //同步好友任he
-                invoke('\\app\\common\\event\\TaskQueue')->push([
-                    'delay' => 3,
-                    'params' => [
-                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
-                        'bot' => $data
-                    ]
-                ]);
-                $this->success('登录成功');
-            }
-        }
-
-        //退掉遗留的弹框
-        //$bot_client->exitLoginCode();
-        $res = $bot_client->getLoginCode();
-        if($res['code'] == 0){
-            $this->error($res['errmsg']);
-        }
-        if(empty($res['data'])){
-            // $bot_client->exitLoginCode();
-        }
-        $data['code'] = base64_to_pic($res['data']);
-        return $this->show($data);
-    }
-
-    /**
-     * 清空聊天记录
-     * @throws \think\Exception
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function cleanChatPost()
-    {
-        $id = input('id', null);
-        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']], true, true);
-
-        if (!$data) {
-            $this->error('参数错误');
-        }
-        $client = $this->model->getRobotClient($data);
-        $res = $client->cleanChatHistory([
-            'robot_wxid' => $data['uin'],
-            'uuid' => $data['uuid']
-        ]);
-        if($res['code']){
-            $this->success('操作成功');
-        }
-        $this->error('操作失败：' . $res['errmsg']);
     }
 
     /**

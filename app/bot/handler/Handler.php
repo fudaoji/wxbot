@@ -164,7 +164,6 @@ class Handler extends BaseCtl
         $this->content['from_group_name'] = $this->groupName;
         $this->content['from_name'] = $this->fromName;
         $this->content['robot_wxid'] = $this->botWxid;
-        //Logger::error($this->content);
     }
 
     public function checkEvent(){

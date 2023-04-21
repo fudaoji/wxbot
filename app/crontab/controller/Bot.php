@@ -79,11 +79,17 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function followMoments(){
-        if(! count($list = $this->momentsFollowM->where('status', 1)
+        $list = $this->momentsFollowM->alias('moments')
+            ->join('bot bot', 'bot.id=moments.bot_id')
+            ->where('moments.status', 1)
+            ->where('bot.alive', 1)
+            ->field('moments.*')
             //->where("last_time", "<=", time() - 60)
-            ->select())){
+            ->select();
+        if(! count($list)){
             return true;
         }
+
         $delay = 0;
         foreach ($list as $item){
             //放入任务队列
@@ -96,7 +102,7 @@ class Bot extends Base
             ]);
             $delay += 1;
         }
-        echo count($list);
+        var_dump(__FUNCTION__ . count($list));
     }
 
     /**
@@ -113,7 +119,7 @@ class Bot extends Base
                 $this->momentsM->publishMoments($item);
             }
         }
-        echo count($list);
+        var_dump(__FUNCTION__ . ': count($list)');
     }
 
     /**
@@ -178,9 +184,7 @@ class Bot extends Base
                 }
                 $redis->del($rKey);
             }
-            echo (count($task_list) . ' tasks run');
-        }else{
-            echo (0);
         }
+        var_dump(__FUNCTION__ . ': '. count($task_list) . ' tasks run');
     }
 }

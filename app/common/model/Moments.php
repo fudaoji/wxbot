@@ -42,7 +42,7 @@ class Moments extends Base
         }
         $bots = explode(',', $data['bot_id']);
         foreach ($bots as $bot_id){
-            if(! $bot = model('admin/bot')->getOne($bot_id)){
+            if(! $bot = model('admin/bot')->getOneByMap(['id' => $bot_id, 'alive' => 1])){
                 continue;
             }
             /**

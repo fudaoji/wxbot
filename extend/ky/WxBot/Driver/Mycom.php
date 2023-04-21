@@ -13,6 +13,9 @@ use ky\WxBot\Base;
 
 class Mycom extends Base
 {
+    const API_GET_LOGIN_CODE = 'StartEnterpriseWeChat'; //
+    const API_EXIT_LOGIN_CODE = 'ExitEnterpriseWeChatLoginWin';
+
     const API_GET_INTERNAL_FRIEND_LIST = "GetInternalFriendlistEnterprise"; //获取外部联系人
     const API_GET_EXTERNAL_FRIEND_LIST = "GetExternalFriendlistEnterprise"; //获取外部联系人
     const API_GET_ROBOT_LIST = 'GetRobotList'; //获取机器人列表
@@ -81,6 +84,21 @@ class Mycom extends Base
             'api' => $api,
             'token' => $this->token
         ]);
+    }
+
+    /**
+     * 获取登录二维码
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getLoginCode(){
+        $res = $this->request([
+            'data' => $this->buildPostData([], self::API_GET_LOGIN_CODE)
+        ]);
+        if($res['code']){
+            $res['data'] = $res['ReturnStr'];
+        }
+        return  $res;
     }
 
     /**

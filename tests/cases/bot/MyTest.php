@@ -127,24 +127,6 @@ class MyTest extends BotTest
     }
 
     /**
-     * 发送xml盆友圈
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function testSendMomentsXml() {
-        $list = $this->botClient->getFriendMoments([
-            'robot_wxid' => $this->robotJane,
-            'to_wxid' => 'Emilyshuangren',
-            'num' => 1
-        ]);
-        $res = $this->botClient->sendMomentsXml([
-            'robot_wxid' => $this->robotJane,
-            'xml' => $list['data'][0]['object']
-        ]);
-        dump($res);
-        $this->assertContains($res['code'], $this->codeArr);
-    }
-
-    /**
      * 评论盆友圈
      * Author: fudaoji<fdj@kuryun.cn>
      */
@@ -178,7 +160,7 @@ class MyTest extends BotTest
     public function testGetFriendMoments() {
         $res = $this->botClient->getFriendMoments([
             'robot_wxid' => $this->robotJane,
-            'to_wxid' => 'wxid_xokb2ezu1p6t21',
+            'to_wxid' => 'Emilyshuangren',
             'num' => 2
         ]);
         dump($res);
@@ -322,102 +304,59 @@ class MyTest extends BotTest
             'to_wxid' => $this->wxidDj,
             'xml' => '<?xml version="1.0"?>
 <msg>
-	<appmsg appid="" sdkver="0">
-		<title>吃喝玩乐 尽在美团</title>
-		<des />
-		<username />
-		<action>view</action>
-		<type>33</type>
-		<showtype>0</showtype>
-		<content />
-		<url>https://mp.weixin.qq.com/mp/waerrpage?appid=wxde8ac0a21135c07d&amp;type=upgrade&amp;upgradetype=3#wechat_redirect</url>
-		<lowurl />
-		<forwardflag>0</forwardflag>
-		<dataurl />
-		<lowdataurl />
-		<contentattr>0</contentattr>
-		<appattach>
-			<attachid />
-			<cdnthumburl>3057020100044b30490201000204353f59cc02032f5dc90204d129e17c020463eb3c0d042462646434363337382d326535382d343561622d623566652d3232306266343533323362380204011800030201000405004c543d00</cdnthumburl>
-			<cdnthumbmd5>f3baf6a8a842594d7b7422d044f5843d</cdnthumbmd5>
-			<cdnthumblength>46256</cdnthumblength>
-			<cdnthumbheight>576</cdnthumbheight>
-			<cdnthumbwidth>720</cdnthumbwidth>
-			<cdnthumbaeskey>8cd7ce5f2832e93e834611ce7186b6ae</cdnthumbaeskey>
-			<aeskey>8cd7ce5f2832e93e834611ce7186b6ae</aeskey>
-			<encryver>1</encryver>
-			<fileext />
-			<islargefilemsg>0</islargefilemsg>
-		</appattach>
-		<extinfo />
-		<androidsource>0</androidsource>
-		<sourceusername>gh_870576f3c6f9@app</sourceusername>
-		<sourcedisplayname>美团丨外卖美食买菜酒店电影购物</sourcedisplayname>
-		<commenturl />
-		<thumburl />
-		<mediatagname />
-		<messageaction><![CDATA[]]></messageaction>
-		<messageext><![CDATA[]]></messageext>
-		<emoticongift>
-			<packageflag>0</packageflag>
-			<packageid />
-		</emoticongift>
-		<emoticonshared>
-			<packageflag>0</packageflag>
-			<packageid />
-		</emoticonshared>
-		<designershared>
-			<designeruin>0</designeruin>
-			<designername>null</designername>
-			<designerrediretcturl>null</designerrediretcturl>
-		</designershared>
-		<emotionpageshared>
-			<tid>0</tid>
-			<title>null</title>
-			<desc>null</desc>
-			<iconUrl>null</iconUrl>
-			<secondUrl>null</secondUrl>
-			<pageType>0</pageType>
-			<setKey>null</setKey>
-		</emotionpageshared>
-		<webviewshared>
-			<shareUrlOriginal />
-			<shareUrlOpen />
-			<jsAppId />
-			<publisherId>wxapp_wxde8ac0a21135c07dindex/pages/mt/mt.html</publisherId>
-		</webviewshared>
-		<template_id />
-		<md5>f3baf6a8a842594d7b7422d044f5843d</md5>
-		<websearch>
-			<rec_category>0</rec_category>
-			<channelId>0</channelId>
-		</websearch>
-		<weappinfo>
-			<pagepath><![CDATA[index/pages/mt/mt.html]]></pagepath>
-			<username>gh_870576f3c6f9@app</username>
-			<appid>wxde8ac0a21135c07d</appid>
-			<version>1114</version>
-			<type>2</type>
-			<weappiconurl><![CDATA[http://wx.qlogo.cn/mmhead/Q3auHgzwzM5IfaiappYJdWCApgZnQUtjqDLBOB2U2l4nsfASxgxkubQ/96]]></weappiconurl>
-			<shareId><![CDATA[1_wxde8ac0a21135c07d_48e268137e9ffa57796ac0ed54820cd0_1676360717_0]]></shareId>
-			<appservicetype>0</appservicetype>
-			<secflagforsinglepagemode>0</secflagforsinglepagemode>
-			<videopageinfo>
-				<thumbwidth>720</thumbwidth>
-				<thumbheight>576</thumbheight>
-				<fromopensdk>0</fromopensdk>
-			</videopageinfo>
-			<showRelievedBuyFlag>538</showRelievedBuyFlag>
-		</weappinfo>
-		<statextstr />
-	</appmsg>
-	<fromusername>wxid_xokb2ezu1p6t21</fromusername>
-	<scene>0</scene>
-	<appinfo>
-		<version>1</version>
-		<appname />
-	</appinfo>
-	<commenturl />
+    <appmsg appid="" sdkver="0">
+        <title>薯片0.3元</title>
+        <des />
+        <action>view</action>
+        <type>33</type>
+        <showtype>0</showtype>
+        <content />
+        <url>https://mp.weixin.qq.com/mp/waerrpage?appid=wxf856a911604ec0ad&amp;type=upgrade&amp;upgradetype=3#wechat_redirect</url>
+        <dataurl />
+        <lowurl />
+        <lowdataurl />
+        <recorditem>(null)</recorditem>
+        <thumburl />
+        <messageaction />
+        <laninfo />
+        <md5>b29c750883eb3192f1dd24345a6cc7fb</md5>
+        <extinfo />
+        <sourceusername>gh_a306e7f4ff8e@app</sourceusername>
+        <sourcedisplayname>抱个房</sourcedisplayname>
+        <commenturl />
+        <appattach>
+            <totallen>0</totallen>
+            <attachid />
+            <emoticonmd5></emoticonmd5>
+            <fileext>jpg</fileext>
+            <filekey>3e78c644863891c1a57404e2f7960b6b</filekey>
+            <cdnthumburl>3057020100044b30490201000204cda5782702032df7950204f95d06af0204643a070d042463656636663433372d633664642d346339652d613139662d6537393831383436373834390204011408030201000405004c4dfd00</cdnthumburl>
+            <aeskey>54cdc096f882edae10a686c53547ad92</aeskey>
+            <cdnthumbaeskey>54cdc096f882edae10a686c53547ad92</cdnthumbaeskey>
+            <encryver>1</encryver>
+            <cdnthumblength>163798</cdnthumblength>
+            <cdnthumbheight>100</cdnthumbheight>
+            <cdnthumbwidth>100</cdnthumbwidth>
+        </appattach>
+        <weappinfo>
+            <pagepath>packagesD/pages/goods/sharePages.html?goodsId=804922752908791808&amp;superId=807035211991879682</pagepath>
+            <username>gh_a306e7f4ff8e@app</username>
+            <appid>wxf856a911604ec0ad</appid>
+            <version>9</version>
+            <type>2</type>
+            <weappiconurl>http://mmbiz.qpic.cn/mmbiz_png/YIQQgLwmsmicCWTXnCuQVB24tvZ7IYmTiclXLjDDJYAGLibJOMqjD7qicOxAJiboRXEPReys9VDcLjBUicPe12mImn2Q/640?wx_fmt=png&amp;wxfrom=200</weappiconurl>
+            <appservicetype>0</appservicetype>
+            <shareId>0_wxf856a911604ec0ad_a461cbbb547d4c2b4720ad79697ba726_1681523874_0</shareId>
+        </weappinfo>
+        <websearch />
+    </appmsg>
+    <fromusername>wxid_xokb2ezu1p6t21</fromusername>
+    <scene>0</scene>
+    <appinfo>
+        <version>1</version>
+        <appname />
+    </appinfo>
+    <commenturl />
 </msg>',
         ]);
         dump($res);

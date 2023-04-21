@@ -30,10 +30,12 @@
         var $ = layui.jquery,
                 miniTab = layui.miniTab;
 
+        var parent_index = parent.layer.getFrameIndex(window.name);
         $('#btn-login').on('click', () => {
             requestPost("", {id: "{$id}"}, (res) => {
                 if(res.url === '/undefined'){
-                    if(parent.layer.getFrameIndex(window.name)){ //表单页为内页的情况
+                    if(parent_index){ //表单页为内页的情况
+                        parent.layer.close(parent_index);
                         parent.location.reload();
                     }else{
                         miniTab.deleteCurrentByIframe();

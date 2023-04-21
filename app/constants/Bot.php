@@ -157,9 +157,10 @@ class Bot
     public static function canScan($id = null)
     {
         $list = [
-            self::PROTOCOL_MY => '我的个微',
+            self::PROTOCOL_MY => '西瓜个微',
+            self::PROTOCOL_MYCOM => '西瓜企微',
             self::PROTOCOL_EXTIAN=> 'e小天个微',
-            self::PROTOCOL_XBOT=> 'XBot个微'
+            //self::PROTOCOL_XBOT=> 'XBot个微'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

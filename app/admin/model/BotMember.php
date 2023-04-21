@@ -477,10 +477,10 @@ class BotMember extends Base
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
-                    //Logger::error($list);
+                    Logger::error($res);
                     foreach ($list as $k => $v){
-                        $nickname = filter_emoji($v['nickname']);
-                        $remark_name = filter_emoji($v['note']);
+                        $nickname = filter_emoji($v['nickname'] ?? '');
+                        $remark_name = filter_emoji($v['note'] ?? '');
                         $username = $v['wx_num'];
                         $headimgurl = $v['avatar'];
                         $wxid = $v['wxid'];

@@ -119,7 +119,7 @@ class Bot extends Base
                 $this->momentsM->publishMoments($item);
             }
         }
-        var_dump(__FUNCTION__ . ': count($list)');
+        var_dump(__FUNCTION__ . ': ' . count($list));
     }
 
     /**
@@ -142,7 +142,9 @@ class Bot extends Base
                 [$view_table . ' t1', 't1.id=bt.id']
             ],
             'where' => ['bot.alive' => 1],
-            'field' => ['bot.uuid', 'bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id','bt.circle','bt.complete_time','bt.atall'],
+            'field' => ['bot.uuid', 'bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id','bt.circle',
+                'bt.complete_time','bt.atall','bt.member_tags'
+            ],
             'refresh' => true
         ]))){
             $redis = get_redis();
@@ -152,19 +154,27 @@ class Bot extends Base
                     continue;
                 }
                 //$redis->setex($rKey, 3600, 1);
-
-                if(!empty($task['wxids']) && !empty($task['medias'])){
+                //var_dump($task);
+                if((!empty($task['member_tags']) || !empty($task['wxids'])) && !empty($task['medias'])){
                     $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
-                    //$bot_client = model('admin/bot')->getRobotClient($task);
                     $medias = json_decode($task['medias'], true);
                     foreach ($medias as $media){
                         $task['media_type'] = $media['type'];
                         $task['media_id'] = $media['id'];
                         $extra = ['atall' => $task['atall']];
-                        //$wxids = explode(',', implode(',', [$task['wxids'],$task['wxids'],$task['wxids'],$task['wxids'],$task['wxids']]));
-                        $wxids = explode(',', $task['wxids']);
+
+                        if(empty($task['wxids'])){
+                            $tags = explode(',', $task['member_tags']);
+                            $wxids = [];
+                            foreach ($tags as $tag){
+                                $wxids = array_merge($wxids, model('admin/botMember')->getField('wxid', ['tags' => ['like', '%'.$tag.'%']]));
+                            }
+                        }else{
+                            $wxids = explode(',', $task['wxids']);
+                        }
+                        $wxids = array_unique($wxids);
+
                         $delay = 0;
-                        //var_dump($wxids);
                         foreach ($wxids as $to_wxid){
                             //放入任务队列
                             invoke('\\app\\common\\event\\TaskQueue')->push([

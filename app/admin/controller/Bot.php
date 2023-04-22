@@ -301,7 +301,7 @@ class Bot extends Bbase
      */
     public function loginMy(){
         $data = cache('botadd' . $this->adminInfo['id']);
-        $jump = $data['jump'] ?? '';
+        $jump = $data['jump'] ?? '/undefined';
         if (!$data) {
             $this->error('参数错误');
         }
@@ -354,7 +354,7 @@ class Bot extends Bbase
                         ]
                     ]);
                 }
-                $this->success('登录成功',$jump);
+                $this->success('登录成功', $jump);
             }else{
                 $this->success('登录失败：' . $bot_client->getError());
             }
@@ -411,7 +411,7 @@ class Bot extends Bbase
                         'bot' => $data
                     ]
                 ]);
-                $this->success('登录成功');
+                $this->success('登录成功', '/undefined');
             }
         }
 

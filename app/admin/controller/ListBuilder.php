@@ -236,7 +236,7 @@ class ListBuilder extends Base
                 $my_attribute['title'] = '编辑';
                 $my_attribute['class'] = 'layui-btn-normal';
                 $my_attribute['lay-event']  = 'edit';
-                $my_attribute['href']  = url('edit', [], '');
+                $my_attribute['href']  = url('edit', ['id' => '__data_id__'], '');
 
                 // 如果定义了属性数组则与默认的进行合并，详细使用方法参考上面的顶部按钮
                 /**

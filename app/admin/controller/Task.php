@@ -82,17 +82,22 @@ class Task extends Botbase
                     'field' => 't.*'
                 ]));
                 foreach ($list as $k => $v){
-                    $ids = explode(',', $v['wxids']);
-                    if($member = model('admin/botMember')->getOneByMap([
-                        'wxid' => $ids[0]
-                    ])){
-                        $v['wxids'] = $member['nickname'];
-                        if(count($ids) > 1){
-                            $v['wxids'] .= "等".count($ids)."个对象";
+                    if($v['wxids']){
+                        $ids = explode(',', $v['wxids']);
+                        if($member = model('admin/botMember')->getOneByMap([
+                            'wxid' => $ids[0]
+                        ])){
+                            $v['wxids'] = $member['nickname'];
+                            if(count($ids) > 1){
+                                $v['wxids'] .= "等".count($ids)."个对象";
+                            }
+                        }else{
+                            $v['wxids'] = "--";
                         }
                     }else{
-                        $v['wxids'] = "--";
+                        $v['wxids'] = '用户分组：' . $v['member_tags'];
                     }
+
 
                     if($v['medias']){
                         $v['medias'] = json_decode($v['medias'], true);
@@ -137,9 +142,8 @@ class Task extends Botbase
                 ->addRightButton('self',['title' => '重发', 'href' => url('resetPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1]);
         }else{
             $builder->addTableColumn(['title' => '是否开启', 'field' => 'status', 'minWidth' => 70, 'type' => 'switch', 'options' => Common::status()])
-                ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
-                ->addRightButton('edit')
-                ->addRightButton('self',['title' => '禁用/启用', 'href' => url('forbidPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1]);
+                ->addTableColumn(['title' => '操作', 'minWidth' => 80, 'type' => 'toolbar'])
+                ->addRightButton('edit');
         }
 
         return $builder->show();
@@ -199,9 +203,11 @@ class Task extends Botbase
             ->addFormItem('circle', 'radio', '发送类型', '发送类型', TaskConst::circles())
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间，发送类型选择“每天发送”时，会忽略日期而只取时间段', [], '')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '选择素材', ['types' => Media::types()], 'required')
-            ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
-            ->addFormItem('atall', 'radio', '艾特全体', '艾特全体', [0 => '否', 1 => '是'], 'required')
-        ->setFormData($default);
+            ->addFormItem('atall', 'radio', '艾特全体', '针对群才有效', [0 => '否', 1 => '是'], 'required')
+            ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+            ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
+            ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $members)
+            ->setFormData($default);
 
         return $builder->show(['material' => $material]);
     }
@@ -215,6 +221,7 @@ class Task extends Botbase
             $this->error('参数错误');
         }
         $data['wxids'] = empty($data['wxids']) ? [] : explode(',', $data['wxids']);
+        $data['member_tags'] = empty($data['member_tags']) ? [] : explode(',', $data['member_tags']);
         $materials = [];
         if($data['medias']){
             $data['medias'] = json_decode($data['medias'], true);
@@ -238,9 +245,11 @@ class Task extends Botbase
             ->addFormItem('circle', 'radio', '发送类型', '发送类型', TaskConst::circles())
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间，发送类型选择“每天发送”时，会忽略日期而只取时间段', [], '')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
-            ->addFormItem('wxids', 'chosen_multi', '指定对象', '不填则默认针对所有好友和群', $members)
             ->addFormItem('atall', 'radio', '艾特全体', '艾特全体', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
+            ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+            ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
+            ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $members)
             ->setFormData($data);
 
         return $builder->show();

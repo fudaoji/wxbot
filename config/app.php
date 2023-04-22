@@ -15,7 +15,7 @@
 
 return [
     // 应用地址
-    'version' => '2.1.2',
+    'version' => '2.1.3',
     'app_host' => env('app.host', ''),
     'app_key' => env('app_key', '123456'),
     'app_name'               => 'WxBot',

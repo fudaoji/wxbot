@@ -13,6 +13,7 @@ namespace app\admin\controller;
 use app\admin\model\BotMember;
 use app\constants\Bot;
 use app\constants\Common;
+use app\common\model\MemberTag as TagM;
 
 class Botfriend extends Botbase
 {
@@ -20,6 +21,10 @@ class Botfriend extends Botbase
      * @var BotMember
      */
     protected $model;
+    /**
+     * @var TagM
+     */
+    protected $tagM;
 
     /**
      * 初始化
@@ -27,8 +32,9 @@ class Botfriend extends Botbase
     public function initialize()
     {
         parent::initialize();
-        $this->model = new BotMember();
         set_time_limit(0);
+        $this->model = new BotMember();
+        $this->tagM = new TagM();
     }
 
     public function index()
@@ -37,6 +43,7 @@ class Botfriend extends Botbase
             $post_data = input('post.');
             $where = ['type' => Bot::FRIEND, 'uin' => $this->bot['uin']];
             !empty($post_data['search_key']) && $where['nickname|remark_name|username|wxid'] = ['like', '%' . $post_data['search_key'] . '%'];
+            !empty($post_data['tags']) && $where['tags'] = ['like', '%' . $post_data['tags'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList(
@@ -53,6 +60,7 @@ class Botfriend extends Botbase
         $tip = "<ul><li>注意：</li><li>当前的备注名称就是您对该好友的微信备注</li></ul>";
         $builder = new ListBuilder();
         $builder->setSearch([
+            ['type' => 'text', 'name' => 'tags', 'title' => '分组', 'placeholder' => '分组名称'],
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => 'wxid、微信号、昵称、备注名称']
         ])
             ->setTip($tip)
@@ -62,11 +70,12 @@ class Botfriend extends Botbase
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 90])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name', 'minWidth' => 70])
+            ->addTableColumn(['title' => '分组', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '性别', 'field' => 'sex', 'minWidth' => 70, 'type' => 'enum', 'options' => Common::sex()])
             ->addTableColumn(['title' => '省份', 'field' => 'province', 'minWidth' => 90])
             ->addTableColumn(['title' => '城市', 'field' => 'city', 'minWidth' => 90])
             ->addTableColumn(['title' => '操作', 'minWidth' => 200, 'type' => 'toolbar'])
-            ->addRightButton('edit', ['title' => '设置备注名'])
+            ->addRightButton('edit', ['title' => '编辑'])
             ->addRightButton('delete', ['title' => '删除好友', 'href' => url('deleteFriendPost', ['id' => '__data_id__'])]);
 
         return $builder->show();
@@ -115,19 +124,17 @@ class Botfriend extends Botbase
                 'to_wxid' => $data['wxid'],
                 'note' => $post_data['remark_name']
             ]);
-            if($res['code']){
-                $this->model->updateOne(['id' => $id, 'remark_name' => $post_data['remark_name']]);
-                $this->success('设置成功', '/undefined');
-            }
-            $this->error($res['errmsg']);
+            return parent::savePost('/undefined', $post_data);
         }
 
+        $data['tags'] = empty($data['tags']) ? [] : explode(',', $data['tags']);
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('设置备注名')
             ->setPostUrl(url('edit'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('remark_name', 'text', '备注名称', '30字内', [], 'required maxlength=30')
+            ->addFormItem('remark_name', 'text', '备注名称', '30字内', [], 'maxlength=30')
+            ->addFormItem('tags', 'chosen_multi', '分组', '分组', $this->tagM->getTitleToTitle($this->bot['id']))
             ->setFormData($data);
 
         return $builder->show();

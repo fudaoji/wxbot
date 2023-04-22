@@ -230,8 +230,12 @@
         {notempty name="top_button_list"}
         //顶部按钮监听事件
         table.on('toolbar({$controller}-table)', function (obj) {
-            var href = $(this).attr('href')
+            var data = obj.data
+                    , href = $(this).attr('href')
             , title = $(this).attr('title');
+            for (var k in data){
+                href = href.replaceAll(`__data_${k}__`, data[k])
+            }
 
             switch (obj.event) {
                 case 'add':
@@ -294,6 +298,9 @@
             , layEvent = obj.event
                 , title = $(this).attr('title')
             , href = $(this).attr('href').replace('__data_id__', data.id);
+            for (var k in data){
+                href = href.replaceAll(`__data_${k}__`, data[k])
+            }
 
             switch (layEvent) {
                 case 'edit':
@@ -302,7 +309,7 @@
                         type: 2,
                         shade: 0.2,
                         area: ['95%', '95%'],
-                        content: href + '/id/' + data.id,
+                        content: href,
                     });
                     $(window).on("resize", function () {
                         layer.full(index);

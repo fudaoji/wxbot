@@ -72,7 +72,7 @@ class Forward extends Botbase
             if ($total) {
                 $list = $this->model->getListJoin(array_merge($params, [
                     'limit' => [$post_data['page'], $post_data['limit']],
-                    'field' => ['g.id','m.nickname as group_title', 'g.officer', 'group_id','g.status','g.wxids']
+                    'field' => ['g.id','m.nickname as group_title', 'g.officer', 'group_id','g.status','g.wxids','g.member_tags']
                 ]));
                 foreach ($list as $k => $v){
                     if($v['group_id']){
@@ -86,11 +86,21 @@ class Forward extends Botbase
                             $v['officer_names'] = '---';
                         }
                     }
-                    $members = array_unique($this->memberM->getField(['nickname'], ['wxid' => ['in', $v['wxids']], 'uin' => $this->bot['uin']]));
-                    if(($count = count($members)) > 1){
-                        $v['wxids'] = $members[0] . '等'.$count.'个';
+
+                    if($v['wxids']){
+                        $ids = explode(',', $v['wxids']);
+                        if($member = model('admin/botMember')->getOneByMap([
+                            'wxid' => $ids[0]
+                        ])){
+                            $v['wxids'] = $member['nickname'];
+                            if(count($ids) > 1){
+                                $v['wxids'] .= "等".count($ids)."个对象";
+                            }
+                        }else{
+                            $v['wxids'] = "--";
+                        }
                     }else{
-                        $v['wxids'] = empty($members[0]) ? "---" : $members[0];
+                        $v['wxids'] = '用户分组：' . $v['member_tags'];
                     }
                     $list[$k] = $v;
                 }
@@ -132,14 +142,16 @@ class Forward extends Botbase
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
             ->setTabNav($this->tabList, $type)
-            ->addFormItem('bot_id', 'hidden', 'bot_id', 'bot_id');
+            ->addFormItem('bot_id', 'hidden', 'bot_id', 'bot_id')
+            ->addFormItem('status', 'radio', '转发状态', '转发状态', [1=>'转发', 0 => '暂停'], 'required');
         if($type == 'private'){
             $builder->addFormItem('officer', 'chosen', '主讲人', '选择主讲人', $this->getMembers(['type' => Bot::FRIEND]), 'required');
         }else{
             $builder->addFormItem('officer', 'linkage', '主讲群&人', '选择主讲人', ['data' => $this->getOfficers()], 'required');
         }
-        $builder->addFormItem('wxids', 'chosen_multi', '转发到', '消息接收方', $this->getMembers(), 'required')
-            ->addFormItem('status', 'radio', '转发状态', '转发状态', [1=>'转发', 0 => '暂停'], 'required')
+        $builder->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+            ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
+            ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $this->getMembers())
             ->setFormData($data);
         return $builder->show();
     }
@@ -151,17 +163,22 @@ class Forward extends Botbase
         if (!$data) {
             $this->error('参数错误');
         }
-        $data['wxids'] = explode(',', $data['wxids']);
+
+        $data['wxids'] = empty($data['wxids']) ? [] : explode(',', $data['wxids']);
+        $data['member_tags'] = empty($data['member_tags']) ? [] : explode(',', $data['member_tags']);
+
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
-            ->addFormItem('id', 'hidden', 'id', 'id');
+            ->addFormItem('id', 'hidden', 'id', 'id')
+            ->addFormItem('status', 'radio', '转发状态', '转发状态', [1=>'转发', 0 => '暂停'], 'required');
         if(! $data['group_id']){
             $builder->addFormItem('officer', 'chosen', '主讲人', '选择主讲人', $this->getMembers(['type' => Bot::FRIEND]), 'required');
         }else{
             $builder->addFormItem('officer', 'linkage', '主讲人&群', '选择主讲人', ['data' => $this->getOfficers(), 'values' => [$data['group_id'], $data['officer']]], 'required');
         }
-        $builder->addFormItem('wxids', 'chosen_multi', '转发到', '消息接收方', $this->getMembers(), 'required')
-            ->addFormItem('status', 'radio', '转发状态', '转发状态', [1=>'转发', 0 => '暂停'], 'required')
+        $builder->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+            ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
+            ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $this->getMembers())
             ->setFormData($data);
         return $builder->show();
     }

@@ -2,11 +2,17 @@
 
 v2.1.3
 功能更新
+* 增加用户分组管理
+* 消息群发支持按分组选择用户
+* 消息转播支持按分组选择用户
 * 优化性能
 * 修复部分bug
 
 数据库表更新
-
+* 新增member_tag表
+* bot_member增加tags字段
+* task表新增member_tags字段
+* forward表新增member_tags字段
 
 2023-03-26
 

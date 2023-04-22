@@ -33,7 +33,9 @@ class Bbase extends Base
 
         $ids = (array) $ids;
         if($status == 'delete'){
-            if($this->model->delByMap(['admin_id' => $this->adminInfo['id'], 'id' => ['in', $ids]])){
+            $map = ['id' => ['in', $ids]];
+            $this->needAid && $map['admin_id'] = $this->adminInfo['id'];
+            if($this->model->delByMap($map)){
                 $this->success('删除成功');
             }else{
                 $this->error('删除失败');

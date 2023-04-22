@@ -1252,7 +1252,7 @@ CREATE TABLE `__PREFIX__moments_follow` (
 -- ----------------------------
 -- 2.1.3
 -- ----------------------------
-CREATE TABLE `ky_member_tag` (
+CREATE TABLE `__PREFIX__member_tag` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `bot_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'bot ID',
   `title` varchar(30) NOT NULL DEFAULT '' COMMENT '标签',

@@ -44,18 +44,19 @@ class Forward extends Base
             'refresh' => $refresh,
             'field' => 'f.*'
         ]);
-
-        if(empty($data['wxids'])){
-            $tags = explode(',', $data['member_tags']);
-            $wxids = [];
-            foreach ($tags as $tag){
-                $wxids = array_merge($wxids, model('admin/botMember')->getField('wxid', ['tags' => ['like', '%'.$tag.'%']]));
+        if($data){
+            if(empty($data['wxids'])){
+                $tags = explode(',', $data['member_tags']);
+                $wxids = [];
+                foreach ($tags as $tag){
+                    $wxids = array_merge($wxids, model('admin/botMember')->getField('wxid', ['tags' => ['like', '%'.$tag.'%']]));
+                }
+            }else{
+                $wxids = explode(',', $data['wxids']);
             }
-        }else{
-            $wxids = explode(',', $data['wxids']);
+            $wxids = array_unique($wxids);
+            $data['wxids'] = implode(',', $wxids);
         }
-        $wxids = array_unique($wxids);
-        $data['wxids'] = implode(',', $wxids);
         return $data;
     }
 }

@@ -124,6 +124,9 @@ class Botfriend extends Botbase
                 'to_wxid' => $data['wxid'],
                 'note' => $post_data['remark_name']
             ]);
+            if(empty($res['code'])){
+                $this->error('好友备注失败：' . $res['errmsg']);
+            }
             return parent::savePost('/undefined', $post_data);
         }
 

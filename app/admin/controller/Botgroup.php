@@ -10,6 +10,7 @@
 namespace app\admin\controller;
 
 use app\admin\model\BotMember;
+use app\common\model\MemberTag as TagM;
 use app\common\model\tpzs\Grouppos;
 
 class Botgroup extends Botbase
@@ -22,6 +23,10 @@ class Botgroup extends Botbase
      * @var Grouppos
      */
     private $groupPosM;
+    /**
+     * @var TagM
+     */
+    private $tagM;
 
     /**
      * 初始化
@@ -32,6 +37,7 @@ class Botgroup extends Botbase
         parent::initialize();
         $this->model = new BotMember();
         $this->groupPosM = new Grouppos();
+        $this->tagM = new TagM();
     }
 
     public function index()
@@ -40,12 +46,12 @@ class Botgroup extends Botbase
             $post_data = input('post.');
             $where = ['type' => \app\constants\Bot::GROUP, 'uin' => $this->bot['uin']];
             !empty($post_data['search_key']) && $where['nickname|remark_name|wxid'] = ['like', '%' . $post_data['search_key'] . '%'];
-
+            !empty($post_data['tags']) && $where['tags'] = ['like', '%' . $post_data['tags'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList([$post_data['page'], $post_data['limit']],
                     $where, ['id' => 'desc'],
-                    ['id', 'nickname', 'remark_name', 'wxid'], true
+                    ['id', 'nickname', 'remark_name', 'wxid', 'tags'], true
                 );
             }else{
                 $list = [];
@@ -57,6 +63,7 @@ class Botgroup extends Botbase
         $tip = "<ul><li>注意：</li><li>当前的备注名称就是指实际微信通讯录当中您对该群的备注</li></ul>";
         $builder = new ListBuilder();
         $builder->setSearch([
+            ['type' => 'text', 'name' => 'tags', 'title' => '分组', 'placeholder' => '分组名称'],
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '群名称、备注名称、wxid']
         ])
             ->setTip($tip)
@@ -64,6 +71,7 @@ class Botgroup extends Botbase
             ->addTableColumn(['title' => '群id', 'field' => 'wxid'])
             ->addTableColumn(['title' => '群名称', 'field' => 'nickname'])
             ->addTableColumn(['title' => '备注名称', 'field' => 'remark_name'])
+            ->addTableColumn(['title' => '分组', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('edit', ['title' => '群成员', 'href' => url('groupmember/index', ['group_id' => '__data_id__']), 'class' => 'layui-btn layui-btn-xs'])
             ->addRightButton('edit', ['title' => '设置白名单', 'href' => url('whiteid/index', ['group_id' => '__data_id__']), 'class' => 'layui-btn layui-btn-xs layui-btn-warm'])
@@ -118,7 +126,7 @@ class Botgroup extends Botbase
             if($res['code'] != 1){
                 $this->error('群名修改失败：' . $res['errmsg']);
             }
-            return parent::savePost('', $post_data);
+            return parent::savePost('/undefined', $post_data);
         }
         $id = input('id');
         $data = $this->model->getOne($id);
@@ -126,6 +134,7 @@ class Botgroup extends Botbase
             $this->error('数据不存在');
         }
 
+        $data['tags'] = empty($data['tags']) ? [] : explode(',', $data['tags']);
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑')  //设置页面标题
@@ -133,6 +142,7 @@ class Botgroup extends Botbase
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('wxid', 'hidden', 'wxid', 'wxid')
             ->addFormItem('nickname', 'text', '群名', '1-20位长度', [], 'required minlength="1" maxlength="20"')
+            ->addFormItem('tags', 'chosen_multi', '分组', '分组', $this->tagM->getTitleToTitle($this->bot['id']))
             ->setFormData($data);
 
         return $builder->show();

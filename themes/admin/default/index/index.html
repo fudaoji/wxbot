@@ -69,9 +69,11 @@
                         <li class="layui-nav-item" lay-unselect>
                             <a href="javascript:;" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
                         </li>
+                        {if $admin.id == 1}
                         <li class="layui-nav-item" lay-unselect>
                             <a href="javascript:;" data-clear="清理" class="layuimini-clear"><i class="fa fa-trash-o"></i></a>
                         </li>
+                        {/if}
                         <li class="layui-nav-item mobile layui-hide-xs" lay-unselect>
                             <a href="javascript:;" data-check-screen="full"><i class="fa fa-arrows-alt"></i></a>
                         </li>
@@ -93,6 +95,8 @@
                         <li class="layui-nav-item layuimini-select-bgcolor" lay-unselect>
                             <a href="javascript:;" data-bgcolor="配色方案"><i class="fa fa-ellipsis-v"></i></a>
                         </li>
+                        {else/}
+                        <li class="layui-nav-item" lay-unselect style="width: 20px;">&nbsp;</li>
                         {/if}
                     </ul>
                 </div>

@@ -6,7 +6,7 @@ layui.define(['laytpl', 'form', 'util'], function (exports) {
     var form = layui.form;
     var util = layui.util;
     var device = layui.device();
-    var MOD_NAME = 'treeTableLay';  // 模块名
+    var MOD_NAME = 'treeTable';  // 模块名
     var _instances = {};  // 记录所有实例
 
     /* 表格默认参数 */
@@ -2234,5 +2234,5 @@ layui.define(['laytpl', 'form', 'util'], function (exports) {
         '</style>'
     ].join(''));
 
-    exports('treeTableLay', tt);
+    exports('treeTable', tt);
 });

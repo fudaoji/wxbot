@@ -61,7 +61,7 @@ class Botfriend extends Botbase
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'tags', 'title' => '分组', 'placeholder' => '分组名称'],
-            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => 'wxid、微信号、昵称、备注名称']
+            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => 'wxid、微信号、昵称、备注名称'],
         ])
             ->setTip($tip)
             ->addTopButton('self', ['title'=>'拉取最新好友', 'href' => url('syncFriends'), 'data-ajax' => 1])

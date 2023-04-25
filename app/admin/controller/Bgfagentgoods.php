@@ -13,6 +13,7 @@ use app\common\model\bgf\AgentGoods as AgentGoodsM;
 use app\common\model\bgf\Agent as AgentM;
 use app\common\model\bgf\Goods as GoodsM;
 use app\common\service\XmlMini;
+use think\facade\Db;
 
 class Bgfagentgoods extends Bbase
 {
@@ -137,7 +138,7 @@ class Bgfagentgoods extends Bbase
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('template_id', 'chosen', '选择模版', '选择模版', $this->getGoodsList(), 'required')
             ->addFormItem('goods_title', 'text', '商品名称', '也是卡片分享标题，30字内', [], 'required minlength="2" maxlength="30"')
-            ->addFormItem('goods_cover', 'picture_url', '商品图片', '商品图片', [], 'required')
+            ->addFormItem('goods_cover', 'text', '商品图片', '商品图片', [], 'required')
             ->addFormItem('goods_id', 'number', '商品ID', '商品ID', [], 'required min=1')
             ->addFormItem('super_id', 'text', 'superID', '多个用英文逗号,隔开', [], 'required');
         return $builder->show();
@@ -166,7 +167,7 @@ class Bgfagentgoods extends Bbase
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('template_id', 'chosen', '选择模版', '选择模版', $this->getGoodsList(), 'required')
             ->addFormItem('goods_title', 'text', '商品名称', '也是卡片分享标题，30字内', [], 'required minlength="2" maxlength="30"')
-            ->addFormItem('goods_cover', 'picture_url', '商品图片', '商品图片', [], 'required')
+            ->addFormItem('goods_cover', 'text', '商品图片', '商品图片', [], 'required')
             ->addFormItem('goods_id', 'number', '商品ID', '商品ID', [], 'required min=1')
             ->addFormItem('super_id', 'number', 'superID', 'superID', [], 'required min=1')
             ->setFormData($data);
@@ -183,21 +184,29 @@ class Bgfagentgoods extends Bbase
         $xml_o = new XmlMini($goods['xml']);
         $super_ids = explode(',', $post_data['super_id']);
 
-        foreach ($super_ids as $super_id){
-            $xml = str_replace(["<title>".$xml_o->getTitle()."</title>", "<![CDATA[" . $xml_o->getThumbRawUrl(), "goodsId=".$xml_o->getPathParams('goodsId'), "superId=".$xml_o->getPathParams('superId')],
-                ["<title>".$post_data['goods_title']."</title>", "<![CDATA[" . $post_data['goods_cover'], "goodsId=".$post_data['goods_id'], "superId=".$super_id], $goods['xml']
-            );
-            $post_data['super_id'] = $super_id;
-            $post_data['xml'] = $xml;
-            $post_data['admin_id'] = $this->adminInfo['id'];
-            if(empty($post_data['id'])){
-                $this->model->addOne($post_data);
-            }else{
-                $this->model->updateOne($post_data);
+        Db::startTrans();
+        try {
+            foreach ($super_ids as $super_id){
+                $xml = str_replace(["<title>".$xml_o->getTitle()."</title>", "<![CDATA[" . $xml_o->getThumbRawUrl(), "goodsId=".$xml_o->getPathParams('goodsId'), "superId=".$xml_o->getPathParams('superId')],
+                    ["<title>".$post_data['goods_title']."</title>", "<![CDATA[" . $post_data['goods_cover'], "goodsId=".$post_data['goods_id'], "superId=".$super_id], $goods['xml']
+                );
+                $post_data['super_id'] = $super_id;
+                $post_data['xml'] = $xml;
+                $post_data['admin_id'] = $this->adminInfo['id'];
+                if(empty($post_data['id'])){
+                    $this->model->addOne($post_data);
+                }else{
+                    $this->model->updateOne($post_data);
+                }
             }
+            Db::commit();
+            $msg = '操作成功！';
+        }catch (\Exception $e){
+            Db::rollBack();
+            $msg = '操作失败：'.$e->getMessage();
         }
 
-        $this->success('操作成功！', '/undefined');
+        $this->success($msg, '/undefined');
     }
     public function savePostBak($jump_to = '/undefined', $data = [])
     {

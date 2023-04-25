@@ -22,6 +22,6 @@ class AgentGoods extends Bgf
      * Author: fudaoji<fdj@kuryun.cn>
      */
     function getIdToTitle($where = []){
-        return $this->getField(['goods_id', 'goods_title'], $where);
+        return $this->getField(['id', 'goods_title'], $where);
     }
 }

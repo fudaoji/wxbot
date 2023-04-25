@@ -30,13 +30,13 @@ class Goods extends Bgf
         $list = $this->getAll([
             'where' => $where,
             'order' => ['id' => 'desc'],
-            'field' => ['id', 'xml']
+            'field' => ['id', 'title']
         ]);
         $goods_list = [];
         foreach ($list as $v){
-            $xml = new XmlMini($v['xml']);
-            $title = $xml->getTitle();
-            $goods_list[$v['id']] = $title;
+            /*$xml = new XmlMini($v['xml']);
+            $title = $xml->getTitle();*/
+            $goods_list[$v['id']] = $v['title'];
         }
         return $goods_list;
     }

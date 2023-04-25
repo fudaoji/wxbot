@@ -89,7 +89,7 @@ class Botbase extends Bbase
 
     public function savePost($jump_to = '/undefined', $data = [])
     {
-        $data = input('post.');
+        empty($data) && $data = input('post.');
         $this->needBotId && $data['bot_id'] = $this->bot['id'];
         parent::savePost($jump_to, $data);
     }

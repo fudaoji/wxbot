@@ -14,6 +14,7 @@ use app\common\model\bgf\Task;
 
 class Bgftask extends Botbase
 {
+    protected $needBotId = true;
     /**
      * @var Task
      */
@@ -46,6 +47,83 @@ class Bgftask extends Botbase
     }
 
     public function index()
+    {
+        $name = input('name', 'todo');
+        if (request()->isPost()) {
+            $post_data = input('post.');
+            $where = ['bot_id' => $this->bot['id']];
+            !empty($post_data['search_key']) && $where['remark|goods_title'] = ['like', '%' . $post_data['search_key'] . '%'];
+            //isset($post_data['complete']) && $post_data['complete'] >= 0 && $where['complete_time'] = $post_data['complete'] == 0 ? 0 : ['>', 0];
+            if($name == 'todo'){
+                $where['complete_time'] = 0;
+                $order = ['plan_time' => 'asc'];
+            }else{
+                $where['complete_time'] = ['>', 0];
+                $order = ['complete_time' => 'desc'];
+            }
+
+            $params = [
+                'alias' => 'task',
+                'join' => [
+                    ['bgf_agent_goods goods', 'goods.id=task.goods_id', 'left']
+                ],
+                'where' => $where,
+                'refresh' => true
+            ];
+            $total = $this->model->totalJoin($params);
+            if ($total) {
+                $list = $this->model->getListJoin(array_merge($params, [
+                    'limit' => [$post_data['page'], $post_data['limit']],
+                    'order' => $order,
+                    'field' => ['task.*', 'goods.goods_title']
+                ]));
+                foreach ($list as $k => $v){
+                    $ids = explode(',', $v['wxids']);
+                    if($member = model('admin/botMember')->getOneByMap([
+                        'wxid' => $ids[0]
+                    ])){
+                        $v['members'] = $member['nickname'];
+                        if(count($ids) > 1){
+                            $v['members'] .= "等".count($ids)."个对象";
+                        }
+                    }else{
+                        $v['members'] = "--";
+                    }
+                    $list[$k] = $v;
+                }
+            }else{
+                $list = [];
+            }
+
+            $this->success('success', '', ['total' => $total, 'list' => $list]);
+        }
+
+        $builder = new ListBuilder();
+        $builder->setSearch([
+            //['type' => 'select', 'name' => 'complete', 'title' => '发送状态', 'options' => [-1 => '全部', 0 => '未发送', 1 => '已发送']],
+            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '内容']
+        ])
+            ->setTabNav($this->tabList, $name)
+            ->setDataUrl(url('index', ['name' => $name]))
+            //->addTopButton('addnew', ['title' => '快速添加', 'href' => url('quickAdd')])
+            ->addTopButton('addnew', ['title' => '添加任务'])
+            ->addTableColumn(['title' => '发送顺序', 'field' => 'id', 'type' => 'index'])
+            ->addTableColumn(['title' => '计划发送时间', 'field' => 'plan_time', 'minWidth' => 180, 'type' => 'datetime'])
+            ->addTableColumn(['title' => '发送商品', 'field' => 'goods_title', 'minWidth' => 100])
+            ->addTableColumn(['title' => '接收对象', 'field' => 'members', 'minWidth' => 200])
+            ->addTableColumn(['title' => '备注', 'field' => 'remark', 'minWidth' => 60]);
+        if($name == 'done'){
+            $builder->addTableColumn(['title' => '完成时间', 'field' => 'complete_time', 'minWidth' => 180, 'type' => 'datetime']);
+        }else{
+            $builder->addTableColumn(['title' => '是否开启', 'field' => 'status', 'minWidth' => 70, 'type' => 'switch', 'options' => [0 => '停止', 1 => '开启']])
+                ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
+                ->addRightButton('edit')
+                ->addRightButton('delete');
+        }
+
+        return $builder->show();
+    }
+    public function indexBak()
     {
         $name = input('name', 'todo');
         if (request()->isPost()) {

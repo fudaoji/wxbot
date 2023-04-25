@@ -42,6 +42,15 @@ class XmlMini extends Xml
     }
 
     /**
+     * 获取封面
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function getThumbRawUrl(){
+        return (string)$this->object->appmsg->weappinfo->weapppagethumbrawurl;
+    }
+
+    /**
      * 获取小程序信息
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>

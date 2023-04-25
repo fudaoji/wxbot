@@ -65,9 +65,9 @@ class Bgfgoods extends Base
             ['type' => 'select', 'name' => 'status', 'title' => '状态', 'options' => [-1 => '全部'] + Common::status()]
         ])
             ->addTopButton('addnew')
-            ->addTableColumn(['title' => '序号', 'type' => 'index'])
-            ->addTableColumn(['title' => '标注', 'field' => 'title'])
-            ->addTableColumn(['title' => '卡片标题', 'field' => 'share_title'])
+            ->addTableColumn(['title' => '序号', 'type' => 'index',  'minWidth' => 70])
+            ->addTableColumn(['title' => '模版名称', 'field' => 'title',  'minWidth' => 100])
+            /*->addTableColumn(['title' => '卡片标题', 'field' => 'share_title'])*/
             ->addTableColumn(['title' => '跳转路径', 'field' => 'pagepath',  'minWidth' => 500])
             //->addTableColumn(['title' => 'superid', 'field' => 'super_id',  'minWidth' => 100])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status()])
@@ -85,7 +85,7 @@ class Bgfgoods extends Base
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
-            ->addFormItem('title', 'text', '标注', '长度1-50之间，此名称仅作为后台标识。卡片上的商品名称请自行修改xml中的内容', [], ' minlength="1" maxlength="50"')
+            ->addFormItem('title', 'text', '模版名称', '长度1-50之间', [], ' minlength="1" maxlength="50"')
             ->addFormItem('xml', 'textarea', '卡片xml', '卡片xml', [], 'required style=height:400px')
             ->addFormItem('status', 'radio', '状态', '状态', Common::status())
             ->setFormData(['status' => 1]);
@@ -108,7 +108,7 @@ class Bgfgoods extends Base
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('title', 'text', '标注', '长度1-50之间，此名称仅作为后台标识。卡片上的商品名称请自行修改xml中的内容', [], ' minlength="1" maxlength="50"')
+            ->addFormItem('title', 'text', '模版名称', '长度1-50之间', [], ' minlength="1" maxlength="50"')
             ->addFormItem('xml', 'textarea', '卡片xml', '卡片xml', [], 'required style=height:400px')
             ->addFormItem('status', 'radio', '状态', '状态', Common::status())
             ->setFormData($data);

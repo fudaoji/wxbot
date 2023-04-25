@@ -42,7 +42,7 @@ class Aiconfig extends Botbase
      */
     public function index(){
         $name = input('name', 'basic');
-        $tip = "<ul><li>AIEdu（ChatGpt-3.5）: <a href='https://aigcfun.com/' target='_blank'>https://pandapy.com/</a></li>
+        $tip = "<ul><li>AIEdu（ChatGpt-3.5）: <a href='https://leyoyu.cn/' target='_blank'>https://leyoyu.cn/</a></li>
 <li>微信OpenAi: <a target='_blank' href='https://openai.weixin.qq.com/'>https://openai.weixin.qq.com/</a></li>
 <li>青云客Ai: <a target='_blank' href='http://api.qingyunke.com/'>http://api.qingyunke.com/</a></li>
 </ul>";

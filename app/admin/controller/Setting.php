@@ -94,9 +94,9 @@ class Setting extends Base
             case 'site':
                 empty($data) && $data['close'] = 0;
                 $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
+                    ->addFormItem('logo', 'picture_url', 'Logo', 'Logo')
                     ->addFormItem('icp', 'text', '备案号', '备案号')
-                    /*->addFormItem('jdunion', 'legend', '京东开放平台', '京东开放平台')
-
+                    /*
                     ->addFormItem('jd_appsecret', 'text', 'AppSecret', '开放平台AppSecret')
                     ->addFormItem('jtt', 'legend', '京推推开发者', '京推推开发者')
                     ->addFormItem('jtt_appid', 'text', 'Appid', '京推推Appid')

@@ -47,7 +47,7 @@ class Bgf extends Base
                 ['bot', 'bot.id=bt.bot_id'],
                 ['bgf_agent_goods goods', 'goods.id=bt.goods_id']
             ],
-            'where' => ['bt.admin_id' => ['in', $opens], 'bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['<=', time()]],
+            'where' => [/*'bt.admin_id' => ['in', $opens], */'bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['<=', time()]],
             'field' => ['uuid','bot.uin as robot_wxid', 'bot.app_key', 'bot.url', 'bot.protocol','bt.wxids', 'goods.xml', 'bt.id']
         ]))){
             foreach($task_list as $task){

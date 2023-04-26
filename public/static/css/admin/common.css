@@ -14,8 +14,9 @@ body {
 .layuimini-menu-left .layui-nav .layui-nav-more {
     top: 40%;
 }
-.layuimini-logo img{visibility: hidden;width: 0;}
-.layui-layout-admin .layuimini-logo h1{margin: 0;}
+.layuimini-logo img{border-radius: 2px;}
+/*.layuimini-logo img{visibility: hidden;width: 0;}
+.layui-layout-admin .layuimini-logo h1{margin: 0;}*/
 .hide{display: none;}
 .layuimini-container {
     border: 1px solid #f2f2f2;

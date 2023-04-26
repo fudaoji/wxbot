@@ -174,7 +174,7 @@ class Index extends Base
         $logoInfo = [
             'title' => config('system.site.company_title'),
             'href' => '/admin/index/index',
-            'image' => '',
+            'image' => config('system.site.logo') ? (string) config('system.site.logo') : '/logo.png',
         ];
         $menuInfo = $this->getMenuList();
         $systemInit = [

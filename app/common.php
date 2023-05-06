@@ -340,14 +340,14 @@ function del_dir_recursively($path, $del_dir = true)
  * curl post 请求
  * @param $url
  * @param $data
- * @param bool $curlFile
+ * @param string $data_type
+ * @param bool $curl_file
  * @return bool|mixed
  * @author: fudaoji<fdj@kuryun.cn>
  */
-function http_post($url, $data, $curlFile = false)
+function http_post($url, $data, $data_type = 'form', $curl_file = false)
 {
-
-    if ($curlFile == true) {
+    if ($curl_file == true) {
         $data = json_decode($data, true);
         if (is_array($data)) {
             foreach ($data as &$value) {
@@ -363,10 +363,19 @@ function http_post($url, $data, $curlFile = false)
     curl_setopt($cl, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($cl, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($cl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($cl, CURLOPT_HEADER, false);
     curl_setopt($cl, CURLOPT_POST, true);
     curl_setopt($cl, CURLOPT_TIMEOUT, 60);
-    curl_setopt($cl, CURLOPT_POSTFIELDS, http_build_query($data));
+    if($data_type === 'json'){
+        $post_data = is_string($data) ? $data : json_encode($data, JSON_UNESCAPED_UNICODE);
+        curl_setopt($cl, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($post_data)
+        ]);
+    }else{
+        curl_setopt($cl, CURLOPT_HEADER, false);
+        $post_data = http_build_query($data);
+    }
+    curl_setopt($cl, CURLOPT_POSTFIELDS, $post_data);
     list($content, $status) = array(curl_exec($cl), curl_getinfo($cl), curl_close($cl));
     return (intval($status["http_code"]) === 200) ? $content : false;
 }

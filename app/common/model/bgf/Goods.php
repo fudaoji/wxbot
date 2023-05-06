@@ -17,6 +17,16 @@ class Goods extends Bgf
     protected $table = 'goods';
 
     /**
+     * 获取默认商品模板
+     * @return array|false|\PDOStatement|string|\think\Model
+     * @throws \think\db\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function getDefaultTemplate(){
+        return $this->getOneByOrder(['order' => ['id' => 'asc']]);
+    }
+
+    /**
      * 商品列表{id:title, ...}
      * @param array $where
      * @return array

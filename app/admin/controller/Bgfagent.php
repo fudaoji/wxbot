@@ -16,18 +16,39 @@ use app\constants\Common;
 class Bgfagent extends Base
 {
     /**
-     * @var AdminM
-     */
-    protected $model;
-    /**
      * @var AgentM
      */
-    private $agentM;
+    protected $model;
 
     public function initialize(){
         parent::initialize();
-        $this->model = new AdminM();
-        $this->agentM = new AgentM();
+        $this->model = new AgentM();
+    }
+
+    /**
+     * 绑定群
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\Exception
+     */
+    public function bindGroup(){
+        $id = input('id', 0);
+        $data = $this->model->getOne($id);
+        $data['groups'] = empty($data['groups']) ? [] : explode(',', $data['groups']);
+        $groups = model('admin/botMember')->getField('wxid,nickname',['uin' => $this->bot['uin'], 'type' => \app\constants\Bot::GROUP], true);
+        //使用FormBuilder快速建立表单页面。
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('关联群')  //设置页面标题
+            ->setPostUrl(url('savePost')) //设置表单提交地址
+            ->addFormItem('id', 'hidden', 'channel id', 'channel id')
+            ->addFormItem('title', 'static', '代理', $data['title'])
+            ->addFormItem('groups', 'chosen_multi', '选择群聊', '群聊', $groups, 'required')
+            ->setFormData($data);
+
+        return $builder->show();
     }
 
     /**
@@ -41,97 +62,85 @@ class Bgfagent extends Base
     public function index(){
         if(request()->isPost()){
             $post_data = input('post.');
-            $where = ['pid' => 0];
-            !empty($post_data['search_key']) && $where['username|mobile|realname'] = ['like', '%'.$post_data['search_key'].'%'];
+            $where = [];
+            !empty($post_data['search_key']) && $where['title|mobile'] = ['like', '%'.$post_data['search_key'].'%'];
             !empty($post_data['super_id']) && $where['super_id'] = $post_data['super_id'];
 
-            //非超管
-            if($this->adminInfo['id'] != 1) {
-                $where['admin.id'] = ['>', 1];
-            }
-            $params = [
-                'alias' => 'admin',
-                'join' => [
-                    ['bgf_agent agent', 'agent.admin_id=admin.id', 'left']
-                ],
-                'refresh' => true
-            ];
-            $total = $this->model->totalJoin($params);
+            $total = $this->model->total($where, true);
             if ($total) {
-                $list = $this->model->getListJoin(array_merge($params, [
-                    'limit' => [$post_data['page'], $post_data['limit']],
-                    'order' => ['admin.id' => 'desc'],
-                    'field' => ['admin.*', 'agent.super_id', 'agent.remark']
-                ]));
+                $list = $this->model->getList([$post_data['page'], $post_data['limit']], $where, ['id' => 'desc'], true, true);
             } else {
                 $list = [];
             }
-
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
         $builder = new ListBuilder();
         $builder->setSearch([
-            ['type' => 'text', 'name' => 'search_key', 'title' => '搜索词', 'placeholder' => '账号、手机号、姓名'],
+            ['type' => 'text', 'name' => 'search_key', 'title' => '搜索词', 'placeholder' => '手机号、姓名'],
             ['type' => 'text', 'name' => 'super_id', 'title' => 'SuperId', 'placeholder' => 'SuperId']
         ])
-            ->addTableColumn(['title' => 'ID', 'field' => 'id'])
-            ->addTableColumn(['title' => '账号', 'field' => 'username'])
+            ->addTopButton('addnew')
+            ->addTableColumn(['title' => 'superId', 'field' => 'super_id'])
+            ->addTableColumn(['title' => '名称', 'field' => 'title'])
             ->addTableColumn(['title' => '手机号', 'field' => 'mobile'])
-            ->addTableColumn(['title' => '姓名', 'field' => 'realname'])
-            ->addTableColumn(['title' => 'SuperId', 'field' => 'super_id'])
-            ->addTableColumn(['title' => '备注', 'field' => 'remark'])
-            ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status()])
+            ->addTableColumn(['title' => '添加时间', 'field' => 'create_time', 'type' => 'datetime'])
             ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
-            ->addRightButton('edit', ['href' => url('edit', ['id' => '__data_id__'])]);
+            ->addRightButton('edit', ['title' => '关联群', 'href' => url('bindGroup', ['id' => '__data_id__'])])
+            ->addRightButton('delete');
         return $builder->show();
     }
 
     /**
-     * 编辑
+     * 新增
      */
-    public function edit(){
-        $id = input('id');
-        $data = $this->model->getOneJoin([
-            'alias' => 'admin',
-            'join' => [
-                ['bgf_agent agent', 'agent.admin_id=admin.id', 'left']
-            ],
-            'where' => ['admin.id' => $id],
-            'field' => ['admin.*', 'agent.super_id', 'agent.remark']
-        ]);
-        if(! $data){
-            $this->error('id参数错误');
+    public function add(){
+        $list = $this->pullAgentList();
+        $exists = $this->model->getField(['super_id']);
+        if($this->request->isPost()){
+            $post_data = input('post.');
+            $supers = explode(',', $post_data['super_id']);
+            if(empty($supers)){
+                $this->error('请选择代理商！');
+            }
+            foreach ($list as $item){
+                if(in_array($item['userId'], $exists) || !in_array($item['userId'], $supers)) continue;
+                $this->model->addOne([
+                    'super_id' => $item['userId'],
+                    'title' => $item['name'] ?: '',
+                    'mobile' => $item['phone'] ?: ''
+                ]);
+            }
+            $this->success('操作成功！', '/undefined');
         }
-
+        $id2name = [];
+        foreach ($list as $item){
+            if(in_array($item['userId'], $exists)) continue;
+            $id2name[$item['userId']] = $item['name'] . "({$item['phone']})";
+        }
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
-        $builder->setMetaTitle('编辑')  //设置页面标题
-            ->setPostUrl(url('savepost')) //设置表单提交地址
-            ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('super_id', 'number', 'SuperId', 'SuperId', [], 'required min=1')
-            ->addFormItem('remark', 'textarea', '备注', '200字内', [], 'maxlength=200')
-            ->setFormData($data);
+        $builder->setMetaTitle('添加')  //设置页面标题
+            ->setPostUrl(url('add')) //设置表单提交地址
+            ->addFormItem('super_id', 'chosen_multi', '选择代理商', '选择代理商', $id2name, 'required');
 
         return $builder->show();
     }
 
-    public function savePost($jump_to = '/undefined', $data = [])
-    {
-        $post_data = input('post.');
-        if($data = $this->agentM->getOneByMap(['admin_id' => $post_data['id']])){
-            $this->agentM->updateOne([
-                'id' => $data['id'],
-                'super_id' => $post_data['super_id'],
-                'remark' => $post_data['remark']
-            ]);
+    /**
+     * get agent list from third
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function pullAgentList(){
+        $url = 'https://appnew.baogefang.cc/houses-backstage/other/public/getAllUser';
+        $data = ['pageNumber' => 1, 'pageSize' => 10000];
+        if(($res = http_post($url, $data, 'json')) !== false){
+            $res = json_decode($res, true);
+            $list = $res['data']['records'];
         }else{
-            $this->agentM->addOne([
-                'admin_id' => $post_data['id'],
-                'super_id' => $post_data['super_id'],
-                'remark' => $post_data['remark']
-            ]);
+            $list = [];
         }
-        $this->success('操作成功!', $jump_to);
+        return $list;
     }
 }

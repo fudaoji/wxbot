@@ -408,7 +408,7 @@ class BotMember extends Base
                     $wxid_arr = [];
                     foreach ($list as $k => $v){
                         $nickname = filter_emoji($v['nickname']);
-                        $remark_name = filter_emoji($v['note']);
+                        $remark_name = empty($v['note']) ? '' : filter_emoji($v['note']) ;
                         $username = $v['wx_num'];
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;

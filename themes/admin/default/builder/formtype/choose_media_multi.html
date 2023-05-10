@@ -8,6 +8,7 @@
     </label>
     <div class="layui-input-block">
         <div class="layui-card">
+            <div class="layui-card-header" style="color: #a29c9c;">{$form['tip'] ?? ''}</div>
             <div class="layui-card-body">
                 <div class="layui-row">
                     <?php foreach($form['options']['types'] as $k => $type):?>
@@ -31,7 +32,7 @@
                                 {foreach $form['options']['materials'] as $material}
                                 <div class="layui-card" id="{$form.name}_{$material.id}_{$material.type}">
                                     <input type="hidden" name="{$form.name}_id_type[]" value="{$material.id}_{$material.type}">
-                                    <div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_{$material.id}_{$material.type}"></i></div>
+                                    <div class="layui-card-header text-right"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_{$material.id}_{$material.type}"></i></div>
                                     <div class="layui-card-body">
                                         <!--选中结果-->
                                         {switch $material.type}
@@ -80,7 +81,7 @@
                         '                                </div><div class="layui-col-xs2">' +
                         '                                    <img src="'+item.image_url+'" alt="" style="width: 50px;"></div>' +
                         '                            </div>';
-                    $("#media-box-{$form.name} .media-content").append(('<div class="layui-card"><input type="hidden" name="{$form.name}_id_type[]" value="MEDIAID_MEDIATYPE"><div class="layui-card-header"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_MEDIAID_MEDIATYPE"></i></div><div class="layui-card-body">'
+                    $("#media-box-{$form.name} .media-content").append(('<div class="layui-card"><input type="hidden" name="{$form.name}_id_type[]" value="MEDIAID_MEDIATYPE"><div class="layui-card-header text-right"><i class="layui-icon layui-icon-delete" data-id="{$form.name}_MEDIAID_MEDIATYPE"></i></div><div class="layui-card-body">'
                         +'CONTENT</div></div>').replace(/MEDIAID/g, item.id).replace(/MEDIATYPE/g, type).replace(/CONTENT/g, content));
                 });
                 $("#media-box-{$form.name} hr").show();
@@ -150,7 +151,7 @@
     </script>
 
     <style>
-        .media-box .layui-card{padding-top: 30px;}
+        .media-box .media-content .layui-card-header{text-align: right;}
         .media-box .box{
             font-size: 16px;line-height: 80px;text-align: center;width: 90%;border: #e7e7eb 1px solid;margin-bottom: 7px;
             cursor: pointer;

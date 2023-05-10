@@ -12,6 +12,7 @@ namespace app\admin\controller;
 use app\common\model\bgf\Agent;
 use app\common\model\bgf\AgentGoods;
 use app\common\model\bgf\Task;
+use app\constants\Media;
 
 class Bgftask extends Botbase
 {
@@ -153,6 +154,17 @@ class Bgftask extends Botbase
                     break;
                 }
             }
+
+            if(count($post_data['media_id_type']) > 0){
+                $medias = [];
+                foreach ($post_data['media_id_type'] as $id_type){
+                    list($id, $type) = explode('_', $id_type);
+                    $medias[] = ['id' => $id, 'type' => $type];
+                }
+                $post_data['medias'] = json_encode($medias, JSON_UNESCAPED_UNICODE);
+                unset($post_data['media_id_type']);
+            }
+
             $plan_time = empty($post_data['plan_time']) ? time() : strtotime($post_data['plan_time']);
             $plan_time_arr = [$plan_time];
             !empty($post_data['plan_time1']) && $plan_time_arr[] = strtotime($post_data['plan_time1']);
@@ -173,7 +185,7 @@ class Bgftask extends Botbase
             $id2title[$item['goodsId']] = $item['goodsTitle'];
         }
         $data = [];
-        $supers = $this->agentM->getField(['super_id', 'title']);
+        $supers = $this->agentM->getField(['super_id', 'title'], ['staff_id' => $this->adminInfo['id']]);
         $last_one = $this->model->getOneByOrder([
             'where' => ['admin_id' => $this->adminInfo['id'], 'bot_id' => $this->bot['id']],
             'field' => 'super_ids',
@@ -188,6 +200,7 @@ class Bgftask extends Botbase
         //$groups = model('admin/botMember')->getField('wxid,nickname',['uin' => $this->bot['uin']]);
         $builder = new FormBuilder();
         $builder->setPostUrl(url('add'))
+            ->addFormItem('media', 'choose_media_multi', '介绍内容', '素材顺序决定推送顺序', ['types' => Media::types()])
             ->addFormItem('goods_id', 'chosen', '选择商品', '选择商品', $id2title, 'required')
             ->addFormItem('super_ids', 'chosen_multi', '选择代理商', '选择代理商', $supers, 'required')
             ->addFormItem('plan_time', 'datetime', '发送时间1', '不填则取当前时间', [], '')
@@ -228,18 +241,43 @@ class Bgftask extends Botbase
             $post_data['goods_title'] = $goods_title;
             $post_data['goods_cover'] = $goods_cover;
             $post_data['plan_time'] = empty($post_data['plan_time']) ? time() : strtotime($post_data['plan_time']);
+
+            if(count($post_data['media_id_type']) > 0){
+                $medias = [];
+                foreach ($post_data['media_id_type'] as $id_type){
+                    list($id, $type) = explode('_', $id_type);
+                    $medias[] = ['id' => $id, 'type' => $type];
+                }
+                $post_data['medias'] = json_encode($medias, JSON_UNESCAPED_UNICODE);
+                unset($post_data['media_id_type']);
+            }
+
             return parent::savePost('/undefined', $post_data);
         }
         $id2title= [];
         foreach ($list as $item){
             $id2title[$item['goodsId']] = $item['goodsTitle'];
         }
-        $supers = $this->agentM->getField(['super_id', 'title']);
+        $supers = $this->agentM->getField(['super_id', 'title'], ['staff_id' => $this->adminInfo['id']]);
         $data['super_ids'] = explode(',', $data['super_ids']);
-        //$groups = model('admin/botMember')->getField('wxid,nickname',['uin' => $this->bot['uin']]);
+
+        $materials = [];
+        if($data['medias']){
+            $data['medias'] = json_decode($data['medias'], true);
+            foreach ($data['medias'] as $item){
+                $m = model('media_' . $item['type'])->getOneByMap([
+                    'admin_id' => $data['admin_id'],
+                    'id' => $item['id']
+                ], true, true);
+                $m['type'] = $item['type'];
+                $materials[] = $m;
+            }
+        }
+
         $builder = new FormBuilder();
         $builder->setPostUrl(url('edit'))
             ->addFormItem('id', 'hidden', 'id', 'id')
+            ->addFormItem('media', 'choose_media_multi', '介绍内容', '素材顺序决定推送顺序', ['types' => Media::types(), 'materials' => $materials])
             ->addFormItem('goods_id', 'chosen', '选择商品', '选择商品', $id2title, 'required')
             ->addFormItem('super_ids', 'chosen_multi', '选择代理商', '选择代理商', $supers, 'required')
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则根据设置的发单间隔时间确定', [], '')

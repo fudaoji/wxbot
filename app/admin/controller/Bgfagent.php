@@ -62,7 +62,7 @@ class Bgfagent extends Base
     public function index(){
         if(request()->isPost()){
             $post_data = input('post.');
-            $where = [];
+            $where = ['staff_id' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['title|mobile'] = ['like', '%'.$post_data['search_key'].'%'];
             !empty($post_data['super_id']) && $where['super_id'] = $post_data['super_id'];
 
@@ -106,6 +106,7 @@ class Bgfagent extends Base
             foreach ($list as $item){
                 if(in_array($item['userId'], $exists) || !in_array($item['userId'], $supers)) continue;
                 $this->model->addOne([
+                    'staff_id' => $this->adminInfo['id'],
                     'super_id' => $item['userId'],
                     'title' => $item['name'] ?: '',
                     'mobile' => $item['phone'] ?: ''

@@ -60,7 +60,7 @@ class Bgf extends Base
                 ['bot', 'bot.id=bt.bot_id']
             ],
             'where' => ['bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['<=', time()]],
-            'field' => ['uuid','bot.uin as robot_wxid', 'bot.app_key', 'bot.url', 'bot.protocol','super_ids', 'goods_title', 'goods_cover', 'goods_id','bt.id']
+            'field' => ['uuid','bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','super_ids', 'goods_title', 'goods_cover', 'goods_id','bt.id','bt.medias']
         ])) && $template = app()->make(Goods::class)->getDefaultTemplate()){
             foreach($task_list as $task){
                 $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
@@ -74,6 +74,9 @@ class Bgf extends Base
                     if(empty($agent['groups'])){
                         continue;
                     }
+                    $wxids = explode(',', $agent['groups']);
+
+
                     $task['xml'] = $this->agentGoodsM->generateXml([
                         'template' => $template,
                         'super_id' => $super_id,
@@ -81,10 +84,29 @@ class Bgf extends Base
                         'goods_title' => $task['goods_title'],
                         'goods_cover' => $task['goods_cover']
                     ]);
-
-                    $wxids = explode(',', $agent['groups']);
                     foreach ($wxids as $to_wxid){
-                        //放入任务队列
+                        //发介绍素材
+                        if(!empty($task['medias'])){
+                            $medias = json_decode($task['medias'], true);
+                            foreach ($medias as $media){
+                                $task['media_type'] = $media['type'];
+                                $task['media_id'] = $media['id'];
+                                //放入任务队列
+                                invoke('\\app\\common\\event\\TaskQueue')->push([
+                                    'delay' => $delay,
+                                    'params' => [
+                                        'do' => ['\\app\\crontab\\task\\Bot', 'sendMsgBatch'],
+                                        'task' => $task,
+                                        'reply' => $task,
+                                        'to_wxid' => $to_wxid,
+                                        'extra' => []
+                                    ]
+                                ]);
+                                $delay++;
+                            }
+                        }
+
+                        ////发商品
                         invoke('\\app\\common\\event\\TaskQueue')->push([
                             'delay' => $delay,
                             'params' => [
@@ -113,7 +135,7 @@ class Bgf extends Base
                 ['bgf_agent_goods goods', 'goods.id=bt.goods_id']
             ],
             'where' => [/*'bt.admin_id' => ['in', $opens], */'bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['<=', time()]],
-            'field' => ['uuid','bot.uin as robot_wxid', 'bot.app_key', 'bot.url', 'bot.protocol','bt.wxids', 'goods.xml', 'bt.id']
+            'field' => ['uuid','bot.uin', 'bot.app_key', 'bot.url', 'bot.protocol','bt.wxids', 'goods.xml', 'bt.id']
         ]))){
             foreach($task_list as $task){
                 if(!empty($task['wxids']) && !empty($task['xml'])){
@@ -153,7 +175,7 @@ class Bgf extends Base
          */
         $bot_client = model('admin/bot')->getRobotClient($task);
         $res = $bot_client->sendXmlToFriends([
-            'robot_wxid' => $task['robot_wxid'],
+            'robot_wxid' => $task['uin'],
             'to_wxid' => $to_wxid,
             'xml' => $task['xml']
         ]);

@@ -206,13 +206,14 @@ window.templets = {
 };
 
 //请求服务端
-window.requestPost = function(url, params, callback, sync = false){
+window.requestPost = function(url, params, callback, sync = false, loading = true){
     layui.use(['layer', 'jquery'], function () {
         var $ = layui.jquery
             , layer = layui.layer;
 
         if(sync) $.ajaxSettings.async = false;
-        var loadingIndex = top.layer.load('数据提交中...');
+        var loadingIndex;
+        if(loading) loadingIndex = top.layer.load('数据提交中...');
         $.post(url, params, function(res){
             if(res.code === 1){
                 if(res.msg){
@@ -226,7 +227,7 @@ window.requestPost = function(url, params, callback, sync = false){
                 layer.alert(res.msg);
             }
         }, 'json').complete(function () {
-            top.layer.close(loadingIndex);
+            loading && top.layer.close(loadingIndex);
         }).error(function (xhr, status, info) {
             layer.alert('系统繁忙，请刷新重试或联系管理员');
         });

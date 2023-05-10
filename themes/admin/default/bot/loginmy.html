@@ -8,9 +8,13 @@
         </ol>
 
         <div style="text-align: center;">
-            <img style="width: 80%;margin-bottom: 40px;"
-                 src="{$code}"
-                 alt="二维码">
+            <div>
+                <img style="width: 100px;margin-bottom: 40px;"
+                     src="__STATIC__/imgs/spin.gif"
+                     alt="加载条" id="spin">
+                <img style="width: 80%;margin-bottom: 40px;" src=""
+                     alt="二维码" class="hide" id="code-img">
+            </div>
 
             <div class="layui-btn-group" style="margin-bottom: 50px;">
                 <button class="layui-btn layui-btn-sm"
@@ -46,6 +50,13 @@
                     location.href = res.url;
                 }
             });
+        });
+
+        $(document).ready(function () {
+            requestPost("", {do:"getcode"}, (res) => {
+                $('#code-img').attr('src', res.data.code).removeClass('hide');
+                $('#spin').addClass('hide');
+            }, false, false);
         });
     });
 </script>

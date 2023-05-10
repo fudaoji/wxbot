@@ -308,6 +308,19 @@ class Bot extends Bbase
         $data['uuid'] = '';
         $bot_client = $this->model->getRobotClient($data);
         if(request()->isPost()){
+            $do = input('post.do', 'confirm');
+            if($do == 'getcode'){
+                $res = $bot_client->getLoginCode();
+                // Log::write("获取微信二维码：".json_encode($res));
+                if($res['code'] == 0){
+                    $this->error($res['errmsg']);
+                }
+                if(empty($res['data'])){
+                    // $bot_client->exitLoginCode();
+                }
+                $data['code'] = base64_to_pic($res['data']);
+                $this->success('请打开微信扫码!', null, $data);
+            }
             sleep(2);
             $return = $bot_client->getRobotList();
             if($return['code'] && !empty($return['data'])){
@@ -359,17 +372,6 @@ class Bot extends Bbase
                 $this->success('登录失败：' . $bot_client->getError());
             }
         }
-        //退掉遗留的弹框
-        // $bot_client->exitLoginCode();
-        $res = $bot_client->getLoginCode();
-        // Log::write("获取微信二维码：".json_encode($res));
-        if($res['code'] == 0){
-            $this->error($res['errmsg']);
-        }
-        if(empty($res['data'])){
-            // $bot_client->exitLoginCode();
-        }
-        $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);
     }
 
@@ -391,6 +393,19 @@ class Bot extends Bbase
         }
         $bot_client = $this->model->getRobotClient($data);
         if(request()->isPost()){
+            $do = input('post.do', 'confirm');
+            if($do == 'getcode'){
+                $res = $bot_client->getLoginCode();
+                // Log::write("获取微信二维码：".json_encode($res));
+                if($res['code'] == 0){
+                    $this->error($res['errmsg']);
+                }
+                if(empty($res['data'])){
+                    // $bot_client->exitLoginCode();
+                }
+                $data['code'] = base64_to_pic($res['data']);
+                $this->success('请打开微信扫码!', null, $data);
+            }
             if($data['alive']){
                 //获取机器人信息
                 $info = $this->model->getRobotInfo($data);
@@ -414,18 +429,6 @@ class Bot extends Bbase
                 $this->success('登录成功', '/undefined');
             }
         }
-
-        //退掉遗留的弹框
-        //$bot_client->exitLoginCode();
-        $res = $bot_client->getLoginCode();
-        if($res['code'] == 0){
-            $this->error($res['errmsg']);
-        }
-        //dump($res);exit;
-        if(empty($res['data'])){
-            // $bot_client->exitLoginCode();
-        }
-        $data['code'] = base64_to_pic($res['data']);
         return $this->show($data);
     }
 

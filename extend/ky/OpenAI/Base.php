@@ -50,6 +50,8 @@ Abstract class Base
 
     protected function request($params = []){
         $this->client = new Client([
+            // 不用证书验证，强制使用https
+            'verify' => false,
             'base_uri' => $this->baseUri,
             'timeout' => empty($this->options['timeout']) ? 0 : $this->options['timeout']
         ]);

@@ -50,8 +50,10 @@ class Adminrule extends Base
             ->addFormItem('title', 'text', '标题', '标题', [], 'required maxlength="32"')
             ->addFormItem('name', 'text', '标识', '权限控制使用', [], ' maxlength="32"')
             ->addFormItem('href', 'text', '链接', '链接', [])
+            ->addFormItem('target', 'radio', '跳转方式', '跳转方式', $this->model->targets())
             ->addFormItem('icon', 'icon', '图标', 'font-awesome图标')
-            ->addFormItem('sort', 'number', '排序', '按数字从小到大排列', [], 'required');
+            ->addFormItem('sort', 'number', '排序', '按数字从小到大排列', [], 'required')
+            ->setFormData(['target' => '_self', 'sort' => 1]);
 
         return $builder->show();
     }
@@ -80,6 +82,7 @@ class Adminrule extends Base
             ->addFormItem('title', 'text', '标题', '标题', [], 'required maxlength="32"')
             ->addFormItem('name', 'text', '标识', '权限控制使用', [], ' maxlength="32"')
             ->addFormItem('href', 'text', '链接', '链接', [])
+            ->addFormItem('target', 'radio', '跳转方式', '跳转方式', $this->model->targets())
             ->addFormItem('icon', 'icon', '图标', 'font-awesome图标')
             ->addFormItem('sort', 'number', '排序', '按数字从小到大排列', [], 'required')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '显示', 0 => '隐藏'])

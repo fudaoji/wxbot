@@ -34,7 +34,11 @@ class Setting extends Base
             'upload' => [
                 'title' => '附件设置',
                 'href' => url('index', ['name' => 'upload'])
-            ]
+            ],
+            'addon' => [
+                'title' => '应用插件',
+                'href' => url('index', ['name' => 'addon'])
+            ],
         ];
     }
 
@@ -81,6 +85,9 @@ class Setting extends Base
         }
         $builder = new FormBuilder();
         switch ($current_name){
+            case 'addon':
+                $builder->addFormItem('addons', 'textarea', '扩展插件', '一般无需配置');
+                break;
             case 'bot':
                 !isset($data['seat_default']) && $data['seat_default'] = 0;
                 !isset($data['seat_price']) && $data['seat_price'] = 0.0;
@@ -95,12 +102,7 @@ class Setting extends Base
                 empty($data) && $data['close'] = 0;
                 $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
                     ->addFormItem('logo', 'picture_url', 'Logo', 'Logo')
-                    ->addFormItem('icp', 'text', '备案号', '备案号')
-                    /*
-                    ->addFormItem('jd_appsecret', 'text', 'AppSecret', '开放平台AppSecret')
-                    ->addFormItem('jtt', 'legend', '京推推开发者', '京推推开发者')
-                    ->addFormItem('jtt_appid', 'text', 'Appid', '京推推Appid')
-                    ->addFormItem('jtt_appkey', 'text', 'Appkey', '京推推Appkey')*/;
+                    ->addFormItem('icp', 'text', '备案号', '备案号');
                 break;
             case 'upload':
                 empty($data) && $data = [

@@ -14,11 +14,24 @@ use app\common\model\Base;
 class AdminRule extends Base
 {
     /**
+     * 跳转类型
+     * @param null $type
+     * @return array
+     */
+    public static function targets($type=null){
+        $list = [
+            '_self' => '站内',
+            '_blank' => '站外'
+        ];
+        return isset($list[$type]) ? $list[$type] : $list;
+    }
+
+    /**
      * 类型
      * @param null $type
      * @return array
      */
-    public function types($type=null){
+    public static function types($type=null){
         $list = [
             1 => '菜单',
             2 => '权限'

@@ -199,7 +199,7 @@ class Bot extends Bbase
                         $action = 'reloginmy';
                         break;
                 }
-                $this->success('保存成功，请继续扫码登录', url($action, ['id' => $res['id']]));
+                $this->success('保存成功，请等待加载登录二维码！', url($action, ['id' => $res['id']]));
             }
             $msg = '数据保存成功';
             try{
@@ -254,7 +254,7 @@ class Bot extends Bbase
                     break;
             }
 
-            $this->success('请打开微信扫码登录', url($action, input('post.')));
+            $this->success('请等待加载登录二维码！', url($action, input('post.')));
         }
 
         $data = array_merge([

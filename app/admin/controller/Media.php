@@ -15,7 +15,7 @@ use app\common\model\MediaText;
 use app\common\model\MediaVideo;
 use app\common\model\MediaLink;
 use app\common\model\Upload;
-use think\Db;
+use think\facade\Db;
 use think\facade\Log;
 
 class Media extends Bbase
@@ -124,36 +124,6 @@ class Media extends Bbase
     }
 
     /**
-     * 素材列表
-     * @author: fudaoji<fdj@kuryun.cn>
-     */
-    public function index(){
-        $types = [
-            'text' => '文本',
-            'image' => '图片',
-            'file' => '文件',
-            'video' => '视频',
-            'link' => '分享链接',
-        ];
-
-        $type = input('type', 'image');
-        $search_key = input('search_key', '');
-        $where = ['admin_id' => $this->adminInfo['id']];
-
-        $search_key && $where['title'] = ['like', '%'.$search_key.'%'];
-        $type == 'news' && $where['pid'] = 0;
-        $data_list = model('media_' . $type)->page(12, $where, ['id' => 'desc'], true, 1);
-        $pager = $data_list->appends(['type' => $type, 'search_key' => $search_key])->render();
-        $assign = [
-            'data_list' => $data_list,
-            'type' => $type,
-            'types' => $types,
-            'pager' => $pager
-        ];
-        return $this->show($assign);
-    }
-
-    /**
      * frame素材列表
      * @return mixed
      * @author: fudaoji<fdj@kuryun.cn>
@@ -174,29 +144,6 @@ class Media extends Bbase
         }else{
             echo $type . "方法不存在";exit;
         }
-    }
-
-    /**
-     * 应用插件
-     * @return mixed
-     * @throws \think\exception\DbException
-     * @author: fudaoji<fdj@kuryun.cn>
-     */
-    public function addon(){
-        $field = input('field', ''); //目标input框
-        $where = ['mpid' => $this->mpId, 'a.status' => 1];
-        $data_list = $this->mpAddonM->pageJoin([
-            'alias' => 'ma',
-            'join' => [['addons a', 'a.addon=ma.addon']],
-            'page_size' => 7,
-            'where' => $where,
-            'field' => ['a.id','a.name', 'a.desc', 'a.logo'],
-            'order' => ['ma.id' => 'desc'],
-            'refresh' => 1
-        ]);
-        $pager = $data_list->render();
-        $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, __FUNCTION__);
     }
 
     /**

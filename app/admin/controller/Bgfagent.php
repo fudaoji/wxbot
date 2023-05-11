@@ -96,7 +96,7 @@ class Bgfagent extends Base
      */
     public function add(){
         $list = $this->pullAgentList();
-        $exists = $this->model->getField(['super_id']);
+        $exists = $this->model->getField(['super_id'], ['staff_id' => $this->adminInfo['id']]);
         if($this->request->isPost()){
             $post_data = input('post.');
             $supers = explode(',', $post_data['super_id']);

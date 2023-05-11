@@ -20,15 +20,24 @@ class Addon
     const BGF = 'bgf';
 
     public static function addons($id = null){
-        $list = [
+        $list = self::freeAddons();
+        if($custom_addons = config('system.addon.addons')){
+            $addons = explode("\r\n", $custom_addons);
+            foreach ($addons as $addon){
+                list($name, $title) = explode(':', $addon);
+                $list[$name] = $title;
+            }
+        }
+        return isset($list[$id]) ? $list[$id] : $list;
+    }
+
+    private static function freeAddons(){
+        return [
             self::TPZS => '推品助手',
             self::HANZI => '汉字助手',
             self::YHQ => '优惠券助手',
             self::AI => '智能对话',
-            self::ZDJR => '自动加人',
-            //self::KEFU => '微信多客服',
-            self::BGF => '抱个房',
+            self::ZDJR => '自动加人'
         ];
-        return isset($list[$id]) ? $list[$id] : $list;
     }
 }

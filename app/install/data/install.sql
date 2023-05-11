@@ -114,9 +114,6 @@ INSERT INTO `__PREFIX__admin_rule` VALUES (185, '', '操作日志', 69, '', '/ad
 INSERT INTO `__PREFIX__admin_rule` VALUES (186, '', '朋友圈', 6, 'fa fa-chrome', '', '_self', 1, 1663308146, 1663308146, 5, 1);
 INSERT INTO `__PREFIX__admin_rule` VALUES (187, '', '获取朋友圈', 186, '', '/admin/moments/pull', '_self', 1, 1663308205, 1663308336, 10, 1);
 INSERT INTO `__PREFIX__admin_rule` VALUES (188, '', '发朋友圈', 186, '', '/admin/moments/index', '_self', 1, 1663308300, 1663308300, 8, 1);
-INSERT INTO `__PREFIX__admin_rule` VALUES (189, '', '微信多客服', 149, 'fa fa-headphones', '', '_self', 1, 1669079700, 1676626385, 20, 1);
-INSERT INTO `__PREFIX__admin_rule` VALUES (190, '', '配置', 189, '', '/admin/kefu/config', '_self', 1, 1669081263, 1669081263, 1, 1);
-INSERT INTO `__PREFIX__admin_rule` VALUES (191, '', '聊天框', 189, '', '/admin/kefu/index', '_self', 1, 1669081290, 1669081290, 5, 1);
 INSERT INTO `__PREFIX__admin_rule` VALUES (192, '', '客户管理', 1, 'fa fa-users', '', '_self', 1, 1676518784, 1677032365, 10, 1);
 INSERT INTO `__PREFIX__admin_rule` VALUES (193, '', '运营管理', 0, '', '', '_self', 1, 1676518921, 1676518921, 10, 1);
 INSERT INTO `__PREFIX__admin_rule` VALUES (194, '', '组织管理', 193, 'fa fa-connectdevelop', '', '_self', 1, 1676529954, 1676529982, 1, 1);

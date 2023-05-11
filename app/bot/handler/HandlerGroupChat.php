@@ -171,7 +171,7 @@ class HandlerGroupChat extends Handler
             'order' => ['sort' => 'desc'],
             'where' => [
                 'bot_id' => $this->bot['id'],
-                'keyword' => $this->content['msg'],
+                'keyword' => preg_replace("/\[at\=.*\]/", "", $this->content['msg']), //过滤组AT的字符
                 'status' => 1
             ]
         ]);

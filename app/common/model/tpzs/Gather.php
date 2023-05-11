@@ -31,7 +31,7 @@ class Gather extends Tpzs
             $data = model('admin/BotMember')->getOneJoin([
                 'alias' => 'm',
                 'join' => [
-                    ['tpzsGather gather', 'gather.group_id=m.id']
+                    ['tpzs_gather gather', 'gather.group_id=m.id']
                 ],
                 'where' => ['gather.status' => 1, 'm.wxid' => $group_wxid, 'gather.officer' => ['like', "%".$from_wxid."%"], 'm.uin' => $bot_wxid],
                 'field' => ['gather.*', 'm.wxid'],

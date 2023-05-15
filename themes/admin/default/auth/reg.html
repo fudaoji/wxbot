@@ -6,7 +6,7 @@
             <span class="bg1"></span>
             <span class="bg2"></span>
         </div>
-        <form class="layui-form login-bottom">
+        <form class="layui-form login-bottom" onsubmit="return false;" method="post">
             {:token_field()}
             <div class="center">
                 <div class="item">
@@ -105,6 +105,12 @@
 
         // 进行登录操作
         form.on('submit(reg)', function (data) {
+            if($('.login-btn').hasClass('layui-btn-disabled')){
+                return ;
+            }else{
+                $('.login-btn').addClass('layui-btn-disabled');
+            }
+
             data.field = Object.assign(data.field, {keeplogin: keepLogin});
             $.post(data.form.action, data.field, function (res) {
                 layer.msg(res.msg, {time: 1500}, function () {
@@ -113,6 +119,7 @@
                     } else {
                         changeCode();
                         $('input[name=__token__]').val(res.data.token);
+                        $('.login-btn').removeClass('layui-btn-disabled');
                     }
                 });
             });

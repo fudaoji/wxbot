@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\model\MediaLink as LinkM;
+use app\common\service\MediaGroup as GroupService;
 use app\constants\Media;
 
 class Medialink extends Bbase
@@ -28,6 +29,7 @@ class Medialink extends Bbase
             $post_data = input('post.');
             $where = ['admin_id' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['title|desc'] = ['like', '%' . $post_data['search_key'] . '%'];
+            !empty($post_data['group_id']) && $where['group_id'] = $post_data['group_id'];
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList(
@@ -43,6 +45,7 @@ class Medialink extends Bbase
         $builder = new ListBuilder();
         $builder->setTabNav($this->mediaTabs(), Media::LINK)
             ->setSearch([
+                ['type' => 'select', 'name' => 'group_id', 'title' => '分组', 'options' => [0=>'全部'] + GroupService::getIdToTitle()],
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "tip" => '标题、描述']
         ])
             ->addTopButton('addnew')
@@ -69,6 +72,7 @@ class Medialink extends Bbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增分享链接')
             ->setPostUrl(url('savePost'))
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '标题', '100字内', [], 'required maxlength=150')
             ->addFormItem('desc', 'textarea', '描述', '200字内', [], 'required maxlength=200')
             ->addFormItem('image_url', 'choose_picture', '图片', '图片比例1:1', [], 'required')
@@ -91,6 +95,7 @@ class Medialink extends Bbase
         $builder->setMetaTitle('编辑文本')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '标题', '100字内', [], 'required maxlength=100')
             ->addFormItem('desc', 'textarea', '描述', '200字内', [], 'required maxlength=150')
             ->addFormItem('image_url', 'choose_picture', '图片', '图片比例1:1', [], 'required')

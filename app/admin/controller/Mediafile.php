@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\model\MediaFile as FileM;
+use app\common\service\MediaGroup as GroupService;
 use app\constants\Media;
 
 class Mediafile extends Bbase
@@ -28,6 +29,7 @@ class Mediafile extends Bbase
             $post_data = input('post.');
             $where = ['admin_id' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['title'] = ['like', '%' . $post_data['search_key'] . '%'];
+            !empty($post_data['group_id']) && $where['group_id'] = $post_data['group_id'];
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList(
@@ -43,6 +45,7 @@ class Mediafile extends Bbase
         $builder = new ListBuilder();
         $builder->setTabNav($this->mediaTabs(), Media::FILE)
             ->setSearch([
+                ['type' => 'select', 'name' => 'group_id', 'title' => '分组', 'options' => [0=>'全部'] + GroupService::getIdToTitle()],
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "tip" => '名称']
         ])
             ->addTopButton('addnew')
@@ -67,6 +70,7 @@ class Mediafile extends Bbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增文件')
             ->setPostUrl(url('savePost'))
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('file', 'file_detail', '上传文件', '上传文件');
 
         return $builder->show();
@@ -86,6 +90,7 @@ class Mediafile extends Bbase
         $builder->setMetaTitle('编辑文件')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('file', 'file_detail', '上传文件', '上传文件', $data)
             ->setFormData($data);
 

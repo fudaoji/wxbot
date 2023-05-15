@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\common\model\MediaText as TextM;
 use app\constants\Media;
+use app\common\service\MediaGroup as GroupService;
 
 class Mediatext extends Bbase
 {
@@ -28,6 +29,7 @@ class Mediatext extends Bbase
             $post_data = input('post.');
             $where = ['admin_id' => $this->adminInfo['id']];
             !empty($post_data['search_key']) && $where['content|title'] = ['like', '%' . $post_data['search_key'] . '%'];
+            !empty($post_data['group_id']) && $where['group_id'] = $post_data['group_id'];
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList(
@@ -43,7 +45,8 @@ class Mediatext extends Bbase
         $builder = new ListBuilder();
         $builder->setTabNav($this->mediaTabs(), Media::TEXT)
             ->setSearch([
-            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词']
+                ['type' => 'select', 'name' => 'group_id', 'title' => '分组', 'options' => [0=>'全部'] + GroupService::getIdToTitle()],
+                ['type' => 'text', 'name' => 'search_key', 'title' => '关键词'],
         ])
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '备注', 'field' => 'title', 'minWidth' => 100])
@@ -67,6 +70,7 @@ class Mediatext extends Bbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增文本')
             ->setPostUrl(url('savePost'))
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
             ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000');
 
@@ -87,6 +91,7 @@ class Mediatext extends Bbase
         $builder->setMetaTitle('编辑文本')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
             ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000')
             ->setFormData($data);

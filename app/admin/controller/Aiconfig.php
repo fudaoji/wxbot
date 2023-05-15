@@ -49,6 +49,8 @@ class Aiconfig extends Botbase
         $settings = $this->model->getConf(['bot_id' => $this->bot['id']]);
         if(!empty($settings['wxids'])){
             $settings['wxids'] = explode(',', $settings['wxids']);
+        }else{
+            $settings['wxids'] = [];
         }
         if(empty($settings)){
             $settings = [
@@ -100,6 +102,9 @@ class Aiconfig extends Botbase
     {
         $jump_to = url('index');
         $post_data = input('post.');
+        if(empty($post_data['wxids'])){
+            $this->error('请选择作用对象！');
+        }
         unset($post_data['__token__']);
         foreach ($post_data as $k => $v){
             if($config = $this->model->getOneByMap(['bot_id' => $this->bot['id'], 'key' => $k],  true, true)){

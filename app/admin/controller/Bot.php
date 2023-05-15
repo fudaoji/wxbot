@@ -34,8 +34,8 @@ class Bot extends Bbase
             'web' => ['title' => 'Web机器人', 'href' => url('web')]
         ];
         $this->tip = "<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p> 
-<ul><li>西瓜框架的接口回调地址: ".request()->domain()."/bot/api/my</li>
-<li>可爱猫的接口回调地址: ".request()->domain()."/bot/api/cat</li>
+<ul><li>西瓜框架的接口回调地址: <a href='javascript:;' id='url-xg' class='js-clipboard' data-clipboard-target='#url-xg'>".request()->domain()."/bot/api/my</a></li>
+<li>可爱猫的接口回调地址: <a href='javascript:;' id='url-cat' class='js-clipboard' data-clipboard-target='#url-cat'>".request()->domain()."/bot/api/cat</a></li>
 <!--<li>XBot框架的接口回调地址: ".request()->domain()."/bot/api/xbot</li>  
 <li>vlw的接口回调地址: ".request()->domain()."/bot/api/vlw</li> 
 <li>千寻的接口回调地址: ".request()->domain()."/bot/api/qianxun</li>-->

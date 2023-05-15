@@ -233,3 +233,59 @@ window.requestPost = function(url, params, callback, sync = false, loading = tru
         });
     });
 };
+
+var $ = layui.jquery, layer = layui.layer;
+$(document).ready(function () {
+    $("[layer-open]").on('click', function () {
+        var type = parseInt($(this).prop('layer-open')),
+                title = $(this).data('title'),
+                that = this;
+        if(!type) type = 2;
+        switch (type) {
+            case 4:
+                var follow = $(this).data('follow'),
+                        position = $(this).data('position');
+                if(!follow){
+                    follow = that
+                }
+                if(!position){
+                    position = 1
+                }
+                layer.tips(title, follow, {
+                    tips: position
+                });
+                break;
+            default:
+                var area = $(this).data('area');
+                if(area){
+                    area = area.split(',');
+                }else{
+                    area = ['95%', '95%'];
+                }
+                layer.open({
+                    title: title,
+                    type: type,
+                    shade: 0.2,
+                    area: area,
+                    content: $(this).data('content'),
+                });
+                break;
+        }
+    });
+
+    if(typeof(ClipboardJS) !== 'undefined'){
+        //复制: use: <span class='js-clipboard' data-clipboard-target='#目标容器id'>这是触发元素</span>
+        var clipboard = new ClipboardJS('.js-clipboard');
+        clipboard.on('success', function (e) {
+            layer.tips('复制成功', $(e.trigger), {
+                tips: [2, '#1e9fff'],
+                time: 2000
+            });
+            e.clearSelection();
+        });
+        clipboard.on('error', function (e) {
+            console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+        });
+    }
+});

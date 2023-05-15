@@ -3,7 +3,6 @@
     <blockquote class="layui-elem-quote" style="padding: 5px;font-size: 12px">
         <p>提示：</p>
         <ul>
-            <li>可以使用 <xmp style="display: inline-block"><a href="http://xxxx.com/">链接文字</a></xmp>格式添加链接</li>
             <li>内容可以使用[昵称]占位符，最终会被实际的用户昵称代替</li>
         </ul>
     </blockquote>
@@ -48,11 +47,6 @@
 
     <div class="layui-row">
         <table class="layui-table" lay-skin="line">
-            <colgroup>
-                <col width="50">
-                <col>
-                <col width="100">
-            </colgroup>
             <tbody>
             {volist name="data_list" id="item"}
             <tr>
@@ -66,7 +60,7 @@
                         data-content="{$item.content}"
                     />
                 </td>
-                <td><pre>{$item.content}</pre></td>
+                <td><pre style="max-width: 500px;">{$item.content}</pre></td>
                 <td>
                     <a href="javascript:;" onclick="clickDelOne('{$item.id}')" class="layui-btn layui-btn-danger layui-btn-sm">删除</a>
                 </td>
@@ -208,7 +202,7 @@
     body{background-color: #fff;}
 
     .layui-form-checkbox[lay-skin=primary]{height: 19px !important;margin-top: -12px;margin-left: -1px;}
-    #page{margin: 20px auto;text-align: center;}
+    #page{margin: 20px auto;text-align: center;padding-bottom: 20px;}
     .bottom{
         background-color: #f8f8f8;line-height: 52px;height: 52px;position: fixed;text-align: center;
         width: 100%; bottom: 0;

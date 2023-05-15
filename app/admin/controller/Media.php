@@ -15,8 +15,10 @@ use app\common\model\MediaText;
 use app\common\model\MediaVideo;
 use app\common\model\MediaLink;
 use app\common\model\Upload;
+use app\common\service\MediaGroup as GroupService;
 use think\facade\Db;
 use think\facade\Log;
+use app\constants\Media as MediaConst;
 
 class Media extends Bbase
 {
@@ -123,111 +125,47 @@ class Media extends Bbase
         $this->success('删除成功');
     }
 
+    private function getModel($type = 'image'){
+        $list = [
+            MediaConst::IMAGE => $this->imageM,
+            MediaConst::TEXT => $this->textM,
+            MediaConst::FILE => $this->fileM,
+            MediaConst::VIDEO => $this->videoM,
+            MediaConst::LINK => $this->linkM,
+        ];
+        return isset($list[$type]) ? $list[$type] : null;
+    }
+
     /**
-     * frame素材列表
+     * 列表通用action
      * @return mixed
-     * @author: fudaoji<fdj@kuryun.cn>
+     * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function handle(){
-        $params = input();
-        if(empty($params['type'])){
-            $type = 'image';
-        }else{
-            if(in_array($params['type'], $this->types)){
-                $type = $params['type'];
+    public function choose(){
+        $group_id = input('group_id', 0);
+        $type = input('type', MediaConst::TEXT);
+        $where = ['admin_id' => $this->adminId];
+        !empty($group_id) && $where['group_id'] = $group_id;
+        $search_key = input('search_key', '');
+        if($search_key){
+            if($type == MediaConst::TEXT){
+                $where['title|content'] = ['like', '%'.$search_key.'%'];
             }else{
-                echo "type参数错误";exit;
+                $where['title'] = ['like', '%'.$search_key.'%'];
             }
         }
-        if(method_exists($this, $type)){
-            return call_user_func([$this, $type]);
-        }else{
-            echo $type . "方法不存在";exit;
-        }
-    }
 
-    /**
-     * 链接
-     * @return mixed
-     * @throws \think\Exception
-     * @author: fudaoji<fdj@kuryun.cn>
-     */
-    public function link(){
-        $field = input('field', ''); //目标input框
-        $where = ['admin_id' => $this->adminId];
-        $data_list = $this->linkM->page(10, $where, ['id' => 'desc'], 'id,title,desc,image_url,url', 1);
-        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
-        $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
-    }
-
-    /**
-     * 视频
-     * @return mixed
-     * @throws \think\db\exception\DbException
-     * @author: fudaoji<fdj@kuryun.cn>
-     */
-    public function video(){
-        $field = input('field', ''); //目标input框
-        $where = ['admin_id' => $this->adminId];
-
-        $data_list = $this->videoM->page(12, $where, ['id' => 'desc'], 'id,url,title', 1);
-        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
-        $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
-    }
-
-    /**
-     * 文件
-     * @return mixed
-     * @throws \think\db\exception\DbException
-     * @author: fudaoji<fdj@kuryun.cn>
-     */
-    public function file(){
-        $field = input('field', ''); //目标input框
-        $where = ['admin_id' => $this->adminId];
-
-        $data_list = $this->fileM->page(10, $where, ['id' => 'desc'], 'id,title,url,ext', 1);
-        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
-        $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
-    }
-
-    /**
-     * 文本
-     * @return mixed
-     * @throws \think\Exception
-     * @author: fudaoji<fdj@kuryun.cn>
-     */
-    public function text(){
-        if(request()->isPost()){
-            $post_data = input('post.');
-            $post_data['admin_id'] = $this->adminId;
-            if($res = $this->textM->addOne($post_data)){
-                $this->success('保存成功');
-            }
-            $this->error('保存失败，请刷新重试');
-        }
-        $field = input('field', ''); //目标input框
-        $where = ['admin_id' => $this->adminId];
-        $data_list = $this->textM->page(10, $where, ['id' => 'desc'], 'id,content', 1);
-        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
-        $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
-    }
-
-    /**
-     * 图片
-     * @return mixed
-     * @throws \think\db\exception\DbException
-     * @author: fudaoji<fdj@kuryun.cn>
-     */
-    public function image(){
-        $field = input('field', ''); //目标input框
-        $where = ['admin_id' => $this->adminId];
-        $data_list = $this->imageM->page(12, $where, ['id' => 'desc'], 'id,url,title', 1);
-        $pager = $data_list->appends(['type' => __FUNCTION__])->render();
-        $assign = ['data_list' => $data_list, 'pager' => $pager, 'field' => $field];
-        return $this->show($assign, $this->controller . DIRECTORY_SEPARATOR . __FUNCTION__);
+        $data_list = $this->getModel($type)->page(12, $where, ['id' => 'desc'], true, true);
+        $pager = $data_list->appends(['type' => $type, 'search_key' => $search_key])->render();
+        $assign = [
+            'data_list' => $data_list,
+            'type' => $type,
+            'pager' => $pager,
+            'config' => config('system.upload'),
+            'field' => input('field', ''), //目标input框
+            'groups' => [0=>'默认分组'] + GroupService::getIdToTitle(),
+            'group_id' => $group_id
+        ];
+        return $this->show($assign);
     }
 }

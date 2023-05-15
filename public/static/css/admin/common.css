@@ -18,6 +18,9 @@ body {
 /*.layuimini-logo img{visibility: hidden;width: 0;}
 .layui-layout-admin .layuimini-logo h1{margin: 0;}*/
 .hide{display: none;}
+.text-left{text-align: left;}
+.text-right{text-align: right;}
+.text-center{text-align: center;}
 .layuimini-container {
     border: 1px solid #f2f2f2;
     border-radius: 5px;

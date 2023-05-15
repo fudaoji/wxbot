@@ -1,0 +1,116 @@
+<script>
+    var parent_index //获取窗口索引
+            ,ids = []
+            ,$checkBoxes = []
+            ,dataLen = parseInt("{:count($data_list)}")
+            , clickDelOne
+            , clickDelBatch
+            , clickSure
+    , type="{$type}";
+
+    layui.use(['jquery','form'],function(){
+        var form = layui.form
+                , $ = layui.jquery;
+
+        parent_index = parent.layer.getFrameIndex(window.name);
+
+        //刷新界面 所有元素
+        form.render();
+
+        //点击删除单个
+        clickDelOne = function (id) {
+            ids = [id];
+            delRequest()
+        };
+        //点击批量删除
+        clickDelBatch = function (id) {
+            $.each($('.id:checked'), function(i, item){
+                ids.push($(item).val());
+            });
+            delRequest()
+        };
+
+        $(function () {
+            $checkBoxes = $('.id');
+            //点击取消
+            $('.js-cancel-btn').on('click', function () {
+                parent.layer.close(parent_index);
+            });
+        });
+
+        //监听全选
+        form.on('checkbox(ids)', function(data){
+            $checkBoxes.prop('checked', data.elem.checked);
+            layui.form.render('checkbox');
+        });
+        //监听单个选中
+        form.on('checkbox(id)', function (data) {
+            $("#ids").prop('checked', $('.id:checked').length < dataLen ? false : true);
+            layui.form.render('checkbox');
+        });
+
+        //请求服务端进行删除操作
+        var delRequest = function () {
+            if(ids.length < 1){
+                layer.alert('请选中要删除的数据');
+            }
+            layer.confirm('删除后无法恢复，你确定吗？', {
+                title: '提示',
+                btn: ['是','不'] //按钮
+            }, function(){
+                var loading_index = layer.load(1);
+                $.post("{:url('delPost')}", {'ids': ids, type: type}, function (res) {
+                    if(res.code === 1){
+                        layer.msg(res.msg, {time: 1000}, function () {
+                            location.reload();
+                        });
+                    }else{
+                        layer.alert(res.msg);
+                    }
+                    layer.close(loading_index);
+                })
+            });
+        };
+    });
+</script>
+<div class="layui-row">
+    <div class="layui-col-md3">
+        <ul class="layui-nav layui-nav-tree layui-bg-gray" style="width: 100%;">
+            {foreach $groups as $k => $title}
+            <li class="layui-nav-item {if $k==$group_id}layui-this{/if}"><a href="{:url('choose', array_merge(input(), ['group_id' => $k]))}">{$title}</a></li>
+            {/foreach}
+        </ul>
+    </div>
+    <div class="layui-col-md9">
+        <form class="layui-form" action="" style="margin: 20px;">
+            <input type="hidden" value="{$type}" name="type">
+            <input type="hidden" value="{$group_id}" name="group_id">
+        {switch name="type"}
+        {case value="text"}{include file="default/media/text" /}{/case}
+            {case value="image"}{include file="default/media/image" /}{/case}
+            {case value="file"}{include file="default/media/file" /}{/case}
+            {case value="video"}{include file="default/media/video" /}{/case}
+            {case value="link"}{include file="default/media/link" /}{/case}
+        {/switch}
+        </form>
+    </div>
+</div>
+
+
+<div class="bottom">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn bg-success" onclick="clickSure();">确定</button>
+            <button class="layui-btn layui-btn-primary js-cancel-btn">取消</button>
+        </div>
+    </div>
+</div>
+<style>
+    body{background-color: #fff;}
+    .layui-form-checkbox[lay-skin=primary]{height: 19px !important;margin-top: -12px;margin-left: -1px;}
+    #page{margin: 20px auto;text-align: center;padding-bottom: 20px;}
+    .bottom{
+        background-color: #f8f8f8;line-height: 52px;height: 52px;position: fixed;text-align: center;
+        width: 100%; bottom: 0;
+    }
+</style>

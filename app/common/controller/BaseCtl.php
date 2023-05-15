@@ -48,6 +48,8 @@ class BaseCtl extends BaseController
 
         if (!$view) {
             $view = $assign['controller']. DIRECTORY_SEPARATOR.$assign['action'];
+        }else{
+            $view = strpos($view, '/') === false ? ($assign['controller']. DIRECTORY_SEPARATOR.$view) : $view;
         }
         return View::fetch(config('view.theme').DIRECTORY_SEPARATOR.$view, $this->assign);
     }

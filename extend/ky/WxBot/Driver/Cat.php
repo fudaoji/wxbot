@@ -365,23 +365,23 @@ class Cat extends Base
 
     /**
      * resp:{
-            'event':'GetFriendList',
-            'code' : 1,
-            'msg': 'successful',
-            'data':[
-                {
-                 'headimgurl' :'http://wx.qlogo.cn/mmhead/ver_1/hCJJXicBAUbiaZ3EIPZvvmd9DADovGwRpEgO8FibDXNHxjLTHCMGWfT4AFzkAQtRnsqFbibKia32Io8fNpOzVwfviaW6ajjCicDlaXJWJaPKHDibmYc/0',
-                'nickname':'AA凯丽德电钢琴厂家-苏',
-                'note' : '',
-                'sex': 0,
-                'wx_num' : 'suosite666',
-                'wxid' :'wxid_i1xoqpqz57xr12',
-                'robot_wxid' : 'wxid_a98qqf9m4bny22',
-                }
+            * 'event':'GetFriendList',
+            * 'code' : 1,
+            * 'msg': 'successful',
+            * 'data':[
+                * {
+                 * 'headimgurl' :'http://wx.qlogo.cn/mmhead/ver_1/hCJJXicBAUbiaZ3EIPZvvmd9DADovGwRpEgO8FibDXNHxjLTHCMGWfT4AFzkAQtRnsqFbibKia32Io8fNpOzVwfviaW6ajjCicDlaXJWJaPKHDibmYc/0',
+                * 'nickname':'AA凯丽德电钢琴厂家-苏',
+                * 'remark' : '',
+                * 'sex': 0,
+                * 'wxNum' : 'suosite666',
+                * 'wxid' :'wxid_i1xoqpqz57xr12',
+                * 'robot_wxid' : 'wxid_a98qqf9m4bny22',
+                * }
          * ]
      * }
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getFriends($params = [])

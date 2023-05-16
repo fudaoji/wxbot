@@ -208,7 +208,7 @@ class BotMember extends Base
                 break;
             case Bot::PROTOCOL_MY:
             case Bot::PROTOCOL_VLW:
-                if($res['code'] && count($res['ReturnJson'])){
+                if($res['code'] && !empty($res['ReturnJson']) && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
                     foreach ($list as $k => $v){
@@ -408,16 +408,18 @@ class BotMember extends Base
                     $wxid_arr = [];
                     foreach ($list as $k => $v){
                         $nickname = filter_emoji($v['nickname']);
-                        $remark_name = empty($v['note']) ? '' : filter_emoji($v['note']) ;
-                        $username = $v['wx_num'];
+                        $remark_name = empty($v['remark']) ? '' : filter_emoji($v['remark']) ;
+                        $username = $v['wxNum'] ?? '';
                         $wxid = $v['wxid'];
+                        $headimgurl = $v['headimgurl'] ?? '';
                         $wxid_arr[] = $wxid;
                         if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
                                 'remark_name' => $remark_name,
-                                'username' => $username
+                                'username' => $username,
+                                'headimgurl' => $headimgurl,
                             ]);
                         }else{
                             $this->addOne([
@@ -426,7 +428,8 @@ class BotMember extends Base
                                 'remark_name' => $remark_name,
                                 'username' => $username,
                                 'wxid' => $wxid,
-                                'type' => \app\constants\Bot::FRIEND
+                                'type' => Bot::FRIEND,
+                                'headimgurl' => $headimgurl,
                             ]);
                         }
                     }
@@ -477,7 +480,7 @@ class BotMember extends Base
                 if($res['code'] && count($res['ReturnJson'])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
-                    Logger::error($res);
+                    //Logger::error($res);
                     foreach ($list as $k => $v){
                         $nickname = filter_emoji($v['nickname'] ?? '');
                         $remark_name = filter_emoji($v['note'] ?? '');

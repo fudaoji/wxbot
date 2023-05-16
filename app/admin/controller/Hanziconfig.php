@@ -66,6 +66,9 @@ class Hanziconfig extends Botbase
     {
         $jump_to = url('index');
         $post_data = input('post.');
+        if(empty($post_data['wxids'])){
+            $this->error('请选择作用对象！');
+        }
         $post_data['admin_id'] = $this->adminInfo['id'];
         if(empty($post_data[$this->pk])){
             $this->model->addOne($post_data);

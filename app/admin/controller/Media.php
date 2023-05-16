@@ -142,10 +142,10 @@ class Media extends Bbase
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function choose(){
-        $group_id = input('group_id', 0);
+        $group_id = input('group_id', -1);
         $type = input('type', MediaConst::TEXT);
         $where = ['admin_id' => $this->adminId];
-        !empty($group_id) && $where['group_id'] = $group_id;
+        $group_id >= 0 && $where['group_id'] = $group_id;
         $search_key = input('search_key', '');
         if($search_key){
             if($type == MediaConst::TEXT){
@@ -163,9 +163,35 @@ class Media extends Bbase
             'pager' => $pager,
             'config' => config('system.upload'),
             'field' => input('field', ''), //目标input框
-            'groups' => [0=>'默认分组'] + GroupService::getIdToTitle(),
+            'groups' => [0=>'未分组'] + GroupService::getIdToTitle(),
             'group_id' => $group_id
         ];
         return $this->show($assign);
+    }
+
+    /**
+     * 设置分组
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function setGroupPost(){
+        $post_data = input();
+        $ids = $post_data['ids'];
+        $model = $this->getModel($post_data['type']);
+        Db::startTrans();
+        try {
+            $model->updateByMap(['id' => ['in', $ids], 'admin_id' => $this->adminInfo['id']],
+                ['group_id' => $post_data['group_id']]
+            );
+            $res = true;
+            Db::commit();
+        }catch (\Exception $e){
+            Log::error($e->getMessage());
+            Db::rollback();
+            $res = false;
+        }
+        if($res === false){
+            $this->error('系统错误，请刷新重试或联系管理员');
+        }
+        $this->success('操作成功!');
     }
 }

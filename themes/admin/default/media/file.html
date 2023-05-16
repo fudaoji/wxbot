@@ -1,5 +1,5 @@
 <div class="layui-row">
-    <div class="layui-col-xs7">
+    <div class="layui-col-xs6">
         <div class="layui-col-xs8">
             <div class="layui-form-item">
                 <input name="search_key" placeholder="请输入名称搜索" value="{:input('search_key')}" class="layui-input"
@@ -12,9 +12,12 @@
             </button>
         </div>
     </div>
-    <div class="layui-col-xs5 text-right">
+    <div class="layui-col-xs6 text-right">
         <input type="checkbox" lay-filter="ids" title="全选" id="ids">
         <div class="layui-btn-group">
+            <button type="button" class="layui-btn  layui-btn-sm layui-btn-normal" id="set-group">
+                <i class="fa fa-bookmark-o"></i>设置分组
+            </button>
             <a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="clickDelBatch()">
                 <i class="fa fa-trash-o"></i>批量删除
             </a>
@@ -27,12 +30,6 @@
 
 <div class="layui-row">
     <table class="layui-table" lay-skin="line">
-        <colgroup>
-            <col width="50">
-            <col>
-            <col>
-            <col width="100">
-        </colgroup>
         <tbody>
         {volist name="data_list" id="item"}
         <tr>
@@ -49,8 +46,11 @@
             </td>
             <td>{$item.title}</td>
             <td><a href="{$item.url}" target="_blank">预览</a></td>
-            <td>
-                <a href="javascript:;" onclick="clickDelOne('{$item.id}')" class="layui-btn layui-btn-danger layui-btn-sm">删除</a>
+            <td class="text-right">
+                <div class="layui-btn-group">
+                    <a href="javascript:;" class="picker-edit layui-btn layui-btn-normal layui-btn-sm" data-id="{$item.id}">编辑</a>
+                    <a href="javascript:;" onclick="clickDelOne('{$item.id}')" class="layui-btn layui-btn-danger layui-btn-sm">删除</a>
+                </div>
             </td>
         </tr>
         {/volist}
@@ -75,6 +75,17 @@
                     area: ['90%', '90%'],
                     shadeClose: false,
                     content: "{:url('mediafile/add')}"
+                });
+            });
+            $(".picker-edit").on('click', function () {
+                var url = "{:url('mediafile/edit')}?id=" + $(this).data('id');
+                layer.open({
+                    title: "编辑文件",
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    area: ['90%', '90%'],
+                    content: [url, 'no'] //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
                 });
             });
         });

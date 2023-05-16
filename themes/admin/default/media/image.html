@@ -1,5 +1,5 @@
 <div class="layui-row">
-    <div class="layui-col-xs7">
+    <div class="layui-col-xs6">
         <div class="layui-col-xs8">
             <div class="layui-form-item">
                 <input name="search_key" placeholder="请输入名称搜索" value="{:input('search_key')}" class="layui-input"
@@ -12,9 +12,12 @@
             </button>
         </div>
     </div>
-    <div class="layui-col-xs5 text-right">
+    <div class="layui-col-xs6 text-right">
         <input type="checkbox" lay-filter="ids" title="全选" id="ids">
         <div class="layui-btn-group">
+            <button type="button" class="layui-btn  layui-btn-sm layui-btn-normal" id="set-group">
+                <i class="fa fa-bookmark-o"></i>设置分组
+            </button>
             <a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="clickDelBatch()">
                 <i class="fa fa-trash-o"></i>批量删除
             </a>

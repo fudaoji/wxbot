@@ -1,5 +1,5 @@
 -- ----------------------------
--- 2.1.4
+-- 2.1.4 手动更新请务必手动替换__PREFIX__为你的真实表前缀
 -- ----------------------------
 CREATE TABLE `__PREFIX__media_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

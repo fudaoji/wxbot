@@ -304,59 +304,50 @@ class MyTest extends BotTest
             'to_wxid' => $this->wxidDj,
             'xml' => '<?xml version="1.0"?>
 <msg>
-    <appmsg appid="" sdkver="0">
-        <title>薯片0.3元</title>
-        <des />
-        <action>view</action>
-        <type>33</type>
-        <showtype>0</showtype>
-        <content />
-        <url>https://mp.weixin.qq.com/mp/waerrpage?appid=wxf856a911604ec0ad&amp;type=upgrade&amp;upgradetype=3#wechat_redirect</url>
-        <dataurl />
-        <lowurl />
-        <lowdataurl />
-        <recorditem>(null)</recorditem>
-        <thumburl />
-        <messageaction />
-        <laninfo />
-        <md5>b29c750883eb3192f1dd24345a6cc7fb</md5>
-        <extinfo />
-        <sourceusername>gh_a306e7f4ff8e@app</sourceusername>
-        <sourcedisplayname>抱个房</sourcedisplayname>
-        <commenturl />
-        <appattach>
-            <totallen>0</totallen>
-            <attachid />
-            <emoticonmd5></emoticonmd5>
-            <fileext>jpg</fileext>
-            <filekey>3e78c644863891c1a57404e2f7960b6b</filekey>
-            <cdnthumburl>3057020100044b30490201000204cda5782702032df7950204f95d06af0204643a070d042463656636663433372d633664642d346339652d613139662d6537393831383436373834390204011408030201000405004c4dfd00</cdnthumburl>
-            <aeskey>54cdc096f882edae10a686c53547ad92</aeskey>
-            <cdnthumbaeskey>54cdc096f882edae10a686c53547ad92</cdnthumbaeskey>
-            <encryver>1</encryver>
-            <cdnthumblength>163798</cdnthumblength>
-            <cdnthumbheight>100</cdnthumbheight>
-            <cdnthumbwidth>100</cdnthumbwidth>
-        </appattach>
-        <weappinfo>
-            <pagepath>packagesD/pages/goods/sharePages.html?goodsId=804922752908791808&amp;superId=807035211991879682</pagepath>
-            <username>gh_a306e7f4ff8e@app</username>
-            <appid>wxf856a911604ec0ad</appid>
-            <version>9</version>
-            <type>2</type>
-            <weappiconurl>http://mmbiz.qpic.cn/mmbiz_png/YIQQgLwmsmicCWTXnCuQVB24tvZ7IYmTiclXLjDDJYAGLibJOMqjD7qicOxAJiboRXEPReys9VDcLjBUicPe12mImn2Q/640?wx_fmt=png&amp;wxfrom=200</weappiconurl>
-            <appservicetype>0</appservicetype>
-            <shareId>0_wxf856a911604ec0ad_a461cbbb547d4c2b4720ad79697ba726_1681523874_0</shareId>
-        </weappinfo>
-        <websearch />
-    </appmsg>
-    <fromusername>wxid_xokb2ezu1p6t21</fromusername>
-    <scene>0</scene>
-    <appinfo>
-        <version>1</version>
-        <appname />
-    </appinfo>
-    <commenturl />
+	<appmsg appid="" sdkver="0">
+		<title>750ml/瓶 无味杀虫气雾剂 速效杀灭苍蝇/蚊虫/蟑螂/跳蚤</title>
+		<des />
+		<type>33</type>
+		<url>https://mp.weixin.qq.com/mp/waerrpage?appid=wxf856a911604ec0ad&amp;type=upgrade&amp;upgradetype=3#wechat_redirect</url>
+		<appattach>
+			<cdnthumburl>3057020100044b304902010002045de9e4d902032df53e020456cba33d02046447d86d042438393462353965392d383839622d343030652d616264372d3232383637636265393437300204011408030201000405004c4f2a00</cdnthumburl>
+			<cdnthumbmd5>4090f8394a67a1d5ed8c83a5685d48bb</cdnthumbmd5>
+			<cdnthumblength>84187</cdnthumblength>
+			<cdnthumbwidth>720</cdnthumbwidth>
+			<cdnthumbheight>576</cdnthumbheight>
+			<cdnthumbaeskey>633c7c87a9e949d4a6718483b479e8e6</cdnthumbaeskey>
+			<aeskey>633c7c87a9e949d4a6718483b479e8e6</aeskey>
+			<encryver>0</encryver>
+			<filekey>wxid_xokb2ezu1p6t21_511_1682430060</filekey>
+		</appattach>
+		<sourceusername>gh_a306e7f4ff8e@app</sourceusername>
+		<sourcedisplayname>团婶婶</sourcedisplayname>
+		<md5>4090f8394a67a1d5ed8c83a5685d48bb</md5>
+		<recorditem><![CDATA[(null)]]></recorditem>
+		<uploadpercent>95</uploadpercent>
+		<weappinfo>
+			<username><![CDATA[gh_a306e7f4ff8e@app]]></username>
+			<appid><![CDATA[wxf856a911604ec0ad]]></appid>
+			<type>2</type>
+			<version>22</version>
+			<weappiconurl><![CDATA[http://mmbiz.qpic.cn/mmbiz_png/YIQQgLwmsm87CbBjibpibMiccJ9N1ibEFSztS4HFrypmtoPJFZSHYDC04CXmWoTiaANVxWUGlV1QJkD6UkVaDicaABHQ/640?wx_fmt=png&wxfrom=200]]></weappiconurl>
+			<pagepath><![CDATA[packagesD/pages/goods/sharePages.html?goodsId=819373728994562048&superId=809230199718809600]]></pagepath>
+			<shareId><![CDATA[0_wxf856a911604ec0ad_a461cbbb547d4c2b4720ad79697ba726_1682430060_0]]></shareId>
+			<appservicetype>0</appservicetype>
+			<brandofficialflag>0</brandofficialflag>
+			<showRelievedBuyFlag>0</showRelievedBuyFlag>
+			<subType>0</subType>
+			<isprivatemessage>0</isprivatemessage>
+			<weapppagethumbrawurl><![CDATA[https://file.baogefang.cc/file/20230511/819382894920339456.png]]></weapppagethumbrawurl>
+		</weappinfo>
+	</appmsg>
+	<fromusername>wxid_nd2jcy5200t712</fromusername>
+	<scene>0</scene>
+	<appinfo>
+		<version>1</version>
+		<appname></appname>
+	</appinfo>
+	<commenturl></commenturl>
 </msg>',
         ]);
         dump($res);

@@ -91,6 +91,7 @@ class BotGroupmember extends Base
             'robot_wxid' => $bot['uin'],
             'uuid' => $bot['uuid'],
             'group_wxid' => $group['wxid'],
+            'is_refresh' => 1, //不使用缓存
         ]);
         switch ($bot['protocol']) {
             case Bot::PROTOCOL_EXTIAN:

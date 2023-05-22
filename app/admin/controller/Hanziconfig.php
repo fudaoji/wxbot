@@ -66,7 +66,7 @@ class Hanziconfig extends Botbase
     {
         $jump_to = url('index');
         $post_data = input('post.');
-        if(empty($post_data['wxids'])){
+        if(isset($post_data['wxids']) && empty($post_data['wxids'])){
             $this->error('请选择作用对象！');
         }
         $post_data['admin_id'] = $this->adminInfo['id'];

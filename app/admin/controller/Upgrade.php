@@ -154,7 +154,7 @@ class Upgrade extends Base
         $builder = new FormBuilder();
         $builder->setMetaTitle('开发者登录')
             ->setPostUrl(url('login'))
-            ->addFormItem('username', 'text', '账号', '在kyphp社区注册的手机账号', [], 'required')
+            ->addFormItem('username', 'text', '账号', '在DaoAdmin社区注册的手机账号', [], 'required')
             ->addFormItem('password', 'password', '密码', '密码', [], 'required')
             ->setBtnSubmit(['text' => '登录'])
             ->setBtnReset(['show' => 0]);

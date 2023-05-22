@@ -310,15 +310,18 @@ class MyTest extends BotTest
 		<type>33</type>
 		<url>https://mp.weixin.qq.com/mp/waerrpage?appid=wxf856a911604ec0ad&amp;type=upgrade&amp;upgradetype=3#wechat_redirect</url>
 		<appattach>
-			<cdnthumburl>3057020100044b304902010002045de9e4d902032df53e020456cba33d02046447d86d042438393462353965392d383839622d343030652d616264372d3232383637636265393437300204011408030201000405004c4f2a00</cdnthumburl>
-			<cdnthumbmd5>4090f8394a67a1d5ed8c83a5685d48bb</cdnthumbmd5>
-			<cdnthumblength>84187</cdnthumblength>
-			<cdnthumbwidth>720</cdnthumbwidth>
-			<cdnthumbheight>576</cdnthumbheight>
-			<cdnthumbaeskey>633c7c87a9e949d4a6718483b479e8e6</cdnthumbaeskey>
-			<aeskey>633c7c87a9e949d4a6718483b479e8e6</aeskey>
-			<encryver>0</encryver>
-			<filekey>wxid_xokb2ezu1p6t21_511_1682430060</filekey>
+			<totallen>0</totallen>
+			<attachid />
+			<emoticonmd5></emoticonmd5>
+			<fileext>jpg</fileext>
+			<filekey>5f4e3199c1d12cb762dbba3324e8477e</filekey>
+			<cdnthumburl>3057020100044b30490201000204cda5782702032df7950204f75d06af020464673be4042465623237363166342d663863352d346336382d386632652d3530356130663630363134370204011408030201000405004c543d00</cdnthumburl>
+			<aeskey>ebd8c7d9672a0a22a10e8fddf01e925e</aeskey>
+			<cdnthumbaeskey>ebd8c7d9672a0a22a10e8fddf01e925e</cdnthumbaeskey>
+			<encryver>1</encryver>
+			<cdnthumblength>58727</cdnthumblength>
+			<cdnthumbheight>100</cdnthumbheight>
+			<cdnthumbwidth>100</cdnthumbwidth>
 		</appattach>
 		<sourceusername>gh_a306e7f4ff8e@app</sourceusername>
 		<sourcedisplayname>团婶婶</sourcedisplayname>

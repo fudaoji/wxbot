@@ -16,6 +16,7 @@ return array(
     'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
     'liliuwei\\think\\' => array($vendorDir . '/liliuwei/thinkphp-jump/src'),
     'app\\' => array($baseDir . '/app'),
+    'addons\\' => array($baseDir . '/addons'),
     'YearDley\\EasyTBK\\Vip\\' => array($vendorDir . '/yeardley/easytbk/src/vip'),
     'YearDley\\EasyTBK\\TaoBao\\' => array($vendorDir . '/yeardley/easytbk/src/taobao'),
     'YearDley\\EasyTBK\\SuNing\\' => array($vendorDir . '/yeardley/easytbk/src/suning'),

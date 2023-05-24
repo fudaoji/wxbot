@@ -43,6 +43,7 @@
   "autoload": {
     "psr-4": {
       "app\\": "app",
+      "addons\\": "addons",
       "tests\\": "tests"
     },
     "psr-0": {

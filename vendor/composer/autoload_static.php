@@ -51,6 +51,7 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'a' => 
         array (
             'app\\' => 4,
+            'addons\\' => 7,
         ),
         'Y' => 
         array (
@@ -167,6 +168,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+        'addons\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/addons',
         ),
         'YearDley\\EasyTBK\\Vip\\' => 
         array (

@@ -5,8 +5,7 @@
 
 return [
     // 模板目录名
-    'view_dir_name' => '',
-    'theme' => '',
+    'cache_path'	=>	runtime_path('temp'),
 
     // 视图中使用的常量
     'tpl_replace_string'  =>  [

@@ -59,6 +59,7 @@ function check_dirfile()
     $root_path = app()->getRootPath();
     $items = array(
         array('dir', '可写', 'success', '/'),
+        array('dir', '可写', 'success', 'addons'),
         array('dir', '可写', 'success', 'app'),
         array('dir', '可写', 'success', 'config'),
         array('dir', '可写', 'success', 'extend'),

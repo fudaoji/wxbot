@@ -13,6 +13,7 @@
 namespace think;
 
 require __DIR__ . '/../vendor/autoload.php';
+require_once 'define.php';
 
 // 执行HTTP应用并响应
 $http = (new App())->http;

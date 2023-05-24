@@ -10,7 +10,6 @@
 namespace app\addon;
 
 use app\common\controller\BaseCtl;
-use think\facade\View;
 
 class AddonController extends BaseCtl
 {
@@ -35,6 +34,7 @@ class AddonController extends BaseCtl
         $assign['controller'] = $this->controller;
         $assign['action'] = $this->action;
         $assign['theme'] = config('view.theme');
+        $assign['app_info'] = get_addon_info();
 
         $this->assign = array_merge($this->assign, $assign);
 
@@ -46,8 +46,13 @@ class AddonController extends BaseCtl
 
         $path = $this->addonName . DIRECTORY_SEPARATOR . ($this->module ? $this->module. DIRECTORY_SEPARATOR.'view' : 'view').
             ($assign['theme'] ? DIRECTORY_SEPARATOR . $assign['theme'] : '') . DIRECTORY_SEPARATOR;
-        //使用绝对路径
-        $template = config('addon.path') . $path .$view.'.'.config('view.view_suffix');
-        return View::fetch($template, $this->assign);
+
+        // 设置模板引擎参数
+        $config = array_merge(config('view'), [
+            'view_path'	=>	config('addon.path') . $path,
+        ]);
+
+        $driver = new \think\Template($config);
+        $driver->fetch($view, $this->assign);
     }
 }

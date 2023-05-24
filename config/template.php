@@ -39,5 +39,5 @@ return [
         '__CSS__' => '/static/css/',
         '__JS__' => '/static/js/',
         '__IMG__' => '/static/imgs/'
-    ]
+    ],
 ];

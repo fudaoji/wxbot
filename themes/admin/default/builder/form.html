@@ -2,7 +2,7 @@
 
 <div class="layui-tab layui-tab-brief" lay-filter="tabBrief">
     {notempty name="tab_nav"}
-    <ul class="layui-tab-title" style="margin-bottom: 15px;">
+    <ul class="layui-tab-title" style="margin-bottom: 5px;">
         {foreach $tab_nav['tab_list'] as $k => $vo}
         <li class='{if condition="$k eq $tab_nav.current_tab"} layui-this {/if}' >
             <a href="{$vo['href']}">{$vo['title']}</a>

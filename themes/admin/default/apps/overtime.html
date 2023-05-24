@@ -1,0 +1,139 @@
+<div class="layui-tab layui-tab-brief" lay-filter="{$controller}-tab">
+    {notempty name="tab_nav"}
+    <ul class="layui-tab-title">
+        {volist name="tab_nav.tab_list" id="tab"}
+        <li class="{if $key eq $tab_nav['current_tab']}layui-this{/if}"><a href="{$tab.href}">{$tab.title}</a></li>
+        {/volist}
+    </ul>
+    {/notempty}
+    <div class="layui-tab-content">
+        {if condition="!empty($tip)"}
+        <blockquote class="layui-elem-quote">{$tip|raw}</blockquote>
+        {/if}
+
+        <fieldset class="table-search-fieldset" style="padding: 5px;">
+            <form class="layui-form layui-form-pane search-form">
+                <div class="layui-row layui-col-space10">
+                    <div class="layui-col-xs6">
+                        <div class="layui-col-xs5" style="margin-left: 5px; line-height: 38px;">
+                            <div class="layui-form-item">
+                                <input name="search_key"
+                                       placeholder="请输入关键词"
+                                       value="{$search_key}"
+                                       class="layui-input"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="layui-col-xs4" style="margin-left: 5px;">
+                            <button class="layui-btn layui-btn-primary" lay-submit="" lay-filter="formDemo">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </fieldset>
+
+        <div class="layui-row">
+            <div id="app-body">
+                <div id="apps">
+                    {if count($data_list)}
+                    <form class="layui-form" action="">
+                        <div class="layui-row">
+                            {volist name="data_list" id="v"}
+                            <div class="layui-col-xs4 layui-col-md3 layui-col-lg2">
+                                <div class="apps-volist">
+                                    <div class="apps-icon">
+                                        <img src="{$v.logo}">
+                                    </div>
+                                    <div class="app-desc">
+                                        <h2>{$v.title}</h2>
+                                        <div class="app-desc-body">
+                                            <div class="description">{:cut_str($v.desc, 30)}</div>
+                                            <div class="text-right">
+                                                <span class="layui-badge layui-bg-danger overtime-tip">已于{:date('Y-m-d H:i', $v.deadline)}到期</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-row">
+                                        <div class="layui-col-xs12 app-opr text-right">
+                                            <a href="javascript:;"
+                                               data-href="{:url('appdetail', ['id' => $v.id])}"
+                                               data-title="{$v.title}"
+                                               style="margin-top: 8px;"
+                                               class="layui-btn layui-btn-xs js-manage">&nbsp;续期&nbsp;</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/volist}
+                        </div>
+                    </form>
+                    <div id="page">{$page|raw}</div>
+                    {else/}
+                    <div class="text-center">
+                        暂无数据！
+                    </div>
+                    {/if}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{block name="js"}
+<script>
+    layui.use(['jquery','form','miniTab'], function() {
+        var form = layui.form,
+                $ = layui.jquery,
+                miniTab = layui.miniTab;
+
+        $('.js-manage').on('click', function () {
+            var index = layer.open({
+                title: $(this).data('title'),
+                type: 2,
+                shade: 0.2,
+                area: ['95%', '95%'],
+                content: $(this).data('href'),
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        });
+    });
+</script>
+{/block}
+{block name="css"}
+<style>
+    #app-body{margin-top: 20px;}
+    .apps-volist {
+        cursor: pointer;
+        padding: 0;
+        border: 1px solid rgb(231, 231, 235);
+        margin: 0 10px 5px 0;
+        overflow: hidden;
+    }
+    .apps-icon {
+        float: left;
+        margin-right: 10px;
+    }
+    .apps-icon,.app-desc{padding: 5px;}
+    .apps-icon img {
+        width: 68px;
+        height: 68px;
+        border-radius: 8px;
+    }
+    .app-desc-body {
+        color: #707070;
+        font-size: 14px;
+    }
+    .app-desc-body .description {
+        font-size: 14px;
+    }
+    .overtime-tip{float: revert;}
+    .app-opr{border: 1px solid #F2F2F2;border-left: none;border-bottom: none;padding-bottom: 8px;text-align: center;}
+    .app-opr:last-child{border-right: none;}
+    .layui-form-item{margin-bottom: 0;}
+</style>
+{/block}

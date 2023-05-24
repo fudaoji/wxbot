@@ -11,6 +11,39 @@
 
 !defined('SESSION_BOT') && define('SESSION_BOT', 'currentBot');
 
+if (!function_exists('cut_str')) {
+    /**
+     * 显示指定长度的字符串，超出长度以省略号(...)填补尾部显示
+     * @param $str
+     * @param int $len
+     * @param string $suffix
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function cut_str($str, $len = 30, $suffix = '...')
+    {
+        if (mb_strlen($str) > $len) {
+            $str = mb_substr($str, 0, $len) . $suffix;
+        }
+        return $str;
+    }
+}
+
+if (!function_exists('addon_path')) {
+    /**
+     * 插件目录
+     * @param null $addon
+     * @param string $file
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function addon_path($addon = null, $file = '')
+    {
+        is_null($addon) && $addon = request()->root();
+        return base_path(config('addon.path')) . $addon . ($file ? DIRECTORY_SEPARATOR . $file : '');
+    }
+}
+
 if(!function_exists('generate_qr')){
     function generate_qr($params = []){
         try {

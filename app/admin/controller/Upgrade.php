@@ -10,12 +10,13 @@
 namespace app\admin\controller;
 
 
+use app\common\service\DACommunity;
 use ky\Logger;
 use think\facade\Log;
 
 class Upgrade extends Base
 {
-    private $uKey = 'daoadminToken';
+    private $uKey = DACommunity::SESSION_KEY;
     public $user = []; //开发者信息
     public $token = '';
     static public $baseUrl = 'http://daoadmin.kuryun.com';
@@ -44,19 +45,7 @@ class Upgrade extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getUserInfo(){
-        if (!empty($token = session($this->uKey))) {
-            $this->token = $token;
-            $res = $this->doRequest(['uri' => self::$apis['getUser']]);
-            if($res['code'] == 1){
-                $this->user = $res['data']['user'];
-                if($this->user){
-                    session($this->uKey, $token);
-                }else{
-                    session($this->uKey, null);
-                }
-            }
-        }
-        $this->assign['user'] = $this->user;
+        $this->assign['user'] = DACommunity::getUserInfo();
         $this->assign['token'] = $this->token;
         return $this->user;
     }
@@ -145,7 +134,7 @@ class Upgrade extends Base
             ];
             $res = $this->doRequest(['uri' => self::$apis['login'], 'data' => $params]);
             if($res['code'] == 1){
-                session($this->uKey, $res['data']['token']);
+                DACommunity::login($res['data']['token']);
                 $this->success($res['msg']);
             }else{
                 $this->error($res['msg']);

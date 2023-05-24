@@ -29,7 +29,8 @@ class Index extends Base
 	public function index() {
         if(is_dir(app()->getRuntimePath())){
             if(! is_writable(app()->getRuntimePath())){
-                exit("请将runtime目录设置成可写");
+                echo("请将runtime目录设置成可写");
+                exit;
             }
         }
 

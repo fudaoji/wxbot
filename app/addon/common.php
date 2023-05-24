@@ -1,5 +1,20 @@
 <?php
 
+if(!function_exists('get_addon_menu')) {
+    function get_addon_menu(string $name = ''){
+        $info = [];
+        if(empty($name)){
+            $rule_arr = explode('/', request()->rule()->getRule());
+            $name = $rule_arr[0];
+        }
+        $path = root_path(config('addon.pathname') . DIRECTORY_SEPARATOR . $name) . 'menu.php';
+        if(is_file($path)){
+            $info = require_once $path;
+        }
+        return $info;
+    }
+}
+
 if(!function_exists('get_addon_info')) {
     function get_addon_info(string $name = ''){
         $info = [];

@@ -104,6 +104,15 @@ class DACommunity
     }
 
     /**
+     * 登录会话
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function getSessionToken(){
+        return session(self::SESSION_KEY);
+    }
+
+    /**
      * 是否登录
      * @return bool
      * Author: fudaoji<fdj@kuryun.cn>

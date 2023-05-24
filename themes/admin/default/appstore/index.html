@@ -19,7 +19,7 @@
                            type="text">
                 </div>
             </div>
-            <div class="layui-col-xs4" style="margin-left: 5px; line-height: 38px;">
+            <div class="layui-col-xs4" style="margin-left: 5px;">
                 <button class="layui-btn layui-btn-primary" lay-submit="" lay-filter="formDemo">
                     <i class="fa fa-search"></i>搜索
                 </button>
@@ -50,7 +50,7 @@
         {else/}
         <span class="layui-breadcrumb" lay-separator="|">
                       <a href="{$official_href}" target="_blank">注册</a>
-                      <a href="{:url('upgrade/login')}">登录</a>
+                      <a href="javascript:;" data-href="{:url('upgrade/login')}" id="daoadmin-login">登录</a>
                     </span>
         {/if}
     </div>
@@ -119,6 +119,19 @@
         var layer = layui.layer
         ,form = layui.form
         ,$ = layui.jquery;
+
+        $('#daoadmin-login').on('click', function () {
+            var index = layer.open({
+                title: "登录开发者社区",
+                type: 2,
+                shade: 0.2,
+                area: ['95%', '95%'],
+                content: $(this).data('href'),
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        });
 
         form.on('select(types)', function(data){
             $('.search-form').submit();

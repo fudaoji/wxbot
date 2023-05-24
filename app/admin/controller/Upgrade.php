@@ -45,7 +45,9 @@ class Upgrade extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getUserInfo(){
-        $this->assign['user'] = DACommunity::getUserInfo();
+        $this->user = DACommunity::getUserInfo();
+        $this->token = DACommunity::getSessionToken();
+        $this->assign['user'] = $this->user;
         $this->assign['token'] = $this->token;
         return $this->user;
     }
@@ -135,7 +137,7 @@ class Upgrade extends Base
             $res = $this->doRequest(['uri' => self::$apis['login'], 'data' => $params]);
             if($res['code'] == 1){
                 DACommunity::login($res['data']['token']);
-                $this->success($res['msg']);
+                $this->success($res['msg'], '/undefined');
             }else{
                 $this->error($res['msg']);
             }

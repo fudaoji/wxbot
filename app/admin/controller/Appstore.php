@@ -62,7 +62,7 @@ class Appstore extends Base
             $zip->extractTo(addon_path(''));
             $zip->close();
             @unlink($tem_file); //删除临时压缩包
-            $this->success('下载成功，正在跳转安装界面。。。', url('admin/app/uninstallList'));
+            $this->success('下载成功，正在跳转安装界面。。。', url('admin/apps/uninstallList'));
         } else {
             $this->error('解压失败，请检查是否有写入权限!');
         }

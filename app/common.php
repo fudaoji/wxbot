@@ -9,7 +9,51 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-!defined('SESSION_BOT') && define('SESSION_BOT', 'currentBot');
+if(!function_exists('get_adddon_name')) {
+    /**
+     * 获取应用名称
+     * @param string $path
+     * @param int $rlevel 从内到外的所在层级
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function get_addon_name(string $path, $rlevel = 2)
+    {
+        $path_layer = explode('/', $path);
+        return $path_layer[count($path_layer) - $rlevel];
+    }
+}
+
+if (!function_exists('addon_logo_url')) {
+    /**
+     * 插件目录
+     * @param null $addon
+     * @param string $file
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function addon_logo_url($addon = null)
+    {
+        is_null($addon) && $addon = request()->root();
+        $addon_info = get_addon_info($addon);
+        return '/'.config('addon.pathname') .'/'. $addon . '/' . $addon_info['logo'];
+    }
+}
+
+if(!function_exists('get_addon_info')) {
+    function get_addon_info(string $name = ''){
+        $info = [];
+        if(empty($name)){
+            $rule_arr = explode('/', request()->rule()->getRule());
+            $name = $rule_arr[0];
+        }
+        $path = root_path(config('addon.pathname') . DIRECTORY_SEPARATOR . $name) . 'info.php';
+        if(is_file($path)){
+            $info = require $path;
+        }
+        return $info;
+    }
+}
 
 if (!function_exists('cut_str')) {
     /**
@@ -40,7 +84,7 @@ if (!function_exists('addon_path')) {
     function addon_path($addon = null, $file = '')
     {
         is_null($addon) && $addon = request()->root();
-        return base_path(config('addon.path')) . $addon . ($file ? DIRECTORY_SEPARATOR . $file : '');
+        return config('addon.path') . $addon . ($file ? DIRECTORY_SEPARATOR . $file : '');
     }
 }
 

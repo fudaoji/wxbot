@@ -64,6 +64,7 @@ function check_dirfile()
         array('dir', '可写', 'success', 'config'),
         array('dir', '可写', 'success', 'extend'),
         array('dir', '可写', 'success', 'public/uploads'),
+        array('dir', '可写', 'success', 'public/addons'),
         array('dir', '可写', 'success', 'route'),
         array('dir', '可写', 'success', 'tests'),
         array('dir', '可写', 'success', 'themes'),

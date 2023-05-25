@@ -26,6 +26,7 @@ use \Exception;
  * Worker class
  * A container for listening ports
  */
+#[\AllowDynamicProperties]
 class Worker
 {
     /**
@@ -33,7 +34,7 @@ class Worker
      *
      * @var string
      */
-    const VERSION = '3.5.31';
+    const VERSION = '3.5.34';
 
     /**
      * Status starting.
@@ -773,7 +774,8 @@ class Worker
         }
 
         //show version
-        $line_version = 'Workerman version:' . static::VERSION . \str_pad('PHP version:', 22, ' ', \STR_PAD_LEFT) . \PHP_VERSION . \PHP_EOL;
+        $line_version = 'Workerman version:' . static::VERSION . \str_pad('PHP version:', 22, ' ', \STR_PAD_LEFT) . \PHP_VERSION;
+        $line_version .= \str_pad('Event-Loop:', 22, ' ', \STR_PAD_LEFT) . static::getEventLoopName() . \PHP_EOL;
         !\defined('LINE_VERSIOIN_LENGTH') && \define('LINE_VERSIOIN_LENGTH', \strlen($line_version));
         $total_length = static::getSingleLineTotalLength();
         $line_one = '<n>' . \str_pad('<w> WORKERMAN </w>', $total_length + \strlen('<w></w>'), '-', \STR_PAD_BOTH) . '</n>'. \PHP_EOL;

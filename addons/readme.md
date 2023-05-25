@@ -11,6 +11,8 @@
 * common.php  //应用公共函数文件，非必须
 * info.php    //应用信息文件，必须
 * Install.php  //应用安装类文件，必须
+* install.sql  //应用安装文件
+* menu.php    //应用的菜单文件, 必须
 * route.php  //应用路由文件，必须
 
 

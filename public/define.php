@@ -7,6 +7,7 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 
+!defined('SESSION_BOT') && define('SESSION_BOT', 'currentBot');
 define('SESSION_ADMIN', 'adminInfo');
 define('DS', DIRECTORY_SEPARATOR);
 

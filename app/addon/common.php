@@ -15,36 +15,6 @@ if(!function_exists('get_addon_menu')) {
     }
 }
 
-if(!function_exists('get_addon_info')) {
-    function get_addon_info(string $name = ''){
-        $info = [];
-        if(empty($name)){
-            $rule_arr = explode('/', request()->rule()->getRule());
-            $name = $rule_arr[0];
-        }
-        $path = root_path(config('addon.pathname') . DIRECTORY_SEPARATOR . $name) . 'info.php';
-        if(is_file($path)){
-            $info = require $path;
-        }
-        return $info;
-    }
-}
-
-if(!function_exists('get_adddon_name')) {
-    /**
-     * 获取应用名称
-     * @param string $path
-     * @param int $rlevel 从内到外的所在层级
-     * @return mixed
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    function get_addon_name(string $path, $rlevel = 2)
-    {
-        $path_layer = explode('/', $path);
-        return $path_layer[count($path_layer) - $rlevel];
-    }
-}
-
 /**
  * Created by PhpStorm.
  * Script Name: common.php

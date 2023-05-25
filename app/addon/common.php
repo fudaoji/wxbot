@@ -9,7 +9,7 @@ if(!function_exists('get_addon_menu')) {
         }
         $path = root_path(config('addon.pathname') . DIRECTORY_SEPARATOR . $name) . 'menu.php';
         if(is_file($path)){
-            $info = require_once $path;
+            $info = require $path;
         }
         return $info;
     }
@@ -24,7 +24,7 @@ if(!function_exists('get_addon_info')) {
         }
         $path = root_path(config('addon.pathname') . DIRECTORY_SEPARATOR . $name) . 'info.php';
         if(is_file($path)){
-            $info = require_once $path;
+            $info = require $path;
         }
         return $info;
     }
@@ -58,7 +58,7 @@ if(!function_exists('get_adddon_name')) {
  * @return string
  */
 if(!function_exists('addon_url')) {
-    function addon_url(string $url = '', array $vars = [], $suffix = true, $domain = true)
+    function addon_url(string $url = '', array $vars = [], $suffix = true, $domain = false)
     {
         $url = trim($url, '/');
         $module = request()->root();

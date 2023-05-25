@@ -14,6 +14,9 @@ use app\common\controller\BaseCtl;
 class AddonController extends BaseCtl
 {
     protected $addonName = null;
+    protected $module = '';
+    protected $urlPrefix = ''; //配合addon_url快速填写 $urlPrefix . $action
+    protected $addonMenus = [];
 
     public function initialize(){
         $rule = $this->request->rule()->getRule();
@@ -27,6 +30,8 @@ class AddonController extends BaseCtl
             $this->controller = $rule_arr[1];
             $this->action = $rule_arr[2];
         }
+        $this->urlPrefix = $this->module . '/'.$this->controller . '/';
+        $this->addonMenus = get_addon_menu($this->addonName);
     }
 
     public function show($assign = [], $view = ''){
@@ -35,9 +40,9 @@ class AddonController extends BaseCtl
         $assign['action'] = $this->action;
         $assign['theme'] = config('view.theme');
         $assign['app_info'] = get_addon_info();
+        $assign['addon_menus'] = $this->addonMenus;
 
         $this->assign = array_merge($this->assign, $assign);
-
         if (!$view) {
             $view = $assign['controller']. DIRECTORY_SEPARATOR.$assign['action'];
         }else{

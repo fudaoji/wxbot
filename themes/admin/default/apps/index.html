@@ -17,10 +17,10 @@
                 <div class="layui-row layui-col-space10">
                     <div class="layui-col-xs2">
                         <div class="layui-form-item">
-                            <select name="status" lay-filter="status" lay-verify="required">
-                                <option {if $status==-1} selected {/if} value="-1">状态</option>
-                                <option {if $status==1} selected {/if} value="1">开启</option>
-                                <option {if $status==0} selected {/if} value="0">关闭</option>
+                            <select name="type" lay-filter="type" lay-verify="required">
+                                {foreach $types as $k => $v}
+                                <option {if $type==$k} selected {/if} value="{$k}">{$v}</option>
+                                {/foreach}
                             </select>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
         var form = layui.form,
                 $ = layui.jquery,
                 miniTab = layui.miniTab;
-        form.on('select(status)', function(data){
+        form.on('select(type)', function(data){
             $('.search-form').submit();
         });
         form.on('switch(status)', function(data){

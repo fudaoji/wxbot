@@ -65,11 +65,10 @@ class Apps extends Base
 
         $page_size = 12;
         $status = input('status', -1);
+        $type = input('type', '');
         $search_key = input('search_key', '');
-        $where = [
-
-        ];
-
+        $where = [];
+        $type && $where[] = ['type', 'like', '%'.$type.'%'];
         $status != -1 && $where[] = ['status', '=', $status];
         $search_key && $where[] = ['title|desc', 'like', '%'.$search_key.'%'];
         $query = $this->model->where($where);
@@ -81,7 +80,9 @@ class Apps extends Base
             'data_list' => $data_list,
             'search_key' => $search_key,
             'page' => $page,
-            'status' => $status
+            'status' => $status,
+            'type' => $type,
+            'types' => ['' => '全部平台'] + PlatformService::types()
         ];
         return $this->show($assign);
     }

@@ -11,9 +11,9 @@ body {
     background: #f2f2f2;
 }
 .layui-layout-admin .layui-body{padding-bottom: 0;}
-.layuimini-menu-left .layui-nav .layui-nav-more {
-    top: 40%;
-}
+.layuimini-tool {left: 200px;}
+.layui-layout-left {left: 260px !important;}
+.layuimini-menu-left .layui-nav .layui-nav-more {top: 40%;}
 .layuimini-logo img{border-radius: 2px;}
 /*.layuimini-logo img{visibility: hidden;width: 0;}
 .layui-layout-admin .layuimini-logo h1{margin: 0;}*/

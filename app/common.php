@@ -9,7 +9,60 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-if(!function_exists('get_adddon_name')) {
+if(!function_exists('import_addon_public')){
+    function import_addon_public($path, $addon = ''){
+        $path = ltrim($path,'/\\');
+        empty($addon) && $addon = explode('/', request()->rule()->getRule())[0];
+        $app_path = addon_path($addon);
+        $ext = substr(strrchr($path, '.'), 1);
+        $source_path= $app_path.DS.'public'.DS.$path;
+        if(($ext == 'html'||$ext == 'php') && is_file($source_path)){
+            include($source_path);
+            return $source_path;
+        }
+
+        $addons_path_name = config('addon.pathname');
+        if(is_file($source_path)){
+            $publish_path = public_path($addons_path_name.DS.$addon).$path;
+            $param = '';
+            //文件如果被改变就重新发布
+            if(!is_file($publish_path) || filemtime($source_path) > filemtime($publish_path)){
+                set_header('X-Accel-Buffering','no'); // 刷新缓存
+                set_header("Expires","Mon, 26 Jul 1997 05:00:00 GMT");
+                set_header("Cache-Control","no-cache, must-revalidate");
+                set_header("Pragma: no-cache");
+                is_dir(dirname($publish_path)) or mkdir(dirname($publish_path),0751,true);
+                copy($source_path, $publish_path);
+                $param = '?t='.time();
+            }
+            $url = request()->domain().'/'.$addons_path_name.'/'.$addon . '/'.$path;
+            if($ext == 'js'){
+                return "<script src='{$url}{$param}'></script>";
+            }elseif ($ext == 'css'){
+                return '<link rel="stylesheet" type="text/css" href="'.($url.$param).'" media="all" />';
+            }else{
+                return $url;
+            }
+        }
+        return $path;
+    }
+}
+
+if(!function_exists('set_header')){
+    /**
+     * 设置返回头
+     * @param $key
+     * @param $value
+     * @return array
+     */
+    function set_header($key=null,$value=null){
+        static $header=[];
+        if($key)$header[$key]=$value;
+        return $header;
+    }
+}
+
+if(!function_exists('get_addon_name')) {
     /**
      * 获取应用名称
      * @param string $path
@@ -28,7 +81,6 @@ if (!function_exists('addon_logo_url')) {
     /**
      * 插件目录
      * @param null $addon
-     * @param string $file
      * @return string
      * Author: fudaoji<fdj@kuryun.cn>
      */
@@ -36,7 +88,8 @@ if (!function_exists('addon_logo_url')) {
     {
         is_null($addon) && $addon = request()->root();
         $addon_info = get_addon_info($addon);
-        return '/'.config('addon.pathname') .'/'. $addon . '/' . $addon_info['logo'];
+        $addons_path_name = config('addon.pathname');
+        return '/'.$addons_path_name .'/'. $addon . '/' . $addon_info['logo'];
     }
 }
 

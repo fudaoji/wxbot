@@ -139,18 +139,11 @@ class Apps extends Base
             if ($name == '') {
                 $this->error('参数错误');
             }
-            $path= addon_path($name);
-            if(!file_exists($path)){
-                $this->error($path.'目录不存在');
-            }
-            if(!is_writable($path)){
-                $this->error($path.'目录没有删除权限');
-            }
-
-            if(($res = FileService::delDirRecursively($path, true)) === true){
+            $res = AppService::removePackage($name);
+            if($res === true){
                 $this->success('安装包删除成功');
             }else{
-                $this->error('删除应用目录失败:' . $res);
+                $this->error($res);
             }
         }
     }
@@ -223,7 +216,7 @@ class Apps extends Base
                     execute_sql($install_sql);
                 }
                 //todo public文件移到框架的public/addons/下，并命名为应用标识
-                FileService::renameFile(addon_path($name, 'public'), public_path(config('addon.pathname')) . $name);
+                //FileService::renameFile(addon_path($name, 'public'), public_path(config('addon.pathname')) . $name);
 
                 //执行应用中的Install::install
                 AppService::runInstall($name);
@@ -252,7 +245,7 @@ class Apps extends Base
             $list = AppService::listUninstallApp();
             $total = count($list);
             foreach ($list as &$item){
-                $item['logo'] = addon_logo_url($item['name']);
+                $item['logo'] = import_addon_public($item['logo'], $item['name']);
             }
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }

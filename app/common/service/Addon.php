@@ -10,6 +10,7 @@
 namespace app\common\service;
 
 use app\common\model\Addon as AppM;
+use app\common\service\File as FileService;
 use think\facade\Db;
 
 class Addon
@@ -152,5 +153,36 @@ class Addon
             $res = false;
         }
         return $res;
+    }
+
+    /**
+     * 彻底删除文件包
+     * @param $name
+     * @return bool|string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function removePackage($name)
+    {
+        try {
+            $path= addon_path($name);
+            if(!file_exists($path)){
+                return $path.'目录不存在';
+            }
+            if(!is_writable($path)){
+                return $path.'目录没有删除权限';
+            }
+            //删除主目录
+            if(($res = FileService::delDirRecursively($path, true)) !== true){
+                return '删除应用目录失败:' . $res;
+            }
+            //删除静态文件夹
+            if(($res = FileService::delDirRecursively(public_path(config('addon.pathname')) . $name, true)) !== true){
+                return '删除静态资源目录失败:' . $res;
+            }
+        }catch (\Exception $e){
+            return  '安装包删除出错：'.$e->getMessage();
+        }
+
+        return true;
     }
 }

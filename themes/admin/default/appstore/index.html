@@ -33,7 +33,7 @@
         <span class="layui-breadcrumb" lay-separator="|">
             {volist name="cates" id="c"}
             <a href="{:url('index', ['cate' => $c, 'type' => $type])}"
-                    {if $cate == $c}class="layui-this"{/if}
+               {if $cate == $c}class="layui-this"{/if}
             >{$c}</a>
             {/volist}
         </span>
@@ -49,12 +49,13 @@
                     </span>
         {else/}
         <span class="layui-breadcrumb" lay-separator="|">
+            <a href="javascript:;" data-href="{:url('upgrade/login')}" id="daoadmin-login">登录</a>
                       <a href="{$official_href}" target="_blank">注册</a>
-                      <a href="javascript:;" data-href="{:url('upgrade/login')}" id="daoadmin-login">登录</a>
+
                     </span>
         {/if}
     </div>
-    <hr>
+    <br> <hr>
 </div>
 
 <div>
@@ -117,8 +118,8 @@
 <script>
     layui.use(['layer','form', 'jquery'], function() {
         var layer = layui.layer
-        ,form = layui.form
-        ,$ = layui.jquery;
+                ,form = layui.form
+                ,$ = layui.jquery;
 
         $('#daoadmin-login').on('click', function () {
             var index = layer.open({
@@ -148,7 +149,7 @@
     }
 
     #account a:hover{text-decoration: none;}
-    #account{text-align: right; font-size: 14px;}
+    #account{text-align: right; font-size: 14px; padding-right: 20px;}
     #apps{margin-top: 10px; display:block; }
     .apps-money{float: right;}
     .app-desc-body{color: #707070;font-size: 14px;}

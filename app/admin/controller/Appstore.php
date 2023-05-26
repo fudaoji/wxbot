@@ -47,8 +47,13 @@ class Appstore extends Base
         if (file_exists($app_install_path))
             $this->error($app['name'] . '目录已经存在或者您已经安装过【' . $app['title'] . '】，如果您要重新安装，请先卸载此应用');
 
+        $addon_path = addon_path('');
+        if(!is_writable($addon_path)){
+            $this->error("应用包根目录" . $addon_path . "无可写权限，请先修改可写权限！");
+        }
+
         $tem_file = runtime_path('/') . $app['name'].$app['version'].'-'.time(). '.tmp';
-        $response = (new Client())->post($app['package']);
+        $response = (new Client())->post($app['package'], ['verify' => false]);
         if($response->getStatusCode() === 200){
             $package = $response->getBody()->getContents();
             file_put_contents($tem_file, $package);
@@ -59,7 +64,7 @@ class Appstore extends Base
         $zip = new \ZipArchive;
         $res = $zip->open($tem_file);
         if ($res === true) {
-            $zip->extractTo(addon_path(''));
+            $zip->extractTo($addon_path);
             $zip->close();
             @unlink($tem_file); //删除临时压缩包
             $this->success('下载成功，正在跳转安装界面。。。', url('admin/apps/uninstallList'));

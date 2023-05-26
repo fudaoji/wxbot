@@ -158,5 +158,8 @@ class HandlerPrivateChat extends Handler
                 }
             }
         }
+
+        //todo 新插件方案执行
+
     }
 }

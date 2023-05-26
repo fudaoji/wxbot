@@ -82,7 +82,7 @@ class ListBuilder extends Base
         switch ($type) {
             case 'addnew':  // 添加新增按钮
                 // 预定义按钮属性以简化使用
-                $my_attribute['title'] = '新增';
+                $my_attribute['text'] = '新增';
                 $my_attribute['class'] = 'layui-btn layui-btn-normal layui-btn-sm';
                 $my_attribute['lay-event']  = 'add';
                 $my_attribute['href']  = url('add');
@@ -98,7 +98,7 @@ class ListBuilder extends Base
                 break;
             case 'delete': // 添加删除按钮(我没有反操作，删除了就没有了，就真的找不回来了)
                 // 预定义按钮属性以简化使用
-                $my_attribute['title'] = '删除';
+                $my_attribute['text'] = '删除';
                 $my_attribute['class'] = 'layui-btn layui-btn-danger layui-btn-sm';
                 $my_attribute['lay-event']  = 'delete';
                 $my_attribute['href']  = url($set_status_url, ['status' => 'delete']);
@@ -111,7 +111,7 @@ class ListBuilder extends Base
                 break;
             case 'resume':  // 添加启用按钮(禁用的反操作)
                 //预定义按钮属性以简化使用
-                $my_attribute['title'] = '批量启用';
+                $my_attribute['text'] = '批量启用';
                 $my_attribute['target-form'] = 'ids';
                 $my_attribute['class'] = 'btn btn-success btn-sm ajax-post confirm';
                 $my_attribute['__href__']  = url($set_status_url, ['status' => 'resume']);
@@ -125,7 +125,7 @@ class ListBuilder extends Base
             case 'forbid':  // 添加禁用按钮(启用的反操作)
                 // 预定义按钮属性以简化使用
                 $my_attribute['lay-event']  = 'forbid';
-                $my_attribute['title'] = '批量禁用';
+                $my_attribute['text'] = '批量禁用';
                 $my_attribute['target-form'] = 'ids';
                 $my_attribute['class'] = 'layui-btn layui-btn-warm layui-btn-sm data-ajax data-confirm';
                 $my_attribute['href']  = url($set_status_url, ['status' => 'forbid']);
@@ -144,12 +144,13 @@ class ListBuilder extends Base
                 if ($attribute && is_array($attribute)) {
                     $my_attribute = array_merge($my_attribute, $attribute);
                 } else {
-                    $my_attribute['title'] = '该自定义按钮未配置属性';
+                    $my_attribute['text'] = '自定义按钮';
                 }
 
                 break;
         }
         $my_attribute['class'] .= ' layui-btn layui-btn-sm ';
+        empty($my_attribute['title']) && $my_attribute['title'] = $my_attribute['text'];
         $this->_top_button_list[] = $my_attribute;
         return $this;
     }
@@ -233,7 +234,7 @@ class ListBuilder extends Base
         switch ($type) {
             case 'edit':  // 编辑按钮
                 // 预定义按钮属性以简化使用
-                $my_attribute['title'] = '编辑';
+                $my_attribute['text'] = '编辑';
                 $my_attribute['class'] = 'layui-btn-normal';
                 $my_attribute['lay-event']  = 'edit';
                 $my_attribute['href']  = url('edit', ['id' => '__data_id__'], '');
@@ -250,7 +251,7 @@ class ListBuilder extends Base
                 break;
             case 'delete':
                 // 预定义按钮属性以简化使用
-                $my_attribute['title'] = '删除';
+                $my_attribute['text'] = '删除';
                 $my_attribute['class'] = 'layui-btn-danger ';
                 $my_attribute['lay-event']  = 'delete';
                 $my_attribute['href']  = url($set_status_url, ['status' => 'delete']);
@@ -268,7 +269,7 @@ class ListBuilder extends Base
                 $my_attribute['0']['__href__']  = url($set_status_url, ['status' => 'resume', 'ids' => '__data_id__']);
                 //$my_attribute['0']['href']  = 'javascript:void(0)';
 
-                $my_attribute['1']['title'] = '禁用';
+                $my_attribute['1']['text'] = '禁用';
                 $my_attribute['1']['class'] = 'label label-warning ajax-get confirm';
                 $my_attribute['1']['__href__']  = url($set_status_url, ['status' => 'forbid', 'ids' => '__data_id__']);
                 //$my_attribute['1']['href']  ='javascript:void(0)';
@@ -287,11 +288,12 @@ class ListBuilder extends Base
                 if ($attribute && is_array($attribute)) {
                     $my_attribute = array_merge($my_attribute, $attribute);
                 } else {
-                    $my_attribute['title'] = '该自定义按钮未配置属性';
+                    $my_attribute['text'] = '该自定义按钮未配置属性';
                 }
                 break;
         }
         $my_attribute['class'] .= ' layui-btn layui-btn-xs ';
+        empty($my_attribute['title']) && $my_attribute['title'] = $my_attribute['text'];
         // 这个按钮定义好了把它丢进按钮池里
         $this->_right_button_list[] = $my_attribute;
         return $this;

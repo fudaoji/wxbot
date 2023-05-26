@@ -1,42 +1,22 @@
 -- ----------------------------
--- 2.1.4 手动更新请务必手动替换__PREFIX__为你的真实表前缀
+-- 2.2.0 手动更新请务必手动替换__PREFIX__为你的真实表前缀
 -- ----------------------------
-CREATE TABLE `__PREFIX__media_group` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+CREATE TABLE `__PREFIX__addon` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `title` varchar(50) CHARACTER SET utf8 NOT NULL COMMENT '应用名称',
+  `name` varchar(50) CHARACTER SET utf8 NOT NULL COMMENT '标识名',
+  `desc` varchar(200) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '简介',
+  `version` varchar(10) CHARACTER SET utf8 NOT NULL COMMENT '版本号',
+  `author` varchar(50) CHARACTER SET utf8 NOT NULL COMMENT '作者姓名',
+  `logo` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT 'LOGO',
+  `admin_url` varchar(160) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '后台入口',
+  `admin_url_type` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '管理后台：1使用系统 2自建后台',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0',
-  `admin_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `type` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT 'mp' COMMENT '支持平台',
+  `cates` varchar(200) NOT NULL DEFAULT '' COMMENT '分类标签',
   PRIMARY KEY (`id`),
-  KEY `title` (`title`,`admin_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='素材分组';
-
-ALTER TABLE `__PREFIX__media_file_1` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_file_2` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_file_3` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_file_4` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_file_5` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-
-ALTER TABLE `__PREFIX__media_image_1` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_image_2` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_image_3` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_image_4` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-ALTER TABLE `__PREFIX__media_image_5` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' AFTER `location`;
-
-ALTER TABLE `__PREFIX__media_link_1` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_link_2` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_link_3` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_link_4` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_link_5` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-
-ALTER TABLE `__PREFIX__media_text_1` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_text_2` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_text_3` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_text_4` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_text_5` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-
-ALTER TABLE `__PREFIX__media_video_1` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_video_2` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_video_3` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_video_4` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
-ALTER TABLE `__PREFIX__media_video_5` ADD COLUMN `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分组id' ;
+  UNIQUE KEY `name` (`name`),
+  KEY `cates` (`cates`(191))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='应用表';

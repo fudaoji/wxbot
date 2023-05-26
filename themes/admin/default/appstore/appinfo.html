@@ -1,0 +1,140 @@
+<div class="layui-row" id="apps-info">
+    <div class="layui-col-xs2 pd">
+        <div class="apps-info-logo">
+            <img src="{$info.logo}" style="width: 100%;" />
+        </div>
+    </div>
+    <div class="layui-col-xs10 pd">
+        <div class="layui-row">
+            <div class="layui-col-xs8">
+                <span class="apps-info-title">{$info.title}
+                    <span class="layui-badge layui-bg-blue">{$info.price>0 ? ('￥' . $info.price) : '免费'}</span>
+                </span>
+                <div class="apps-info-desc">
+                    <p>版本：{$info.version}</p>
+                    <p>作者：{$info.author}，分类：{:implode('|', explode(',', $info['cates']))}</p>
+                    <p>发布时间：{$info.create_time|date="Y-m-d"}，更新时间：{$info.update_time|date="Y-m-d"}</p>
+                    <p>
+                        {App:types haystack='types' types="info.type" /}
+                    </p>
+                    <p>
+                        依赖应用：{$info.dependency}
+                    </p>
+                    <div class="install-btn">
+                        <button onclick="downloadApp('{$info.id}')" class="layui-btn layui-btn-sm">
+                            <i class="layui-icon">&#xe601;</i>立即下载
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs4 preview-qrcode tc">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        {if $info.demo_pc != ''}
+                        <p class="apps-info-preview_text" style="margin-bottom: 20px;">PC端预览</p>
+                        <p><a style="color: #1E9FFF;" href="{$info.demo_pc}" target="_blank">点击跳转</a></p>
+                        {/if}
+                    </div>
+                    <div class="layui-col-xs6">
+                        {if $info.demo_qrcode != ''}
+                        <p class="apps-info-preview_text" style="margin-bottom: 5px">手机端预览</p>
+                        <img style="width: 120px;" src="{$info.demo_qrcode}">
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div style="padding: 0px 10px;">
+        小提示
+        <hr>
+        <blockquote style="border-left:5px solid  #ea6e0c;" class="layui-elem-quote">{$info.warning|raw}</blockquote>
+        应用简介
+        <hr>
+        <blockquote class="layui-elem-quote">{$info.desc|raw}</blockquote>
+        <div class="layui-tab layui-tab-card">
+            <ul class="layui-tab-title">
+                <li class="layui-this">应用详情</li>
+                <li>升级日志</li>
+            </ul>
+            <div class="layui-tab-content" style="height: auto;">
+                <div class="layui-tab-item layui-show">
+                    <div class="apps-info-content">
+                        {$info.detail|raw}
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+                    <ul class="layui-timeline">
+                        {volist name="upgrade_list" id="v"}
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">V{$v.version}({$v.create_time|date="Y-m-d H:i"})</h3>
+                                <div>{$v.desc|raw}</div>
+                            </div>
+                        </li>
+                        {/volist}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>
+</div>
+
+<script>
+    var layer, form, element;
+
+    layui.use(['layer','form','element'], function() {
+        element = layui.element;
+        layer = layui.layer;
+        form = layui.form;
+    });
+
+    /**
+     * 下载应用
+     * @param id
+     * @returns {boolean}
+     */
+    function downloadApp(id) {
+        var isLogin = parseInt("{$token ? 1 : 0}");
+        if(! isLogin){
+            layer.msg('请先登录', {time:1500}, function () {
+                location.href = "{:url('upgrade/login')}";
+            });
+            return false;
+        }
+
+        var tip = '{if($info.price>0)}你确定付费{$info.price}元下载使用此应用吗？{else /}此应用是免费的，你确定要下载使用吗？{/if}';
+        layer.confirm(tip, {
+            btn: ['是的','不的']
+        }, function(){
+            var userInfo = {:json_encode($user)}
+        ,appInfo = {:json_encode($info)};
+            if(parseFloat(userInfo.money) < parseFloat(appInfo.price)){
+                layer.alert('余额不足，请先充值！');
+                return;
+            }
+            requestPost("{:url('download')}", {app_id:id}, function (res) {
+                parent.location.href = res.url;
+            });
+        });
+        return false;
+    }
+</script>
+
+
+<style>
+    #apps-info p{line-height: 20px;}
+    #apps-info .pd{padding: 10px 0px 10px 10px;}
+    .apps-info-title{font-size: 22px;}
+    .apps-info-title span{ margin-left:5px;font-size: 12px;bottom: 3px;}
+    .apps-info-content{padding: 10px;}
+    .apps-info-desc{font-size: 12px;color: #787878;}
+    .preview-qrcode{text-align: center;}
+    .apps-info-preview_text {text-align: center; top: -5px;position: relative;}
+    .install-btn{margin-top: 35px;}
+    .layui-tab-content img{max-width: 100% !important;}
+</style>

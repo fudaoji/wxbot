@@ -1,0 +1,166 @@
+<form class="layui-form search-form" action="" style="margin-top: 10px;">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-xs2">
+            <div class="layui-form-item">
+                <select name="type" lay-filter="types">
+                    {volist name="types" id="vo"}
+                    <option {if $type==$key} selected {/if} value="{$key}">{$vo}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-col-xs7">
+            <div class="layui-col-xs5" style="margin-left: 5px; line-height: 38px;">
+                <div class="layui-form-item">
+                    <input name="search_key"
+                           placeholder="请输入关键词"
+                           value="{$search_key}"
+                           class="layui-input"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-col-xs4" style="margin-left: 5px;">
+                <button class="layui-btn layui-btn-primary" lay-submit="" lay-filter="formDemo">
+                    <i class="fa fa-search"></i>搜索
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="layui-row">
+    <div class="layui-col-xs8">
+        <span class="layui-breadcrumb" lay-separator="|">
+            {volist name="cates" id="c"}
+            <a href="{:url('index', ['cate' => $c, 'type' => $type])}"
+               {if $cate == $c}class="layui-this"{/if}
+            >{$c}</a>
+            {/volist}
+        </span>
+    </div>
+
+    <div class="layui-col-xs4" id="account">
+        {if !empty($user)}
+        <span class="layui-breadcrumb" lay-separator="|">
+                      <a>{$user.name}</a>
+                      <a>{$user.money ?? 0.00}元</a>
+                      <a href="javascript:;">充值</a>
+                      <a href="{:url('logout')}">退出</a>
+                    </span>
+        {else/}
+        <span class="layui-breadcrumb" lay-separator="|">
+            <a href="javascript:;" data-href="{:url('upgrade/login')}" id="daoadmin-login">登录</a>
+                      <a href="{$official_href}" target="_blank">注册</a>
+
+                    </span>
+        {/if}
+    </div>
+    <br> <hr>
+</div>
+
+<div>
+    <div class="layui-row">
+        <div id="app-body">
+            <div id="apps">
+                <div class="layui-row">
+                    {volist name="apps" id="v"}
+                    <div class="layui-col-xs3 layui-col-md3 layui-col-lg2 apps-volist"
+                         layer-open="2" data-title="{$v.title}" data-content="{:url('appinfo', ['id' => $v.id])}"
+                    >
+                        <div class="apps-volists">
+                            <div class="apps-icon">
+                                <img src="{$v.logo}">
+                            </div>
+                            <div class="app-desc">
+                                <h2>{$v.title}
+                                    <span class="apps-money layui-badge layui-bg-blue">
+                                        {$v.price>0 ? ('￥' . $v.price) : '免费'}
+                                    </span>
+                                </h2>
+                                <div class="app-desc-body">
+                                    <div class="type" style="height: 34px;margin: 2px;">
+                                        <?php $atypes = explode(',', $v['type']);?>
+                                        {foreach $atypes as $t}
+                                        <span style="margin-right: 2px;margin-bottom: 1px;" class="layui-badge layui-bg-orange">{$types[$t]}</span>
+                                        {/foreach}
+                                    </div>
+                                    <div class="description">{:cut_str($v.desc,25)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/volist}
+                </div>
+            </div>
+        </div>
+        {if $total>0}
+        <div class="layui-row">
+            <div class="layui-col-md3 layui-col-md-offset9">
+                <div class="apps-page">
+                    <a href="{if $page > 1}{:url('index', array_merge(input(), ['page' => $page - 1]))}{else/}javascript:;{/if}" class="layui-btn layui-btn-sm {if $page <= 1}layui-btn-disabled{/if}" >
+                        <i class="layui-icon">&#xe603;</i>
+                        上一页
+                    </a>
+                    <a href="{if $page * $page_size < $total}{:url('index', array_merge(input(), ['page' => $page + 1]))}{else/}javascript:;{/if}" class="layui-btn layui-btn-sm {if $page * $page_size >= $total}layui-btn-disabled{/if}">
+                        <i class="layui-icon">&#xe602;</i>
+                        下一页
+                    </a>
+                </div>
+            </div>
+        </div>
+        {else/}
+        <div class="text-center">暂无数据</div>
+        {/if}
+    </div>
+</div>
+
+{block name="js"}
+<script>
+    layui.use(['layer','form', 'jquery'], function() {
+        var layer = layui.layer
+                ,form = layui.form
+                ,$ = layui.jquery;
+
+        $('#daoadmin-login').on('click', function () {
+            var index = layer.open({
+                title: "登录开发者社区",
+                type: 2,
+                shade: 0.2,
+                area: ['95%', '95%'],
+                content: $(this).data('href'),
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        });
+
+        form.on('select(types)', function(data){
+            $('.search-form').submit();
+        });
+    });
+</script>
+{/block}
+
+{block name="css"}
+<style>
+    .type{font-size: 12px;}
+    .layui-breadcrumb .layui-this {
+        color: #1E9FFF !important;
+    }
+
+    #account a:hover{text-decoration: none;}
+    #account{text-align: right; font-size: 14px; padding-right: 20px;}
+    #apps{margin-top: 10px; display:block; }
+    .apps-money{float: right;}
+    .app-desc-body{color: #707070;font-size: 14px;}
+    .app-desc-body .description{font-size: 14px;}
+    .apps-volists {border:1px  solid rgb(231, 231, 235);margin: 0px 5px 5px 0px;padding: 5px;overflow: hidden;}
+    .apps-volists:hover{border-color: #1E9FFF;}
+    .apps-volist{cursor: pointer}
+    .apps-icon{float: left;margin-right: 10px;}
+    .apps-icon img{ width: 68px;height: 68px;border-radius:8px; }
+
+    .apps-page{margin-top: 15px;}
+    .apps-page a:hover{text-decoration: none;}
+</style>
+{/block}

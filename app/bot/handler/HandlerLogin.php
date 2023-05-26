@@ -9,10 +9,10 @@
 
 namespace app\bot\handler;
 
-use app\constants\Addon;
-
 class HandlerLogin extends Handler
 {
+    protected $addonHandlerName = 'loginHandle';
+
     public function handle(){
         $this->basic();
         $this->addon();
@@ -23,19 +23,5 @@ class HandlerLogin extends Handler
             'id' => $this->bot['id'],
             'alive' => $this->content['type'] ? 0 : 1
         ]);
-    }
-
-    protected function addon()
-    {
-        $addons = Addon::addons();
-        foreach ($addons as $k => $v){
-            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, 'loginHandle')){
-                    $class->init($this->getAddonOptions())->loginHandle();
-                }
-            }
-        }
     }
 }

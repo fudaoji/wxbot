@@ -16,7 +16,9 @@ use ky\Logger;
 
 class HandlerGroupMemberAdd extends Handler
 {
+    protected $addonHandlerName = 'groupMemberAddHandle';
     public $replyM;
+
     /**
      *
     {
@@ -82,20 +84,6 @@ class HandlerGroupMemberAdd extends Handler
                     $this->bot, $this->botClient, $reply, $this->groupWxid,
                     ['nickname' => $nickname, 'need_at' => $reply['need_at'], 'member_wxid' => $member_wxid]
                 );
-            }
-        }
-    }
-
-    protected function addon()
-    {
-        $addons = Addon::addons();
-        foreach ($addons as $k => $v){
-            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, 'groupMemberAddHandle')){
-                    $class->groupMemberAddHandle();
-                }
             }
         }
     }

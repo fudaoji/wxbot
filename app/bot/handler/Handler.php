@@ -17,6 +17,9 @@ use app\bot\handler\vlw\EventFriendVerify;
 use app\bot\handler\vlw\EventPrivateChat;
 use app\bot\handler\vlw\EventLogin;
 use app\common\controller\BaseCtl;
+use app\common\service\Addon as AppService;
+use app\common\service\Platform;
+use app\constants\Addon;
 use app\constants\Bot as BotConst;
 use ky\Helper;
 use ky\WxBot\Driver\Extian;
@@ -62,6 +65,8 @@ class Handler extends BaseCtl
     protected $addonOptions;
     protected $isNewFriend = false;
     protected $beAtStr = [];
+
+    protected $addonHandlerName;
 
     /**
      * 入口
@@ -327,6 +332,40 @@ class Handler extends BaseCtl
                 return Qianxun::response();
             case BotConst::PROTOCOL_EXTIAN:
                 return Extian::response();
+        }
+    }
+
+    /**
+     * 插件调用
+     * @param $handler
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function addon(){
+        //插件新方案执行
+        $addons = AppService::listOpenApps(Platform::WECHAT);
+        foreach ($addons as $k => $v){
+            $class_name = "\\".config('addon.pathname')."\\".$v['name']."\\platform\\controller\\Bot";
+            if(class_exists($class_name)){
+                $class = new $class_name();
+                if(method_exists($class, $this->addonHandlerName)){
+                    $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
+                }
+            }
+        }
+
+        //插件旧方案
+        $addons = Addon::addons();
+        foreach ($addons as $k => $v){
+            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
+            if(class_exists($class_name)){
+                $class = new $class_name();
+                if(method_exists($class, $this->addonHandlerName)){
+                    $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
+                }
+            }
         }
     }
 }

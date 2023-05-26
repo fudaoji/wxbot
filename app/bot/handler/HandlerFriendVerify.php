@@ -15,24 +15,9 @@ use app\constants\Reply;
 
 class HandlerFriendVerify extends Handler
 {
+    protected $addonHandlerName = 'friendVerifyHandle';
+
     public function handle(){
         $this->addon();
-    }
-
-    /**
-     * 插件处理
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function addon(){
-        $addons = Addon::addons();
-        foreach ($addons as $k => $v){
-            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, 'friendVerifyHandle')){
-                    $class->init($this->getAddonOptions())->friendVerifyHandle();
-                }
-            }
-        }
     }
 }

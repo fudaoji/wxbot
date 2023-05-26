@@ -14,6 +14,7 @@ use ky\Logger;
 
 class HandlerDeviceCallback extends Handler
 {
+    protected $addonHandlerName = 'deviceCallbackHandle';
     /**
      * 设备回调消息接收器: 机器人自己发群消息
      * {
@@ -35,22 +36,4 @@ class HandlerDeviceCallback extends Handler
         $this->groupWxid = $this->content['robot_wxid'];
         $this->addon();
     }
-
-    /**
-     * 插件处理
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function addon(){
-        $addons = Addon::addons();
-        foreach ($addons as $k => $v){
-            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, 'deviceCallbackHandle')){
-                    $class->init($this->getAddonOptions())->deviceCallbackHandle();
-                }
-            }
-        }
-    }
-
 }

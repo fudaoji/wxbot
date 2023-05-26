@@ -13,6 +13,8 @@ use app\constants\Addon;
 
 class HandlerLoginCode extends Handler
 {
+    protected $addonHandlerName = 'loginHandle';
+
     public function handle(){
         $this->basic();
         $this->addon();
@@ -20,19 +22,5 @@ class HandlerLoginCode extends Handler
 
     public function basic(){
 
-    }
-
-    protected function addon()
-    {
-        $addons = Addon::addons();
-        foreach ($addons as $k => $v){
-            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, 'loginHandle')){
-                    $class->init($this->getAddonOptions())->loginHandle();
-                }
-            }
-        }
     }
 }

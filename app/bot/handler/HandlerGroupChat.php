@@ -18,6 +18,8 @@ use ky\Logger;
 
 class HandlerGroupChat extends Handler
 {
+    protected $addonHandlerName = 'groupChatHandle';
+
     /**
      * 消息转播
      * Author: fudaoji<fdj@kuryun.cn>
@@ -65,23 +67,6 @@ class HandlerGroupChat extends Handler
                     case Reply::HANDLE_MSG:
                         model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid);
                         break;
-                }
-            }
-        }
-    }
-
-    /**
-     * 插件处理
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function addon(){
-        $addons = Addon::addons();
-        foreach ($addons as $k => $v){
-            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, 'groupChatHandle')){
-                    $class->init($this->getAddonOptions())->groupChatHandle();
                 }
             }
         }

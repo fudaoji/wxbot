@@ -16,6 +16,29 @@ use think\facade\Db;
 class Addon
 {
     /**
+     * 启用的应用
+     * @param string $type
+     * @param bool $refresh
+     * @return AppM[]|array|mixed|\think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function listOpenApps($type = Platform::WECHAT, $refresh = false){
+        $key = md5(__CLASS__.__FUNCTION__);
+        $list = cache($key);
+        if(empty($list) || $refresh){
+            $list = AppM::where('status', 1)
+                ->where('type', 'like', '%'.$type.'%')
+                ->field(['id','title','name','logo'])
+                ->select();
+        }
+        cache($key, $list);
+        return $list;
+    }
+
+    /**
      * 执行应用中的Install::update
      * @param string $name
      * Author: fudaoji<fdj@kuryun.cn>

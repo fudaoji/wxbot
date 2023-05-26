@@ -18,5 +18,5 @@ use ky\Logger;
 
 class HandlerGroupEstablish extends Handler
 {
-
+    protected $addonHandlerName = 'groupEstablishHandle';
 }

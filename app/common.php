@@ -19,7 +19,7 @@ if(!function_exists('get_adddon_name')) {
      */
     function get_addon_name(string $path, $rlevel = 2)
     {
-        $path_layer = explode('/', $path);
+        $path_layer = explode(DS, $path);
         return $path_layer[count($path_layer) - $rlevel];
     }
 }
@@ -84,7 +84,7 @@ if (!function_exists('addon_path')) {
     function addon_path($addon = null, $file = '')
     {
         is_null($addon) && $addon = request()->root();
-        return config('addon.path') . $addon . ($file ? DIRECTORY_SEPARATOR . $file : '');
+        return config('addon.path') . $addon . ($file ? DS . $file : '');
     }
 }
 

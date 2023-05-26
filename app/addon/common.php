@@ -46,7 +46,7 @@ if(!function_exists('get_local_addons')){
         $files = scandir($path);
         $addons = [];
         foreach ($files as $v) {
-            $file = $path . DIRECTORY_SEPARATOR . $v;
+            $file = $path . DS . $v;
             if (is_dir($file) && $v != '.' && $v != '..') {
                 $addons[] = $v;
             }

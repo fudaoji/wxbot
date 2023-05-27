@@ -4,6 +4,7 @@
 
 ### 目录结构
 * admin       //业务功能逻辑主模块（名称可自定义，只要和路由定义能对应就行），至少1个模块
+* common      //common模块，放置model、service等代码
 * crontab     //定时任务模块，非必须
 * platform    //消息处理器模块，必须
 * 其他模块
@@ -14,6 +15,7 @@
 * install.sql  //应用安装文件
 * menu.php    //应用的菜单文件, 必须
 * route.php  //应用路由文件，必须
+* upgrade.sql  //版本升级SQL文件，非必须
 
 
 ### 路由

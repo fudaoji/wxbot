@@ -31,12 +31,12 @@
 - 优惠券助手
     
 #### 界面截图：
-![输入图片说明](1.png)
-![输入图片说明](2.png)
-![输入图片说明](3.png)
-![输入图片说明](4.png)
-![输入图片说明](5.png)
-![输入图片说明](6.png)
+![输入图片说明](snapshots/1.png)
+![输入图片说明](snapshots/2.png)
+![输入图片说明](snapshots/3.png)
+![输入图片说明](snapshots/4.png)
+![输入图片说明](snapshots/5.png)
+![输入图片说明](snapshots/6.png)
 ![输入图片说明](snapshots/7.png)
 
 #### 软件架构

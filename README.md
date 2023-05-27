@@ -32,11 +32,12 @@
     
 #### 界面截图：
 ![输入图片说明](1.png)
-![输入图片说明](image.png)
+![输入图片说明](2.png)
 ![输入图片说明](3.png)
 ![输入图片说明](4.png)
 ![输入图片说明](5.png)
 ![输入图片说明](6.png)
+![输入图片说明](snapshots/7.png)
 
 #### 软件架构
 - [ThinkPHP6](https://www.kancloud.cn/manual/thinkphp6_0/)

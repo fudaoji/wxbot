@@ -79,8 +79,8 @@ class Bot extends Bbase
         ])
             ->setTabNav($this->tabs, 'index')
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
-            ->addTopButton('addnew', ['title' => '扫码登录', 'href' => url('hookadd')])
             ->addTopButton('addnew', ['title' => '手动添加'])
+            ->addTopButton('addnew', ['title' => '扫码登录(限wxbot会员)', 'href' => url('hookadd')])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 150])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 100])
             ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => BotConst::protocols(), 'minWidth' => 90])
@@ -265,7 +265,7 @@ class Bot extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
-            ->setTip("微信二维码加载需要几秒钟，点击提交后请耐心等待！<br>app_key和url读取顺序：上个机器人 > 设置默认值 <br> 如果需要填写新的，请先在服务器上完成框架设置并获取APPKey和http调用地址")
+            ->setTip("<div style='color: red;font-weight: bold;'>使用免费的西瓜框架无法用此功能。</div>微信二维码加载需要几秒钟，点击提交后请耐心等待！<br>app_key和url读取顺序：上个机器人 > 设置默认值 <br> 如果需要填写新的，请先在服务器上完成框架设置并获取APPKey和http调用地址")
             ->setPostUrl(url('hookAdd'))
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::canScan())
             ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')

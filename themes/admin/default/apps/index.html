@@ -71,7 +71,11 @@
                     </form>
                     <div id="page">{$page|raw}</div>
                     {else/}
-                    <div class="text-center">暂无数据！</div>
+                    <div class="text-center" style="padding: 20px;">
+                        <button class="layui-btn layui-btn-normal js-go-appstore">
+                            暂无可用应用,去采购 <i class="fa fa-arrow-right"></i>
+                        </button>
+                    </div>
                     {/if}
                 </div>
             </div>
@@ -107,6 +111,13 @@
                 window.open(href)
                 //top.location.href = href
             }
+        });
+
+        $('.js-go-appstore').on('click', function () {
+            miniTab.openNewTabByIframe({
+                href: "{:url('appstore/index')}",
+                title: "应用商店",
+            });
         });
     });
 </script>

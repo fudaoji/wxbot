@@ -64,7 +64,7 @@ class Apps extends Base
         }
 
         $page_size = 12;
-        $status = input('status', -1);
+        $status = input('status', 1);
         $type = input('type', '');
         $search_key = input('search_key', '');
         $where = [];
@@ -208,18 +208,18 @@ class Apps extends Base
 
             Db::startTrans();
             try {
-                //入库
-                $res = $this->model->addOne($data);
-
                 $install_sql = addon_path($name, 'install.sql');
                 if (is_file($install_sql) && is_readable($install_sql)) {
                     execute_sql($install_sql);
                 }
-                //todo public文件移到框架的public/addons/下，并命名为应用标识
-                //FileService::renameFile(addon_path($name, 'public'), public_path(config('addon.pathname')) . $name);
+                //入库
+                $res = $this->model->addOne($data);
 
                 //执行应用中的Install::install
                 AppService::runInstall($name);
+
+                //refresh apps
+                AppService::listOpenApps(PlatformService::WECHAT, true);
                 Db::commit();
             }catch (\Exception $e){
                 Db::rollback();
@@ -304,45 +304,52 @@ class Apps extends Base
     }
 
     /**
-     * 编辑应用信息
-     * @author: fudaoji<fdj@kuryun.cn>
+     * 设置一条或者多条数据的状态
+     * @Author  fudaoji<fdj@kuryun.cn>
      */
-    public function edit(){
-        if(request()->isPost()){
-            $post_data = input('post.');
-            unset($post_data['__token__']);
-            $this->model->update([
-                'id' => $post_data['id'],
-                'cates' => $post_data['cates'],
-                'version' => $post_data['version'],
-                'status' => $post_data['status']
-            ]);
-            unset($post_data['version'], $post_data['status'], $post_data['cates']);
-            $this->appInfoM->update($post_data);
-            return $this->success('保存成功');
-        }
-        if(! $data = $this->model->find(input('id', 0))){
-            return $this->error('数据不存在');
+    public function setStatus() {
+        $ids = input('ids/a');
+        $status = input('status');
+
+        if (empty($ids)) {
+            $this->error('请选择要操作的数据');
         }
 
-        $data = array_merge($data->toArray(), $this->appInfoM->find($data['id'])->toArray());
-        $data['cates'] = empty($data['cates']) ? [] : explode(',', $data['cates']);
-
-        $cates = $this->cateM->where('status',1)
-            ->column('title');
-
-        $builder = new FormBuilder();
-        $builder->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('cates', 'chosen_multi', '分类标签', '可多选', array_combine($cates, $cates), 'required')
-            ->addFormItem('version', 'text', '版本', '版本', [], 'required')
-            ->addFormItem('sale_num_show', 'number', '虚拟销量', '前台显示的数字', [], 'required min=0')
-            ->addFormItem('old_price', 'text', '原价', '原价', [], 'required min="0"')
-            ->addFormItem('price', 'text', '售价', '每月的费用', [], 'required min="0"')
-            ->addFormItem('snapshot', 'pictures_url', '应用快照', '应用典型界面截图', [], 'required')
-            ->addFormItem('detail', 'ueditor', '详细介绍', '详细介绍', [], 'required max=50000')
-            ->addFormItem('status', 'radio', '上架状态', '上架状态', Common::goodsStatus(), 'required')
-            ->setFormData($data);
-
-        return $builder->show();
+        $ids = (array) $ids;
+        if($status == 'delete'){
+            if($this->model->delByMap([[$this->pk, 'in', $ids]])){
+                $this->success('删除成功');
+            }else{
+                $this->error('删除失败');
+            }
+        }else{
+            $arr = [];
+            $msg = [
+                'success' => '操作成功！',
+                'error'   => '操作失败！',
+            ];
+            switch ($status) {
+                case 'forbid' :  // 禁用条目
+                    $data['status'] = 0;
+                    break;
+                case 'resume' :  // 启用条目
+                    $data['status'] = 1;
+                    break;
+                default:
+                    $this->error('参数错误');
+                    break;
+            }
+            foreach($ids as $id){
+                $data[$this->pk] = $id;
+                $arr[] = $data;
+            }
+            if($this->model->saveAll($arr)){
+                //refresh apps
+                AppService::listOpenApps(PlatformService::WECHAT, true);
+                $this->success($msg['success']);
+            }else{
+                $this->error($msg['error']);
+            }
+        }
     }
 }

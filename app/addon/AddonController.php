@@ -17,6 +17,7 @@ class AddonController extends BaseCtl
     protected $module = '';
     protected $urlPrefix = ''; //配合addon_url快速填写 $urlPrefix . $action
     protected $addonMenus = [];
+    protected $addonInfo;
 
     public function initialize(){
         $rule = $this->request->rule()->getRule();
@@ -32,6 +33,7 @@ class AddonController extends BaseCtl
         }
         $this->urlPrefix = $this->module . '/'.$this->controller . '/';
         $this->addonMenus = get_addon_menu($this->addonName);
+        $this->addonInfo = get_addon_info();
     }
 
     public function show($assign = [], $view = ''){
@@ -39,7 +41,7 @@ class AddonController extends BaseCtl
         $assign['controller'] = $this->controller;
         $assign['action'] = $this->action;
         $assign['theme'] = config('view.theme');
-        $assign['app_info'] = get_addon_info();
+        $assign['app_info'] = $this->addonInfo;
         $assign['addon_menus'] = $this->addonMenus;
 
         $this->assign = array_merge($this->assign, $assign);
@@ -59,5 +61,27 @@ class AddonController extends BaseCtl
 
         $driver = new \think\Template($config);
         $driver->fetch($view, $this->assign);
+    }
+
+    /**
+     * 应用内省略模块和控制的快速url
+     * @param string $url
+     * @param array $vars
+     * @param bool $suffix
+     * @param bool $domain
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function url(string $url = '', array $vars = [], $suffix = true, $domain = false){
+        $url_arr = explode('/', $url);
+        switch (count($url_arr)){
+            case 1:
+                $url = $this->module.'/'.$this->controller . '/'.$url;
+                break;
+            case 2:
+                $url = $this->module.'/'.$url;
+                break;
+        }
+        return addon_url($url, $vars, $suffix, $domain);
     }
 }

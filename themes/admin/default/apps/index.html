@@ -1,4 +1,3 @@
-
 <div class="layui-tab layui-tab-brief" lay-filter="{$controller}-tab">
     {notempty name="tab_nav"}
     <ul class="layui-tab-title">
@@ -54,7 +53,8 @@
                             <div class="layui-col-xs4 layui-col-md3 layui-col-lg2">
                                 <div class="apps-volist js-manage" data-href="{$v['admin_url']}"
                                      data-jump="{$v['admin_url_type']}"
-                                     data-title="{$v.title}">
+                                     data-title="{$v.title}"
+                                     data-type="{$v.type}">
                                     <div class="apps-icon">
                                         <img src="{$v.logo}">
                                     </div>
@@ -86,10 +86,11 @@
 
 {block name="js"}
 <script>
-    layui.use(['jquery','form','miniTab'], function() {
+    layui.use(['jquery','form','miniTab','layer'], function() {
         var form = layui.form,
                 $ = layui.jquery,
-                miniTab = layui.miniTab;
+                miniTab = layui.miniTab,
+        layer = layui.layer;
         form.on('select(type)', function(data){
             $('.search-form').submit();
         });
@@ -100,7 +101,15 @@
         });
         $('.js-manage').on('click', function () {
             var href = $(this).data('href'),
-                    jump = parseInt($(this).data('jump'));
+                    jump = parseInt($(this).data('jump')),
+            type = $(this).data('type');
+            //是否有可用机器人
+            {if count($bot_list) < 1}
+            if(type.indexOf('wechat') !== -1){
+                layer.alert("请先添加微信机器人！", {title: "温馨提醒"});
+                return false;
+            }
+            {/if}
             if(jump === 1){
                 //location.href = href
                 miniTab.openNewTabByIframe({

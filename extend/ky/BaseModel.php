@@ -162,12 +162,22 @@ class BaseModel extends Model
         $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ . serialize($params));
         $refresh && cache($cache_key, null);
 
+        if(count($field) == 2){
+            $key = $field[0];
+            unset($field[0]);
+            $field = array_values($field);
+        }elseif(count($field) > 2){
+            $key = $field[0];
+        }else{
+            $key = '';
+        }
+
         $selector = $this->getBuilder($where);
         $this->_where($selector, $where);
         if($this->isCache){
             $selector->cache($cache_key, $this->expire, $this->getTrueTable($where));
         }
-        return $selector->order($order)->column($field);
+        return $selector->order($order)->column($field, $key);
     }
 
     /**
@@ -470,13 +480,15 @@ class BaseModel extends Model
      */
     public function getField($field, $query = [],$refresh = 0){
         is_string($field) && $field = explode(',', str_replace(' ', '', $field));
-        $key = '';
+
         if(count($field) == 2){
             $key = $field[0];
             unset($field[0]);
             $field = array_values($field);
         }elseif(count($field) > 2){
             $key = $field[0];
+        }else{
+            $key = '';
         }
         $cache_key = md5($this->cachePrefix . $this->getTrueTable($query) . __FUNCTION__ . serialize($field).':'.serialize($query));
         $refresh && cache($cache_key, null);

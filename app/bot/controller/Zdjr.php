@@ -189,18 +189,4 @@ class Zdjr extends Addon
         //Logger::error($this->clue);
         return $flag;
     }
-
-    /**
-     * 关键词回复
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    private function keyword(){
-        if($this->content['msg'] == 'good'){
-            $this->botClient->sendTextToFriends([
-                'robot_wxid' => $this->botWxid,
-                'to_wxid' => $this->groupWxid,
-                'msg' => 'ooooo'
-            ]);
-        }
-    }
 }

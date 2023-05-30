@@ -33,6 +33,10 @@ class Bgf extends Base
      * @var AgentGoods
      */
     private $agentGoodsM;
+    /**
+     * @var Goods
+     */
+    private $goodsM;
 
     public function __construct(){
         parent::__construct();
@@ -40,6 +44,7 @@ class Bgf extends Base
         $this->configM = new Config();
         $this->agentM = new Agent();
         $this->agentGoodsM = new AgentGoods();
+        $this->goodsM = new Goods();
     }
 
     /**
@@ -60,8 +65,76 @@ class Bgf extends Base
                 ['bot', 'bot.id=bt.bot_id']
             ],
             'where' => ['bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['<=', time()]],
-            'field' => ['uuid','bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','super_ids', 'goods_title', 'goods_cover', 'goods_id','bt.id','bt.medias']
-        ])) && $template = app()->make(Goods::class)->getDefaultTemplate()){
+            'field' => ['uuid','bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','super_ids', 'goods_id','bt.id','bt.medias']
+        ]))){
+            foreach($task_list as $task){
+                $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
+                if(empty($task['super_ids']) || !$goods = $this->goodsM->getOne($task['goods_id'])){
+                    continue;
+                }
+
+                $supers = explode(',', $task['super_ids']);
+                $delay = 0;
+                foreach ($supers as $super_id){
+                    $agent = $this->agentM->getOneByMap(['super_id' => $super_id]);
+                    if(empty($agent['groups'])){
+                        continue;
+                    }
+                    $wxids = explode(',', $agent['groups']);
+
+                    $task['xml'] = str_replace('SUPER_ID', $super_id, $goods['xml']);
+                    foreach ($wxids as $to_wxid){
+                        //发介绍素材
+                        if(!empty($task['medias'])){
+                            $medias = json_decode($task['medias'], true);
+                            foreach ($medias as $media){
+                                $task['media_type'] = $media['type'];
+                                $task['media_id'] = $media['id'];
+                                //放入任务队列
+                                invoke('\\app\\common\\event\\TaskQueue')->push([
+                                    'delay' => $delay,
+                                    'params' => [
+                                        'do' => ['\\app\\crontab\\task\\Bot', 'sendMsgBatch'],
+                                        'task' => $task,
+                                        'reply' => $task,
+                                        'to_wxid' => $to_wxid,
+                                        'extra' => []
+                                    ]
+                                ]);
+                                $delay++;
+                            }
+                        }
+
+                        ////发商品
+                        invoke('\\app\\common\\event\\TaskQueue')->push([
+                            'delay' => $delay,
+                            'params' => [
+                                'do' => ['\\app\\crontab\\task\\Bgf', 'sendMsg'],
+                                'task' => $task,
+                                'to_wxid' => $to_wxid
+                            ]
+                        ]);
+                        $delay += model('common/setting')->getStepTime();
+                    }
+                }
+            }
+        }
+        var_dump(__CLASS__ . ':'.__FUNCTION__ . ":" . count($task_list));
+    }
+
+    public function minuteTask230530(){
+        if(! $opens = $this->configM->getField('admin_id', ['key' => 'switch', 'value' => 1])){
+            return  true;
+        }
+
+        if(count($task_list = $this->taskM->getAllJoin([
+                'alias' => 'bt',
+                'join' => [
+                    ['bot', 'bot.id=bt.bot_id']
+                ],
+                'where' => ['bt.complete_time' => 0, 'bot.alive' => 1, 'plan_time' => ['<=', time()]],
+                'field' => ['uuid','bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','super_ids', 'goods_title', 'goods_cover', 'goods_id','bt.id','bt.medias']
+            ])) && $template = app()->make(Goods::class)->getDefaultTemplate()){
             foreach($task_list as $task){
                 $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
                 if(empty($task['super_ids'])){

@@ -4,7 +4,7 @@ namespace app\admin\controller;
 
 use app\common\model\bgf\Config;
 
-class Bgfconfig extends Bbase
+class Bgfconfig extends Botbase
 {
     /**
      * @var Config
@@ -31,11 +31,17 @@ class Bgfconfig extends Bbase
                 'switch' => 0
             ];
         }
+        if(!empty($settings['groups'])){
+            $settings['groups'] = explode(',', $settings['groups']);
+        }else{
+            $settings['groups'] = [];
+        }
 
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
             ->setTip($tip)
             ->addFormItem('switch', 'radio', '开启', '是否开启', [1=>'是', 0 => '否'], 'required')
+            ->addFormItem('groups', 'chosen_multi', '商品采集群', '商品采集群', $this->getMembers(['type' => \app\constants\Bot::GROUP]), 'required')
             ->setFormData($settings);
         return $builder->show();
     }

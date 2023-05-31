@@ -49,12 +49,13 @@ Abstract class Base
     }
 
     protected function request($params = []){
-        $this->client = new Client([
-            // 不用证书验证，强制使用https
+        $options = [
             'verify' => empty($this->options['verify']) ? false : $this->options['verify'],
             'base_uri' => $this->baseUri,
             'timeout' => empty($this->options['timeout']) ? 0 : $this->options['timeout']
-        ]);
+        ];
+        !empty($params["proxy"]) && $options["proxy"] = $params["proxy"];
+        $this->client = new Client($options);
         $url = empty($params['url']) ? '/' : $params['url'];
         $method = empty($params['method']) ? 'post' : $params['method'];
         $extra = [

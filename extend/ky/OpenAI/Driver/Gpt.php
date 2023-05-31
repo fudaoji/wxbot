@@ -14,13 +14,20 @@ use ky\OpenAI\Base;
 
 class Gpt extends Base
 {
-    //https://chat.forchange.cn/
-    protected $baseUri = 'https://api.forchange.cn/';
+    const API_SMART = '/v1/chat/completions';
+    const API_SMART_IMG = '/v1/images/generations';
+    protected $baseUri = 'https://api.openai.com';
     protected $errMsg = '';
+    protected $appKey = '';
+    protected $proxy = '';
+    protected $model = 'gpt-3.5-turbo';
+    private $method = 'post';
 
     public function __construct($options = [])
     {
         parent::__construct($options);
+        !empty($options['appid']) && $this->appKey = $options['appid'];
+        !empty($options['proxy']) && $this->proxy = $options['proxy'];
     }
 
     /**
@@ -30,16 +37,47 @@ class Gpt extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function smart($params){
-        return  $this->doRequest($params, '/');
+        $message = [
+            ['role' => 'system', 'content' => "你是一个智能助手assistant"],
+        ];
+        if(! empty($params['content_rule'])){
+            array_push($message, ['role' => 'system', 'content' => $params['content_rule']]);
+        }
+        if(! empty($params['background'])){
+            array_push($message, ['role' => 'system', 'content' => $params['background']]);
+        }
+        if(! empty($params['context'])){
+            $message = array_merge_recursive($message, $params['context']);
+        }
+        
+        array_push($message, ['role' => 'user', 'content' => $params['msg']]);
+        $length = mb_strlen($params['msg']);
+        //Logger::error($message);
+        $data = [
+            'messages' => $message,
+            'model' => $this->model,
+            // 'temperature' => 0.2,
+            // 'tokensLength' => $length
+        ];
+        $res = $this->doRequest($data, self::API_SMART);
+        if($res['code']){
+            $res['answer_type'] = self::ANSWER_TEXT;
+            $text = isset($res['choices'][0]['text']) ? $res['choices'][0]['text'] : '';
+            $res['answer'] = str_replace('<br/>',"\n", trim($text, "<br/>"));
+        }
+        return  $res;
     }
 
     private function doRequest($params = [], $api = ''){
-        $params['prompt'] = "Human:{$params['msg']}\nAI:";
-        //$params['tokensLength'] = mb_strlen($params['prompt']);
-        return $this->request([
+        $options = [
             'url' => $api,
-            'data' => $params
-        ]);
+            'method' => $this->method,
+            'headers' => ["Authorization" => "Bearer " . $this->appKey],
+            'proxy' => $this->proxy,
+        ];
+        !empty($params) && $options['data'] = $params;
+        Logger::error(json_encode($options, JSON_UNESCAPED_UNICODE));
+        return $this->request($options);
     }
 
     public function errors($code = 200){
@@ -53,15 +91,14 @@ class Gpt extends Base
     }
 
     public function dealRes($params){
-        $res['ori_res'] = $params;
-        if(!empty($params['choices'])){
+        $res = $params;
+        Logger::error($params);
+        if(isset($res['choices'][0]['message']['content'])){
+            $res['choices'][0]['text'] = $res['choices'][0]['message']['content'];
             $res['code'] = 1;
-            $res['answer_type'] = self::ANSWER_TEXT;
-            $text = isset($params['choices'][0]['text']) ? $params['choices'][0]['text'] : '';
-            $res['answer'] = str_replace('<br/>',"\n", trim($text, "<br/>"));
         }else{
             $res['code'] = 0;
-            $res['errmsg'] = $params['error'];
+            $res['errmsg'] = $params['msg'];
         }
         return $res;
     }

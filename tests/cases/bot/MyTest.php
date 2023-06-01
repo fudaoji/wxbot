@@ -34,6 +34,19 @@ class MyTest extends BotTest
         $this->botComClient = new Mycom(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
     }
 
+    /**
+     * 清空聊天记录
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testCleanChatHistory(){
+        $params = [
+            'robot_wxid' => $this->robotJane,
+        ];
+        $res = $this->botClient->cleanChatHistory($params);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
     public function testGetMemberInfo(){
         $params = [
             'robot_wxid' => $this->robotFjq,
@@ -193,7 +206,7 @@ class MyTest extends BotTest
     public function testBuildingGroup() {
         $res = $this->botClient->buildingGroup([
             'robot_wxid' => $this->robotJane,
-            'wxids' => [$this->wxidDj, $this->wxidYyp, $this->wxidYlp, $this->wxidDcq]
+            'wxids' => [$this->robotJane, $this->wxidDj, $this->wxidYyp, $this->wxidYlp, $this->wxidDcq]
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
@@ -423,9 +436,25 @@ class MyTest extends BotTest
      */
     public function testSendFileMsg() {
         $res = $this->botClient2->sendFileMsg([
-            'robot_wxid' => $this->robotFjq,
+            'robot_wxid' => $this->robotJane,
             'to_wxid' => $this->wxidDj,
-            'path' => 'https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf'
+            'path' => 'https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf',
+            'file_storage_path' => 'C:\ProgramData\Tencent\WeChat'
+        ]);
+        //dump(basename('https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf'));
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 发送文件消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendText() {
+        $res = $this->botClient2->sendTextToFriends([
+            'robot_wxid' => $this->robotJane,
+            'to_wxid' => $this->wxidDj,
+            'msg' => 'https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf',
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);

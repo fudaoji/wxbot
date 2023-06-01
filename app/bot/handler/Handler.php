@@ -351,6 +351,7 @@ class Handler extends BaseCtl
             if(class_exists($class_name)){
                 $class = new $class_name();
                 if(method_exists($class, $this->addonHandlerName)){
+                    file_exists($common = addon_path($v['name'], 'common.php')) and require_once $common;
                     $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
                 }
             }

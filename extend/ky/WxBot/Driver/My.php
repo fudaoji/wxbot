@@ -143,7 +143,7 @@ class My extends Base
     member_wxid (string)  // 要踢出的群成员ID，多个成员用英文逗号“,”分开
      * Author: fudaoji<fdj@kuryun.cn>
      * @param array $params
-     * @return bool
+     * @return array
      */
     public function removeGroupMember($params = []){
         $params['member_wxid'] = $params['to_wxid'];
@@ -159,11 +159,12 @@ class My extends Base
     msgid (string)  // 消息
      * Author: fudaoji<fdj@kuryun.cn>
      * @param array $params
-     * @return bool
+     * @return array
      */
     public function forwardMsgToFriends($params = []){
         $data = $this->buildPostData($params, self::API_FORWARD_MSG);
         $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        $res = ['code' => 1];
         foreach($to_wxid as $id){
             $data['to_wxid'] = $id;
             $res = $this->request([
@@ -181,7 +182,7 @@ class My extends Base
         msgid (string)  // 消息
      * Author: fudaoji<fdj@kuryun.cn>
      * @param array $params
-     * @return bool
+     * @return array
      */
     public function forwardMsg($params = []){
         return $this->request([
@@ -210,7 +211,7 @@ class My extends Base
     }
      * Author: fudaoji<fdj@kuryun.cn>
      * @param array $params
-     * @return bool
+     * @return array
      */
     public function getDetailInfoByWxid($params = []){
         return $this->request([
@@ -224,7 +225,7 @@ class My extends Base
     group_wxid (string)  // 群ID
     friend_wxid (string|array)  // 好友ID
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function inviteInGroupByLink($params = []){
@@ -240,7 +241,7 @@ class My extends Base
     group_wxid (string)  // 群ID
     friend_wxid (string)  // 好友ID
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function inviteInGroup($params = []){
@@ -256,7 +257,7 @@ class My extends Base
     v2 (string)  // 收到好友验证消息中（json）的v2属性
     type (int)  // 收到好友验证消息中（json）的type属性
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function agreeFriendVerify($params = []){
@@ -270,7 +271,7 @@ class My extends Base
     robot_wxid (string)  // 机器人ID
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function deleteFriend($params = []){
@@ -289,7 +290,7 @@ class My extends Base
     robot_wxid (string)  // 机器人ID
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function downloadAndSend($params = []){
@@ -304,7 +305,7 @@ class My extends Base
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
     content (string)  // 朋友ID
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendCardToFriend($params = [])
@@ -314,6 +315,12 @@ class My extends Base
         ]);
     }
 
+    /**
+     * 群发名片给好友
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function sendCardToFriends($params = [])
     {
         $data = $this->buildPostData($params, self::API_SEND_CARD_MSG);
@@ -338,6 +345,7 @@ class My extends Base
     public function sendVideoToFriends($params = []){
         $data = $this->buildPostData($params, self::API_SEND_VIDEO_MSG);
         $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        $res = ['code' => 1];
         foreach($to_wxid as $id){
             $data['to_wxid'] = $id;
             $res = $this->request([
@@ -354,7 +362,7 @@ class My extends Base
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
     path (string)  // 机器人本地文件的绝对路径
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendVideoMsg($params = []){
@@ -371,6 +379,7 @@ class My extends Base
      */
     public function sendFileToFriends($params = []){
         $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
+        $res = ['code' => 1];
         foreach($to_wxid as $id){
             $params['to_wxid'] = $id;
             $res = $this->sendFileMsg($params);
@@ -381,11 +390,11 @@ class My extends Base
 
     /**
     res:
-    robot_wxid (string)  // 机器人ID
-    to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
-    path (string)  // 机器人本地文件的绝对路径
+        robot_wxid (string)  // 机器人ID
+        to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
+        path (string)  // 机器人本地文件的绝对路径或图片url
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendFileMsg($params = []){
@@ -396,11 +405,8 @@ class My extends Base
         ]);*/
         $params['useApi'] = 'SendFileMsg';
         $params['url'] = $params['path'];
-        $url_arr = explode('/', $params['path']);
-        $base_path = empty($params['base_path']) ? ("C:\Users\Administrator\Documents\WeChat Files\\".$params['robot_wxid']."\FileStorage\File\\") : $params['base_path'];
-        $base_path = trim($base_path, "\\") . "\\";
-        $params['savePath'] = $base_path.$url_arr[count($url_arr)-1];
-
+        $base_path = trim($params['file_storage_path'] ?? "C:\Users\Administrator\Documents", "\\") . "\WeChat Files\\".$params['robot_wxid']."\FileStorage\File\\";
+        $params['savePath'] = $base_path.md5($params['path']).'-'.basename($params['path']);
         return $this->request([
             'data' => $this->buildPostData($params, self::API_DOWNLOAD_FILE)
         ]);
@@ -417,7 +423,7 @@ class My extends Base
     dataurl (string)  // mp3地址
     thumburl (string)  // http图片地址
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendMusicLinkMsg($params = []){
@@ -435,6 +441,7 @@ class My extends Base
     public function sendShareLinkToFriends($params = []){
         $data = $this->buildPostData($params, self::API_SEND_SHARE_LINK_MSG);
         $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        $res = ['code' => 1];
         foreach($to_wxid as $id){
             $data['to_wxid'] = $id;
             $res = $this->request([
@@ -454,7 +461,7 @@ class My extends Base
     image_url (string)  // 图片地址
     url (string)  // 跳转地址
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendShareLinkMsg($params = []){
@@ -469,7 +476,7 @@ class My extends Base
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
     xml (string)  // xml代码
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendLinkMsg($params = []){
@@ -484,7 +491,7 @@ class My extends Base
     to_wxid (string)  // 对方的ID（支持好友/群ID/公众号ID）
     content (string)  // 朋友ID
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendCardMsg($params = []){
@@ -501,7 +508,7 @@ class My extends Base
     member_name (string)  // 要艾特的群成员昵称，可空 会自动读取
     msg (string)
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendGroupMsgAndAt($params = []){
@@ -598,14 +605,15 @@ class My extends Base
     public function sendTextToFriends($params = []){
         $data = $this->buildPostData($params, self::API_SEND_TEXT);
         $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        $res = ['code' => 1];
         foreach($to_wxid as $id){
             $data['to_wxid'] = $id;
-            $this->request([
+            $res = $this->request([
                 'data' => $data
             ]);
             $this->sleep();
         }
-        return ['code' => 1];
+        return $res;
     }
 
     /**
@@ -617,14 +625,15 @@ class My extends Base
     public function sendImgToFriends($params = []){
         $data = $this->buildPostData($params, self::API_SEND_IMG);
         $to_wxid = is_array($data['to_wxid']) ? $data['to_wxid'] : explode(',', $data['to_wxid']);
+        $res = ['code' => 1];
         foreach($to_wxid as $id){
             $data['to_wxid'] = $id;
-            $this->request([
+            $res = $this->request([
                 'data' => $data
             ]);
             $this->sleep();
         }
-        return ['code' => 1];
+        return $res;
     }
 
     /**
@@ -856,7 +865,7 @@ class My extends Base
     group_wxid (string)  // 群ID
     group_name (string)  // 新的群名称
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function setGroupName($params = [])
@@ -868,15 +877,19 @@ class My extends Base
 
     /**
      * 修改群公告
-        robot_wxid (string)  // 机器人ID
-        group_wxid (string)  // 群ID
-        Notice (string)  // 新的群公告
+     * robot_wxid (string)  // 机器人ID
+     * group_wxid (string)  // 群ID
+     * Notice (string)  // 新的群公告
      * @param array $params
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function setGroupNotice($params = [])
     {
-        // TODO: Implement setGroupNotice() method.
+        $params['Notice'] = $params['notice'];
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_SET_GROUP_NOTICE)
+        ]);
     }
 
     /**
@@ -884,7 +897,7 @@ class My extends Base
      *  robot_wxid (string)  // 机器人ID
      *  group_wxid (string)  // 群ID
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function quitGroup($params = [])
@@ -900,7 +913,7 @@ class My extends Base
      *  group_wxid (string)  // 群ID
      *  msg                     //文本内容
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendMsgAtAll($params = [])
@@ -917,6 +930,12 @@ class My extends Base
         ]);
     }
 
+    /**
+     * 清除聊天记录
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function cleanChatHistory($params = [])
     {
         return $this->request([
@@ -927,7 +946,7 @@ class My extends Base
     /**
      * 建群
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function buildingGroup($params = [])
@@ -983,7 +1002,7 @@ class My extends Base
     /**
      * 点赞朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function likeMoments($params = [])
@@ -996,7 +1015,7 @@ class My extends Base
     /**
      * 评论朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function commentMoments($params = [])
@@ -1010,7 +1029,7 @@ class My extends Base
     /**
      * 发送文本朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendMomentsText($params = [])
@@ -1023,7 +1042,7 @@ class My extends Base
     /**
      * 发送图片朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendMomentsImg($params = [])
@@ -1036,7 +1055,7 @@ class My extends Base
     /**
      * 发送视频朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendMomentsVideo($params = [])
@@ -1049,7 +1068,7 @@ class My extends Base
     /**
      * 发送连接朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendMomentsLink($params = [])
@@ -1062,7 +1081,7 @@ class My extends Base
     /**
      * 发送xml朋友圈
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendMomentsXml($params = [])
@@ -1098,7 +1117,7 @@ class My extends Base
     /**
      * 接收转账
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function acceptTransfer($params = [])
@@ -1111,7 +1130,7 @@ class My extends Base
     /**
      * 拒收转账
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function rejectTransfer($params = [])
@@ -1124,7 +1143,7 @@ class My extends Base
     /**
      * 下载文件
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function downloadFile($params = []){
@@ -1139,7 +1158,7 @@ class My extends Base
         content (string)  // 要开启消息免打扰的好友ID 或 群ID 或 公众号ID
      * Author: fudaoji<fdj@kuryun.cn>
      * @param array $params
-     * @return bool
+     * @return array
      */
     public function onNotDisturb($params = []){
         return $this->request([
@@ -1154,7 +1173,7 @@ class My extends Base
         content (string)  // 要关闭消息免打扰的好友ID 或 群ID 或 公众号ID
      * Author: fudaoji<fdj@kuryun.cn>
      * @param array $params
-     * @return bool
+     * @return array
      */
     public function offNotDisturb($params = []){
         return $this->request([
@@ -1165,7 +1184,7 @@ class My extends Base
     /**
      * 发送xml给好友
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendXml($params = [])
@@ -1178,11 +1197,12 @@ class My extends Base
     /**
      * 批量发送xml
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function sendXmlToFriends($params = [])
     {
+        $res = ['code' => 1];
         $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
         foreach($to_wxid as $id){
             $params['to_wxid'] = $id;

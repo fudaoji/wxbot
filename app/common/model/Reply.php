@@ -85,7 +85,8 @@ class Reply extends Base
                     'robot_wxid' => $bot['uin'],
                     'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
-                    'path' => $media['url']
+                    'path' => $media['url'],
+                    'file_storage_path' => config('system.bot.file_storage_path')
                 ]);
                 break;
         }

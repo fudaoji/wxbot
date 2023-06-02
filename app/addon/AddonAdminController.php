@@ -30,8 +30,8 @@ class AddonAdminController extends AddonController
     protected $aid;
     protected $adminInfo;
     protected $needCompanyId = false;  //商户ID
-    private $needBotId = true;  //机器人ID
-    private $needAid = true; //员工ID
+    protected $needBotId = true;  //机器人ID
+    protected $needAid = true; //员工ID
 
     public function initialize()
     {

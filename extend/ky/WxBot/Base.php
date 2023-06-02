@@ -162,7 +162,8 @@ Abstract class Base
     protected function request($params = []){
         $this->client = new Client([
             'base_uri' => $this->baseUri,
-            'timeout' => empty($this->options['timeout']) ? 0 : $this->options['timeout']
+            'timeout' => empty($this->options['timeout']) ? 0 : $this->options['timeout'],
+            'verify' => empty($this->options['verify']) ? false : $this->options['verify']
         ]);
         $url = empty($params['url']) ? '/' : $params['url'];
         $method = empty($params['method']) ? 'post' : $params['method'];
@@ -191,15 +192,19 @@ Abstract class Base
                 }
             }
         }
-        //var_dump($extra);
-        $response = $this->client->request($method, $url, $extra);
+        try {
+            //var_dump($extra);
+            $response = $this->client->request($method, $url, $extra);
 
-        if($response->getStatusCode() !== 200){
-            $this->setError($response->getStatusCode());
-            return ['code' => 0, 'errmsg' => $this->errMsg];
+            if($response->getStatusCode() !== 200){
+                $this->setError($response->getStatusCode());
+            }else{
+                return $this->dealRes(json_decode($response->getBody()->getContents(), true));
+            }
+        }catch (\Exception $e){
+            $this->errMsg = $e->getMessage();
         }
-        //return $response->getBody()->getContents();
-        return $this->dealRes(json_decode($response->getBody()->getContents(), true));
+        return ['code' => 0, 'errmsg' => $this->errMsg];
     }
 
     public function setError($code = 200){

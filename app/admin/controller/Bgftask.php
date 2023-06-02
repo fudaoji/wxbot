@@ -154,7 +154,7 @@ class Bgftask extends Botbase
                 $post_data['goods_title'] = $goods['title'];
             }
 
-            if(count($post_data['media_id_type']) > 0){
+            if(!empty($post_data['media_id_type']) && count($post_data['media_id_type']) > 0){
                 $medias = [];
                 foreach ($post_data['media_id_type'] as $id_type){
                     list($id, $type) = explode('_', $id_type);
@@ -218,7 +218,7 @@ class Bgftask extends Botbase
 
             $post_data['plan_time'] = empty($post_data['plan_time']) ? time() : strtotime($post_data['plan_time']);
 
-            if(count($post_data['media_id_type']) > 0){
+            if(!empty($post_data['media_id_type']) && count($post_data['media_id_type']) > 0){
                 $medias = [];
                 foreach ($post_data['media_id_type'] as $id_type){
                     list($id, $type) = explode('_', $id_type);

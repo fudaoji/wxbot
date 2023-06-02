@@ -76,7 +76,7 @@ class Bgf extends Base
                 $supers = explode(',', $task['super_ids']);
                 $delay = 0;
                 foreach ($supers as $super_id){
-                    $agent = $this->agentM->getOneByMap(['super_id' => $super_id]);
+                    $agent = $this->agentM->getOneByMap(['super_id' => $super_id, 'staff_id' => $task['admin_id']]);
                     if(empty($agent['groups'])){
                         continue;
                     }

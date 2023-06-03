@@ -252,6 +252,8 @@ class Apps extends Base
 
         $builder = new ListBuilder();
         $builder->setTabNav(self::tabList(), 'uninstall')
+            ->addTopButton('addnew', ['text' => '采购应用', 'href' => url('appstore/index')])
+            ->addTopButton('addnew', ['text' => '创建应用', 'href' => url('build'), 'class' => 'layui-btn-default'])
             ->addTableColumn(['title' => 'logo', 'field' => 'logo', 'type' => 'picture'])
             ->addTableColumn(['title' => '标识', 'field' => 'name'])
             ->addTableColumn(['title' => '名称', 'field' => 'title'])
@@ -293,6 +295,7 @@ class Apps extends Base
                 ['type' => 'text', 'name' => 'search_key', 'title' => '搜索词','placeholder' => '应用名称或标识']
             ])
             ->addTopButton('addnew', ['text' => '采购应用', 'href' => url('appstore/index')])
+            ->addTopButton('addnew', ['text' => '创建应用', 'href' => url('build'), 'class' => 'layui-btn-default'])
             ->addTableColumn(['title' => 'logo', 'field' => 'logo', 'type' => 'picture'])
             ->addTableColumn(['title' => '标识', 'field' => 'name'])
             ->addTableColumn(['title' => '名称', 'field' => 'title'])
@@ -351,5 +354,36 @@ class Apps extends Base
                 $this->error($msg['error']);
             }
         }
+    }
+
+    /**
+     * 创建应用
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function build(){
+        if($this->request->isPost()){
+            $post_data = input('post.');
+            if(($res = AppService::buildAddon($post_data)) === true){
+                $this->success('创建成功, 请前往安装！', url('uninstallList'));
+            }else{
+                $this->error($res);
+            }
+        }
+
+        $default_data = [
+            'version' => '1.0.0',
+            'author' => $this->adminInfo['realname']
+        ];
+        $builder = new FormBuilder();
+        $builder->setPostUrl(url('build'))
+            ->addFormItem('name', 'text', '应用标识', '请输入唯一应用标识', [], 'required minlength="2" maxlength="20"')
+            ->addFormItem('title', 'text', '应用名称', '请输入应用名称，2-50长度', [], 'required minlength="2" maxlength="50"')
+            ->addFormItem('version', 'text', '应用版本', '例如1.0.0', [], 'required')
+            ->addFormItem('logo', 'picture_url', '应用LOGO', '请上传比例为1:1的应用LOGO', [], 'required')
+            ->addFormItem('author', 'text', '作者', '应用作者', [], 'required maxlength=100')
+            ->addFormItem('desc', 'textarea', '应用描述', '200字内', [], 'maxlength=200')
+            ->setFormData($default_data);
+        return $builder->show();
     }
 }

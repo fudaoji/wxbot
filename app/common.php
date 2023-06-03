@@ -9,6 +9,42 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+if(!function_exists('replace_in_files')){
+    /**
+     * 替换文件内容
+     * @param $dir
+     * @param $search
+     * @param $replace
+     * @param array $ignore
+     * @return bool|string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function replace_in_files($dir, $search, $replace, $ignore = []) {
+        try {
+            array_push($ignore, '.', '..');
+            // 遍历目录下所有文件和目录
+            foreach (scandir($dir) as $file) {
+                if (in_array($file, $ignore)) continue;
+                $path = $dir . DIRECTORY_SEPARATOR . $file;
+                // 如果是目录，则递归遍历子目录
+                if (is_dir($path)) {
+                    replace_in_files($path, $search, $replace, $ignore);
+                } else {
+                    // 如果是文件，则替换文件中的内容
+                    $content = file_get_contents($path);
+                    $new_content = str_replace($search, $replace, $content);
+                    if ($new_content !== $content) {
+                        file_put_contents($path, $new_content);
+                    }
+                }
+            }
+            return true;
+        }catch (\Exception $e){
+            return "错误：".$e->getMessage();
+        }
+    }
+}
+
 if(!function_exists('import_addon_public')){
     function import_addon_public($path, $addon = ''){
         $path = ltrim($path,'/\\');
@@ -209,7 +245,9 @@ function execute_sql($sql_path = '')
     $original = '`__PREFIX__';
     $prefix = '`'.env('database.prefix', '');
     $sql = str_replace("{$original}", "{$prefix}", $sql); //替换掉表前缀
-
+    if(empty(trim($sql))){
+        return  true;
+    }
     \think\facade\Db::execute($sql);
     return true;
 }
@@ -498,8 +536,8 @@ function http_post($url, $data, $data_type = 'form', $curl_file = false)
     if($data_type === 'json'){
         $post_data = is_string($data) ? $data : json_encode($data, JSON_UNESCAPED_UNICODE);
         curl_setopt($cl, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($post_data)
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($post_data)
         ]);
     }else{
         curl_setopt($cl, CURLOPT_HEADER, false);

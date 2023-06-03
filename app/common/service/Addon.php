@@ -199,13 +199,65 @@ class Addon
                 return '删除应用目录失败:' . $res;
             }
             //删除静态文件夹
-            if(($res = FileService::delDirRecursively(public_path(config('addon.pathname')) . $name, true)) !== true){
-                return '删除静态资源目录失败:' . $res;
+            if(is_dir(public_path(config('addon.pathname')) . $name)){
+                if(($res = FileService::delDirRecursively(public_path(config('addon.pathname')) . $name, true)) !== true){
+                    return '删除静态资源目录失败:' . $res;
+                }
             }
         }catch (\Exception $e){
             return  '安装包删除出错：'.$e->getMessage();
         }
 
         return true;
+    }
+
+    /**
+     * 快速创建应用
+     * @param array $params
+     * @return bool|string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function buildAddon($params = []){
+        $addon_name = $params['name'];
+        $addon_title = $params['title'];
+        $addon_version = $params['version'];
+        $addon_author = $params['author'];
+        $addon_desc = $params['desc'];
+        $addon_logo = $params['logo'];
+        $addon_path = addon_path($addon_name);
+
+        try {
+            if(file_exists($addon_path)){
+                return "应用{$addon_name}已存在";
+            }
+
+            //1、解压应用模板
+            if(! file_exists(addon_path('__addon__.zip'))){
+                return addon_path('__addon__.zip') . "不存在";
+            }
+            $zip = new \ZipArchive;
+            $res = $zip->open(addon_path('__addon__.zip'));
+            if ($res === true) {
+                $zip->extractTo($addon_path);
+                $zip->close();
+            } else {
+                return  "解压".addon_path('__addon__.zip')."失败，请检查是否有写入权限!";
+            }
+            $logo_name = 'logo.png';
+            file_put_contents(addon_path($addon_name, 'public'.DS.$logo_name), file_get_contents($addon_logo));
+
+            //2、批量替换应用信息参数
+            if(($res = replace_in_files(addon_path($addon_name),
+                    ['__ADDON_NAME__', '__ADDON_TITLE__','__ADDON_DESC__', '__ADDON_VERSION__', '__ADDON_AUTHOR__', '__ADDON_LOGO__'],
+                    [$addon_name, $addon_title, $addon_desc, $addon_version, $addon_author, $logo_name],
+                    ['public']
+                )) !== true){
+                return $res;
+            }
+            return true;
+        }catch (\Exception $e){
+            @unlink($addon_path);
+            return '应用创建错误：' . (string)$e->getMessage();
+        }
     }
 }

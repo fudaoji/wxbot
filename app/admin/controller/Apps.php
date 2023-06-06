@@ -69,7 +69,9 @@ class Apps extends Base
         $search_key = input('search_key', '');
         $where = [];
         $type && $where[] = ['type', 'like', '%'.$type.'%'];
-        $status != -1 && $where[] = ['status', '=', $status];
+        if($status != -1 && !AdminM::isFounder($this->adminInfo)){
+            $where[] = ['status', '=', $status];
+        }
         $search_key && $where[] = ['title|desc', 'like', '%'.$search_key.'%'];
         $query = $this->model->where($where);
         $data_list = $query->order('id', 'desc')

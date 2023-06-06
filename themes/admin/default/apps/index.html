@@ -63,6 +63,9 @@
                                         <div class="app-desc-body" title="{$v.desc}">
                                             <div class="description">{:cut_str($v.desc, 20)}</div>
                                         </div>
+                                        {if !$v.status}
+                                        <span class="layui-badge status-offline">下架状态</span>
+                                        {/if}
                                     </div>
                                 </div>
                             </div>
@@ -158,9 +161,8 @@
     .app-desc-body .description {
         font-size: 14px;
     }
-    .overtime-tip{float: revert;}
-    .app-opr{border: 1px solid #F2F2F2;border-left: none;border-bottom: none;padding-bottom: 8px;text-align: center;}
-    .app-opr:last-child{border-right: none;}
     .layui-form-item{margin-bottom: 0;}
+    .app-desc{position: relative;}
+    .status-offline{position: absolute;top: 0;right: 0;}
 </style>
 {/block}

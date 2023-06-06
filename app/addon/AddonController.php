@@ -37,14 +37,15 @@ class AddonController extends BaseCtl
     }
 
     public function show($assign = [], $view = ''){
-        $assign['module'] = $this->module;
-        $assign['controller'] = $this->controller;
-        $assign['action'] = $this->action;
-        $assign['theme'] = config('view.theme');
-        $assign['app_info'] = $this->addonInfo;
-        $assign['addon_menus'] = $this->addonMenus;
+        $assign = array_merge($this->assign, $assign, [
+            'module' => $this->module,
+            'controller' => $this->controller,
+            'action' => $this->action,
+            'theme' => config('view.theme'),
+            'app_info' => $this->addonInfo,
+            'addon_menus' => $this->addonMenus
+        ]);
 
-        $this->assign = array_merge($this->assign, $assign);
         if (!$view) {
             $view = $assign['controller']. DIRECTORY_SEPARATOR.$assign['action'];
         }else{
@@ -60,7 +61,7 @@ class AddonController extends BaseCtl
         ]);
 
         $driver = new \think\Template($config);
-        $driver->fetch($view, $this->assign);
+        $driver->fetch($view, $assign);
     }
 
     /**

@@ -32,7 +32,9 @@ class Admin extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     static function getFounderId(){
-        return self::limit(1)->select()[0]['id'];
+        return self::where('status', 1)
+            ->order('id', 'asc')
+            ->find()['id'];
     }
 
     /**
@@ -40,9 +42,12 @@ class Admin extends Base
      * @param array $admin_info
      * @return mixed
      * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     static function isFounder($admin_info = []){
-        return $admin_info['id'] == 1;
+        return $admin_info['id'] == self::getFounderId();
     }
 
     /**

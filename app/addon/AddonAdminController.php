@@ -53,7 +53,7 @@ class AddonAdminController extends AddonController
         $this->aid = (int)session($this->sKey);
         $this->adminInfo = model("admin/admin")->getOne($this->aid);
         if (empty($this->adminInfo)) {
-            $this->redirect(url('auth/login'));
+            $this->redirect(url('admin/auth/login'));
         }
         $this->assign['admin'] = $this->adminInfo;
     }

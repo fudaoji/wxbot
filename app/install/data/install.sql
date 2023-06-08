@@ -29,7 +29,7 @@ CREATE TABLE `__PREFIX__admin_group`  (
   `name` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '部门标识',
   `title` char(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `status` tinyint(1) NOT NULL DEFAULT 1,
-  `rules` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `rules` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   `sort` tinyint(3) NOT NULL DEFAULT 0,
   `pid` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `create_time` int(11) NOT NULL DEFAULT 0 COMMENT '创建时间',

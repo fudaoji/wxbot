@@ -17,6 +17,7 @@ class Addon extends Handler
         $this->botClient = $options['bot_client'];
         $this->botWxid = $options['bot_wxid'];
         $this->fromWxid = $options['from_wxid'];
+        $this->fromName = $options['from_name'];
         $this->groupWxid = $options['group_wxid'];
         $this->group = $options['group'];
         $this->content = $options['content'];

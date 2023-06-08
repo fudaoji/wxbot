@@ -3,6 +3,15 @@
 // +----------------------------------------------------------------------
 // | 日志设置
 // +----------------------------------------------------------------------
+
+
+if($rule = request()->pathinfo()){
+    $rule_arr = explode('/', $rule);
+    $addon = $rule_arr[0];
+}else{
+    $addon = '';
+}
+
 return [
     // 默认日志记录通道
     'default'      => env('log.channel', 'file'),
@@ -21,7 +30,7 @@ return [
             // 日志记录方式
             'type'           => 'File',
             // 日志保存目录
-            'path'           => '',
+            'path'           => root_path('runtime'.DS.$addon.DS.'log'),
             // 单文件日志写入
             'single'         => false,
             // 独立日志级别

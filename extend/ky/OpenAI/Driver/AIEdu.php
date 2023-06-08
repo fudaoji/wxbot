@@ -87,7 +87,7 @@ class AIEdu extends Base
     }
 
     public function dealRes($params){
-        $res = $params;Logger::error($params);
+        $res = $params;
         if(empty($params['errCode'])){
             $res['code'] = 1;
         }else{

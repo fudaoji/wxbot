@@ -1,5 +1,15 @@
 <?php
 
+if(!function_exists('get_addon_name')) {
+    function get_addon_name(){
+        if($rule = request()->rule()->getRule()){
+            $rule_arr = explode('/', $rule);
+            return $rule_arr[0];
+        }
+        return '';
+    }
+}
+
 if(!function_exists('get_addon_menu')) {
     function get_addon_menu(string $name = ''){
         $info = [];

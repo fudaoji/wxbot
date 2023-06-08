@@ -147,11 +147,12 @@ class Bgftask extends Botbase
         $id2title = $this->listGoodsTemplates();
         if($this->request->isPost()){
             $post_data = input('post.');
-            if(empty($post_data['goods_id'])){
-                $this->error('请选择要发送的商品!');
-            }
-            if($goods = $this->goodsM->getOne($post_data['goods_id'])){
-                $post_data['goods_title'] = $goods['title'];
+            if(! empty($post_data['goods_id'])){
+                //$this->error('请选择要发送的商品!');
+
+                if($goods = $this->goodsM->getOne($post_data['goods_id'])){
+                    $post_data['goods_title'] = $goods['title'];
+                }
             }
 
             if(!empty($post_data['media_id_type']) && count($post_data['media_id_type']) > 0){
@@ -194,7 +195,7 @@ class Bgftask extends Botbase
         $builder = new FormBuilder();
         $builder->setPostUrl(url('add'))
             ->addFormItem('media', 'choose_media_multi', '介绍内容', '素材顺序决定推送顺序', ['types' => Media::types()])
-            ->addFormItem('goods_id', 'chosen', '选择商品', '选择商品', $id2title, 'required')
+            ->addFormItem('goods_id', 'chosen', '选择商品', '选择商品', $id2title)
             ->addFormItem('super_ids', 'chosen_multi', '选择代理商', '选择代理商', $supers, 'required')
             ->addFormItem('plan_time', 'datetime', '发送时间1', '不填则取当前时间', [], '')
             ->addFormItem('plan_time1', 'datetime', '发送时间2', '不填则不生效', [], '')
@@ -212,7 +213,7 @@ class Bgftask extends Botbase
 
         if($this->request->isPost()){
             $post_data = input('post.');
-            if($goods = $this->goodsM->getOne($post_data['goods_id'])){
+            if(!empty($post_data['goods_id']) && $goods = $this->goodsM->getOne($post_data['goods_id'])){
                 $post_data['goods_title'] = $goods['title'];
             }
 
@@ -252,7 +253,7 @@ class Bgftask extends Botbase
         $builder->setPostUrl(url('edit'))
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('media', 'choose_media_multi', '介绍内容', '素材顺序决定推送顺序', ['types' => Media::types(), 'materials' => $materials])
-            ->addFormItem('goods_id', 'chosen', '选择商品', '选择商品', $id2title, 'required')
+            ->addFormItem('goods_id', 'chosen', '选择商品', '选择商品', $id2title)
             ->addFormItem('super_ids', 'chosen_multi', '选择代理商', '选择代理商', $supers, 'required')
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则根据设置的发单间隔时间确定', [], '')
             ->addFormItem('remark', 'text', '备注', '')
@@ -474,7 +475,7 @@ class Bgftask extends Botbase
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function listGoodsTemplates(){
-        return $this->goodsM->getFieldByOrder([
+        return [0 => '选择商品'] + $this->goodsM->getFieldByOrder([
             'field' => ['id','title'],
             'order' => ['id' => 'desc'],
             'status' => 1

@@ -1,5 +1,4 @@
-<iframe id="iframe_display" name="iframe_display" style="display: none;"></iframe>
-<form id="app-form" class="layui-form layuimini-form" target="iframe_display">
+<form id="app-form" class="layui-form layuimini-form" onsubmit="return false;">
     <div class="layui-form-item">
         <label class="layui-form-label required">权限名称</label>
         <div class="layui-input-block">
@@ -17,24 +16,21 @@
         </div>
     </div>
 </form>
+
 <script>
-    layui.use(['layer', 'tree', 'form'], function() {
+    layui.use(['layer', 'authtree', 'form'], function() {
         var $ = layui.jquery,
             layer = layui.layer,
-            tree = layui.tree,
+            authtree = layui.authtree,
             form = layui.form;
 
-        var parent_index = parent.layer.getFrameIndex(window.name);
-        //树形组件复选框
-        tree.render({
-            elem: '#dept_tree',
-            data: getData(),
-            id: 'treeId',
-            showCheckbox: true,     //是否显示复选框
-            onlyIconControl: true
+        authtree.render('#dept_tree', getData(), {
+            //autochecked: false,
+            autoclose: false,
+            autowidth: true,
+            theme: 'auth-skin-default'
         });
-        //初始化
-        tree.setChecked('treeId', <?php echo json_encode($data['rules']);?>);
+
         function getData(){
             var rules_tree = [];
             $.ajax({
@@ -47,6 +43,17 @@
                     if(res.code === 1) {
                         var data = res.data;
                         rules_tree = data.rules_tree;
+
+                        var checkedRules = {:$data.rules};
+                        checkedRules = checkedRules.map(x => parseInt(x));
+                        rules_tree = authtree.listConvert(rules_tree, {
+                            primaryKey: 'id'
+                            ,startPid: 0
+                            ,parentKey: 'pid'
+                            ,nameKey: 'title'
+                            ,valueKey: 'id'
+                            ,checkedKey: checkedRules
+                        })
                     }
                 }
             });
@@ -54,14 +61,12 @@
             return rules_tree;
         }
         //监听提交
-        var rules_ids = [];
         form.on('submit(formAuth)', function() {
-            var checkData = tree.getChecked('treeId');
-            recursion(checkData);
+            var checkData =authtree.getChecked('#dept_tree');
 
             var postData = {
                 id: "<?php echo $data['id']?>",
-                rules: rules_ids.join(',')
+                rules: checkData.join(',')
             };
 
             $.ajax({
@@ -73,7 +78,6 @@
                 success: function(res) {
                     if (res.code === 1) {
                         layer.msg(res.msg, {time: 1500}, function(){
-                            parent.layer.close(parent_index);
                             parent.location.reload();
                         });
                     } else {
@@ -82,14 +86,6 @@
                 }
             });
         });
-        function recursion(data) {
-            data.forEach((el) => {
-                rules_ids.push(el.id);
-                if(el.children) {
-                    recursion(el.children);
-                }
-            });
-        }
     });
 </script>
 </body>

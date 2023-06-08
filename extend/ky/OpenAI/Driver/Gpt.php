@@ -76,7 +76,7 @@ class Gpt extends Base
             'proxy' => $this->proxy,
         ];
         !empty($params) && $options['data'] = $params;
-        Logger::error(json_encode($options, JSON_UNESCAPED_UNICODE));
+        //Logger::error(json_encode($options, JSON_UNESCAPED_UNICODE));
         return $this->request($options);
     }
 
@@ -92,7 +92,7 @@ class Gpt extends Base
 
     public function dealRes($params){
         $res = $params;
-        Logger::error($params);
+        //Logger::error($params);
         if(isset($res['choices'][0]['message']['content'])){
             $res['choices'][0]['text'] = $res['choices'][0]['message']['content'];
             $res['code'] = 1;

@@ -59,9 +59,9 @@ class HandlerPrivateChat extends Handler
         foreach ($keywords as $keyword){
             if(empty($keyword['wxids'])){
                 $where = ['uin' => $this->botWxid];
-                if($keyword['user_type']==Task::USER_TYPE_FRIEND){
+                if($keyword['user_type'] == Task::USER_TYPE_FRIEND){
                     $where['type'] = Bot::FRIEND;
-                }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
+                }elseif($keyword['user_type'] == Task::USER_TYPE_GROUP){
                     $where['type'] = Bot::GROUP;
                 }
                 $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
@@ -69,6 +69,7 @@ class HandlerPrivateChat extends Handler
             if(strpos($keyword['wxids'], $this->fromWxid) !== false){
                 model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);
                 $flag = true;
+                $this->replied = true;
             }
         }
         return $flag;

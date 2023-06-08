@@ -14,6 +14,7 @@ layui.config({
     base: rootPath + "lay-module/",
     version: true
 }).extend({
+    authtree: "authtree/authtree", //tree增强   https://gitee.com/kevin402502/layui-authtree
     excel: "excel/excel", //excel 操作  https://gitee.com/wangerzi/layui-excel
     selectN: "selectN/selectN", // 多级联动  https://fly.layui.com/extend/selectN,selectM/
     miniAdmin: "layuimini/miniAdmin", // layuimini后台扩展

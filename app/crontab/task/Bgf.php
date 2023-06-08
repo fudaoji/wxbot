@@ -69,7 +69,10 @@ class Bgf extends Base
         ]))){
             foreach($task_list as $task){
                 $this->taskM->updateOne(['id' => $task['id'], 'complete_time' => time()]);
-                if(empty($task['super_ids']) || !$goods = $this->goodsM->getOne($task['goods_id'])){
+                if(empty($task['super_ids'])){
+                    continue;
+                }
+                if(!empty($task['goods_id']) && !$goods = $this->goodsM->getOne($task['goods_id'])){
                     continue;
                 }
 
@@ -82,7 +85,7 @@ class Bgf extends Base
                     }
                     $wxids = explode(',', $agent['groups']);
 
-                    $task['xml'] = str_replace('SUPER_ID', $super_id, $goods['xml']);
+                    !empty($goods) && $task['xml'] = str_replace('SUPER_ID', $super_id, $goods['xml']);
                     foreach ($wxids as $to_wxid){
                         //发介绍素材
                         if(!empty($task['medias'])){
@@ -105,8 +108,8 @@ class Bgf extends Base
                             }
                         }
 
-                        ////发商品
-                        invoke('\\app\\common\\event\\TaskQueue')->push([
+                        //发商品
+                        !empty($goods) && invoke('\\app\\common\\event\\TaskQueue')->push([
                             'delay' => $delay,
                             'params' => [
                                 'do' => ['\\app\\crontab\\task\\Bgf', 'sendMsg'],

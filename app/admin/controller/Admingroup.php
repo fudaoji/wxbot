@@ -141,8 +141,7 @@ class Admingroup extends Base
         if(! $data) {
             $this->error('id非法');
         }
-        $data['rules'] = explode(',', $data['rules']);
-
+        $data['rules'] = json_encode(explode(',', $data['rules']));
         return $this->show(['data' => $data]);
     }
 
@@ -178,10 +177,13 @@ class Admingroup extends Base
                 }else {
                     $item['checked'] = false;
                 }
+                /*$item['name'] = $item['title'];
+                $item['value'] = $item['id'];*/
                 $rules[$k] = $item;
             }
             $Tree = new Tree();
-            $rules_tree = $Tree->listToTree($rules);
+            //$rules_tree = $Tree->listToTree($rules);
+            $rules_tree = $rules;
             $this->success('success', '', ['rules_tree' => $rules_tree]);
         }
     }

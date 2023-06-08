@@ -22,6 +22,7 @@ Abstract class Base
 
     const ANSWER_TEXT = 'text';
     const ANSWER_MUSIC = 'music';
+    const ANSWER_IMAGE = 'image';
 
     /**
      * @var Client

@@ -86,8 +86,8 @@ class Admin extends Base
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('group_id', 'select', '角色', '角色', $groups, 'required')
-            ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength="4" maxlength="20"')
-            ->addFormItem('password', 'password', '密码', '6-20位', [], 'required')
+            ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength=4 maxlength=20')
+            ->addFormItem('password', 'password', '密码', '6-20位', [], 'required minlength=6 maxlength=20')
             //->addFormItem('email', 'text', '邮箱', '邮箱')
             ->addFormItem('mobile', 'text', '手机', '手机')
             ->addFormItem('realname', 'text', '姓名', '姓名');
@@ -111,7 +111,7 @@ class Admin extends Base
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('group_id', 'select', '角色', '角色', $groups, 'required')
-            ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength="4" maxlength="20"')
+            ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength=4 maxlength=20')
             //->addFormItem('email', 'text', '邮箱', '邮箱')
             ->addFormItem('mobile', 'text', '手机', '手机')
             ->addFormItem('realname', 'text', '姓名', '姓名')

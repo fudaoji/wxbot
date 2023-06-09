@@ -20,6 +20,7 @@ class AddonController extends BaseCtl
     protected $addonInfo;
 
     public function initialize(){
+        parent::initialize();
         $rule = $this->request->rule()->getRule();
         $rule_arr = explode('/', $rule);
         $this->addonName = $rule_arr[0];

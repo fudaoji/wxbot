@@ -239,17 +239,32 @@ if(! function_exists('get_redis')){
  */
 function execute_sql($sql_path = '')
 {
-    $sql = file_get_contents($sql_path);
-    $sql = str_replace("\r", ";\n", $sql);
-    //$sql = explode(";\n", $sql);
-    $original = '`__PREFIX__';
-    $prefix = '`'.env('database.prefix', '');
-    $sql = str_replace("{$original}", "{$prefix}", $sql); //替换掉表前缀
-    if(empty(trim($sql))){
-        return  true;
+    \think\facade\Db::startTrans();
+    try {
+        $sql = file_get_contents($sql_path);
+        //去除注释
+        $sql = preg_replace('/\/\*[\s\S]*?\*\/|--.*?[\r\n]/m', '', $sql);
+        $sql = str_replace("\r", "\n", $sql);
+        $sql = explode(";\n", $sql);
+
+        //替换表前缀
+        $original = '`__PREFIX__';
+        $prefix = '`'.env('database.prefix', '');
+        $sql = str_replace($original, "{$prefix}", $sql);
+
+        //开始安装
+        foreach ($sql as $value) {
+            if(empty($value)){
+                continue;
+            }
+            \think\facade\Db::execute($value);
+        }
+        \think\facade\Db::commit();
+        return true;
+    }catch (\Exception $e){
+        \think\facade\Db::rollback();
+        return  $e->getMessage();
     }
-    \think\facade\Db::execute($sql);
-    return true;
 }
 
 /**

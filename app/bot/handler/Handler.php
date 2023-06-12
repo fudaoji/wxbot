@@ -353,7 +353,11 @@ class Handler extends BaseCtl
                 $class = new $class_name();
                 if(method_exists($class, $this->addonHandlerName)){
                     file_exists($common = addon_path($v['name'], 'common.php')) and require_once $common;
-                    $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
+                    try {
+                        $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
+                    }catch (\Exception $e){
+                        Logger::error($e->getMessage());
+                    }
                 }
             }
         }
@@ -365,7 +369,11 @@ class Handler extends BaseCtl
             if(class_exists($class_name)){
                 $class = new $class_name();
                 if(method_exists($class, $this->addonHandlerName)){
-                    $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
+                    try {
+                        $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
+                    }catch (\Exception $e){
+                        Logger::error($e->getMessage());
+                    }
                 }
             }
         }

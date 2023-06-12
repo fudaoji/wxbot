@@ -56,6 +56,7 @@ class Bot
     const MSG_SYS = 10000; // 系统消息
     const MSG_RECALLED = 2005;  // 消息撤回
     const MSG_OTHER = 0; // 其他消息
+    const MSG_QUOTE = 10003; //引用消息
 
     //添加好友场景值
     const SCENE_WXNUM = 3; //微xin号搜索
@@ -90,6 +91,7 @@ class Bot
             self::MSG_GROUPINVITE => '进群邀请',
             self::MSG_VERIFY => '加好友验证',
             self::MSG_RECALLED => '消息撤回',
+            self::MSG_QUOTE => '引用消息',
             self::MSG_OTHER => '其他'
         ];
         return isset($list[$id]) ? $list[$id] : $list;

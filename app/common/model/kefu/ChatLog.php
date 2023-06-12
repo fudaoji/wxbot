@@ -296,12 +296,12 @@ class ChatLog extends Kefu
      */
     public function convertMsgToHtml($msg = '', $msg_type = 1)
     {
-        $this->emojiM = new EmojiCode();
+        $emojiM = new EmojiCode();
         $content = '';
         switch ($msg_type) {
                 //文本消息
             case 1:
-                $content = $this->emojiM->emojiText($msg, 'img');
+                $content = $emojiM->emojiText($msg, 'img');
                 break;
                 //     //图片消息
                 // case 3:

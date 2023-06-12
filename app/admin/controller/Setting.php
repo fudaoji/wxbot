@@ -10,6 +10,7 @@
 
 namespace app\admin\controller;
 use app\common\model\Setting as SettingM;
+use app\constants\Common;
 
 class Setting extends Base
 {
@@ -103,6 +104,7 @@ class Setting extends Base
                 empty($data) && $data['close'] = 0;
                 $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
                     ->addFormItem('logo', 'picture_url', 'Logo', 'Logo')
+                    ->addFormItem('switch_reg', 'radio', '开发注册', '开发注册', Common::yesOrNo(), 'required')
                     ->addFormItem('icp', 'text', '备案号', '备案号');
                 break;
             case 'upload':

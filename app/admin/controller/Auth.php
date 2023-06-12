@@ -45,6 +45,9 @@ class Auth extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function reg(){
+        if(! config('system.site.switch_reg')){
+            $this->error('未开放注册！');
+        }
         if (request()->isPost()) {
             $post_data = input('post.');
             $validate = Validate::rule([

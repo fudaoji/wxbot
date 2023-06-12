@@ -35,9 +35,11 @@
             <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin:0px;">
                 <button class="login-btn" lay-submit="" lay-filter="login">立即登录</button>
             </div>
+            {if config('system.site.switch_reg')}
             <div class="layui-form-item" style="width: 288px;margin: 20px auto;">
                 <a href="{:url('reg')}" style="float: right;color: #459ae9;font-size: 12px;">无账号？去注册</a>
             </div>
+            {/if}
         </form>
     </div>
 </div>

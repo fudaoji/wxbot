@@ -28,7 +28,8 @@ class Bgfconfig extends Botbase
         $settings = $this->model->getConf(['admin_id' => $this->adminInfo['id']]);
         if(empty($settings)){
             $settings = [
-                'switch' => 0
+                'switch' => 0,
+                'userid' => 'userId'
             ];
         }
         if(!empty($settings['groups'])){
@@ -42,6 +43,7 @@ class Bgfconfig extends Botbase
             ->setTip($tip)
             ->addFormItem('switch', 'radio', '开启', '是否开启', [1=>'是', 0 => '否'], 'required')
             ->addFormItem('groups', 'chosen_multi', '商品采集群', '商品采集群', $this->getMembers(['type' => \app\constants\Bot::GROUP]), 'required')
+            ->addFormItem('userid', 'text', '用户id名', '页面参数的用户ID名', [], 'required')
             ->setFormData($settings);
         return $builder->show();
     }

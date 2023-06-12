@@ -65,7 +65,7 @@ class Bgf extends Addon
             $xml = $this->content['msg'];
             $this->xmlService = new XmlMini($xml);
             $title = $this->xmlService->getTitle();
-            $super_id = $this->xmlService->getPathParams('superId');
+            $super_id = $this->xmlService->getPathParams(empty($this->configs['userid']) ? 'userId' : $this->configs['userid']);
             $xml = str_replace($super_id, 'SUPER_ID', $xml);
             if($goods = $this->goodsM->getOneByOrder(['where' => ['title' => $title], 'order' => ['id' => 'desc']])){
                 $this->goodsM->updateOne(['id' => $goods['id'], 'title' => $title, 'xml' => $xml]);

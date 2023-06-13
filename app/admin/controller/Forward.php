@@ -117,7 +117,8 @@ class Forward extends Botbase
                 ->addTableColumn(['title' => '发送对象', 'field' => 'wxids', 'minWidth' => 200])
                 ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status(),'minWidth' => 60])
                 ->addTableColumn(['title' => '操作', 'minWidth' => 70, 'type' => 'toolbar'])
-                ->addRightButton('edit');
+                ->addRightButton('edit')
+                ->addRightButton('delete');
         return $builder->show();
     }
 

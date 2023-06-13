@@ -146,7 +146,7 @@ class Task extends Botbase
                 ->addRightButton('edit');
         }
 
-        return $builder->show();
+        return $builder->addRightButton('delete')->show();
     }
 
     public function resetPost()

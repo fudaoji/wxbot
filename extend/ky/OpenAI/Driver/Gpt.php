@@ -20,7 +20,7 @@ class Gpt extends Base
     protected $errMsg = '';
     protected $appKey = '';
     protected $proxy = '';
-    protected $model = 'gpt-3.5-turbo';
+    protected $model = 'gpt-3.5-turbo-0613';
     private $method = 'post';
 
     public function __construct($options = [])
@@ -28,6 +28,7 @@ class Gpt extends Base
         parent::__construct($options);
         !empty($options['appid']) && $this->appKey = $options['appid'];
         !empty($options['proxy']) && $this->proxy = $options['proxy'];
+        !empty($options['model']) && $this->model = $options['model'];
     }
 
     /**

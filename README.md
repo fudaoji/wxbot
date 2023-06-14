@@ -71,6 +71,7 @@ QQ交流群：
 ![输入图片说明](https://zyx.images.huihuiba.net/1-5f8afb8796b2f.png "WxBot微信开发框架QQ群聊二维码.png")
 
 微信交流群：
+
 ![输入图片说明](wx_group.png)
 
 #### 声明

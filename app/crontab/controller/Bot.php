@@ -142,7 +142,7 @@ class Bot extends Base
                 [$view_table . ' t1', 't1.id=bt.id']
             ],
             'where' => ['bot.alive' => 1],
-            'field' => ['bot.uuid', 'bot.uin', 'bot.app_key', 'bot.admin_id','bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id','bt.circle',
+            'field' => ['bot.uuid', 'bot.uin', 'bot.app_key', 'bot.admin_id', 'bot.staff_id', 'bot.url', 'bot.protocol','bt.wxids', 'bt.medias', 'bt.id','bt.circle',
                 'bt.complete_time','bt.atall','bt.member_tags'
             ],
             'refresh' => true

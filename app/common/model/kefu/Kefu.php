@@ -54,7 +54,7 @@ class Kefu extends Base
         //     "robot_type":0
         // }
         Logger::write("好友自动通过Config:---".json_encode($config)."\n");
-        if ($config['auto_pass']) {
+        if (!empty($config['auto_pass'])) {
             Logger::write("好友自动通过---"."\n");
             Logger::write("content".json_encode($content)."\n");
             $v1 = $content['json_msg']['v1'];

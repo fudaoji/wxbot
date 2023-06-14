@@ -37,7 +37,7 @@ class Reply extends Base
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function botReply($bot, $client, $reply, $to_wxid = '', $extra = []){
-        $media = model('media_' . $reply['media_type'])->getOneByMap(['admin_id' => $bot['admin_id'], 'id' => $reply['media_id']]);
+        $media = model('media_' . $reply['media_type'])->getOneByMap(['admin_id' => $bot['staff_id'], 'id' => $reply['media_id']]);
         //Logger::error($media);
         switch($reply['media_type']){
             case Media::LINK:

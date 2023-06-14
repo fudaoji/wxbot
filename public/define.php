@@ -9,6 +9,7 @@
 
 !defined('SESSION_BOT') && define('SESSION_BOT', 'currentBot');
 define('SESSION_ADMIN', 'adminInfo');
+define('SESSION_AID', 'aid');
 define('DS', DIRECTORY_SEPARATOR);
 
 define('COMMUNITY_URL', 'https://daoadmin.kuryun.com');

@@ -19,6 +19,9 @@ class MediaGroup
      * Author: fudaoji<fdj@kuryun.cn>
      */
     static function getIdToTitle($where = []){
+        if(empty($where['admin_id'])){
+            $where['admin_id'] = session(SESSION_AID);
+        }
         return model('mediaGroup')->getField(['id', 'title'], $where);
     }
 }

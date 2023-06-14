@@ -22,7 +22,7 @@ class Base extends BaseCtl
     protected $layout = 'layout/base';
     protected $needLogin = true;
     protected $pk = 'id';
-    protected $sKey = 'aid';
+    protected $sKey = SESSION_AID;
     protected $botList = [];
     protected $bot;
 

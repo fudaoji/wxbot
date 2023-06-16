@@ -1185,3 +1185,7 @@ CREATE TABLE `__PREFIX__addon` (
   UNIQUE KEY `name` (`name`),
   KEY `cates` (`cates`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='应用表';
+-- ----------------------------
+-- 2.2.3 手动更新请务必手动替换__PREFIX__为你的真实表前缀
+-- ----------------------------
+ALTER TABLE `__PREFIX__admin_group` ADD COLUMN `addons` text NULL COMMENT '角色应用' AFTER `tenant_group`;

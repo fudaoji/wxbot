@@ -41,7 +41,7 @@ class Tenant extends Base
     public function index(){
         if(request()->isPost()){
             $post_data = input('post.');
-            $where = ['pid' => 0];
+            $where = ['pid' => 0, 'id' => ['<>', AdminM::getFounderId()]];
             !empty($post_data['search_key']) && $where['username|mobile|realname'] = ['like', '%'.$post_data['search_key'].'%'];
 
             //非超管

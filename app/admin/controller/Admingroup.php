@@ -9,6 +9,8 @@
 
 namespace app\admin\controller;
 
+use app\common\service\Addon as AppService;
+use app\common\service\AdminGroup as GroupService;
 use app\constants\Common;
 use app\admin\model\Admin as AdminM;
 use ky\Tree;
@@ -24,6 +26,13 @@ class Admingroup extends Base
         parent::initialize();
         $this->model = new \app\admin\model\AdminGroup();
         $this->ruleM = new \app\admin\model\AdminRule();
+    }
+
+    static function tabList($id){
+        return [
+            'auth' => ['title' => '菜单权限', 'href' => url('auth', ['group_id' => $id])],
+            'apps' => ['title' => '可见应用', 'href' => url('apps', ['group_id' => $id])]
+        ];
     }
 
     /**
@@ -100,7 +109,7 @@ class Admingroup extends Base
      */
     public function edit(){
         $id = input('id');
-        $data = $this->model->getOne($id);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
         if(! $data){
             $this->error('id参数错误');
         }
@@ -142,7 +151,36 @@ class Admingroup extends Base
             $this->error('id非法');
         }
         $data['rules'] = json_encode(explode(',', $data['rules']));
-        return $this->show(['data' => $data]);
+        $assign = [
+            'data' => $data,
+            'tab_nav' => [
+                'tab_list' => self::tabList($group_id),
+                'current_tab' => 'auth'
+            ]
+        ];
+        return $this->show($assign);
+    }
+
+    /**
+     * 可见应用
+     * Author: Doogie <461960962@qq.com>
+     */
+    public function apps(){
+        $id = input('group_id');
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
+        if(! $data){
+            $this->error('id参数错误');
+        }
+        $data['addons'] = empty($data['addons']) ? [] : explode(',', $data['addons']);
+        //使用FormBuilder快速建立表单页面。
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('可见应用')  //设置页面标题
+            ->setPostUrl(url('savepost')) //设置表单提交地址
+            ->setTabNav(self::tabList($id), 'apps')
+            ->addFormItem('id', 'hidden', 'id', 'id')
+            ->addFormItem('addons', 'chosen_multi', '可见应用', '可见应用', AppService::getIdToTitle(GroupService::getGroupAppsWhere($this->adminInfo)))
+            ->setFormData($data);
+        return $builder->show();
     }
 
     /**

@@ -15,6 +15,22 @@ class DACommunity
     const SESSION_KEY = 'DaoAdminToken';
 
     /**
+     * 公告列表
+     * @param array $params
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function listNotice($params = []){
+        empty($params['page_size']) && $params['page_size'] = 20;
+        empty($params['current_page']) && $params['current_page'] = 1;
+        $res = DaoCommunity::instance()->noticeList($params);
+        if($res['code']){
+            return $res['data'];
+        }
+        return $res['msg'];
+    }
+
+    /**
      * 获取APP升级包
      * @param array $params
      * @return mixed

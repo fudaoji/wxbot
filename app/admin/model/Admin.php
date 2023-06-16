@@ -24,6 +24,19 @@ class Admin extends Base
     }
 
     /**
+     * 获取当前客户的{id:name}
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    static function getTenantIdToName(){
+        $where = ['id' => ['<>', self::getFounderId()], 'pid' => 0];
+        return (new self())->getField(['id','username'], $where);
+    }
+
+    /**
      * 站长id
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException

@@ -9,14 +9,12 @@
 
 namespace app\admin\controller;
 
-use app\admin\model\Admin as AdminM;
+use app\common\service\AdminGroup as GroupService;
 use app\common\service\Platform as PlatformService;
 use app\constants\Common;
 use app\common\model\Addon;
 use app\common\model\AdminAddon;
 use app\common\service\Addon as AppService;
-use app\common\service\DACommunity;
-use app\common\service\File as FileService;
 use think\facade\Db;
 
 
@@ -30,10 +28,9 @@ class Apps extends Base
      * @var AdminAddon
      */
     private $adminAppM;
-    private $tabList;
 
-    public function __construct(){
-        parent::__construct();
+    public function initialize(){
+        parent::initialize();
         $this->model = new Addon();
         $this->adminAppM = new AdminAddon();
     }
@@ -46,7 +43,7 @@ class Apps extends Base
     }
 
     /**
-     * 我的应用
+     * 操作台
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -64,70 +61,45 @@ class Apps extends Base
         }
 
         $page_size = 12;
-        $status = input('status', 1);
         $type = input('type', '');
         $search_key = input('search_key', '');
-        $where = [];
-        $type && $where[] = ['type', 'like', '%'.$type.'%'];
-        if($status != -1 && !AdminM::isFounder($this->adminInfo)){
-            $where[] = ['status', '=', $status];
-        }
-        $search_key && $where[] = ['title|desc', 'like', '%'.$search_key.'%'];
-        $query = $this->model->where($where);
-        $data_list = $query->order('id', 'desc')
-            ->paginate($page_size);
-        $page = $data_list->appends(['status' => $status, 'search_key' => $search_key])->render();
+        $where = array_merge(['status' => 1], GroupService::getGroupAppsWhere($this->adminInfo));
+        $type && $where['type'] = ['like', '%'.$type.'%'];
+
+        $search_key && $where['title|desc'] = ['like', '%'.$search_key.'%'];
+        $data_list = $this->model->page($page_size, $where, ['id' => 'desc'], true, true);
+        $page = $data_list->appends(['search_key' => $search_key])->render();
 
         $assign = [
             'data_list' => $data_list,
             'search_key' => $search_key,
             'page' => $page,
-            'status' => $status,
             'type' => $type,
             'types' => ['' => '全部平台'] + PlatformService::types()
         ];
         return $this->show($assign);
     }
-    public function adminapp(){
-        $company_id = AdminM::getCompanyId($this->adminInfo);
-        if(request()->isPost()){ //开启关闭
-            $id = input('post.id');
-            if(empty($ta = $this->adminAppM->getOneByMap(['id' => $id, 'company_id' => $company_id]))){
-                $this->error('数据不存在');
-            }
-            $this->adminAppM->update(['id' => $id, 'status' => abs($ta['status'] - 1)]);
-            $this->success('操作成功');
+
+    public function edit()
+    {
+        $id = input('id', 0);
+        $data = $this->model->getOne($id);
+
+        if (!$data) {
+            $this->error('参数错误');
         }
 
-        $page_size = 12;
-        $status = input('status', -1);
-        $search_key = input('search_key', '');
-        $where = [
-            ['ta.deadline', '>', time()],
-            ['ta.company_id', '=', $company_id],
-        ];
-
-        $status != -1 && $where[] = ['ta.status', '=', $status];
-        $search_key && $where[] = ['app.title|app.desc', 'like', '%'.$search_key.'%'];
-        $query = $this->adminAppM->alias('ta')
-            ->where($where)
-            ->join('addon app', 'app.name=ta.app_name')
-            ->join('admin admin', 'admin.id=ta.company_id');
-        $data_list = $query->order('ta.update_time', 'desc')
-            ->field([
-                'ta.*','app.logo','app.desc','app.name','app.title','app.admin_url','app.admin_url_type',
-                'admin.realname', 'admin.mobile','admin.username'
-            ])
-            ->paginate($page_size);
-        $page = $data_list->appends(['status' => $status, 'search_key' => $search_key])->render();
-
-        $assign = [
-            'data_list' => $data_list,
-            'search_key' => $search_key,
-            'page' => $page,
-            'status' => $status
-        ];
-        return $this->show($assign);
+        $data['groups'] = empty($data['groups']) ? [] : json_decode($data['groups'], true);
+        $groups = model('admin/adminGroup')->getGroupsIdToTitle($this->adminInfo['id']);
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('编辑')
+            ->setPostUrl(url('savePost'))
+            ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('status', 'radio', '状态', '状态', Common::status(), 'required')
+            ->addFormItem('groups', 'chosen_multi', '可见角色', '超管固定可见', $groups)
+            ->setFormData($data);
+        return $builder->show();
     }
 
     /**
@@ -303,7 +275,8 @@ class Apps extends Base
             ->addTableColumn(['title' => '名称', 'field' => 'title'])
             ->addTableColumn(['title' => '版本', 'field' => 'version'])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'text' => '上架|下架'])
-            ->addTableColumn(['title' => '操作', 'width' => 70, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'width' => 120, 'type' => 'toolbar'])
+            ->addRightButton('edit')
             ->addRightButton('delete', ['title' => '卸载', 'href' => url('uninstallpost', ['name' => '__data_name__'])]);
         return $builder->show();
     }
@@ -323,6 +296,9 @@ class Apps extends Base
         $ids = (array) $ids;
         if($status == 'delete'){
             if($this->model->delByMap([[$this->pk, 'in', $ids]])){
+                foreach ($ids as $id){
+                    AppService::getApp($id, true);
+                }
                 $this->success('删除成功');
             }else{
                 $this->error('删除失败');
@@ -351,6 +327,10 @@ class Apps extends Base
             if($this->model->saveAll($arr)){
                 //refresh apps
                 AppService::listOpenApps(PlatformService::WECHAT, true);
+
+                foreach ($ids as $id){
+                    AppService::getApp($id, true);
+                }
                 $this->success($msg['success']);
             }else{
                 $this->error($msg['error']);

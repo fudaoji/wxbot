@@ -125,7 +125,8 @@ if (!function_exists('addon_logo_url')) {
         is_null($addon) && $addon = request()->root();
         $addon_info = get_addon_info($addon);
         $addons_path_name = config('addon.pathname');
-        return '/'.$addons_path_name .'/'. $addon . '/' . $addon_info['logo'];
+        $prefix = '/'.$addons_path_name .'/'. $addon . '/';
+        return (strpos($addon_info['logo'], $prefix) === false ? $prefix : '') . $addon_info['logo'];
     }
 }
 
@@ -139,6 +140,9 @@ if(!function_exists('get_addon_info')) {
         $path = root_path(config('addon.pathname') . DIRECTORY_SEPARATOR . $name) . 'info.php';
         if(is_file($path)){
             $info = require $path;
+        }
+        if($db = \app\common\service\Addon::getApp($name)){
+            $info = array_merge($info, $db->toArray());
         }
         return $info;
     }

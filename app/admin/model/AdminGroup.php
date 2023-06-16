@@ -36,11 +36,13 @@ class AdminGroup extends Base
     /**
      * 获取角色列表[id => title]
      * @param int $admin_id
+     * @param array $where
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function getGroupsIdToTitle($admin_id = 0){
-        return $this->getField('id,title', ['status' => 1, 'admin_id' => $admin_id]);
+    public function getGroupsIdToTitle($admin_id = 0, $where = []){
+        $where = array_merge(['status' => 1, 'admin_id' => $admin_id], $where);
+        return $this->getField('id,title', $where);
     }
 
     /**

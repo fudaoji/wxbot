@@ -16,6 +16,17 @@ use think\facade\Db;
 class Addon
 {
     /**
+     * 获取{id:title, ...}
+     * @param array $where
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function getIdToTitle($where = []){
+        $list = (new AppM())->getField(['id','title'], $where);
+        return $list;
+    }
+
+    /**
      * 启用的应用
      * @param string $type
      * @param bool $refresh
@@ -88,19 +99,26 @@ class Addon
     /**
      * 获取应用基本信息
      * @param string $name
+     * @param bool $refresh
      * @return array|mixed|\think\db\Query|\think\Model|null
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    static function getApp($name = ''){
-        if(intval($name)){
-            $where = [['id','=', $name]];
-        }else{
-            $where = [['name','=', $name]];
+    static function getApp($name = '', $refresh = false){
+        $key = md5(__CLASS__.__FUNCTION__.$name);
+        $data = cache($key);
+        if(empty($data) || $refresh){
+            if(intval($name)){
+                $where = [['id','=', $name]];
+            }else{
+                $where = [['name','=', $name]];
+            }
+            $data = AppM::where($where)->find();
         }
-        return AppM::where($where)->find();
+        cache($key, $data);
+        return  $data;
     }
 
     /**

@@ -1,0 +1,36 @@
+<div class="layui-collapse" lay-accordion>
+    {volist name="data_list" id="vo"}
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title" data-id="{$vo.id}">
+            <div class="layui-row">
+                <div class="layui-col-xs10">
+                    {$vo.title}
+                </div>
+                <div class="layui-col-xs2 publish-time">{:date('Y-m-d H:i', $vo.publish_time)}</div>
+            </div>
+        </h2>
+        <div class="layui-colla-content">
+            {$vo.content|raw}
+        </div>
+    </div>
+    {/volist}
+</div>
+
+{block name="js"}
+<script>
+    layui.use(['element', 'jquery'], function(){
+        var element = layui.element
+        , $ = layui.jquery;
+
+        layui.data('community', {key: 'lastNotice', value: parseInt("{:empty($data_list[0]) ? 0 : $data_list[0]['id']}")});
+        $('.notice-badge', parent.document).addClass('hide')
+    });
+</script>
+{/block}
+
+{block name="css"}
+<style>
+    .publish-time{color: rgb(141,141,141)}
+    img{max-width: 100%;}
+</style>
+{/block}

@@ -1,92 +1,104 @@
-<form id="app-form" class="layui-form layuimini-form" onsubmit="return false;">
-    <div class="layui-form-item">
-        <label class="layui-form-label required">权限名称</label>
-        <div class="layui-input-block">
-            <input type="text" name="title" readonly="" class="layui-input" value="<?php echo $data['title']?>">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label required">分配节点</label>
-        <div id="dept_tree" style="margin-left: 150px;"></div>
-    </div>
-    <div class="layui-form-item text-center" style="margin-top: 50px;">
-        <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="formAuth">立即提交</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-        </div>
-    </div>
-</form>
+<div class="layui-tab layui-tab-brief" lay-filter="tabBrief">
+    {notempty name="tab_nav"}
+    <ul class="layui-tab-title" style="margin-bottom: 5px;">
+        {foreach $tab_nav['tab_list'] as $k => $vo}
+        <li class='{if condition="$k eq $tab_nav.current_tab"} layui-this {/if}' >
+            <a href="{$vo['href']}">{$vo['title']}</a>
+        </li>
+        {/foreach}
+    </ul>
+    {/notempty}
+    <div class="layui-tab-content">
+        <form id="app-form" class="layui-form layuimini-form" onsubmit="return false;">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">权限名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" readonly="" class="layui-input" value="<?php echo $data['title']?>">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">分配节点</label>
+                <div id="dept_tree" style="margin-left: 150px;"></div>
+            </div>
+            <div class="layui-form-item text-center" style="margin-top: 50px;">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formAuth">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
 
-<script>
-    layui.use(['layer', 'authtree', 'form'], function() {
-        var $ = layui.jquery,
-            layer = layui.layer,
-            authtree = layui.authtree,
-            form = layui.form;
+        <script>
+            layui.use(['layer', 'authtree', 'form'], function() {
+                var $ = layui.jquery,
+                        layer = layui.layer,
+                        authtree = layui.authtree,
+                        form = layui.form;
 
-        authtree.render('#dept_tree', getData(), {
-            //autochecked: false,
-            autoclose: false,
-            autowidth: true,
-            theme: 'auth-skin-default'
-        });
+                authtree.render('#dept_tree', getData(), {
+                    //autochecked: false,
+                    autoclose: false,
+                    autowidth: true,
+                    theme: 'auth-skin-default'
+                });
 
-        function getData(){
-            var rules_tree = [];
-            $.ajax({
-                url : "/admin/admingroup/getRulesTree",//后台数据请求地址
-                dataType : 'json',
-                data: <?php echo json_encode(['group_id' => $data['id']]);?>,
-                type : 'post',
-                async : false,
-                success: function(res){
-                    if(res.code === 1) {
-                        var data = res.data;
-                        rules_tree = data.rules_tree;
+                function getData(){
+                    var rules_tree = [];
+                    $.ajax({
+                        url : "/admin/admingroup/getRulesTree",//后台数据请求地址
+                        dataType : 'json',
+                        data: <?php echo json_encode(['group_id' => $data['id']]);?>,
+                    type : 'post',
+                            async : false,
+                            success: function(res){
+                        if(res.code === 1) {
+                            var data = res.data;
+                            rules_tree = data.rules_tree;
 
-                        var checkedRules = {:$data.rules};
-                        checkedRules = checkedRules.map(x => parseInt(x));
-                        rules_tree = authtree.listConvert(rules_tree, {
-                            primaryKey: 'id'
-                            ,startPid: 0
-                            ,parentKey: 'pid'
-                            ,nameKey: 'title'
-                            ,valueKey: 'id'
-                            ,checkedKey: checkedRules
-                        })
+                            var checkedRules = {:$data.rules};
+                            checkedRules = checkedRules.map(x => parseInt(x));
+                            rules_tree = authtree.listConvert(rules_tree, {
+                                primaryKey: 'id'
+                                ,startPid: 0
+                                ,parentKey: 'pid'
+                                ,nameKey: 'title'
+                                ,valueKey: 'id'
+                                ,checkedKey: checkedRules
+                            })
+                        }
                     }
+                });
+
+                    return rules_tree;
                 }
+                //监听提交
+                form.on('submit(formAuth)', function() {
+                    var checkData =authtree.getChecked('#dept_tree');
+
+                    var postData = {
+                        id: "<?php echo $data['id']?>",
+                        rules: checkData.join(',')
+                    };
+
+                    $.ajax({
+                        url : "/admin/admingroup/auth",//后台数据请求地址
+                        dataType : 'json',
+                        type : 'post',
+                        async : false,
+                        data: postData,
+                        success: function(res) {
+                            if (res.code === 1) {
+                                layer.msg(res.msg, {time: 1500}, function(){
+                                    parent.location.reload();
+                                });
+                            } else {
+                                layer.alert(res.msg);
+                            }
+                        }
+                    });
+                });
             });
+        </script>
 
-            return rules_tree;
-        }
-        //监听提交
-        form.on('submit(formAuth)', function() {
-            var checkData =authtree.getChecked('#dept_tree');
-
-            var postData = {
-                id: "<?php echo $data['id']?>",
-                rules: checkData.join(',')
-            };
-
-            $.ajax({
-                url : "/admin/admingroup/auth",//后台数据请求地址
-                dataType : 'json',
-                type : 'post',
-                async : false,
-                data: postData,
-                success: function(res) {
-                    if (res.code === 1) {
-                        layer.msg(res.msg, {time: 1500}, function(){
-                            parent.location.reload();
-                        });
-                    } else {
-                        layer.alert(res.msg);
-                    }
-                }
-            });
-        });
-    });
-</script>
-</body>
-</html>
+    </div>
+</div>

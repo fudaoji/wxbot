@@ -35,6 +35,9 @@ class AddonController extends BaseCtl
         $this->urlPrefix = $this->module . '/'.$this->controller . '/';
         $this->addonMenus = get_addon_menu($this->addonName);
         $this->addonInfo = get_addon_info();
+        if(empty($this->addonInfo['status'])){
+            exit('应用不存在或已下架');
+        }
     }
 
     public function show($assign = [], $view = ''){

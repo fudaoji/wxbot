@@ -47,9 +47,6 @@
                         </li>
                     </ul>
                     <ul class="layui-nav layui-layout-right">
-                        <!--<li class="layui-nav-item">
-                            <a href="{:url('home/index/index')}" title="前台" target="_blank"><i class="fa fa-home"></i></a>
-                        </li>-->
                         {if !empty($bot_info)}
                         <li class="layui-nav-item layuimini-setting" style="margin-right: 40px;">
                             <a href="javascript:;">当前微信：{$bot_info.title}</a>
@@ -66,6 +63,11 @@
                             {/if}
                         </li>
                         {/if}
+                        <li class="layui-nav-item">
+                            <a href="javascript:;" layuimini-content-href="{:url('admin/notice/community')}" data-title="公告">
+                                <i class="fa fa-bullhorn"></i><span class="layui-badge-dot notice-badge hide" style="margin-left: 0;"></span>
+                            </a>
+                        </li>
                         <li class="layui-nav-item" lay-unselect>
                             <a href="javascript:;" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
                         </li>
@@ -164,6 +166,19 @@
                     maxTabNum: 20,              // 最大的tab打开数量
                 };
                 miniAdmin.render(options);
+
+                //获取社区公告
+                var getMsgTotal = function() {
+                    $.post("{:url('notice/hasNewsPost')}", {}, function (res) {
+                        var community = layui.data('community');
+                        var lastId = community.hasOwnProperty('lastNotice') ? community['lastNotice'] : 0;
+                        if(res.data && res.data.id > lastId){
+                            $('.notice-badge').removeClass('hide');
+                        }
+                    });
+                };
+                getMsgTotal();
+                setInterval(getMsgTotal, parseInt("{:config('app_debug') ? 2000 : 20000}"));
             });
         </script>
 

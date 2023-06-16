@@ -33,6 +33,7 @@ class Client
     const API_USER_GET= 'user/getPost';
     const API_FRAMEWORK_VERSIONS = 'framework/getVersions';
     const API_FRAMEWORK_GETUPGRADE = 'framework/getUpgradePackage';
+    const API_APP_NOTICE_LIST     = 'notice/listNotice';
 
     public function __construct($options = [])
     {
@@ -42,6 +43,16 @@ class Client
         if(!empty($options['token'])){
             $this->token = $options['token'];
         }
+    }
+
+    /**
+     * 社区公告
+     * @param array $params
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function noticeList($params = []){
+        return $this->doRequest(['uri' => self::API_APP_NOTICE_LIST, 'data' => $params]);
     }
 
     /**

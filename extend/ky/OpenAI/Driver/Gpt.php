@@ -68,9 +68,10 @@ class Gpt extends Base
         $data = [
             'messages' => $message,
             'model' => $this->model,
-            // 'temperature' => 0.2,
-            // 'tokensLength' => $length
         ];
+        if(! empty($params['functions']) && is_array($params['functions'])){
+            $data['functions'] = $params['functions'];
+        }
         $res = $this->doRequest($data, self::API_SMART);
         if($res['code']){
             $res['answer_type'] = self::ANSWER_TEXT;
@@ -105,12 +106,14 @@ class Gpt extends Base
     public function dealRes($params){
         $res = $params;
         //Logger::error($params);
-        if(isset($res['choices'][0]['message']['content'])){
+        $res['code'] = 1;
+        if(!empty($res['choices'][0]['message']['content'])){
             $res['choices'][0]['text'] = $res['choices'][0]['message']['content'];
-            $res['code'] = 1;
+        }elseif(isset($res['choices'][0]['finish_reason']) && $res['choices'][0]['finish_reason'] == 'function_call'){
+            return $res;
         }else{
             $res['code'] = 0;
-            $res['errmsg'] = $params['msg'];
+            $res['choices'][0]['text'] = "异常";
         }
         return $res;
     }

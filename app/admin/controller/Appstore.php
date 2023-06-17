@@ -162,7 +162,7 @@ class Appstore extends Base
             $data_list = [];
             if (!empty($list)) {
                 foreach ($list as $v) {
-                    $app = AppService::getApp($v['name']);
+                    $app = AppService::getApp($v['name'], true);
                     if(!empty($app) && $v['version'] > $app['version']){
                         $app['new_version'] = $v['version'];
                         $app['update_time'] = $v['update_time'];
@@ -210,7 +210,7 @@ class Appstore extends Base
         if (!file_exists($app_path))
              $this->error($app_name . '目录不存在');
 
-        $app = AppService::getApp($app_name);
+        $app = AppService::getApp($app_name, true);
         if(is_string($res = DACommunity::getUpgradePackage(['addon' => $app_name, 'version' => $app['version']]))){
              $this->error($res);
         }

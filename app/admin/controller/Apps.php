@@ -89,15 +89,13 @@ class Apps extends Base
             $this->error('参数错误');
         }
 
-        $data['groups'] = empty($data['groups']) ? [] : json_decode($data['groups'], true);
-        $groups = model('admin/adminGroup')->getGroupsIdToTitle($this->adminInfo['id']);
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('status', 'radio', '状态', '状态', Common::status(), 'required')
-            ->addFormItem('groups', 'chosen_multi', '可见角色', '超管固定可见', $groups)
+            ->addFormItem('sort_reply', 'number', '应答顺序', '数字越大越靠前', [], 'required min=0')
             ->setFormData($data);
         return $builder->show();
     }
@@ -155,7 +153,7 @@ class Apps extends Base
                 $this->error('name参数错误');
             }
 
-            if ($app = AppService::getApp($name)) {
+            if ($app = AppService::getApp($name, true)) {
                 $this->error('应用已安装!');
             }
 
@@ -255,7 +253,7 @@ class Apps extends Base
             $total = $query->count();
             if($total){
                 $list = $query->page($post_data['page'], $post_data['limit'])
-                    ->order('id', 'desc')
+                    ->order(['sort_reply' => 'desc', 'id' => 'desc'])
                     ->select();
             }else{
                 $list = [];
@@ -274,6 +272,7 @@ class Apps extends Base
             ->addTableColumn(['title' => '标识', 'field' => 'name'])
             ->addTableColumn(['title' => '名称', 'field' => 'title'])
             ->addTableColumn(['title' => '版本', 'field' => 'version'])
+            ->addTableColumn(['title' => '应答顺序', 'field' => 'sort_reply'])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'text' => '上架|下架'])
             ->addTableColumn(['title' => '操作', 'width' => 120, 'type' => 'toolbar'])
             ->addRightButton('edit')

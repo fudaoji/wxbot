@@ -43,7 +43,9 @@ class Addon
             $list = AppM::where('status', 1)
                 ->where('type', 'like', '%'.$type.'%')
                 ->field(['id','title','name','logo'])
-                ->select();
+                ->order('sort_reply', 'desc')
+                ->select()
+                ->toArray();
         }
         cache($key, $list);
         return $list;
@@ -136,7 +138,7 @@ class Addon
         if ($app_folder) {
             while (($file = readdir($app_folder)) !== false) {
                 if (is_dir(addon_path($file)) && $file != '.' && $file != '..') {
-                    if (($app_local = get_addon_info($file)) && empty(self::getApp($file))) {
+                    if (($app_local = get_addon_info($file)) && empty(self::getApp($file, true))) {
                         $apps[] = $app_local;
                     }
                 }
@@ -156,7 +158,7 @@ class Addon
      */
     static function clearAppData($params = []){
         $name = $params['name'];
-        $app = self::getApp($name);
+        $app = self::getApp($name, true);
         Db::startTrans();
         try {
             $install_sql = addon_path($name, 'install.sql');
@@ -236,7 +238,7 @@ class Addon
      * Author: fudaoji<fdj@kuryun.cn>
      */
     static function buildAddon($params = []){
-        $addon_name = $params['name'];
+        $addon_name = strtolower($params['name']);
         $addon_title = $params['title'];
         $addon_version = $params['version'];
         $addon_author = $params['author'];
@@ -247,6 +249,10 @@ class Addon
         try {
             if(file_exists($addon_path)){
                 return "应用{$addon_name}已存在";
+            }
+            $pattern = '/^([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$/';
+            if (! preg_match($pattern, $addon_name)) {
+                return '应用名不合法。 应用名称只支持小写字母、数字和下划线，且不能以数字开头！';
             }
 
             //1、解压应用模板

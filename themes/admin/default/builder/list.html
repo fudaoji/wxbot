@@ -211,6 +211,8 @@
                     form.render('switch');
                 });
                 layer.close(index);
+            }, function () {
+                table.reload('{$controller}-table');  // 刷新(异步模式)
             });
         });
         {notempty name="search"}

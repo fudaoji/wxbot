@@ -380,11 +380,11 @@ class Handler extends BaseCtl
     }
 
     /**
-     * 特殊消息
+     * 屏蔽关键词
      * @param $msg
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    protected function specialKeyword($msg = '')
+    protected function ignoreKeyword($msg = '')
     {
         empty($msg) && $msg = $this->content['msg'];
         $filter = ['发送消息过于频繁，可稍候再试。', '开启了朋友验证，你还不是他（她）朋友'];

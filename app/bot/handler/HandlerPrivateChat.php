@@ -47,7 +47,7 @@ class HandlerPrivateChat extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function keyword(){
-        $this->specialKeyword($this->content['msg']);
+        $this->ignoreKeyword($this->content['msg']);
         $keywords = model('keyword')->getAll([
             'order' => ['sort' => 'desc'],
             'where' => [

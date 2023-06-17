@@ -34,7 +34,7 @@ class HandlerDeviceCallback extends Handler
      */
     public function handle(){
         $this->groupWxid = $this->content['robot_wxid'];
-        $this->specialKeyword();
+        $this->ignoreKeyword();
         $this->addon();
     }
 }

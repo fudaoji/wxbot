@@ -12,6 +12,7 @@ namespace app\bot\handler;
 use app\constants\Bot;
 use app\constants\Reply;
 use app\constants\Task;
+use ky\Logger;
 
 class HandlerPrivateChat extends Handler
 {
@@ -46,6 +47,7 @@ class HandlerPrivateChat extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function keyword(){
+        $this->specialKeyword($this->content['msg']);
         $keywords = model('keyword')->getAll([
             'order' => ['sort' => 'desc'],
             'where' => [

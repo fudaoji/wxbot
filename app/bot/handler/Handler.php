@@ -378,4 +378,21 @@ class Handler extends BaseCtl
             }
         }
     }
+
+    /**
+     * 特殊消息
+     * @param $msg
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function specialKeyword($msg = '')
+    {
+        empty($msg) && $msg = $this->content['msg'];
+        $filter = ['发送消息过于频繁，可稍候再试。', '开启了朋友验证，你还不是他（她）朋友'];
+        foreach ($filter as $f){
+            if(strpos($msg, $f) !== false){
+                Logger::error('不回复:'.$f);
+                exit(0);
+            }
+        }
+    }
 }

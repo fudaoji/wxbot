@@ -16,6 +16,7 @@
                 xm-select-show-count="10"
                 {$form['extra_attr']??''}
                 xm-select-search=""
+                xm-select-skin="normal"
         >
         {notempty name="form.options"}
         {foreach $form['options'] as $k => $v}
@@ -31,12 +32,19 @@
         <tip class="form-tip">{$form['tip']}</tip>
         {/if}
     </div>
-    <script>
-        layui.use(['jquery', 'formSelects'], function(){
-            var formSelects = layui.formSelects;
-        });
-    </script>
 
+    <script>
+        layui.use(['jquery','formSelects'], function(){
+            var formSelects = layui.formSelects
+            , $ = layui.jquery;
+        });
+
+        {if !empty($form['extra_attr']) && strpos($form['extra_attr'], 'required') !== false}
+        setTimeout(function () {
+            $("input[name='{$form.name}']").attr('required', true);
+        }, 1000);
+        {/if}
+    </script>
 
     <style>
         .xm-select-title {

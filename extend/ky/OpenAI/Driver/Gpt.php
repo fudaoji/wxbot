@@ -51,6 +51,7 @@ class Gpt extends Base
     public function smart($params){
         $message = [
             ['role' => 'system', 'content' => "你是一个智能助手assistant"],
+            ['role' => 'system', 'content' => "今天是" . date("Y-m-d") . "，现在时间是" . date("H:i")],
         ];
         if(! empty($params['content_rule'])){
             array_push($message, ['role' => 'system', 'content' => $params['content_rule']]);

@@ -565,12 +565,16 @@ class BotMember extends Base
     public function addFriend($params = [])
     {
         $bot = $params['bot'];
+        $type = Bot::FRIEND;
+        if(strpos($params['wxid'], 'gh_') !== false){
+            $type = Bot::MP;
+        }
         $insert = [
             'uin' => $bot['uin'],
             'nickname' => $params['nickname'],
             'username' => empty($params['username']) ? $params['wxid'] : $params['username'],
             'wxid' => $params['wxid'],
-            'type' => Bot::FRIEND,
+            'type' => $type,
             'internal' => 1
         ];
         switch ($bot['protocol']){

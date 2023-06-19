@@ -38,6 +38,7 @@ class AIEdu extends Base
     public function smart($params){
         $message = [
             ['role' => 'system', 'content' => "你是一个智能助手assistant"],
+            ['role' => 'system', 'content' => "今天是" . date("Y-m-d") . "，现在时间是" . date("H:i").'。有人问你时，按照我给你的时间进行测算。'],
         ];
         if(! empty($params['content_rule'])){
             array_push($message, ['role' => 'system', 'content' => $params['content_rule']]);

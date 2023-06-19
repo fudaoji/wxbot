@@ -75,6 +75,8 @@ class My extends Base
     const API_GET_LOGIN_CODE = 'StartWeChat'; //
     const API_EXIT_LOGIN_CODE = 'ExitWeChatLoginWin';
     const API_EXIT = 'ExitWeChat';
+    const API_GET_CONTACT = 'GetContact';
+    const API_GET_SUBSCRIPTION = 'GetSubscriptionlist';
 
     const API_FAVORITE_MSG = 'FavoritesMsg'; //收藏消息
     const API_GET_FAVORITES = 'FavoritesGetList'; //获取收藏列表
@@ -1210,5 +1212,18 @@ class My extends Base
             $this->sleep();
         }
         return $res;
+    }
+
+    /**
+     * 获取整个通讯录
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getSubscriptions($params = [])
+    {
+        return $this->request([
+            'data' => $this->buildPostData($params, self::API_GET_SUBSCRIPTION)
+        ]);
     }
 }

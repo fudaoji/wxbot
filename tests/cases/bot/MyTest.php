@@ -34,6 +34,24 @@ class MyTest extends BotTest
         $this->botComClient = new Mycom(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
     }
 
+    public function testGetSubscription(){
+        $params = [
+            'robot_wxid' => $this->robotJane,
+        ];
+        $res = $this->botClient->getSubscriptions($params);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    public function testGetContact(){
+        $params = [
+            'robot_wxid' => $this->robotJane,
+        ];
+        $res = $this->botClient->getContact($params);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
     /**
      * 清空聊天记录
      * Author: fudaoji<fdj@kuryun.cn>
@@ -50,7 +68,7 @@ class MyTest extends BotTest
     public function testGetMemberInfo(){
         $params = [
             'robot_wxid' => $this->robotFjq,
-            'to_wxid' => $this->wxidDj
+            'to_wxid' => 'gh_eb2ef06f2ba7'
         ];
         $res = $this->botClient->getMemberInfo($params);
         dump($res);

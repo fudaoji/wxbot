@@ -358,7 +358,7 @@ class Apps extends Base
         ];
         $builder = new FormBuilder();
         $builder->setPostUrl(url('build'))
-            ->addFormItem('name', 'text', '应用标识', '请输入唯一应用标识', [], 'required minlength="2" maxlength="20"')
+            ->addFormItem('name', 'text', '应用标识', '请输入唯一应用标识，支持小写字母、数字和下划线，且不能以数字开头', [], 'required minlength="2" maxlength="20"')
             ->addFormItem('title', 'text', '应用名称', '请输入应用名称，2-50长度', [], 'required minlength="2" maxlength="50"')
             ->addFormItem('version', 'text', '应用版本', '例如1.0.0', [], 'required')
             ->addFormItem('logo', 'picture_url', '应用LOGO', '请上传比例为1:1的应用LOGO', [], 'required')

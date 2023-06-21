@@ -85,6 +85,7 @@ class HandlerPrivateChat extends Handler
         if(empty($this->friend)){
             $reply_m = new \app\common\model\Reply();
             $this->isNewFriend = true;
+
             $this->friend = $this->memberM->addFriend([
                 'bot' => $this->bot,
                 'nickname' => filter_emoji($this->fromName),

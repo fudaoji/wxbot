@@ -153,6 +153,7 @@ class Handler extends BaseCtl
             default:
                 $this->botWxid = !empty($this->content['robot_wxid']) ? $this->content['robot_wxid'] : $this->content['Wxid'];
                 $this->fromWxid = empty($this->content['from_wxid']) ? $this->botWxid : $this->content['from_wxid'];
+                $this->fromName = $this->content['from_name'] ?? '';
                 break;
         }
 
@@ -165,11 +166,11 @@ class Handler extends BaseCtl
             "@{$this->bot['nickname']}"
         ];
 
-        $this->content['from_group'] = $this->groupWxid;
-        $this->content['from_wxid'] = $this->fromWxid;
-        $this->content['from_group_name'] = $this->groupName;
-        $this->content['from_name'] = $this->fromName;
-        $this->content['robot_wxid'] = $this->botWxid;
+        empty($this->content['from_group']) && $this->content['from_group'] = $this->groupWxid;
+        empty($this->content['from_wxid']) && $this->content['from_wxid'] = $this->fromWxid;
+        empty($this->content['from_group_name']) && $this->content['from_group_name'] = $this->groupName;
+        empty($this->content['from_name']) && $this->content['from_name'] = $this->fromName;
+        empty($this->content['robot_wxid']) && $this->content['robot_wxid'] = $this->botWxid;
     }
 
     public function checkEvent(){

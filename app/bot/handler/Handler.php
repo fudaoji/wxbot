@@ -67,7 +67,7 @@ class Handler extends BaseCtl
     protected $beAtStr = [];
 
     protected $addonHandlerName;
-    protected $replied = false;
+    protected static $replied = false;
 
     /**
      * 入口

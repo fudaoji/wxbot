@@ -71,7 +71,7 @@ class HandlerPrivateChat extends Handler
             if(strpos($keyword['wxids'], $this->fromWxid) !== false){
                 model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);
                 $flag = true;
-                $this->replied = true;
+                parent::$replied = true;
             }
         }
         return $flag;

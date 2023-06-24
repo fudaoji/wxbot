@@ -40,9 +40,9 @@ class Addon
         $key = md5(__CLASS__.__FUNCTION__);
         $list = cache($key);
         if(empty($list) || $refresh){
-            $list = AppM::where('status', 1)
-                ->where('type', 'like', '%'.$type.'%')
-                ->field(['id','title','name','logo'])
+            $query = AppM::where('status', 1);
+            $type && $query = $query->where('type', 'like', '%'.$type.'%');
+            $list = $query->field(['id','title','name','logo'])
                 ->order('sort_reply', 'desc')
                 ->select()
                 ->toArray();

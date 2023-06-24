@@ -10,6 +10,7 @@
 
 namespace app\crontab\controller;
 
+use app\common\service\Addon as AppService;
 use app\constants\Addon;
 use app\constants\Task;
 use ky\Logger;
@@ -43,6 +44,23 @@ class Bot extends Base
      */
     public function addonMinute()
     {
+        //插件新方案执行
+        $addons = AppService::listOpenApps('');
+        foreach ($addons as $k => $v){
+            $class_name = "\\".config('addon.pathname')."\\".$v['name']."\\crontab\\controller\\Bot";
+            if(class_exists($class_name)){
+                $class = new $class_name();
+                if(method_exists($class, 'minuteTask')){
+                    try {
+                        $class->minuteTask();
+                    }catch (\Exception $e){
+                        Logger::error($e->getMessage());
+                    }
+                }
+            }
+        }
+
+        //插件旧方案
         $addons = Addon::addons();
         foreach ($addons as $k => $v){
             $class_name = '\\app\\crontab\\task\\' . ucfirst($k);

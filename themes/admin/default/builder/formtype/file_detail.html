@@ -16,7 +16,7 @@
                ／>
         <div class="layui-btn-group" style="margin-left: -5px;margin-top: -3px;">
             <a href="javascript:;" class="layui-btn layui-btn-primary" id="picker">选择文件</a>
-            <a href="{$form['options']['url'] ?? ''}" class="layui-btn <?=empty($form['options']['url']) ? 'hide' : '';?>" id="preview" style="border-left: none;">预览</a>
+            <a href="{$form['options']['url'] ?? ''}" target="_blank" class="layui-btn <?=empty($form['options']['url']) ? 'hide' : '';?>" id="preview" style="border-left: none;">预览</a>
         </div>
     </div>
 </div>
@@ -63,7 +63,7 @@
                 $("#title").val(res.data[0].original_name);
                 $("#ext").val(res.data[0].ext);
                 $("#size").val(res.data[0].size);
-                $("#preview").removeClass('hide');
+                $("#preview").attr('href', res.data[0].url).removeClass('hide');
             }
         });
     });

@@ -37,13 +37,13 @@
         layui.use(['jquery','formSelects'], function(){
             var formSelects = layui.formSelects
             , $ = layui.jquery;
-        });
 
-        {if !empty($form['extra_attr']) && strpos($form['extra_attr'], 'required') !== false}
-        setTimeout(function () {
-            $("input[name='{$form.name}']").attr('required', true);
-        }, 1000);
-        {/if}
+            {if !empty($form['extra_attr']) && strpos($form['extra_attr'], 'required') !== false}
+            setTimeout(function () {
+                $("input[name='{$form.name}']").attr('required', true);
+            }, 1000);
+            {/if}
+        });
     </script>
 
     <style>

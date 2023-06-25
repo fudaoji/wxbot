@@ -51,9 +51,9 @@ class Tpzs extends Base
                 }
                 $task_m->updateOne(['id' => $task['id'], 'complete_time' => time()]);
             }
-            dump("num:" . count($task_list));
+            var_dump("num:" . count($task_list));
         }else{
-            dump(0);
+            var_dump(0);
         }
     }
 }

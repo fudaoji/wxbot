@@ -21,7 +21,7 @@ use app\common\model\Upload;
 class Uploader extends Base
 {
     /**
-     * @var \app\common\model\Upload
+     * @var Upload
      */
     protected $model;
 

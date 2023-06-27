@@ -31,10 +31,10 @@
     "liliuwei/thinkphp-jump": "^1.5",
     "topthink/think-image": "^1.0",
     "topthink/think-queue": "^3.0",
-    "qiniu/php-sdk": "^7.0",
     "yeardley/easytbk": "^1.2",
     "topthink/think-worker": "^3.0",
-    "league/flysystem": "^2.5"
+    "league/flysystem": "^2.5",
+    "fudaoji/php-upload": "^1.1"
   },
   "require-dev": {
     "symfony/var-dumper": "^4.2",

@@ -18,7 +18,7 @@
 namespace app\common\model;
 
 use ky\BaseModel;
-use ky\Upload as Uploader;
+use Dao\Upload\Upload as Uploader;
 
 class Upload extends BaseModel
 {
@@ -49,8 +49,10 @@ class Upload extends BaseModel
      */
     public static function locations($id = null){
         $list = [
-            'local' => '本地',
-            'qiniu' => '七牛'
+            Uploader::LOCAL => '本地',
+            Uploader::QINIU => '七牛',
+            Uploader::ALIYUN => '阿里云',
+            Uploader::QCLOUD => '腾讯云'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
@@ -77,7 +79,7 @@ class Upload extends BaseModel
                 $insert_data = [
                     'uid' => $extra['uid'],
                     'path' => empty($v['path']) ? $v['url'] : $v['path'],
-                    'url' => strtolower($driver) == 'qiniu' ? $v['url'] : (request()->domain() . $v['url']),
+                    'url' => strtolower($driver) == Uploader::LOCAL ? (request()->domain() . $v['url']) : $v['url'],
                     'size' => $v['size'],
                     'ext' => $v['ext'],
                     'md5' => $v['md5'],
@@ -247,7 +249,26 @@ class Upload extends BaseModel
     public static function driverConfig($driver = 'local'){
         $driver = strtolower($driver);
         switch($driver){
-            case 'qiniu':  //七牛
+            case Uploader::QCLOUD:  //七牛
+                $config = [
+                    'accessKey' => self::$setting['qcloud_ak'] ?: '',
+                    'secrectKey' => self::$setting['qcloud_sk'] ?: '',
+                    'bucket' => self::$setting['qcloud_bucket'] ?: '',
+                    'domain' => self::$setting['qcloud_domain'] ?: '',
+                    'region' => self::$setting['qcloud_region'] ?: '',
+                    'timeout' => 3600,
+                ];
+                break;
+            case Uploader::ALIYUN:  //七牛
+                $config = [
+                    'accessKey' => self::$setting['aliyun_ak'] ?: '',
+                    'secrectKey' => self::$setting['aliyun_sk'] ?: '',
+                    'bucket' => self::$setting['aliyun_bucket'] ?: '',
+                    'domain' => self::$setting['aliyun_domain'] ?: '',
+                    'timeout' => 3600,
+                ];
+                break;
+            case Uploader::QINIU:  //七牛
                 $config = [
                     'accessKey' => self::$setting['qiniu_ak'] ?: '',
                     'secrectKey' => self::$setting['qiniu_sk'] ?: '',
@@ -405,7 +426,6 @@ class Upload extends BaseModel
                 ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
                 ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
             ] /* 列出的文件类型 */
-
         ];
     }
 }

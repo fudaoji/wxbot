@@ -1,16 +1,25 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => '2.2.0.x-dev',
-    'version' => '2.2.0.9999999-dev',
+    'pretty_version' => 'dev-master',
+    'version' => 'dev-master',
     'aliases' => 
     array (
     ),
-    'reference' => '3f2fcad431b66f45dbe594042f3322e1059a0940',
+    'reference' => 'd1536352ebd9a94c258d3a97c6518bbfe2cc2d8d',
     'name' => 'topthink/think',
   ),
   'versions' => 
   array (
+    'aliyuncs/oss-sdk-php' => 
+    array (
+      'pretty_version' => 'v2.6.0',
+      'version' => '2.6.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '572d0f8e099e8630ae7139ed3fdedb926c7a760f',
+    ),
     'doctrine/instantiator' => 
     array (
       'pretty_version' => '1.5.0',
@@ -20,6 +29,24 @@
       ),
       'reference' => '0a0fa9780f5d4e507415a065172d26a98d02047b',
     ),
+    'fudaoji/php-upload' => 
+    array (
+      'pretty_version' => '1.1.1',
+      'version' => '1.1.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'e907a3b406760066d07eabc03be752a08324fdc0',
+    ),
+    'guzzlehttp/command' => 
+    array (
+      'pretty_version' => '1.0.0',
+      'version' => '1.0.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '2aaa2521a8f8269d6f5dfc13fe2af12c76921034',
+    ),
     'guzzlehttp/guzzle' => 
     array (
       'pretty_version' => '6.5.8',
@@ -28,6 +55,15 @@
       array (
       ),
       'reference' => 'a52f0440530b54fa079ce76e8c5d196a42cad981',
+    ),
+    'guzzlehttp/guzzle-services' => 
+    array (
+      'pretty_version' => '1.1.3',
+      'version' => '1.1.3.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '9e3abf20161cbf662d616cbb995f2811771759f7',
     ),
     'guzzlehttp/promises' => 
     array (
@@ -94,21 +130,21 @@
     ),
     'nesbot/carbon' => 
     array (
-      'pretty_version' => '2.66.0',
-      'version' => '2.66.0.0',
+      'pretty_version' => '2.67.0',
+      'version' => '2.67.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '496712849902241f04902033b0441b269effe001',
+      'reference' => 'c1001b3bc75039b07f38a79db5237c4c529e04c8',
     ),
     'nikic/php-parser' => 
     array (
-      'pretty_version' => 'v4.15.5',
-      'version' => '4.15.5.0',
+      'pretty_version' => 'v4.16.0',
+      'version' => '4.16.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '11e2663a5bc9db5d714eedb4277ee300403b4a9e',
+      'reference' => '19526a33fb561ef417e822e85f08a00db4059c17',
     ),
     'phar-io/manifest' => 
     array (
@@ -175,12 +211,12 @@
     ),
     'phpunit/phpunit' => 
     array (
-      'pretty_version' => '9.6.8',
-      'version' => '9.6.8.0',
+      'pretty_version' => '9.6.9',
+      'version' => '9.6.9.0',
       'aliases' => 
       array (
       ),
-      'reference' => '17d621b3aff84d0c8b62539e269e87d8d5baa76e',
+      'reference' => 'a9aceaf20a682aeacf28d582654a1670d8826778',
     ),
     'psr/container' => 
     array (
@@ -224,6 +260,15 @@
       array (
       ),
       'reference' => '408d5eafb83c57f6365a3ca330ff23aa4a5fa39b',
+    ),
+    'qcloud/cos-sdk-v5' => 
+    array (
+      'pretty_version' => 'v2.6.3',
+      'version' => '2.6.3.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'dd1b7a096cbdcafc9de265cb2bb1b4222ac60136',
     ),
     'qiniu/php-sdk' => 
     array (
@@ -452,12 +497,12 @@
     ),
     'symfony/translation' => 
     array (
-      'pretty_version' => 'v5.4.22',
-      'version' => '5.4.22.0',
+      'pretty_version' => 'v5.4.24',
+      'version' => '5.4.24.0',
       'aliases' => 
       array (
       ),
-      'reference' => '9a401392f01bc385aa42760eff481d213a0cc2ba',
+      'reference' => 'de237e59c5833422342be67402d487fbf50334ff',
     ),
     'symfony/translation-contracts' => 
     array (
@@ -504,12 +549,12 @@
     ),
     'topthink/think' => 
     array (
-      'pretty_version' => '2.2.0.x-dev',
-      'version' => '2.2.0.9999999-dev',
+      'pretty_version' => 'dev-master',
+      'version' => 'dev-master',
       'aliases' => 
       array (
       ),
-      'reference' => '3f2fcad431b66f45dbe594042f3322e1059a0940',
+      'reference' => 'd1536352ebd9a94c258d3a97c6518bbfe2cc2d8d',
     ),
     'topthink/think-captcha' => 
     array (

@@ -10,8 +10,7 @@
 
 namespace app\common\event;
 
-use ky\ErrorCode;
-use ky\Upload\Driver\Qiniu;
+use Dao\Upload\Driver\Qiniu;
 
 class Base
 {

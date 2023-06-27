@@ -1,11 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | [KyPHP System] Copyright (c) 2020 http://www.kuryun.com/
-// +----------------------------------------------------------------------
-// | [KyPHP] 并不是自由软件,你可免费使用,未经许可不能去掉KyPHP相关版权
-// +----------------------------------------------------------------------
-// | Author: fudaoji <fudaoji@gmail.com>
-// +----------------------------------------------------------------------
 
 /**
  * Created by PhpStorm.
@@ -21,7 +14,7 @@ use think\facade\Db;
 use think\facade\Env;
 use think\Model;
 
-class BaseModel extends Model
+abstract class BaseModel extends Model
 {
     /**
      * 默认主键

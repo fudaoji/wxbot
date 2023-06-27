@@ -51,7 +51,7 @@ class AIEdu extends Base
         }
 
         array_push($message, ['role' => 'user', 'content' => $params['msg']]);
-        $length = mb_strlen($params['msg']);
+        //$length = mb_strlen($params['msg']);
         //Logger::error($message);
         $data = [
             'messages' => $message,
@@ -93,7 +93,7 @@ class AIEdu extends Base
             $res['code'] = 1;
         }else{
             $res['code'] = 0;
-            $res['errmsg'] = $params['msg'];
+            $res['errmsg'] = $params['choices'][0]['text'];
         }
         return $res;
     }

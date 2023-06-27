@@ -32,13 +32,16 @@ class Reply extends Base
      * @param string $to_wxid
      * @param array $extra
      * Author: fudaoji<fdj@kuryun.cn>
+     * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function botReply($bot, $client, $reply, $to_wxid = '', $extra = []){
-        $media = model('media_' . $reply['media_type'])->getOneByMap(['admin_id' => $bot['staff_id'], 'id' => $reply['media_id']]);
-        //Logger::error($media);
+        if(empty($media = model('media_' . $reply['media_type'])->getOneByMap(['admin_id' => $bot['staff_id'], 'id' => $reply['media_id']]))){
+            return false;
+        }
+        //Logger::error(model('media_' . $reply['media_type'])->getLastSql());
         switch($reply['media_type']){
             case Media::LINK:
                 $client->sendShareLinkToFriends([

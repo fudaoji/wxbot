@@ -55,7 +55,7 @@ return [
             // 监听SQL
             'trigger_sql'     => env('database.debug', false),
             // 开启字段缓存
-            'fields_cache'    => false,
+            'fields_cache'    => !env('app_debug', false),
         ]
     ],
 ];

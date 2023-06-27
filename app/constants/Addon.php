@@ -13,8 +13,6 @@ class Addon
 {
     const TPZS='tpzs';
     const HANZI='hanzi';
-    const YHQ='yhq';
-    const AI = 'ai';
     const ZDJR = 'zdjr';
     const KEFU = 'kefu';
     const BGF = 'bgf';
@@ -33,10 +31,8 @@ class Addon
 
     private static function freeAddons(){
         return [
-            //self::AI => '智能对话',
             self::ZDJR => '自动加人',
             self::TPZS => '推品助手',
-            //self::YHQ => '优惠券助手',
             //self::HANZI => '汉字助手',
         ];
     }

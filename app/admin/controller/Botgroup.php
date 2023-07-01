@@ -141,7 +141,7 @@ class Botgroup extends Botbase
             ->setPostUrl(url('edit')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('wxid', 'hidden', 'wxid', 'wxid')
-            ->addFormItem('nickname', 'text', '群名', '1-20位长度', [], 'required minlength="1" maxlength="20"')
+            ->addFormItem('nickname', 'text', '群名', '1-20位长度', [], 'required minlength=1 maxlength=20')
             ->addFormItem('tags', 'chosen_multi', '分组', '分组', $this->tagM->getTitleToTitle($this->bot['id']))
             ->setFormData($data);
 

@@ -55,7 +55,7 @@ class Base extends BaseCtl
         $this->aid = (int)session($this->sKey);
         $this->adminInfo = model("admin/admin")->getOne($this->aid);
         if (empty($this->adminInfo)) {
-            cookie('redirect_url', request()->url());
+            $this->request->isGet() && cookie('redirect_url', request()->url());
             $this->redirect(url('admin/auth/login'));
         }
         $this->assign['admin'] = $this->adminInfo;

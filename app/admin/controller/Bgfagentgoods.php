@@ -137,7 +137,7 @@ class Bgfagentgoods extends Bbase
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('template_id', 'chosen', '选择模版', '选择模版', $this->getGoodsList(), 'required')
-            ->addFormItem('goods_title', 'text', '商品名称', '也是卡片分享标题，30字内', [], 'required minlength="2" maxlength="30"')
+            ->addFormItem('goods_title', 'text', '商品名称', '也是卡片分享标题，30字内', [], 'required minlength=2 maxlength=30')
             ->addFormItem('goods_cover', 'text', '商品图片', '商品图片', [], 'required')
             ->addFormItem('goods_id', 'number', '商品ID', '商品ID', [], 'required min=1')
             ->addFormItem('super_id', 'text', 'superID', '多个用英文逗号,隔开', [], 'required');
@@ -166,7 +166,7 @@ class Bgfagentgoods extends Bbase
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('template_id', 'chosen', '选择模版', '选择模版', $this->getGoodsList(), 'required')
-            ->addFormItem('goods_title', 'text', '商品名称', '也是卡片分享标题，30字内', [], 'required minlength="2" maxlength="30"')
+            ->addFormItem('goods_title', 'text', '商品名称', '也是卡片分享标题，30字内', [], 'required minlength=2 maxlength=30')
             ->addFormItem('goods_cover', 'text', '商品图片', '商品图片', [], 'required')
             ->addFormItem('goods_id', 'number', '商品ID', '商品ID', [], 'required min=1')
             ->addFormItem('super_id', 'number', 'superID', 'superID', [], 'required min=1')

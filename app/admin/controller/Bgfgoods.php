@@ -85,7 +85,7 @@ class Bgfgoods extends Base
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
-            ->addFormItem('title', 'text', '模版名称', '长度1-50之间', [], ' minlength="1" maxlength="50"')
+            ->addFormItem('title', 'text', '模版名称', '长度1-50之间', [], ' minlength=1 maxlength=50')
             ->addFormItem('xml', 'textarea', '卡片xml', '卡片xml', [], 'required style=height:400px')
             ->addFormItem('status', 'radio', '状态', '状态', Common::status())
             ->setFormData(['status' => 1]);
@@ -108,7 +108,7 @@ class Bgfgoods extends Base
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('title', 'text', '模版名称', '长度1-50之间', [], ' minlength="1" maxlength="50"')
+            ->addFormItem('title', 'text', '模版名称', '长度1-50之间', [], ' minlength=1 maxlength=50')
             ->addFormItem('xml', 'textarea', '卡片xml', '卡片xml', [], 'required style=height:400px')
             ->addFormItem('status', 'radio', '状态', '状态', Common::status())
             ->setFormData($data);

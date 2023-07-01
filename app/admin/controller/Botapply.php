@@ -71,7 +71,7 @@ class Botapply extends Bbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
-            ->addFormItem('wx_num', 'text', '微信号', '请输入微信号', [], 'required minlength="4" maxlength="50"')
+            ->addFormItem('wx_num', 'text', '微信号', '请输入微信号', [], 'required minlength=4 maxlength=50')
             ->addFormItem('month', 'number', '要开几个月', '请输入要开通的时间，单位月。例如： 3', [], 'required min=1')
             ->addFormItem('staff_id', 'select', '绑定员工', '绑定员工', AdminM::getTeamIdToName($this->adminInfo), 'required min=1');
 

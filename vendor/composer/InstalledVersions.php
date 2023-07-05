@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'd1536352ebd9a94c258d3a97c6518bbfe2cc2d8d',
+    'reference' => '6e04e71a705943f545197daf277f4610411801e1',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -143,12 +143,12 @@ private static $installed = array (
     ),
     'nesbot/carbon' => 
     array (
-      'pretty_version' => '2.67.0',
-      'version' => '2.67.0.0',
+      'pretty_version' => '2.68.1',
+      'version' => '2.68.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'c1001b3bc75039b07f38a79db5237c4c529e04c8',
+      'reference' => '4f991ed2a403c85efbc4f23eb4030063fdbe01da',
     ),
     'nikic/php-parser' => 
     array (
@@ -501,12 +501,12 @@ private static $installed = array (
     ),
     'symfony/process' => 
     array (
-      'pretty_version' => 'v4.4.44',
-      'version' => '4.4.44.0',
+      'pretty_version' => 'v5.4.24',
+      'version' => '5.4.24.0',
       'aliases' => 
       array (
       ),
-      'reference' => '5cee9cdc4f7805e2699d9fd66991a0e6df8252a2',
+      'reference' => 'e3c46cc5689c8782944274bb30702106ecbe3b64',
     ),
     'symfony/translation' => 
     array (
@@ -567,7 +567,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'd1536352ebd9a94c258d3a97c6518bbfe2cc2d8d',
+      'reference' => '6e04e71a705943f545197daf277f4610411801e1',
     ),
     'topthink/think-captcha' => 
     array (
@@ -616,12 +616,12 @@ private static $installed = array (
     ),
     'topthink/think-queue' => 
     array (
-      'pretty_version' => 'v3.0.7',
-      'version' => '3.0.7.0',
+      'pretty_version' => 'v3.0.9',
+      'version' => '3.0.9.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'cded7616e313f9daa55c0ad0de5791f0d1fb3066',
+      'reference' => '654812b47dd7c708c4443deed27f212f8382e8da',
     ),
     'topthink/think-template' => 
     array (

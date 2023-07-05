@@ -112,7 +112,7 @@ class Client
      * Author: fudaoji<fdj@kuryun.cn>
      */
     function appGet($params = []){
-        return $this->doRequest(['uri' => self::API_APP_GET, 'data' => $params]);
+        return $this->doRequest(['uri' => self::API_APP_GET, 'data' => $params, 'token' => $params['token']]);
     }
 
     /**

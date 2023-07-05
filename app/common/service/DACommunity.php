@@ -157,6 +157,7 @@ class DACommunity
      */
     public static function getAppInfo(array $params)
     {
+        $params['token'] = self::checkLogin();
         $res = DaoCommunity::instance()->appGet($params);
         if($res['code']){
             return $res['data'];

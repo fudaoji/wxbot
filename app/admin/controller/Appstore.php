@@ -97,6 +97,7 @@ class Appstore extends Base
 
         $this->assign('info', $info);
         $this->assign('upgrade_list', $res['upgrade_list']);
+        $this->assign('bought', $res['bought'] ?? 0);
         return $this->show();
     }
 

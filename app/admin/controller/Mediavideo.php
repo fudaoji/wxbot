@@ -105,7 +105,7 @@ class Mediavideo extends Bbase
             $res = $this->model->updateOne($post_data);
         }
         if($res){
-            $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'id' => $res['id']], true, true);
+            $this->refreshMedia($res['id']);
             $this->success('数据保存成功', $jump_to);
         }else{
             $this->error('数据保存出错');

@@ -92,7 +92,7 @@ class Botapply extends Bbase
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
         ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('wx_num', 'text', '微信号', '请输入微信号', [], 'required minlength="4" maxlength="50"')
+            ->addFormItem('wx_num', 'text', '微信号', '请输入微信号', [], 'required minlength=4 maxlength=50')
             ->addFormItem('staff_id', 'select', '绑定员工', '绑定员工', AdminM::getTeamIdToName($this->adminInfo), 'required min=1')
         ->setFormData($data);
         if($data['status'] != Common::VERIFY_SUCCESS){
@@ -202,7 +202,7 @@ class Botapply extends Bbase
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('verify')) //设置表单提交地址
         ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('wx_num', 'text', '微信号', '请输入微信号', [], 'required minlength="4" maxlength="50"')
+            ->addFormItem('wx_num', 'text', '微信号', '请输入微信号', [], 'required minlength=4 maxlength=50')
             ->addFormItem('month', 'number', '要开几个月', '从当前时间开始算', [], 'required min=1')
             ->addFormItem('status', 'radio', '状态', '请选择审核状态', Common::verifies(), 'required')
             ->setFormData($data);

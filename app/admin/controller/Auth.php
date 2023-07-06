@@ -7,6 +7,7 @@
  * Author: fudaoji<fdj@kuryun.cn>
  */
 namespace app\admin\controller;
+use app\common\service\AdminLog as AdminLogService;
 use think\captcha\facade\Captcha;
 use think\facade\Session;
 use think\facade\Validate;
@@ -150,6 +151,7 @@ class Auth extends Base
                     /*if(! $this->model->isLeader($user)){
                         $redirect = url('kefu/index');
                     }*/
+                    AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::LOGIN, 'desc' => $user['username'] . '('.$user['mobile'].') 登录']);
                     $this->success('登录成功!', $redirect);
                 }else{
                     $this->error('账号或密码错误', '', ['token' => token()]);

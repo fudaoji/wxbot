@@ -9,7 +9,6 @@
 
 namespace app\common\model;
 
-
 use app\constants\Media;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
@@ -38,7 +37,10 @@ class Reply extends Base
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function botReply($bot, $client, $reply, $to_wxid = '', $extra = []){
-        if(empty($media = model('media_' . $reply['media_type'])->getOneByMap(['admin_id' => $bot['staff_id'], 'id' => $reply['media_id']]))){
+        if(empty($media = model('media_' . $reply['media_type'])->getOneByMap([
+            'admin_id' => ['in', [$bot['staff_id'], $bot['admin_id']]],
+            'id' => $reply['media_id']
+        ]))){
             return false;
         }
         //Logger::error(model('media_' . $reply['media_type'])->getLastSql());

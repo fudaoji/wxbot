@@ -101,6 +101,7 @@ class Upgrade extends Base
             }
             $total = $res['data']['total'];
             $list = $res['data']['list'];
+            session('wxbot_versions', $list);
             $this->success('success', '', ['total' => $total, 'list' => $list]);
         }
 
@@ -168,39 +169,43 @@ class Upgrade extends Base
         if (request()->isPost()) {
             $post_data = input('post.');
             $root_path = app()->getRootPath();
-            $res = $this->doRequest(['uri' => self::$apis['getUpgradePackage'], 'data' => ['id' => $post_data['id']]]);
-            if($res['code'] == 1){
-                $upgrade = $res['data']['package'];
-            }else{
-                $this->error($res['msg']);
+            $list = array_reverse(session('wxbot_versions'));
+            $upgrade = ['version' => 0];
+            foreach ($list as $item){
+                $item['id'] == $post_data['id'] && $upgrade = $item;
             }
+
             if($upgrade['version'] <= config('app.version')){
                 $this->error('请选择大于系统当前版本的项进行升级！');
             }
 
-            $zip = new \ZipArchive;
-            $tem_file = env('runtime_path') . $upgrade['version'].'-'.time() . '.tmp';
-            $package = http_post($upgrade['upgrade_url'], []);
-            file_put_contents($tem_file, $package);
-
             try {
-                $res = $zip->open($tem_file);
-                if ($res === true) {
-                    $zip->extractTo($root_path);
-                    $zip->close();
-                } else {
-                    $this->error('解压失败，请检查是否有写入权限');
+                foreach ($list as $item){
+                    if($item['version'] <= config('app.version')) continue;
+                    if($item['version'] > $upgrade['version']) break;
+
+                    $zip = new \ZipArchive;
+                    $tem_file = runtime_path() . $item['version'].'-'.time() . '.tmp';
+                    $package = http_post($item['upgrade_url'], []);
+                    file_put_contents($tem_file, $package);
+
+                    $res = $zip->open($tem_file);
+                    if ($res === true) {
+                        $zip->extractTo($root_path);
+                        $zip->close();
+                    } else {
+                        $this->error('解压失败，请检查是否有写入权限');
+                    }
+
+                    if (is_file($root_path . 'upgrade.sql')) {
+                        execute_sql($root_path . 'upgrade.sql');
+                        @unlink($root_path . 'upgrade.sql');
+                    }
+                    @unlink($tem_file);
                 }
             }catch (\Exception $e){
                 $this->error('覆盖文件失败：' . $e->getMessage());
             }
-
-            if (is_file($root_path . 'upgrade.sql')) {
-                execute_sql($root_path . 'upgrade.sql');
-                @unlink($root_path . 'upgrade.sql');
-            }
-            @unlink($tem_file);
-            model('setting')->setDatas(['name' => 'site'], ['version' => $upgrade['version']]);
             $this->success('恭喜您，升级成功');
         }
     }

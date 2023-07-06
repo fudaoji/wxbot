@@ -10,7 +10,6 @@
 
 namespace ky;
 use think\db\exception\DbException;
-use think\facade\Db;
 use think\facade\Env;
 use think\Model;
 
@@ -53,7 +52,7 @@ abstract class BaseModel extends Model
      */
     protected $rule = [];
     /**
-     * 分表字段
+     * 分表/分区字段
      * @var string
      */
     protected $key = '';
@@ -598,17 +597,60 @@ abstract class BaseModel extends Model
     /**
      * 获取builder,兼容分表和分区
      * @param array $query
-     * @return Db
+     * @return mixed
      * @Author: fudaoji<461960962@qq.com>
      */
     public function getBuilder($query = []){
-        if($this->rule && $this->key){
-            return Db::table($this->getPartitionTableName($query, $this->key, $this->rule));
-        }elseif($this->isPartition){
-            return Db::table($this->getTable())->partition($this->getPartition($query, $this->key, $this->rule));
-        }else{
-            return Db::table($this->getTable());
+        if($this->isPartition){ //$this->getPartition 在特定模型中自行指定
+            return $this->partition($this->getPartition($query));
+        }else if($this->rule && $this->key){ //兼容之前tp6之前的分表
+            $this->suffix = '_' . $this->getPartitionSuffix($query, $this->key, $this->rule);
         }
+        return $this->table($this->getTable());
+    }
+
+    /**
+     * 分表后缀
+     * @param $data
+     * @param $field
+     * @param array $rule
+     * @return false|float|int|mixed|string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getPartitionSuffix($data, $field, $rule = []){
+        $value = $data[$field];
+        $type  = $rule['type'];
+        switch ($type) {
+            case 'id':
+                // 按照id范围分表
+                $step = $rule['expr'];
+                $seq  = floor($value / $step) + 1;
+                break;
+            case 'year':
+                // 按照年份分表
+                if (!is_numeric($value)) {
+                    $value = strtotime($value);
+                }
+                $seq = date('Y', $value) - $rule['expr'] + 1;
+                break;
+            case 'mod':
+                // 按照id的模数分表
+                $seq = ($value % $rule['num']) + 1;
+                break;
+            case 'md5':
+                // 按照md5的序列分表
+                $seq = (ord(substr(md5($value), 0, 1)) % $rule['num']) + 1;
+                break;
+            default:
+                if (function_exists($type)) {
+                    // 支持指定函数哈希
+                    $value = $type($value);
+                }
+
+                $seq = (ord(substr($value, 0, 1)) % $rule['num']) + 1;
+        }
+
+        return $seq;
     }
 
     /**
@@ -674,7 +716,7 @@ abstract class BaseModel extends Model
      * @Author: Doogie <461960962@qq.com>
      */
     public function getTrueTable($query = []){
-        if($this->key && !empty($query[$this->key])){
+        if(!$this->isPartition && $this->key && !empty($query[$this->key])){
             return $this->getPartitionTableName([$this->key => $query[$this->key]], $this->key, $this->rule);
         }else{
             return $this->getTable();

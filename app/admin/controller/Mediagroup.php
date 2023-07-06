@@ -72,15 +72,15 @@ class Mediagroup extends Bbase
      */
     public function edit(){
         $id = input('id');
-        $data = $this->model->getOneByMap(['id' => $id, 'bot_id' => $this->bot['id']]);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']]);
         if(! $data){
             $this->error('id参数错误');
         }
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑')  //设置页面标题
-        ->setPostUrl(url('savepost')) //设置表单提交地址
-        ->addFormItem('id', 'hidden', 'id', 'id')
+            ->setPostUrl(url('savepost')) //设置表单提交地址
+            ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('title', 'text', '名称', '30字内', [], 'required  maxlength=30')
             ->setFormData($data);
 

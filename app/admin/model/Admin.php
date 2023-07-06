@@ -9,6 +9,7 @@
 
 namespace app\admin\model;
 
+use app\admin\model\Admin as AdminM;
 use app\common\model\Base;
 
 class Admin extends Base
@@ -18,8 +19,12 @@ class Admin extends Base
      * @param array $admin_info
      * @return mixed
      * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     static function getTeamIdToName($admin_info = []){
+        empty($admin_info) && $admin_info = AdminM::find(session(SESSION_AID));
         return self::where('id|pid', $admin_info['id'])->column('username', 'id');
     }
 

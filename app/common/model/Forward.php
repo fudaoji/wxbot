@@ -10,8 +10,6 @@
 namespace app\common\model;
 
 
-use ky\Logger;
-
 class Forward extends Base
 {
     protected $isCache = true;
@@ -69,5 +67,30 @@ class Forward extends Base
         }
         cache($cache_key, is_null($data) ? [] : $data);
         return $data;
+    }
+
+    /**
+     * 修改数据后回调
+     * @param \think\Model $data
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function onAfterUpdate($data){
+        $res = self::find($data['id']);
+        if(!empty($res['group_id'])){
+            $group = model('admin/botMember')->getOne($res['group_id']);
+            $group_wxid = $group['wxid'];
+        }else{
+            $group_wxid = '';
+        }
+        $bot = model('admin/bot')->getOne($res['bot_id']);
+        (new self())->getGather([
+            'group_wxid' => $group_wxid,
+            'from_wxid' => $res['officer'],
+            'bot_wxid' => $bot['uin'] ?? '',
+            'refresh' => true
+        ]);
     }
 }

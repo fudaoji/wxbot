@@ -25,6 +25,6 @@ return array(
     '841780ea2e1d6545ea3a253239d59c05' => $vendorDir . '/qiniu/php-sdk/src/Qiniu/functions.php',
     '667aeda72477189d0494fecd327c3641' => $vendorDir . '/symfony/var-dumper/Resources/functions/dump.php',
     '1cfd2761b63b0a29ed23657ea394cb2d' => $vendorDir . '/topthink/think-captcha/src/helper.php',
-    'f5abec83138583a91d834fe8f4e61ad2' => $vendorDir . '/yeardley/easytbk/src/helper.php',
     'cc56288302d9df745d97c934d6a6e5f0' => $vendorDir . '/topthink/think-queue/src/common.php',
+    'f5abec83138583a91d834fe8f4e61ad2' => $vendorDir . '/yeardley/easytbk/src/helper.php',
 );

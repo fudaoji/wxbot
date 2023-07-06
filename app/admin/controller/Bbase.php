@@ -8,6 +8,7 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\Admin as AdminM;
 use app\constants\Media;
 
 class Bbase extends Base
@@ -105,5 +106,17 @@ class Bbase extends Base
             Media::VIDEO => ['title' => '视频', 'href' => url('mediavideo/index')],
             Media::LINK => ['title' => '分享链接', 'href' => url('medialink/index')]
         ];
+    }
+
+    /**
+     * 刷新素材
+     * @param int $id
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function refreshMedia($id = 0){
+        $this->model->getOneByMap(['admin_id' => ['in', [$this->adminInfo['id'], AdminM::getCompanyId($this->adminInfo)]], 'id' => $id], true, true);
     }
 }

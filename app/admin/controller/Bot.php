@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot as BotM;
 use app\admin\model\Admin as AdminM;
+use app\common\service\AdminLog as AdminLogService;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
@@ -220,6 +221,7 @@ class Bot extends Bbase
                         'alive' => 1
                     ]);
                     $jump_to = url('index/index', ['id' => $res['id']]);
+                    AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '登录'.$info['username'].'微信']);
                 }else{
                     $msg .= '，但系统检测到您的机器人尚未登录';
                 }

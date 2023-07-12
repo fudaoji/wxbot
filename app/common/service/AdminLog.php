@@ -15,10 +15,14 @@ use app\admin\model\AdminLog as LogM;
 class AdminLog
 {
     const LOGIN = 'login';
+    const BOT_LOGIN = 'bot_login';
+    const DEL = 'del';
 
     public static function types($id = null){
         $list = [
-            self::LOGIN => '登录'
+            self::LOGIN => '账户登录',
+            self::BOT_LOGIN => '机器人登录',
+            self::DEL => '数据删除'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 use app\common\controller\BaseCtl;
 use app\admin\model\Admin as AdminM;
+use app\common\service\AdminLog as AdminLogService;
 
 class Base extends BaseCtl
 {
@@ -124,6 +125,7 @@ class Base extends BaseCtl
         $ids = (array) $ids;
         if($status == 'delete'){
             if($this->model->delByMap([[$this->pk, 'in', $ids]])){
+                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::DEL, 'desc' => $this->adminInfo['username'] . '删除数据'.$this->model->getName().':'.implode(',', $ids)]);
                 $this->success('删除成功');
             }else{
                 $this->error('删除失败');

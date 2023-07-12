@@ -56,7 +56,7 @@ class Adminlog extends Base
             ->setSearch([
                 ['title' => '年份', 'name' => 'year', 'type' => 'select', 'options' => $year_list, 'value' => $cur_year],
                 ['title' => '管理员', 'name' => 'admin_id', 'type' => 'select', 'options' => [0 => '所有'] + Admin::getTeamIdToName()],
-                ['title' => '操作类型', 'name' => 'type_id', 'type' => 'select', 'options' => ['' => '所有'] + LogService::types()],
+                ['title' => '操作类型', 'name' => 'type', 'type' => 'select', 'options' => ['' => '所有'] + LogService::types()],
             ])
             ->addTableColumn(['field' => 'type', 'title' => '类型', 'type' => 'enum', 'options' => LogService::types(), 'minWidth' => 120])
             ->addTableColumn(['field' => 'desc', 'title' => '操作详情', 'minWidth' => 120])

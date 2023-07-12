@@ -10,6 +10,7 @@
 namespace app\admin\controller;
 
 
+use app\common\service\AdminLog as AdminLogService;
 use app\constants\Bot;
 
 class Botbase extends Bbase
@@ -51,6 +52,7 @@ class Botbase extends Bbase
             $map = ['id' => ['in', $ids]];
             $this->needBotId && $map['bot_id'] = $this->bot['id'];
             if($this->model->delByMap($map)){
+                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::DEL, 'desc' => $this->adminInfo['username'] . '删除数据'.$this->model->getName().':'.implode(',', $ids)]);
                 $this->success('删除成功');
             }else{
                 $this->error('删除失败');

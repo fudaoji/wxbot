@@ -106,6 +106,8 @@ class HandlerPrivateChat extends Handler
                     $reply_m->botReply($this->bot, $this->botClient, $reply, $this->fromWxid);
                 }
             }
+        }else{
+            empty($this->fromName) && $this->fromName = $this->friend['nickname']; //兼容个别驱动
         }
     }
 

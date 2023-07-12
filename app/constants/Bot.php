@@ -20,6 +20,7 @@ class Bot
     const PROTOCOL_QXUN = 'qianxun'; //千寻个微
     const PROTOCOL_XBOT = 'xbot'; //XBOT个微
     const PROTOCOL_EXTIAN = 'extian'; //e小天个微
+    const PROTOCOL_XHX = 'xhx'; //小浣熊
 
     const FRIEND = 'friend';
     const GROUP = 'group';

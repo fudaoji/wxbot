@@ -43,7 +43,6 @@ class Reply extends Base
         ]))){
             return false;
         }
-        //Logger::error(model('media_' . $reply['media_type'])->getLastSql());
         switch($reply['media_type']){
             case Media::LINK:
                 $client->sendShareLinkToFriends([

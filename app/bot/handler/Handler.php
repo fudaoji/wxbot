@@ -32,6 +32,7 @@ use ky\WxBot\Driver\Cat;
 use ky\Logger;
 use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Xbot;
+use ky\WxBot\Driver\Xhx;
 
 class Handler extends BaseCtl
 {
@@ -117,6 +118,10 @@ class Handler extends BaseCtl
 
         $this->checkEvent();
         switch ($this->driver){
+            case BotConst::PROTOCOL_XHX:
+                $this->botWxid = $this->ajaxData['wxid'];
+                $this->fromWxid = $this->content['from_wxid'] ?? $this->botWxid;
+                break;
             case BotConst::PROTOCOL_EXTIAN:
                 $this->botWxid = $this->ajaxData['myid'] ?? '';
                 if(in_array($this->event, [BotConst::EVENT_GROUP_MEMBER_ADD])){
@@ -173,8 +178,25 @@ class Handler extends BaseCtl
         empty($this->content['robot_wxid']) && $this->content['robot_wxid'] = $this->botWxid;
     }
 
+    /**
+     * 验证回调事件类型
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function checkEvent(){
         switch ($this->driver){
+            case BotConst::PROTOCOL_XHX:
+                $this->content = empty($this->ajaxData['data']['data']) ? $this->ajaxData['data'] : $this->ajaxData['data']['data'];
+                !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
+                $map = [
+                    Xhx::EVENT_LOGIN => BotConst::EVENT_LOGIN,
+                    Xhx::EVENT_PRIVATE_CHAT => BotConst::EVENT_PRIVATE_CHAT,
+                    Xhx::EVENT_GROUP_CHAT => BotConst::EVENT_GROUP_CHAT,
+                ];
+                $this->event = isset($map[$this->ajaxData['event']]) ? $map[$this->ajaxData['event']] : $this->ajaxData['event'];
+                if($this->isGroupEvent()){
+                    $this->groupWxid = $this->content['room_wxid'];
+                }
+                break;
             case BotConst::PROTOCOL_EXTIAN:
                 $this->content = $this->ajaxData['data'] ?? [];
                 $map = [

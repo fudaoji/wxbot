@@ -154,14 +154,16 @@ class Admin extends Base
         if(!empty($post_data['password'])){
             $post_data['password'] = ky_generate_password($post_data['password']);
         }
-        $exists_where = ['username' => $post_data['username']];
-        if(empty($post_data[$this->pk])){
-            $post_data['pid'] = $this->adminInfo['id'];
-        }else{
-            $exists_where['id'] = ['<>', $post_data[$this->pk]];
-        }
-        if($this->model->total($exists_where)){
-            $this->error('账号已被占用，请更换！');
+        if(!empty($post_data['username'])){
+            $exists_where = ['username' => $post_data['username']];
+            if(empty($post_data[$this->pk])){
+                $post_data['pid'] = $this->adminInfo['id'];
+            }else{
+                $exists_where['id'] = ['<>', $post_data[$this->pk]];
+            }
+            if($this->model->total($exists_where)){
+                $this->error('账号已被占用，请更换！');
+            }
         }
         return parent::savePost($url, $post_data);
     }

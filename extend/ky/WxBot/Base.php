@@ -10,7 +10,6 @@
 namespace ky\WxBot;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
 
 Abstract class Base
 {
@@ -193,9 +192,7 @@ Abstract class Base
             }
         }
         try {
-            //var_dump($extra);
             $response = $this->client->request($method, $url, $extra);
-
             if($response->getStatusCode() !== 200){
                 $this->setError($response->getStatusCode());
             }else{

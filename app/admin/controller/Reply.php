@@ -93,7 +93,7 @@ class Reply extends Botbase
                     ['sort' => 'desc'], true, true
                 );
                 foreach ($list as $k => $v){
-                    $v['media_id'] && $v = array_merge(model('media_'.$v['media_type'])->getOne(['id' => $v['media_id'], 'admin_id' => $this->adminInfo['id']]), $v);
+                    $v['media_id'] && $v = array_merge(model('media_'.$v['media_type'])->getOne(['id' => $v['media_id'], 'admin_id' => $this->adminInfo['id']])->toArray(), $v->toArray());
                     $list[$k] = $v;
                 }
             } else {

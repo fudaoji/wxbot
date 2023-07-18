@@ -40,6 +40,10 @@ class EventPrivateChat extends HandlerPrivateChat
             case Bot::MSG_TEXT:
                 $this->keyword();
                 break;
+            case Bot::MSG_VOICE:
+                //Logger::error($this->content);
+                break;
+            //other types
         }
 
         //针对消息事件的特殊响应

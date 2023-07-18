@@ -393,6 +393,7 @@ class Bot extends Bbase
         if (!$data) {
             $this->error('参数错误');
         }
+
         $bot_client = $this->model->getRobotClient($data);
         if(request()->isPost()){
             $do = input('post.do', 'confirm');
@@ -431,7 +432,8 @@ class Bot extends Bbase
                 $this->success('登录成功', '/undefined');
             }
         }
-        return $this->show($data);
+
+        return $this->show($data->toArray());
     }
 
     /**

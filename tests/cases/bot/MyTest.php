@@ -452,11 +452,11 @@ class MyTest extends BotTest
      * 发送文件消息
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function testSendFileMsg() {
+    public function testSendFile() {
         $res = $this->botClient2->sendFileMsg([
             'robot_wxid' => $this->robotJane,
             'to_wxid' => $this->wxidDj,
-            'path' => 'https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf',
+            'path' => 'https://guandaoji.oss-cn-hangzhou.aliyuncs.com/file/1-64b60acb13609.mp3',
             'file_storage_path' => 'C:\ProgramData\Tencent\WeChat'
         ]);
         //dump(basename('https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf'));

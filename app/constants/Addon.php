@@ -31,8 +31,8 @@ class Addon
 
     private static function freeAddons(){
         return [
-            self::ZDJR => '自动加人',
-            self::TPZS => '推品助手',
+            //self::ZDJR => '自动加人',
+            //self::TPZS => '推品助手',
             //self::HANZI => '汉字助手',
         ];
     }

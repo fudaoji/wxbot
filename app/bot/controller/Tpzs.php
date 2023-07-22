@@ -44,19 +44,6 @@ class Tpzs extends Addon
     }
 
     /**
-     * 机器人主动事件
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function deviceCallbackHandle(){
-        if(!empty($this->groupWxid)){
-            $this->groupChatHandle();
-        }
-    }
-
-    /**
      * 群聊处理器
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
@@ -173,14 +160,6 @@ class Tpzs extends Addon
         }
         //二、关键词
         $this->keyword();
-    }
-
-    /**
-     * 私聊处理器
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function privateChatHandle(){
-
     }
 
     /**

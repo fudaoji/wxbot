@@ -22,12 +22,11 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        'cd5441689b14144e5573bf989ee47b34' => __DIR__ . '/..' . '/qcloud/cos-sdk-v5/src/Common.php',
         '841780ea2e1d6545ea3a253239d59c05' => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu/functions.php',
+        'cd5441689b14144e5573bf989ee47b34' => __DIR__ . '/..' . '/qcloud/cos-sdk-v5/src/Common.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
         'cc56288302d9df745d97c934d6a6e5f0' => __DIR__ . '/..' . '/topthink/think-queue/src/common.php',
-        'f5abec83138583a91d834fe8f4e61ad2' => __DIR__ . '/..' . '/yeardley/easytbk/src/helper.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -49,15 +48,6 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         array (
             'app\\' => 4,
             'addons\\' => 7,
-        ),
-        'Y' => 
-        array (
-            'YearDley\\EasyTBK\\Vip\\' => 21,
-            'YearDley\\EasyTBK\\TaoBao\\' => 24,
-            'YearDley\\EasyTBK\\SuNing\\' => 24,
-            'YearDley\\EasyTBK\\PinDuoDuo\\' => 27,
-            'YearDley\\EasyTBK\\JingDong\\' => 26,
-            'YearDley\\EasyTBK\\' => 17,
         ),
         'W' => 
         array (
@@ -145,12 +135,12 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         ),
         'think\\' => 
         array (
-            0 => __DIR__ . '/..' . '/topthink/framework/src/think',
-            1 => __DIR__ . '/..' . '/topthink/think-helper/src',
-            2 => __DIR__ . '/..' . '/topthink/think-image/src',
-            3 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            4 => __DIR__ . '/..' . '/topthink/think-queue/src',
-            5 => __DIR__ . '/..' . '/topthink/think-template/src',
+            0 => __DIR__ . '/..' . '/topthink/think-helper/src',
+            1 => __DIR__ . '/..' . '/topthink/think-image/src',
+            2 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            3 => __DIR__ . '/..' . '/topthink/think-queue/src',
+            4 => __DIR__ . '/..' . '/topthink/think-template/src',
+            5 => __DIR__ . '/..' . '/topthink/framework/src/think',
         ),
         'tests\\' => 
         array (
@@ -167,30 +157,6 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'addons\\' => 
         array (
             0 => __DIR__ . '/../..' . '/addons',
-        ),
-        'YearDley\\EasyTBK\\Vip\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/vip',
-        ),
-        'YearDley\\EasyTBK\\TaoBao\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/taobao',
-        ),
-        'YearDley\\EasyTBK\\SuNing\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/suning',
-        ),
-        'YearDley\\EasyTBK\\PinDuoDuo\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/pinduoduo',
-        ),
-        'YearDley\\EasyTBK\\JingDong\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/yeardley/easytbk/src/jingdong',
-        ),
-        'YearDley\\EasyTBK\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/yeardley/easytbk/src',
         ),
         'Workerman\\' => 
         array (

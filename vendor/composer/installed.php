@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'c3d8c59699b2dcb282ce1f7678c4abba33f0a011',
+    'reference' => 'c420d6f45757d313dab6b9adee61fffd75772c57',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -211,12 +211,12 @@
     ),
     'phpunit/phpunit' => 
     array (
-      'pretty_version' => '9.6.9',
-      'version' => '9.6.9.0',
+      'pretty_version' => '9.6.10',
+      'version' => '9.6.10.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'a9aceaf20a682aeacf28d582654a1670d8826778',
+      'reference' => 'a6d351645c3fe5a30f5e86be6577d946af65a328',
     ),
     'psr/container' => 
     array (
@@ -263,12 +263,12 @@
     ),
     'qcloud/cos-sdk-v5' => 
     array (
-      'pretty_version' => 'v2.6.3',
-      'version' => '2.6.3.0',
+      'pretty_version' => 'v2.6.4',
+      'version' => '2.6.4.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'dd1b7a096cbdcafc9de265cb2bb1b4222ac60136',
+      'reference' => '06ccc95599635abd3f431f470b79b8fb8ddbd6a0',
     ),
     'qiniu/php-sdk' => 
     array (
@@ -540,12 +540,12 @@
     ),
     'topthink/framework' => 
     array (
-      'pretty_version' => 'v6.1.3',
-      'version' => '6.1.3.0',
+      'pretty_version' => 'v6.1.4',
+      'version' => '6.1.4.0',
       'aliases' => 
       array (
       ),
-      'reference' => '7c324e7011246f0064b055b62ab9c3921cf0a041',
+      'reference' => '66eb9cf4d627df12911344cd328faf9bb596bf2c',
     ),
     'topthink/think' => 
     array (
@@ -554,7 +554,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'c3d8c59699b2dcb282ce1f7678c4abba33f0a011',
+      'reference' => 'c420d6f45757d313dab6b9adee61fffd75772c57',
     ),
     'topthink/think-captcha' => 
     array (
@@ -663,15 +663,6 @@
       array (
       ),
       'reference' => 'fe4fc5ecc44d0410a22214d9e8679e2fc3795f5a',
-    ),
-    'yeardley/easytbk' => 
-    array (
-      'pretty_version' => '1.2.2',
-      'version' => '1.2.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '1f08028f8793f3ac0c32315ef2901199a00d97e6',
     ),
   ),
 );

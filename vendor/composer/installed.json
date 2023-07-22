@@ -1593,17 +1593,17 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.9",
-            "version_normalized": "9.6.9.0",
+            "version": "9.6.10",
+            "version_normalized": "9.6.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778"
+                "reference": "a6d351645c3fe5a30f5e86be6577d946af65a328"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a9aceaf20a682aeacf28d582654a1670d8826778",
-                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a6d351645c3fe5a30f5e86be6577d946af65a328",
+                "reference": "a6d351645c3fe5a30f5e86be6577d946af65a328",
                 "shasum": ""
             },
             "require": {
@@ -1639,7 +1639,7 @@
                 "ext-soap": "To be able to generate mocks based on WSDL files",
                 "ext-xdebug": "PHP extension that provides line coverage as well as branch and path coverage"
             },
-            "time": "2023-06-11T06:13:56+00:00",
+            "time": "2023-07-10T04:04:23+00:00",
             "bin": [
                 "phpunit"
             ],
@@ -1679,7 +1679,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.9"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.10"
             },
             "funding": [
                 {
@@ -1931,17 +1931,17 @@
         },
         {
             "name": "qcloud/cos-sdk-v5",
-            "version": "v2.6.3",
-            "version_normalized": "2.6.3.0",
+            "version": "v2.6.4",
+            "version_normalized": "2.6.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tencentyun/cos-php-sdk-v5.git",
-                "reference": "dd1b7a096cbdcafc9de265cb2bb1b4222ac60136"
+                "reference": "06ccc95599635abd3f431f470b79b8fb8ddbd6a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tencentyun/cos-php-sdk-v5/zipball/dd1b7a096cbdcafc9de265cb2bb1b4222ac60136",
-                "reference": "dd1b7a096cbdcafc9de265cb2bb1b4222ac60136",
+                "url": "https://api.github.com/repos/tencentyun/cos-php-sdk-v5/zipball/06ccc95599635abd3f431f470b79b8fb8ddbd6a0",
+                "reference": "06ccc95599635abd3f431f470b79b8fb8ddbd6a0",
                 "shasum": ""
             },
             "require": {
@@ -1954,7 +1954,7 @@
                 "guzzlehttp/psr7": "^1.3.1 || ^2.0",
                 "php": ">=5.6"
             },
-            "time": "2023-06-14T03:18:14+00:00",
+            "time": "2023-07-12T03:41:07+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1996,7 +1996,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tencentyun/cos-php-sdk-v5/issues",
-                "source": "https://github.com/tencentyun/cos-php-sdk-v5/tree/v2.6.3"
+                "source": "https://github.com/tencentyun/cos-php-sdk-v5/tree/v2.6.4"
             },
             "install-path": "../qcloud/cos-sdk-v5"
         },
@@ -4094,17 +4094,17 @@
         },
         {
             "name": "topthink/framework",
-            "version": "v6.1.3",
-            "version_normalized": "6.1.3.0",
+            "version": "v6.1.4",
+            "version_normalized": "6.1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "7c324e7011246f0064b055b62ab9c3921cf0a041"
+                "reference": "66eb9cf4d627df12911344cd328faf9bb596bf2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/7c324e7011246f0064b055b62ab9c3921cf0a041",
-                "reference": "7c324e7011246f0064b055b62ab9c3921cf0a041",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/66eb9cf4d627df12911344cd328faf9bb596bf2c",
+                "reference": "66eb9cf4d627df12911344cd328faf9bb596bf2c",
                 "shasum": ""
             },
             "require": {
@@ -4124,7 +4124,7 @@
                 "mockery/mockery": "^1.2",
                 "phpunit/phpunit": "^7.0"
             },
-            "time": "2023-05-22T03:02:08+00:00",
+            "time": "2023-07-11T15:16:03+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -4156,7 +4156,7 @@
             ],
             "support": {
                 "issues": "https://github.com/top-think/framework/issues",
-                "source": "https://github.com/top-think/framework/tree/v6.1.3"
+                "source": "https://github.com/top-think/framework/tree/v6.1.4"
             },
             "install-path": "../topthink/framework"
         },
@@ -4831,82 +4831,6 @@
                 }
             ],
             "install-path": "../workerman/workerman"
-        },
-        {
-            "name": "yeardley/easytbk",
-            "version": "1.2.2",
-            "version_normalized": "1.2.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/yeardley/easytbk.git",
-                "reference": "1f08028f8793f3ac0c32315ef2901199a00d97e6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/yeardley/easytbk/zipball/1f08028f8793f3ac0c32315ef2901199a00d97e6",
-                "reference": "1f08028f8793f3ac0c32315ef2901199a00d97e6",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-dom": "*",
-                "ext-json": "*",
-                "ext-mbstring": "*",
-                "ext-simplexml": "*",
-                "php": ">=7.0.0"
-            },
-            "time": "2020-10-30T05:44:43+00:00",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "files": [
-                    "src/helper.php"
-                ],
-                "psr-4": {
-                    "YearDley\\EasyTBK\\": "src/",
-                    "YearDley\\EasyTBK\\Vip\\": "src/vip",
-                    "YearDley\\EasyTBK\\SuNing\\": "src/suning",
-                    "YearDley\\EasyTBK\\TaoBao\\": "src/taobao",
-                    "YearDley\\EasyTBK\\JingDong\\": "src/jingdong",
-                    "YearDley\\EasyTBK\\PinDuoDuo\\": "src/pinduoduo"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "yeardley",
-                    "email": "510865496@qq.com"
-                }
-            ],
-            "description": "淘客六合一SDK，支持淘宝联盟、京东联盟、多多进宝、唯品会、苏宁、蘑菇街. 改自 <https://github.com/niugengyun/easytbk>",
-            "homepage": "https://github.com/yeardley/easytbk",
-            "keywords": [
-                "京东SDK",
-                "京东联盟",
-                "唯品会",
-                "唯品会SDK",
-                "多多进宝",
-                "拼多多",
-                "拼多多SDK",
-                "拼多多联盟",
-                "淘宝客",
-                "淘宝客SDK",
-                "苏宁",
-                "苏宁SDK"
-            ],
-            "support": {
-                "source": "https://github.com/yeardley/easytbk/tree/1.2.2"
-            },
-            "install-path": "../yeardley/easytbk"
         }
     ],
     "dev": true

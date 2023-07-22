@@ -67,6 +67,7 @@ class Apps extends Base
         $type && $where['type'] = ['like', '%'.$type.'%'];
 
         $search_key && $where['title|desc'] = ['like', '%'.$search_key.'%'];
+        
         $data_list = $this->model->page($page_size, $where, ['id' => 'desc'], true, true);
         $page = $data_list->appends(['search_key' => $search_key])->render();
 

@@ -25,7 +25,6 @@ class File
         try {
             rename($ori, $dest);
         }catch (\Exception $e){
-            dump($e->getMessage());exit;
             return $e->getMessage();
         }
         return true;

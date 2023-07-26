@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'ec6111607573bb30a49f486f410237559b48c5c7',
+    'reference' => 'f179352a30c8fa5f245b6ab84eb6e804f11c44ef',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -567,7 +567,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'ec6111607573bb30a49f486f410237559b48c5c7',
+      'reference' => 'f179352a30c8fa5f245b6ab84eb6e804f11c44ef',
     ),
     'topthink/think-captcha' => 
     array (

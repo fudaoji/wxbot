@@ -43,6 +43,9 @@ class EventPrivateChat extends HandlerPrivateChat
             case Bot::MSG_VOICE:
                 //Logger::error($this->content);
                 break;
+            case Bot::MSG_FILE:
+                //Logger::error($this->content);
+                break;
             //other types
         }
 

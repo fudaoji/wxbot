@@ -34,6 +34,19 @@ class MyTest extends BotTest
         $this->botComClient = new Mycom(['app_key' => 'quNhWFeMrTcsjPnUIUtcpZHMHcAsEDRq', 'base_uri' => '124.223.70.93:8091']);
     }
 
+    /**
+     * 下载文件
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testDownloadFile(){
+        $params = [
+            'path' => 'C:\\ProgramData\\Tencent\\WeChat\\WeChat Files\\wxid_a98qqf9m4bny22\\FileStorage\\File\\2023-07\\Bot.php'
+        ];
+        $res = $this->botClient->downloadFile($params);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
     public function testGetSubscription(){
         $params = [
             'robot_wxid' => $this->robotJane,

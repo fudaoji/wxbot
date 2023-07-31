@@ -287,7 +287,7 @@ class Bot extends Bbase
             'where' => ['admin_id' => $this->adminInfo['id']],
             'order' => ['alive' => 'desc', 'update_time' => 'desc'],
             'field' => ['app_key', 'url']
-        ])){
+        ])->toArray()){
             $config = config('system.bot');
         }
         return empty($config) ? [] : $config;

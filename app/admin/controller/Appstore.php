@@ -112,7 +112,7 @@ class Appstore extends Base
         $search_key = input('search_key', '');
         $cate = input('cate', '全部');
         $current_page = input('page', 1);
-        $page_size = 12;
+        $page_size = 18;
         $params = [
             'type' => $type,
             'cate' => $cate,

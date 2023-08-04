@@ -81,7 +81,7 @@ class ChatLog extends Kefu
         ];
         $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
-        Logger::write("存储数据OK：" . json_encode($msg) . "\n");
+        //Logger::write("存储数据OK：" . json_encode($msg) . "\n");
         //视频转换失败
         if (in_array($data['type'], [43, 2004]) && $convert['content'] == '') {
             $delay_second = 10;
@@ -195,14 +195,14 @@ class ChatLog extends Kefu
                 if ($path) {
                     Logger::write("视频消息path" .$path."\n");
                     $res = $bot_client->downloadFile(['path' => $path]);
-                    Logger::write("res:" .json_encode($res));
+                    //Logger::write("res:" .json_encode($res));
                     if ($res['Code'] != 0) {
                         echo "转换视频消息为base64错误:" . json_encode($res) . "\n";
                         Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                         // Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                         $url = '';
                     } else {
-                        Logger::write("转换成功11111" . "\n");
+                        //Logger::write("转换成功11111" . "\n");
                         $base64 = $res['ReturnStr'];
                         $url = upload_base64('mp4_' . rand(1000, 9999) . '_' . time(), $base64);
                     }

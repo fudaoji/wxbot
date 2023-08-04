@@ -249,7 +249,7 @@ class Upload extends BaseModel
     public static function driverConfig($driver = 'local'){
         $driver = strtolower($driver);
         switch($driver){
-            case Uploader::QCLOUD:  //七牛
+            case Uploader::QCLOUD:  //腾讯云
                 $config = [
                     'accessKey' => self::$setting['qcloud_ak'] ?: '',
                     'secrectKey' => self::$setting['qcloud_sk'] ?: '',
@@ -259,7 +259,7 @@ class Upload extends BaseModel
                     'timeout' => 3600,
                 ];
                 break;
-            case Uploader::ALIYUN:  //七牛
+            case Uploader::ALIYUN:  //阿里云
                 $config = [
                     'accessKey' => self::$setting['aliyun_ak'] ?: '',
                     'secrectKey' => self::$setting['aliyun_sk'] ?: '',

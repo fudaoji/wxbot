@@ -283,11 +283,13 @@ class Bot extends Bbase
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getConfig(){
-        if(! $config = $this->model->getOneByOrder([
+        if($config = $this->model->getOneByOrder([
             'where' => ['admin_id' => $this->adminInfo['id']],
             'order' => ['alive' => 'desc', 'update_time' => 'desc'],
             'field' => ['app_key', 'url']
-        ])->toArray()){
+        ])){
+            $config = $config->toArray();
+        }else{
             $config = config('system.bot');
         }
         return empty($config) ? [] : $config;

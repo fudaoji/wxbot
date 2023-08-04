@@ -11,7 +11,6 @@ namespace app\admin\controller;
 
 use app\admin\model\BotMember;
 use app\common\model\MemberTag as TagM;
-use app\common\model\tpzs\Grouppos;
 
 class Botgroup extends Botbase
 {
@@ -19,10 +18,7 @@ class Botgroup extends Botbase
      * @var BotMember
      */
     protected $model;
-    /**
-     * @var Grouppos
-     */
-    private $groupPosM;
+
     /**
      * @var TagM
      */
@@ -36,7 +32,6 @@ class Botgroup extends Botbase
         $this->needAid = false;
         parent::initialize();
         $this->model = new BotMember();
-        $this->groupPosM = new Grouppos();
         $this->tagM = new TagM();
     }
 
@@ -143,52 +138,6 @@ class Botgroup extends Botbase
             ->addFormItem('wxid', 'hidden', 'wxid', 'wxid')
             ->addFormItem('nickname', 'text', '群名', '1-20位长度', [], 'required minlength=1 maxlength=20')
             ->addFormItem('tags', 'chosen_multi', '分组', '分组', $this->tagM->getTitleToTitle($this->bot['id']))
-            ->setFormData($data);
-
-        return $builder->show();
-    }
-
-    /**
-     * 绑定推广位
-     * @return mixed
-     * Author: fudaoji<fdj@kuryun.cn>
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     * @throws \think\Exception
-     */
-    public function bindPos(){
-        if(request()->isPost()){
-            $post_data = input('post.');
-            if($gp = $this->groupPosM->getOneByMap(['group_id' => $post_data['group_id']])){
-                $this->groupPosM->updateOne([
-                    'id' => $gp['id'],
-                    'position_id' => $post_data['position_id']
-                ]);
-            }else{
-                $this->groupPosM->addOne([
-                    'group_id' => $post_data['group_id'],
-                    'position_id' => $post_data['position_id']
-                ]);
-            }
-            $this->success('操作成功');
-        }
-        $id = input('id');
-        $data = $this->model->getOne($id);
-        $data['group_id'] = $id;
-        $data['group_title'] = $data['nickname'];
-        if($gp = $this->groupPosM->getOneByMap(['group_id' => $id], ['position_id'])){
-            $data['position_id'] = $gp['position_id'];
-        }else{
-            $data['position_id'] = 0;
-        }
-        //使用FormBuilder快速建立表单页面。
-        $builder = new FormBuilder();
-        $builder->setMetaTitle('绑定推广位')  //设置页面标题
-            ->setPostUrl(url('bindPos')) //设置表单提交地址
-            ->addFormItem('group_id', 'hidden', 'group id', 'group id')
-            ->addFormItem('group_title', 'text', '发单群', '发单群', [], 'required readonly')
-            ->addFormItem('position_id', 'chosen', '推广位', '推广位', model('common/tpzs/position')->getField('id,title',['admin_id' => $this->adminInfo['id'], 'status' => 1]), 'required')
             ->setFormData($data);
 
         return $builder->show();

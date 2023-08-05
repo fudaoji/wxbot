@@ -39,4 +39,19 @@ class Emoji extends Base
         $assign = ['data_list' => $data_list, 'pager' => $pager, 'type' => $type];
         return $this->show($assign);
     }
+
+    public function deal(){
+        $list = $this->model->getAll([
+            'where' => ['softb_unicode' => '-'],
+            'field' => ['id','class','softb_unicode']
+        ])->toArray();
+        $all = [];
+        foreach ($list as $item){
+            $all[] = $this->model->updateOne([
+                'id' => $item['id'],
+                'softb_unicode' => str_replace("emoji", "\u", $item['class'])
+            ]);
+        }
+        dump($all);exit;
+    }
 }

@@ -189,7 +189,7 @@ CREATE TABLE `__PREFIX__emoji_code`  (
   `google` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `softb_unicode` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 721 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_forward

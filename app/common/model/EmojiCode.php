@@ -14,6 +14,7 @@ class EmojiCode extends Base
 {
     protected $isCache = true;
     protected $expire = 0;
+    protected $autoWriteTimestamp = false;
 
 
     /**

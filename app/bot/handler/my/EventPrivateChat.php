@@ -66,6 +66,22 @@ class EventPrivateChat extends HandlerPrivateChat
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
             switch ($this->content['type']) {
+                case Bot::MSG_FILE:
+                    sleep(2);
+                    $this->botClient->forwardMsgToFriends([
+                        'robot_wxid' => $this->botWxid,
+                        'to_wxid' => $groups,
+                        'msgid' => $this->content['msg_id']
+                    ]);
+                    break;
+                case Bot::MSG_VIDEO:
+                    sleep(10);
+                    $this->botClient->forwardMsgToFriends([
+                        'robot_wxid' => $this->botWxid,
+                        'to_wxid' => $groups,
+                        'msgid' => $this->content['msg_id']
+                    ]);
+                    break;
                 case Bot::MSG_TEXT:
                     $this->botClient->sendTextToFriends([
                         'robot_wxid' => $this->content['robot_wxid'],
@@ -100,11 +116,12 @@ class EventPrivateChat extends HandlerPrivateChat
                             'msg' => $this->content['msg']
                         ]);
                     } else { //个微
-                        $this->botClient->forwardMsgToFriends([
+                        $res = $this->botClient->forwardMsgToFriends([
                             'robot_wxid' => $this->botWxid,
                             'to_wxid' => $groups,
                             'msgid' => $this->content['msg_id']
                         ]);
+                        Logger::error($res);
                     }
                     break;
             }

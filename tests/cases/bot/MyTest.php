@@ -490,4 +490,18 @@ class MyTest extends BotTest
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
     }
+
+    /**
+     * 发送视频消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendVideo() {
+        $res = $this->botClient2->sendVideoToFriends([
+            'robot_wxid' => $this->robotJane,
+            'to_wxid' => $this->wxidDj,
+            'path' => 'C:\ProgramData\Tencent\WeChat\WeChat Files\wxid_a98qqf9m4bny22\FileStorage\Video\2023-08\1a806d3eccdba8ab902c24ca9013e282.mp4',
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
 }

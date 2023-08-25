@@ -14,6 +14,7 @@ use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
+use ky\VideoSpider;
 
 class Test
 {
@@ -21,6 +22,24 @@ class Test
     public function index()
     {
         return response('hello thinkphp6');
+    }
+
+    public function testVideo(){
+        /*$parttern = "/http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/";
+        $content = "https://v.kuaishou.com/1WUK6C 这样的骗术你遇到过吗？一定要警惕！ 该作品在快手被播放过5,080.4万次，点击链接，打开【快手极速版】直接观看！";
+        preg_match_all($parttern, $content, $matches);
+        dump($matches);exit;*/
+        $douyin_url = 'https://v.douyin.com/iJCGW2qT/';
+        //$res = (new VideoSpider)->douyin($douyin_url);
+        //$xigua_url = 'https://v.ixigua.com/iJQ6nAm1/';
+        $xiaohongshu_url = 'http://xhslink.com/zzSpxt';
+        $kuaishou_url = 'https://v.kuaishou.com/1WUK6C';
+        $pipixia_url = 'https://h5.pipix.com/s/iJq6yrYX/';
+        $weishi_url = 'https://video.weishi.qq.com/hzqN7rQt';
+        $weibo_url = 'https://video.weibo.com/show?fid=1034:4934561977532466';
+        $zuiyou_url = 'https://share.xiaochuankeji.cn/hybrid/share/post?pid=338456751&vid=2244242734';
+        $res = (new VideoSpider)->zuiyou($zuiyou_url);
+        dump($res);exit;
     }
 
     /**

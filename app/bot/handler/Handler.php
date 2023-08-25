@@ -171,6 +171,10 @@ class Handler extends BaseCtl
             "@{$this->bot['nickname']}"
         ];
 
+        if (strpos($this->fromWxid, 'gh_') !== false) { //公众号忽略
+            exit(0);
+        }
+
         empty($this->content['from_group']) && $this->content['from_group'] = $this->groupWxid;
         empty($this->content['from_wxid']) && $this->content['from_wxid'] = $this->fromWxid;
         empty($this->content['from_group_name']) && $this->content['from_group_name'] = $this->groupName;

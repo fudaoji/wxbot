@@ -482,6 +482,10 @@ class BotMember extends Base
                     $wxid_arr = [];
                     //Logger::error($res);
                     foreach ($list as $k => $v){
+                        if(empty($v['wxid']))  {
+                            unset($list[$k]);
+                            continue;
+                        }
                         $nickname = filter_emoji($v['nickname'] ?? '');
                         $remark_name = filter_emoji($v['note'] ?? '');
                         $username = $v['wx_num'];

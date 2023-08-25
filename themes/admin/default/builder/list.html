@@ -187,6 +187,10 @@
             page: true,
             skin: 'line',
             escape: false,
+            defaultToolbar: [{
+                layEvent: 'refresh',
+                icon: 'layui-icon-refresh',
+            }, 'filter', 'print', 'exports'],
             parseData: function(res){ //res 即为原始返回的数据
                 return {
                     "code": Math.abs(res.code - 1), //解析接口状态
@@ -240,6 +244,9 @@
             }
 
             switch (obj.event) {
+                case 'refresh':
+                    table.reload('{$controller}-table');
+                    break;
                 case 'add':
                     var index = layer.open({
                         title: title,

@@ -56,6 +56,7 @@ class Keyword extends Botbase
                     ['id' => 'desc'], true, true
                 );
                 foreach ($list as $k => $v){
+                    if(empty($v['media_type'])) continue;
                     if($material = model('media_' . $v['media_type'])->getOneByMap([
                         'admin_id' => $v['admin_id'],
                         'id' => $v['media_id']
@@ -177,6 +178,9 @@ class Keyword extends Botbase
         $post_data['bot_id'] = $this->bot['id'];
         $keywords = trim($post_data['keyword'], '|');
         $keyword_arr = explode('|', $keywords);
+        if(empty($post_data['media_type'])){
+            $this->error('请选择回复素材！');
+        }
         if(empty($post_data[$this->pk])){
             $post_data['admin_id'] = $this->adminInfo['id'];
             foreach ($keyword_arr as $keyword){

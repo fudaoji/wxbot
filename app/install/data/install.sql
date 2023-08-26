@@ -746,9 +746,8 @@ CREATE TABLE `__PREFIX__server`  (
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1,
   `create_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `ip`(`url`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '服务器' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '服务器' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_setting
@@ -786,7 +785,7 @@ CREATE TABLE `__PREFIX__task`  (
   `plan_hour` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '00:00' COMMENT '具体的发送时段',
   `atall` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否艾特所有人',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = ' 消息群发表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = ' 消息群发表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_tj_group
@@ -829,6 +828,7 @@ ALTER TABLE `__PREFIX__moments` CHANGE COLUMN `media_id` `media_id` varchar(200)
 -- ----------------------------
 -- 2.1.2
 -- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__moments_follow`;
 CREATE TABLE `__PREFIX__moments_follow` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `admin_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -845,6 +845,7 @@ CREATE TABLE `__PREFIX__moments_follow` (
 -- ----------------------------
 -- 2.1.3
 -- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__member_tag`;
 CREATE TABLE `__PREFIX__member_tag` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `bot_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'bot ID',
@@ -860,9 +861,10 @@ ALTER TABLE `__PREFIX__forward` ADD COLUMN `member_tags` varchar(200) NOT NULL D
 -- ----------------------------
 -- 2.1.4 手动更新请务必手动替换__PREFIX__为你的真实表前缀
 -- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__media_group`;
 CREATE TABLE `__PREFIX__media_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `title` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0',
   `admin_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -902,6 +904,7 @@ ALTER TABLE `__PREFIX__media_video_5` ADD COLUMN `group_id` int(10) UNSIGNED NOT
 -- ----------------------------
 -- 2.2.0 手动更新请务必手动替换__PREFIX__为你的真实表前缀
 -- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__addon`;
 CREATE TABLE `__PREFIX__addon` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `title` varchar(50) CHARACTER SET utf8 NOT NULL COMMENT '应用名称',
@@ -932,6 +935,7 @@ ALTER TABLE `__PREFIX__addon` ADD COLUMN `sort_reply` int(10) UNSIGNED NOT NULL 
 -- ----------------------------
 -- 2.2.6 手动更新请务必手动替换__PREFIX__为你的真实表前缀
 -- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__admin_log`;
 CREATE TABLE `__PREFIX__admin_log` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '操作类型',

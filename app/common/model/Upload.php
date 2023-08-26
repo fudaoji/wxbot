@@ -79,7 +79,7 @@ class Upload extends BaseModel
                 $insert_data = [
                     'uid' => $extra['uid'],
                     'path' => empty($v['path']) ? $v['url'] : $v['path'],
-                    'url' => strtolower($driver) == Uploader::LOCAL ? (request()->domain() . $v['url']) : $v['url'],
+                    'url' => strtolower($driver) == Uploader::LOCAL ? (request()->domain() . trim($v['url'], '.')) : $v['url'],
                     'size' => $v['size'],
                     'ext' => $v['ext'],
                     'md5' => $v['md5'],

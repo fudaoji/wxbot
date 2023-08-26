@@ -15,9 +15,10 @@ function check_env()
 {
     $items = array(
         'os' => array('操作系统', '不限制', '类Unix', PHP_OS, 'success'),
-        'php' => array('PHP版本', '5.6.0+', '5.6+', PHP_VERSION, 'success'),
+        'php' => array('PHP版本', '7.3.0+', '7.3+', PHP_VERSION, 'success'),
         'upload' => array('附件上传', '不限制', '2M+', '未知', 'success'),
         'gd' => array('GD库', '2.0', '2.0+', '未知', 'success'),
+        'redis' => array('Redis库', '不限制', '不限制', '未知', 'success'),
         'disk' => array('磁盘空间', '30M', '不限制', '未知', 'success'),
     );
 
@@ -41,6 +42,13 @@ function check_env()
         $items['gd'][3] = $tmp['GD Version'];
     }
     unset($tmp);
+
+    //redis检测
+    if(! extension_loaded('redis')){
+        $items['redis'][3] = '未安装';
+        $items['redis'][4] = 'error';
+        session('error', true);
+    }
 
     //磁盘空间检测
     if (function_exists('disk_free_space')) {

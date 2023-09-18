@@ -32,7 +32,7 @@ class Kefu extends Addon
      */
     public function privateChatHandle(){
 //        echo "私聊处理器---".date("Y-m-d H:i:s");
-        Logger::write("私聊处理器---".date("Y-m-d H:i:s"));
+        //Logger::write("私聊处理器---".date("Y-m-d H:i:s"));
         // Logger::write(json_encode($this->bot));
         if(empty($this->switch)){
             return false;
@@ -80,7 +80,7 @@ class Kefu extends Addon
      * 群聊接收回调处理器
      */
     public function groupChatHandle(){
-        Logger::write("群聊接收回调处理器---");
+        //Logger::write("群聊接收回调处理器---");
         if(empty($this->switch)){
             return false;
         }
@@ -88,7 +88,4 @@ class Kefu extends Addon
         $model_chat_log = new ChatLog();
         $model_chat_log->saveGroupChat($this->content,$this->bot);
     }
-
-    
-    
 }

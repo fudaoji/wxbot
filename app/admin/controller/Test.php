@@ -31,14 +31,21 @@ class Test
         dump($matches);exit;*/
         $douyin_url = 'https://v.douyin.com/iJCGW2qT/';
         //$res = (new VideoSpider)->douyin($douyin_url);
-        //$xigua_url = 'https://v.ixigua.com/iJQ6nAm1/';
+        $xigua_url = 'https://v.ixigua.com/ieUR9nmW/';
+        $xigua_url = "https://v.ixigua.com/ie5ypkNc/";
         $xiaohongshu_url = 'http://xhslink.com/zzSpxt';
         $kuaishou_url = 'https://v.kuaishou.com/1WUK6C';
+        $kuaishou_url = 'https://v.kuaishou.com/5mphXc';
         $pipixia_url = 'https://h5.pipix.com/s/iJq6yrYX/';
         $weishi_url = 'https://video.weishi.qq.com/hzqN7rQt';
         $weibo_url = 'https://video.weibo.com/show?fid=1034:4934561977532466';
         $zuiyou_url = 'https://share.xiaochuankeji.cn/hybrid/share/post?pid=338456751&vid=2244242734';
-        $res = (new VideoSpider)->zuiyou($zuiyou_url);
+        $lvzhou_url = "https://m.oasis.weibo.cn/v1/h5/share?sid=4907194933844490";
+        $douyin_images = "https://v.douyin.com/hWrAWMd/";
+        $douyin_url2 = "https://v.douyin.com/NrRah9w/";
+        //$res = (new VideoSpider)->douyin($douyin_images);
+        //$res = (new VideoSpider)->xigua($xigua_url);
+        $res = (new VideoSpider)->kuaishou($kuaishou_url);
         dump($res);exit;
     }
 

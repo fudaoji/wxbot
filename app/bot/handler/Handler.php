@@ -12,10 +12,6 @@ namespace app\bot\handler;
 use app\admin\model\Bot;
 use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
-use app\bot\handler\cat\EventGroupMemberAdd;
-use app\bot\handler\vlw\EventFriendVerify;
-use app\bot\handler\vlw\EventPrivateChat;
-use app\bot\handler\vlw\EventLogin;
 use app\common\controller\BaseCtl;
 use app\common\service\Addon as AppService;
 use app\common\service\Platform;
@@ -93,7 +89,7 @@ class Handler extends BaseCtl
         }
 
         /**
-         * @var $handler EventLogin|EventFriendVerify|EventPrivateChat|EventGroupMemberAdd
+         * @var $handler Handler
          */
         $handler = new $class();
         $handler->initData($options);

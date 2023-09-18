@@ -182,7 +182,7 @@ class Appstore extends Base
             ->addTableColumn(['title' => '作者', 'field' => 'author'])
             ->addTableColumn(['title' => '当前版本', 'field' => 'version'])
             ->addTableColumn(['title' => '最新版本', 'field' => 'new_version'])
-            ->addTableColumn(['title' => '更新时间', 'field' => 'update_time'])
+            ->addTableColumn(['title' => '更新时间', 'field' => 'update_time', 'type' => 'datetime'])
             ->addTableColumn(['title' => '操作', 'width' => 150, 'type' => 'toolbar'])
             ->addRightButton('self', ['text' => '升级', 'href' => url('upgradepost', ['name' => '__data_name__']), 'data-ajax' => true, 'data-confirm' => '升级应用文件将会被更新(系统自动将应用打包备份在runtime/目录下)，你确定升级应用吗？']);
         return $builder->show();

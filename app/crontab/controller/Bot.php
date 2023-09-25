@@ -146,7 +146,7 @@ class Bot extends Base
      */
     private function sendBatch(){
         $view_table = $this->taskM->where('status', 1)
-            ->whereNotNull('wxids')
+            //->whereNotNull('wxids')
             ->whereNotNull('medias')
             ->where("(complete_time=0 and circle=".Task::CIRCLE_SINGLE." and plan_time <= ".time().") or (circle=" . Task::CIRCLE_DAILY .
                 " and plan_hour<='".date('H:i:s')."' and complete_time<".strtotime(date('Ymd 00:00')).")")

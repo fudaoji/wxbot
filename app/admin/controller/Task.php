@@ -260,6 +260,9 @@ class Task extends Botbase
         $post_data = input('post.');
         $post_data['admin_id'] = $this->adminInfo['id'];
         $post_data['bot_id'] = $this->bot['id'];
+        if(empty($post_data['wxids']) && empty($post_data['member_tags'])){
+            $this->error('请选择指定对象！');
+        }
         if(empty($post_data['plan_time'])){
             $post_data['plan_time'] = time();
         }else{

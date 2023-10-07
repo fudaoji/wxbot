@@ -43,8 +43,8 @@
         {if !empty($user)}
         <span class="layui-breadcrumb" lay-separator="|">
                       <a>{$user.name}</a>
-                      <a>{$user.money ?? 0.00}元</a>
-                      <a href="javascript:;">充值</a>
+            <!--<a>{$user.money ?? 0.00}元</a>
+            <a href="javascript:;">充值</a>-->
                       <a href="{:url('logout')}">退出</a>
                     </span>
         {else/}

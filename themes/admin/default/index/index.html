@@ -63,11 +63,13 @@
                             {/if}
                         </li>
                         {/if}
+                        {if $admin.is_founder}
                         <li class="layui-nav-item">
                             <a href="javascript:;" layuimini-content-href="{:url('admin/notice/community')}" data-title="公告">
                                 <i class="fa fa-bullhorn"></i><span class="layui-badge-dot notice-badge hide" style="margin-left: 0;"></span>
                             </a>
                         </li>
+                        {/if}
                         <li class="layui-nav-item" lay-unselect>
                             <a href="javascript:;" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
                         </li>

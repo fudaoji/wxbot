@@ -28,6 +28,9 @@ class Bot extends Bbase
      */
     public function initialize()
     {
+        $this->needAid = false;
+        $this->needStaffId = true;
+
         parent::initialize();
         $this->model = new BotM();
         $this->tabs = [
@@ -87,17 +90,77 @@ class Bot extends Bbase
             ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => BotConst::protocols(), 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 100])
-            ->addTableColumn(['title' => 'appKey', 'field' => 'app_key', 'minWidth' => 200])
+            ->addTableColumn(['title' => '所属员工', 'type' => 'enum', 'field' => 'staff_id', 'options' => AdminM::getTeamIdToName($this->adminInfo), 'minWidth' => 90])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 80])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '操作', 'minWidth' => 240, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120])
-            ->addRightButton('edit')
-            ->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1])
-            ->addRightButton('delete');
+            ->addRightButton('edit');
+        if(AdminM::isLeader($this->adminInfo)){
+            $builder->addRightButton('edit', ['title' => '分配员工', 'href' => url('allocate', ['id' => '__data_id__'])])
+                /*->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1])*/
+                ->addRightButton('delete', ['href' => url('delPost', ['id' => '__data_id__'])]);
+        }
 
         return $builder->show();
+    }
+
+    /**
+     * 分配员工
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function allocate()
+    {
+        $id = input('id', null);
+        $data = $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'id' => $id]);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        if($this->request->isPost()){
+            $post_data = input('post.');
+            $this->model->updateOne([
+                'id' => $data['id'],
+                'staff_id' => $post_data['staff_id']
+            ]);
+            $this->success('操作成功！', '/undefined');
+        }
+
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('分配员工')
+            ->setPostUrl(url('allocate'))
+            ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('staff_id', 'select', '选择员工', '选择员工', AdminM::getTeamIdToName(), 'required')
+            ->setFormData($data);
+
+        return $builder->show();
+    }
+
+    /**
+     * 删除机器人
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function delPost(){
+        if(request()->isPost()){
+            $id = input('id', 0);
+            $map = ['admin_id' => $this->adminInfo['id'], 'id' => $id];
+            if($this->model->delByMap($map)){
+                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::DEL, 'desc' => $this->adminInfo['username'] . '删除数据'.$this->model->getName().':'.$id]);
+                $this->success('删除成功');
+            }else{
+                $this->error('删除失败');
+            }
+        }
     }
 
     /**

@@ -40,8 +40,7 @@ CREATE TABLE `__PREFIX__admin_group`  (
   UNIQUE INDEX `title`(`title`) USING BTREE
 ) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
-INSERT INTO `__PREFIX__admin_group` VALUES ('1', '1','super_admin', '超级管理员', '1', '', '0', '0', '1445158837', '拥有系统最高管理权限', '1626581117', 0);
-
+INSERT INTO `__PREFIX__admin_group` VALUES ('1', '1','super_admin', '超级管理员', '1', '', '0', '0', '1445158837', '拥有系统最高管理权限', '1626581117', 0),('2', '1','', '客户', '1', '169,162', '0', '0', '1445158837', '通过自主注册的商户', '1626581117', 1);
 
 -- ----------------------------
 -- Table structure for ky_admin_rule

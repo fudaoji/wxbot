@@ -21,9 +21,14 @@
                         依赖应用：{$info.dependency}
                     </p>
                     <div class="install-btn">
+                        {if $bought}
                         <button onclick="downloadApp('{$info.id}')" class="layui-btn layui-btn-sm">
                             <i class="layui-icon">&#xe601;</i>立即下载
                         </button>
+                        {else/}
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" href="https://daoadmin.kuryun.com/home/app/detail/id/38" target="_blank">前往购买</a>
+                        <button onclick="location.reload();" class="layui-btn layui-btn-sm layui-btn-primary"><i class="fa fa-refresh"></i></button>
+                        {/if}
                     </div>
                 </div>
             </div>

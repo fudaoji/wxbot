@@ -15,6 +15,7 @@ use app\constants\Media;
 class Bbase extends Base
 {
     protected $needAid = true;
+    protected $needStaffId = false;
 
     public function initialize()
     {
@@ -37,6 +38,7 @@ class Bbase extends Base
         if($status == 'delete'){
             $map = ['id' => ['in', $ids]];
             $this->needAid && $map['admin_id'] = $this->adminInfo['id'];
+            $this->needStaffId && $map['staff_id'] = $this->adminInfo['id'];
             if($this->model->delByMap($map)){
                 AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::DEL, 'desc' => $this->adminInfo['username'] . '删除数据'.$this->model->getName().':'.implode(',', $ids)]);
                 $this->success('删除成功');

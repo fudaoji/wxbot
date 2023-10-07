@@ -43,10 +43,22 @@ class Test
         $lvzhou_url = "https://m.oasis.weibo.cn/v1/h5/share?sid=4907194933844490";
         $douyin_images = "https://v.douyin.com/hWrAWMd/";
         $douyin_url2 = "https://v.douyin.com/NrRah9w/";
-        //$res = (new VideoSpider)->douyin($douyin_images);
+        $douyin_url =
+        $res = (new VideoSpider)->douyin($douyin_url);
         //$res = (new VideoSpider)->xigua($xigua_url);
-        $res = (new VideoSpider)->kuaishou($kuaishou_url);
+        //$res = (new VideoSpider)->kuaishou($kuaishou_url);
         dump($res);exit;
+    }
+
+    function getVideoFromLink($link) {
+        // 使用 file_get_contents() 函数获取页面内容
+        $html = file_get_contents($link);
+
+        // 使用正则表达式提取视频链接
+        preg_match('/<meta property="og:video" content="(.*?)"/', $html, $matches);
+        $videoLink = $matches[1];
+
+        return $videoLink;
     }
 
     /**

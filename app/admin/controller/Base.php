@@ -59,6 +59,7 @@ class Base extends BaseCtl
             $this->request->isGet() && cookie('redirect_url', request()->url());
             $this->redirect(url('admin/auth/login'));
         }
+        $this->adminInfo['is_founder'] = AdminM::isFounder($this->adminInfo);
         $this->assign['admin'] = $this->adminInfo;
     }
 

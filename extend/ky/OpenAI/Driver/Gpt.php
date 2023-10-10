@@ -49,8 +49,11 @@ class Gpt extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function smart($params){
+        $role = "你是一个智能助手assistant。";
+        !empty($params["role_context"]) && $role = $params["role_context"];
+
         $message = [
-            ['role' => 'system', 'content' => "你是一个智能助手assistant"],
+            ['role' => 'system', 'content' => $role],
             ['role' => 'system', 'content' => "今天是" . date("Y-m-d") . "，现在时间是" . date("H:i")],
         ];
         if(! empty($params['content_rule'])){

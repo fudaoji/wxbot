@@ -28,6 +28,7 @@ class Gpt extends Base
         "gpt-3.5-turbo-0613" => "gpt-3.5-turbo-0613",
         "gpt-3.5-turbo-16k" => "gpt-3.5-turbo-16k",
         "gpt-3.5-turbo-16k-0613" => "gpt-3.5-turbo-16k-0613",
+        "gpt-4-1106-preview" => "gpt-4-1106-preview",
         "gpt-4" => "gpt-4",
         "gpt-4-0613" => "gpt-4-0613",
         "gpt-4-32k" => "gpt-4-32k",
@@ -49,8 +50,11 @@ class Gpt extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function smart($params){
+        $role = "你是一个智能助手assistant。";
+        !empty($params["role_context"]) && $role = $params["role_context"];
+
         $message = [
-            ['role' => 'system', 'content' => "你是一个智能助手assistant"],
+            ['role' => 'system', 'content' => $role],
             ['role' => 'system', 'content' => "今天是" . date("Y-m-d") . "，现在时间是" . date("H:i")],
         ];
         if(! empty($params['content_rule'])){

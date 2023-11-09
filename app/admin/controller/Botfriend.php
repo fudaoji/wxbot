@@ -65,6 +65,8 @@ class Botfriend extends Botbase
         ])
             ->setTip($tip)
             ->addTopButton('self', ['title'=>'拉取最新好友', 'href' => url('syncFriends'), 'data-ajax' => 1])
+            ->addTopButton('delete', ['title' => '批量删除好友', 'href' => url('deleteFriendPost')])
+            ->addTableColumn([ 'type' => 'checkbox', 'minWidth' => 30])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'wxid', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture', 'minWidth' => 100])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 90])
@@ -82,20 +84,32 @@ class Botfriend extends Botbase
     }
 
     public function deleteFriendPost(){
-        $id = input('post.ids');
-        if(! $friend = $this->model->getOneByMap(['uin' => $this->bot['uin'], 'id' => $id])){
-            $this->error('数据不存在');
+        $ids = input('ids/a');
+        if (empty($ids)) {
+            $this->error('请选择要操作的数据');
         }
-        $res = model('admin/bot')->getRobotClient($this->bot)->deleteFriend([
-            'robot_wxid' => $this->bot['uin'],
-            'to_wxid' => $friend['wxid'],
-            'uuid' => $this->bot['uuid']
-        ]);
-        if($res['code']){
-            $this->model->delOne($id);
+
+        $ids = (array) $ids;
+        $count = 0;
+        foreach ($ids as $id){
+            if(! $friend = $this->model->getOneByMap(['uin' => $this->bot['uin'], 'id' => $id])){
+                $this->error('数据不存在');
+            }
+            $res = model('admin/bot')->getRobotClient($this->bot)->deleteFriend([
+                'robot_wxid' => $this->bot['uin'],
+                'to_wxid' => $friend['wxid'],
+                'uuid' => $this->bot['uuid']
+            ]);
+            if($res['code']) {
+                $this->model->delOne($id);
+                $count++;
+            }
+        }
+
+        if($count == count($ids)){
             $this->success('操作成功');
         }else{
-            $this->error($res['errmsg']);
+            $this->error('部分好友删除失败，请刷新页面再次操作！');
         }
     }
 

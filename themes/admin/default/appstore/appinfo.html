@@ -26,7 +26,7 @@
                             <i class="layui-icon">&#xe601;</i>立即下载
                         </button>
                         {else/}
-                        <a class="layui-btn layui-btn-sm layui-btn-normal" href="https://daoadmin.kuryun.com/home/app/detail/id/38" target="_blank">前往购买</a>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="goBuy()">前往购买</button>
                         <button onclick="location.reload();" class="layui-btn layui-btn-sm layui-btn-primary"><i class="fa fa-refresh"></i></button>
                         {/if}
                     </div>
@@ -97,6 +97,20 @@
         layer = layui.layer;
         form = layui.form;
     });
+
+    /**
+     * 购买应用
+     */
+    function goBuy() {
+        var isLogin = parseInt("{$token ? 1 : 0}");
+        if(! isLogin){
+            layer.msg('请先登录', {time:1500}, function () {
+                location.href = "{:url('upgrade/login')}";
+            });
+            return false;
+        }
+        window.open("https://daoadmin.kuryun.com/home/app/detail/id/{$info.id}");
+    }
 
     /**
      * 下载应用

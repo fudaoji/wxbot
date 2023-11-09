@@ -152,13 +152,10 @@ class HandlerGroupChat extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){
-        $keywords = model('keyword')->getAll([
-            'order' => ['sort' => 'desc'],
-            'where' => [
-                'bot_id' => $this->bot['id'],
-                'keyword' => preg_replace("/\[at\=.*\]/", "", $this->content['msg']), //过滤组AT的字符
-                'status' => 1
-            ]
+        $keywords = model('keyword')->searchByKeyword([
+            'keyword' => str_replace($this->beAtStr, "", $this->content['msg']), //过滤组AT的字符
+            'bot_id' => $this->bot['id'],
+            'refresh' => true
         ]);
         //Logger::error($keywords);
         $flag = false;

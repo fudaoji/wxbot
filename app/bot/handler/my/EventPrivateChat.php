@@ -66,16 +66,38 @@ class EventPrivateChat extends HandlerPrivateChat
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
             switch ($this->content['type']) {
+                case Bot::MSG_APP:
+                    $this->botClient->sendXmlToFriends([
+                        'robot_wxid' => $this->content['robot_wxid'],
+                        'to_wxid' => $groups,
+                        'xml' => $this->content['msg']
+                    ]);
+                    break;
                 case Bot::MSG_FILE:
-                    sleep(2);
-                    $this->botClient->forwardMsgToFriends([
+                    $begin_time = time();
+                    do{
+                        $res = $this->botClient->downloadFile([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $groups,
+                            'path' => str_replace(["[File=", "]"], "", $this->content['msg'])
+                        ]);
+                    }while($res['code'] == 0 && $begin_time + 60 > time());
+
+                    $this->botClient->sendTextToFriends([
                         'robot_wxid' => $this->botWxid,
                         'to_wxid' => $groups,
-                        'msgid' => $this->content['msg_id']
+                        'msg' => $this->content['msg']
                     ]);
                     break;
                 case Bot::MSG_VIDEO:
-                    sleep(10);
+                    $begin_time = time();
+                    do{
+                        $res = $this->botClient->downloadFile([
+                            'robot_wxid' => $this->botWxid,
+                            'to_wxid' => $groups,
+                            'path' => str_replace(["[File=", "]"], "", $this->content['msg'])
+                        ]);
+                    }while($res['code'] == 0 && $begin_time + 120 > time());
                     $this->botClient->forwardMsgToFriends([
                         'robot_wxid' => $this->botWxid,
                         'to_wxid' => $groups,

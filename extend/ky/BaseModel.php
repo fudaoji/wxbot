@@ -542,6 +542,9 @@ abstract class BaseModel extends Model
             if(isset($where['sql'], $where['bind'])){
                 $self->whereRaw($where['sql'], $where['bind']);
                 return  $self;
+            }elseif(isset($where['sql'])){
+                $self->whereRaw($where['sql']);
+                return  $self;
             }
             foreach ($where as $k => $v){
                 if(is_string($k)){

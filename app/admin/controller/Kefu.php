@@ -73,8 +73,13 @@ class Kefu extends Base
                 'socket_port' => 9506
             ];
         }
+
+        $tip = "配置信息填写后，还需要开启worker服务，在终端命令行中，进入项目根目录后执行：<code>
+php think worker:server start -d
+</code>";
         $builder = new FormBuilder();
         $builder->setPostUrl(url('saveConfigPost'))
+            ->setTip($tip)
             ->addFormItem('basic_legend', 'legend', '基础配置', '基础配置')
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('switch', 'radio', '是否开启', '是否开启', [1 => '是', 0 => '否'])
@@ -252,7 +257,7 @@ class Kefu extends Base
 
             $result = [
                 'msg_id' => $msgid,
-                'date' => $date,
+                'date' => '',
                 'content' => $content,
                 'type' => 'send',
                 'class' => 'my_chat_content',
@@ -473,16 +478,20 @@ class Kefu extends Base
             $from_date = strtotime(date("Y-m-d"));
             $to_date = time();
             // $where[] = ['create_time', 'between', [$from_date, $to_date]];
-            $order = ['create_time' => 'desc'];
+            $order = [];
             $limit = $post_data['limit'] ?? 30;
             $page = $post_data['page'] ?? 1;
             $total = $chat_model->partition('p' . $year)->where($where)->count();
             $log_list = [];
             if ($total) {
-                $log_list = $chat_model->partition('p' . $year)->where($where)->order($order)->page($page)->limit($limit)->select();
+                $log_list = $chat_model->partition('p' . $year)->where($where)
+                    ->order($order)
+                    ->page($page)
+                    ->limit($limit)
+                    ->select();
                 $friend = $member_model->where(['uin' => $post_data['uin'], 'wxid' => $post_data['friend_wxid']])->find();
                 foreach ($log_list as &$val) {
-                    $val['date'] = $val['create_time'];
+                    $val['date'] = (time() - $val['create_time']) >= 600 ? ky_publish_time($val['create_time']) : '';
                     $val['class'] = $val['type'] == 'send' ? 'my_chat_content' : 'friend_chat_content';
                     $val['headimgurl'] = $val['from_headimg'];
                     $val['friend'] = $friend;

@@ -48,13 +48,11 @@ class HandlerPrivateChat extends Handler
      */
     protected function keyword(){
         $this->ignoreKeyword($this->content['msg']);
-        $keywords = model('keyword')->getAll([
-            'order' => ['sort' => 'desc'],
-            'where' => [
-                'bot_id' => $this->bot['id'],
-                'keyword' => $this->content['msg'],
-                'status' => 1
-            ]
+
+        $keywords = model('keyword')->searchByKeyword([
+            'keyword' => $this->content['msg'],
+            'bot_id' => $this->bot['id'],
+            'refresh' => true
         ]);
 
         $flag = false;

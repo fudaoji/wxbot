@@ -80,6 +80,7 @@ class Keyword extends Botbase
             ->addTopButton('forbid')
             ->addTableColumn(['title' => '', 'type' => 'checkbox'])
             ->addTableColumn(['title' => '关键词', 'field' => 'keyword', 'minWidth' => 100])
+            ->addTableColumn(['title' => '匹配模式', 'field' => 'match_type', 'type' => 'enum', 'options' => KeywordM::matchTypes(), 'minWidth' => 100])
             ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
             ->addTableColumn(['title' => '回复内容', 'field' => 'media_title', 'minWidth' => 100])
             ->addTableColumn(['title' => '批量指定', 'field' => 'user_type', 'type' => 'enum','options' => \app\constants\Task::userTypes(),'minWidth' => 100])
@@ -129,6 +130,7 @@ class Keyword extends Botbase
         $builder->setMetaTitle('新增')
             ->setPostUrl(url('savePost'))
             ->addFormItem('keyword', 'text', '关键词', '多个关键词用|分割', [], 'required maxlength=200')
+            ->addFormItem('match_type', 'radio', '匹配规则', '匹配规则', KeywordM::matchTypes(), 'required')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types()], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
@@ -160,6 +162,7 @@ class Keyword extends Botbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('keyword', 'text', '关键词', '编辑状态不支持多个关键词', [], 'required maxlength=30')
+            ->addFormItem('match_type', 'radio', '匹配规则', '匹配规则', KeywordM::matchTypes(), 'required')
             ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types(), 'id' => $data['media_id'], 'type' => $data['media_type']], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
@@ -192,14 +195,10 @@ class Keyword extends Botbase
         }
         foreach ($keyword_arr as $keyword){
             //refresh
-            $this->model->getAll([
-                'order' => ['sort' => 'desc'],
-                'where' => [
-                    'bot_id' => $this->bot['id'],
-                    'keyword' => $keyword,
-                    'status' => 1
-                ],
-                'refresh' => true
+            $this->model->searchByKeyword([
+                'refresh' => true,
+                'keyword' => $keyword,
+                'bot_id' => $this->bot['id'],
             ]);
         }
         $this->success('数据保存成功', $jump_to);

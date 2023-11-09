@@ -101,7 +101,7 @@
                     <div style="padding: 15px" class="chat_panel" id="chat_panel" ref="chat_log_list_ref">
                         <div class="scroll">
                             <div v-for="(item, index) in current_chat" :key="item.msg_id" :class="item.class">
-                                <div class="layui-row">
+                                <div class="layui-row" v-show="item.date">
                                     <div class="layui-col-md12" class="send_time" style="text-align:center">
                                         <span class="layui-badge layui-bg-gray">{{item.date}}</span>
                                     </div>

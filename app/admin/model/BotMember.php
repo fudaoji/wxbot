@@ -208,7 +208,7 @@ class BotMember extends Base
                 break;
             case Bot::PROTOCOL_MY:
             case Bot::PROTOCOL_VLW:
-                if($res['code'] && !empty($res['ReturnJson']) && count($res['ReturnJson'])){
+                if($res['code'] && !empty($res['ReturnJson']) && count($res['ReturnJson']) && !empty($res['ReturnJson'][0])){
                     $list = $res['ReturnJson'];
                     $wxid_arr = [];
                     foreach ($list as $k => $v){

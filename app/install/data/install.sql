@@ -77,7 +77,7 @@ CREATE TABLE `__PREFIX__bot`  (
   `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 1 COMMENT '商户ID',
   `staff_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '员工ID',
   `title` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '账号',
-  `app_key` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '密码',
+  `app_key` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '密码',
   `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '微信用户昵称',
   `headimgurl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '头像',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态',
@@ -258,6 +258,7 @@ CREATE TABLE `__PREFIX__keyword`  (
   `sort` int(6) UNSIGNED NOT NULL DEFAULT 0,
   `user_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0所有 1好友 2群聊',
   `need_at` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '艾特提问者',
+  `match_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0完全匹配  1模糊匹配',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `unique`(`keyword`, `bot_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 139 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '被动回复' ROW_FORMAT = Compact;

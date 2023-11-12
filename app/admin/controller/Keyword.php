@@ -56,12 +56,26 @@ class Keyword extends Botbase
                     ['id' => 'desc'], true, true
                 );
                 foreach ($list as $k => $v){
-                    if(empty($v['media_type'])) continue;
-                    if($material = model('media_' . $v['media_type'])->getOneByMap([
-                        'admin_id' => $v['admin_id'],
-                        'id' => $v['media_id']
-                    ], true, true)){
-                        $v['media_title'] = $v['media_type'] == 'text' ? $material['content'] : $material['title'];
+                    $v['content'] = '';
+                    if($v['medias']){
+                        $v['medias'] = json_decode($v['medias'], true);
+                        $materials = [];
+                        foreach ($v['medias'] as $item){
+                            if($material = model('media_' . $item['type'])->getOneByMap([
+                                'admin_id' => $v['admin_id'],
+                                'id' => $item['id']
+                            ], true, true)){
+                                $materials[] = $item['type'] == 'text' ? $material['content'] : $material['title'];
+                            }
+                        }
+                        $v['content'] = implode('、', $materials);
+                    } else if($v['media_type']){
+                        if($material = model('media_' . $v['media_type'])->getOneByMap([
+                            'admin_id' => $v['admin_id'],
+                            'id' => $v['media_id']
+                        ], true, true)){
+                            $v['content'] = $v['media_type'] == 'text' ? $material['content'] : $material['title'];
+                        }
                     }
                     $list[$k] = $v;
                 }
@@ -81,8 +95,8 @@ class Keyword extends Botbase
             ->addTableColumn(['title' => '', 'type' => 'checkbox'])
             ->addTableColumn(['title' => '关键词', 'field' => 'keyword', 'minWidth' => 100])
             ->addTableColumn(['title' => '匹配模式', 'field' => 'match_type', 'type' => 'enum', 'options' => KeywordM::matchTypes(), 'minWidth' => 100])
-            ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
-            ->addTableColumn(['title' => '回复内容', 'field' => 'media_title', 'minWidth' => 100])
+            //->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'minWidth' => 100])
+            ->addTableColumn(['title' => '回复内容', 'field' => 'content', 'minWidth' => 100])
             ->addTableColumn(['title' => '批量指定', 'field' => 'user_type', 'type' => 'enum','options' => \app\constants\Task::userTypes(),'minWidth' => 100])
             ->addTableColumn(['title' => '自由指定', 'field' => 'wxids', 'minWidth' => 100])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 50, 'type' => 'switch', 'options' => Common::status()])
@@ -131,7 +145,7 @@ class Keyword extends Botbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('keyword', 'text', '关键词', '多个关键词用|分割', [], 'required maxlength=200')
             ->addFormItem('match_type', 'radio', '匹配规则', '匹配规则', KeywordM::matchTypes(), 'required')
-            ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types()], 'required')
+            ->addFormItem('media', 'choose_media_multi', '选择素材', '选择素材', ['types' => Media::types()], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
             ->addFormItem('user_type', 'radio', '批量选择', '批量选择', \app\constants\Task::userTypes())
@@ -150,10 +164,19 @@ class Keyword extends Botbase
             $this->error('参数错误');
         }
         $data['wxids'] = empty($data['wxids']) ? [] : explode(',', $data['wxids']);
-        $material = model('media_' . $data['media_type'])->getOneByMap([
-            'admin_id' => $data['admin_id'],
-            'id' => $data['media_id']
-        ], true, true);
+        $materials = [];
+
+        if($data['medias']){
+            $data['medias'] = json_decode($data['medias'], true);
+            foreach ($data['medias'] as $item){
+                $m = model('media_' . $item['type'])->getOneByMap([
+                    'admin_id' => $data['admin_id'],
+                    'id' => $item['id']
+                ], true, true);
+                $m['type'] = $item['type'];
+                $materials[] = $m;
+            }
+        }
 
         $members = $this->getMembers();
         // 使用FormBuilder快速建立表单页面
@@ -163,7 +186,7 @@ class Keyword extends Botbase
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('keyword', 'text', '关键词', '编辑状态不支持多个关键词', [], 'required maxlength=30')
             ->addFormItem('match_type', 'radio', '匹配规则', '匹配规则', KeywordM::matchTypes(), 'required')
-            ->addFormItem('media', 'choose_media', '选择素材', '选择素材', ['types' => \app\constants\Media::types(), 'id' => $data['media_id'], 'type' => $data['media_type']], 'required')
+            ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
@@ -172,7 +195,7 @@ class Keyword extends Botbase
             ->addFormItem('wxids', 'chosen_multi', '自由选择', '此处若填写，会覆盖批量选择的值', $members)
             ->setFormData($data);
 
-        return $builder->show(['material' => $material]);
+        return $builder->show();
     }
 
     public function savePost($jump_to = '/undefined', $data = [])
@@ -181,9 +204,19 @@ class Keyword extends Botbase
         $post_data['bot_id'] = $this->bot['id'];
         $keywords = trim($post_data['keyword'], '|');
         $keyword_arr = explode('|', $keywords);
-        if(empty($post_data['media_type'])){
-            $this->error('请选择回复素材！');
+
+        if(count($post_data['media_id_type']) > 0){
+            $medias = [];
+            foreach ($post_data['media_id_type'] as $id_type){
+                list($id, $type) = explode('_', $id_type);
+                $medias[] = ['id' => $id, 'type' => $type];
+            }
+            $post_data['medias'] = json_encode($medias, JSON_UNESCAPED_UNICODE);
+            unset($post_data['media_id_type']);
+        }else{
+            $this->error('请选择素材');
         }
+
         if(empty($post_data[$this->pk])){
             $post_data['admin_id'] = $this->adminInfo['id'];
             foreach ($keyword_arr as $keyword){

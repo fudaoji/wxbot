@@ -160,20 +160,44 @@ class HandlerGroupChat extends Handler
         //Logger::error($keywords);
         $flag = false;
         foreach ($keywords as $keyword){
-            if(empty($keyword['wxids'])){
-                $where = ['uin' => $this->botWxid];
-                if($keyword['user_type']==Task::USER_TYPE_FRIEND){
-                    $where['type'] = Bot::FRIEND;
-                }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
-                    $where['type'] = Bot::GROUP;
+            if(empty($keyword['medias'])){
+                if(empty($keyword['wxids'])){
+                    $where = ['uin' => $this->botWxid];
+                    if($keyword['user_type']==Task::USER_TYPE_FRIEND){
+                        $where['type'] = Bot::FRIEND;
+                    }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
+                        $where['type'] = Bot::GROUP;
+                    }
+                    $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
                 }
-                $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
-            }
-            if(strpos($keyword['wxids'], $this->groupWxid) !== false){
-                model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid,
-                    ['nickname' => $this->fromName, 'need_at' => $keyword['need_at'], 'member_wxid' => $this->fromWxid]
-                );
-                $flag = true;
+                if(strpos($keyword['wxids'], $this->groupWxid) !== false){
+                    model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid,
+                        ['nickname' => $this->fromName, 'need_at' => $keyword['need_at'], 'member_wxid' => $this->fromWxid]
+                    );
+                    $flag = true;
+                }
+            }else{
+                $medias = json_decode($keyword['medias'], true);
+                foreach ($medias as $media) {
+                    $keyword['media_type'] = $media['type'];
+                    $keyword['media_id'] = $media['id'];
+
+                    if(empty($keyword['wxids'])){
+                        $where = ['uin' => $this->botWxid];
+                        if($keyword['user_type']==Task::USER_TYPE_FRIEND){
+                            $where['type'] = Bot::FRIEND;
+                        }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
+                            $where['type'] = Bot::GROUP;
+                        }
+                        $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
+                    }
+                    if(strpos($keyword['wxids'], $this->groupWxid) !== false){
+                        model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid,
+                            ['nickname' => $this->fromName, 'need_at' => $keyword['need_at'], 'member_wxid' => $this->fromWxid]
+                        );
+                        $flag = true;
+                    }
+                }
             }
         }
 

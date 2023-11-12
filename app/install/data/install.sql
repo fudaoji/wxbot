@@ -259,6 +259,7 @@ CREATE TABLE `__PREFIX__keyword`  (
   `user_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0所有 1好友 2群聊',
   `need_at` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '艾特提问者',
   `match_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0完全匹配  1模糊匹配',
+  `medias` text COMMENT '素材',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `unique`(`keyword`, `bot_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 139 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '被动回复' ROW_FORMAT = Compact;

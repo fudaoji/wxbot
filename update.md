@@ -1,10 +1,12 @@
 #v2.3.1
 功能更新
 * 关键词增加模糊匹配
-*
+* 关键词增加多素材回复
+* 优化部分功能
+* 修复部分bug
 
 数据库表更新
-* keyword表新增match_type字段
+* keyword表新增match_type、medias字段
 
 #v2.3.0
 功能更新

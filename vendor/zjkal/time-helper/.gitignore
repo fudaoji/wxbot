@@ -1,0 +1,5 @@
+/vendor
+.idea
+/.github/
+composer.lock
+.phpunit.result.cache

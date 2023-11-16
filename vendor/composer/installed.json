@@ -4831,6 +4831,60 @@
                 }
             ],
             "install-path": "../workerman/workerman"
+        },
+        {
+            "name": "zjkal/time-helper",
+            "version": "v1.1.4",
+            "version_normalized": "1.1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zjkal/time-helper.git",
+                "reference": "202e6876414aa9393ebe05ecca1f402a6e259c51"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zjkal/time-helper/zipball/202e6876414aa9393ebe05ecca1f402a6e259c51",
+                "reference": "202e6876414aa9393ebe05ecca1f402a6e259c51",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "@stable"
+            },
+            "time": "2023-10-25T03:42:01+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "zjkal\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "zjkal",
+                    "email": "zjkal@qq.com"
+                }
+            ],
+            "description": "一个简单快捷的PHP日期时间助手类库。 a smart PHP datetime helper library.",
+            "keywords": [
+                "date",
+                "datetime",
+                "helper",
+                "php",
+                "time",
+                "zjkal"
+            ],
+            "support": {
+                "issues": "https://github.com/zjkal/time-helper/issues",
+                "source": "https://github.com/zjkal/time-helper/tree/v1.1.4"
+            },
+            "install-path": "../zjkal/time-helper"
         }
     ],
     "dev": true

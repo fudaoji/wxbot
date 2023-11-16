@@ -123,8 +123,20 @@ class HandlerPrivateChat extends Handler
                 ]
             ]);
             foreach ($replys as $k => $reply){
-                if(empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false){
-                    $reply_m->botReply($this->bot, $this->botClient, $reply, $this->fromWxid);
+                if(empty($reply['medias'])){ //兼容旧版
+                    if(empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false){
+                        $reply_m->botReply($this->bot, $this->botClient, $reply, $this->fromWxid, ['nickname' => $this->fromName]);
+                    }
+                }else{
+                    $medias = json_decode($reply['medias'], true);
+                    foreach ($medias as $media) {
+                        $reply['media_type'] = $media['type'];
+                        $reply['media_id'] = $media['id'];
+
+                        if(empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false){
+                            $reply_m->botReply($this->bot, $this->botClient, $reply, $this->fromWxid, ['nickname' => $this->fromName]);
+                        }
+                    }
                 }
             }
         }else{
@@ -162,7 +174,16 @@ class HandlerPrivateChat extends Handler
                         $this->botClient->deleteFriend(['robot_wxid' => $this->botWxid, 'to_wxid' => $this->fromWxid]);
                         break;
                     case Reply::HANDLE_MSG:
-                        model('reply')->botReply($this->bot, $this->botClient, $reply, $this->fromWxid);
+                        if(empty($reply['medias'])){
+                            model('reply')->botReply($this->bot, $this->botClient, $reply, $this->fromWxid, ['nickname' => $this->fromName]);
+                        }else{
+                            $medias = json_decode($reply['medias'], true);
+                            foreach ($medias as $media) {
+                                $reply['media_type'] = $media['type'];
+                                $reply['media_id'] = $media['id'];
+                                model('reply')->botReply($this->bot, $this->botClient, $reply, $this->fromWxid, ['nickname' => $this->fromName]);
+                            }
+                        }
                         break;
                 }
             }

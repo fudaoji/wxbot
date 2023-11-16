@@ -57,6 +57,7 @@ class Reply extends Base
                 break;
             case Media::TEXT:
                 $msg = empty($extra['nickname']) ? $media['content'] : str_replace('[昵称]', $extra['nickname'], $media['content']);
+                $msg = empty($extra['group_name']) ? $msg : str_replace('[群名称]', $extra['group_name'], $msg);
                 if(!empty($extra['need_at'])){
                     $client->sendGroupMsgAndAt(['robot_wxid' => $bot['uin'], 'group_wxid' => $to_wxid, 'member_wxid' => $extra['member_wxid'], 'msg' => $msg]);
                 }elseif(!empty($extra['atall'])){

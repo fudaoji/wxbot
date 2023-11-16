@@ -93,7 +93,22 @@ class Reply extends Botbase
                     ['sort' => 'desc'], true, true
                 );
                 foreach ($list as $k => $v){
-                    $v['media_id'] && $v = array_merge(model('media_'.$v['media_type'])->getOne(['id' => $v['media_id'], 'admin_id' => $this->adminInfo['id']])->toArray(), $v->toArray());
+                    //$v['media_id'] && $v = array_merge(model('media_'.$v['media_type'])->getOne(['id' => $v['media_id'], 'admin_id' => $this->adminInfo['id']])->toArray(), $v->toArray());
+                    if($v['medias']){
+                        $v['medias'] = json_decode($v['medias'], true);
+                        $materials = [];
+                        foreach ($v['medias'] as $item){
+                            if($material = model('media_' . $item['type'])->getOneByMap([
+                                'admin_id' => $v['admin_id'],
+                                'id' => $item['id']
+                            ], true, true)){
+                                $materials[] = $item['type'] == 'text' ? $material['content'] : $material['title'];
+                            }
+                        }
+                        $v['content'] = implode('、', $materials);
+                    }else{
+                        $v['content'] = '';
+                    }
                     $list[$k] = $v;
                 }
             } else {
@@ -108,8 +123,9 @@ class Reply extends Botbase
             ->addTopButton('addnew', ['title' => '新增消息响应','href' => url('add', ['event' => $current_name])])
             ->addTableColumn(['title' => '消息类型', 'field' => 'msg_type', 'type' => 'enum','options'=>BotConst::msgTypes(),'minWidth' => 80])
             ->addTableColumn(['title' => '响应类型', 'field' => 'handle_type', 'type' => 'enum','options'=>ReplyConst::handleTypes(),'minWidth' => 80])
-            ->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'type' => 'enum','options'=>Media::types(),'minWidth' => 80])
-            ->addTableColumn(['title' => '内容名称', 'field' => 'title', 'minWidth' => 80]);
+            /*->addTableColumn(['title' => '回复类型', 'field' => 'media_type', 'type' => 'enum','options'=>Media::types(),'minWidth' => 80])*/
+            ->addTableColumn(['title' => '回复内容', 'field' => 'content', 'minWidth' => 80])
+            /*;
         switch ($current_name){
             case Media::IMAGE:
                 $builder->addTableColumn(['title' => '图片', 'field' => 'url', 'minWidth' => 100]);
@@ -124,7 +140,7 @@ class Reply extends Botbase
                 $builder->addTableColumn(['title' => '内容', 'field' => 'content', 'minWidth' => 200]);
                 break;
         }
-        $builder->addTableColumn(['title' => '优先级', 'field' => 'sort', 'minWidth' => 80])
+        $builder*/->addTableColumn(['title' => '优先级', 'field' => 'sort', 'minWidth' => 80])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 80,'type' => 'switch','options' => Common::status()])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('edit')
@@ -139,7 +155,18 @@ class Reply extends Botbase
     public function savePost($jump_to = '/undefined', $data = [])
     {
         $post_data = input('post.');
-        if(isset($post_data['media_id']) && empty($post_data['media_id'])){
+        /*if(isset($post_data['media_id']) && empty($post_data['media_id'])){
+            $this->error('请选择素材');
+        }*/
+        if(count($post_data['media_id_type']) > 0){
+            $medias = [];
+            foreach ($post_data['media_id_type'] as $id_type){
+                list($id, $type) = explode('_', $id_type);
+                $medias[] = ['id' => $id, 'type' => $type];
+            }
+            $post_data['medias'] = json_encode($medias, JSON_UNESCAPED_UNICODE);
+            unset($post_data['media_id_type']);
+        }else{
             $this->error('请选择素材');
         }
 
@@ -187,16 +214,28 @@ class Reply extends Botbase
             $this->redirect(url('eventEdit', ['id' => $id]));
         }
 
-        $material = model('media_' . $reply['media_type'])->getOneByMap([
+        /*$material = model('media_' . $reply['media_type'])->getOneByMap([
             'admin_id' => $reply['admin_id'],
             'id' => $reply['media_id']
-        ], true, true);
+        ], true, true);*/
+        $materials = [];
+        if($reply['medias']){
+            $reply['medias'] = json_decode($reply['medias'], true);
+            foreach ($reply['medias'] as $item){
+                $m = model('media_' . $item['type'])->getOneByMap([
+                    'admin_id' => $reply['admin_id'],
+                    'id' => $item['id']
+                ], true, true);
+                $m['type'] = $item['type'];
+                $materials[] = $m;
+            }
+        }
+
         if(!empty($reply['wxids'])){
             $reply['wxids'] = explode(',', $reply['wxids']);
         }
 
         $builder = new FormBuilder();
-
         $builder->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->setFormData($reply);
@@ -207,14 +246,14 @@ class Reply extends Botbase
                     ->addFormItem('need_at', 'radio', '艾特新人', '艾特新人', [0 => '否', 1 => '是'], 'required');
                 break;
             case ReplyConst::MSG:
-                $builder->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
+                $builder->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', BotConst::msgTypes())
                     ->addFormItem('wxids', 'chosen_multi', '指定对象', '指定对象', $this->getMembers(), 'required');
                 break;
         }
-        return $builder->addFormItem('media', 'choose_media', '回复内容', '回复内容', ['types' => \app\constants\Media::types(), 'id' => $reply['media_id'], 'type' => $reply['media_type']], 'required')
+        return $builder->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
             ->addFormItem('sort', 'number', '排序', '排序', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')
-            ->show(['material' => $material]);
+            ->show();
     }
 
     /**
@@ -227,9 +266,6 @@ class Reply extends Botbase
      */
     public function add(){
         $current_name = input('event', ReplyConst::BEADDED);
-        $builder = new FormBuilder();
-        $material = [];
-
         $data = [
             'admin_id' => $this->adminInfo['id'],
             'bot_id' => $this->bot['id'],
@@ -237,6 +273,8 @@ class Reply extends Botbase
             'status' => 1,
             'handle_type' => ReplyConst::HANDLE_MSG
         ];
+
+        $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
             ->setTip("添加【".ReplyConst::events($current_name)."】回复")
             ->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
@@ -256,11 +294,11 @@ class Reply extends Botbase
                     ->addFormItem('wxids', 'chosen_multi', '指定对象', '指定对象', $this->getMembers(), 'required');
                 break;
         }
-        return $builder->addFormItem('media', 'choose_media', '回复内容', '回复内容', ['types' => \app\constants\Media::types()], 'required')
+        return $builder->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types()], 'required')
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')
             ->setFormData($data)
-            ->show(['material' => $material]);
+            ->show();
     }
 
     /**

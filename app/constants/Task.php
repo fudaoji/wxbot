@@ -14,6 +14,8 @@ class Task
 {
     const CIRCLE_SINGLE = 1; //单次发送
     const CIRCLE_DAILY = 2; //每日发送
+    const CIRCLE_WORKDAY = 3; //工作日发送
+    const CIRCLE_HOLIDAY = 4; //节假日发送
 
     const USER_TYPE_ALL = 0;
     const USER_TYPE_FRIEND = 1;
@@ -31,7 +33,9 @@ class Task
     public static function circles($id = null){
         $list = [
             self::CIRCLE_SINGLE => '单次发送',
-            self::CIRCLE_DAILY => '每天发送'
+            self::CIRCLE_DAILY => '每天发送',
+            self::CIRCLE_WORKDAY => '工作日发送',
+            self::CIRCLE_HOLIDAY => '节假日发送'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

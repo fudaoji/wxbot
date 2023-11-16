@@ -15,6 +15,7 @@ use app\admin\model\BotMember;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
 use ky\VideoSpider;
+use zjkal\ChinaHoliday;
 
 class Test
 {
@@ -22,6 +23,19 @@ class Test
     public function index()
     {
         return response('hello thinkphp6');
+    }
+
+    /**
+     * https://packagist.org/packages/zjkal/time-helper
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testTimeHelper(){
+
+        //判断指定日期是否为国内的工作日
+        var_dump(ChinaHoliday::isWorkday('2024-01-10'));
+
+        //判断指定日期是否为国内的节假日
+        var_dump(ChinaHoliday::isHoliday(strtotime('2024-02-10')));
     }
 
     public function testVideo(){

@@ -65,7 +65,16 @@ class HandlerGroupChat extends Handler
                         $this->botClient->removeGroupMember(['robot_wxid' => $this->botWxid, 'group_wxid' => $this->groupWxid, 'to_wxid' => $this->fromWxid]);
                         break;
                     case Reply::HANDLE_MSG:
-                        model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid);
+                        if(empty($reply['medias'])){
+                            model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid, ['nickname' => $this->fromName, 'group_name' => $this->groupName]);
+                        }else{
+                            $medias = json_decode($reply['medias'], true);
+                            foreach ($medias as $media) {
+                                $reply['media_type'] = $media['type'];
+                                $reply['media_id'] = $media['id'];
+                                model('reply')->botReply($this->bot, $this->botClient, $reply, $this->groupWxid, ['nickname' => $this->fromName, 'group_name' => $this->groupName]);
+                            }
+                        }
                         break;
                 }
             }

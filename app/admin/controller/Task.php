@@ -60,7 +60,7 @@ class Task extends Botbase
                 ->where('bot_id' , $this->bot['id']);
             !empty($post_data['search_key']) && $view_table = $view_table->where('title', 'like', '%' . $post_data['search_key'] . '%');
             if($name == 'todo'){
-                $view_table = $view_table->where('(complete_time=0 and circle='.TaskConst::CIRCLE_SINGLE . ') or circle='.TaskConst::CIRCLE_DAILY);
+                $view_table = $view_table->where('(complete_time=0 and circle='.TaskConst::CIRCLE_SINGLE . ') or circle='.TaskConst::CIRCLE_DAILY. ' OR circle='.TaskConst::CIRCLE_WORKDAY. ' OR circle='.TaskConst::CIRCLE_HOLIDAY);
                 $order = ['t.plan_time' => 'asc'];
             }else{
                 $view_table = $view_table->where('complete_time>0 and circle='.TaskConst::CIRCLE_SINGLE);
@@ -202,7 +202,7 @@ class Task extends Botbase
             ->addFormItem('title', 'text', '任务名称', '选填，不超过30字', [], 'maxlength=30')
             ->addFormItem('circle', 'radio', '发送类型', '发送类型', TaskConst::circles())
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间，发送类型选择“每天发送”时，会忽略日期而只取时间段', [], '')
-            ->addFormItem('media', 'choose_media_multi', '选择素材', '选择素材', ['types' => Media::types()], 'required')
+            ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types()], 'required')
             ->addFormItem('atall', 'radio', '艾特全体', '针对群才有效', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
             ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))

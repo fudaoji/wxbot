@@ -23,6 +23,12 @@ class Reply
     const HANDLE_TRANSFER_ACCEPT = 'transfer_accept';
     const HANDLE_TRANSFER_REFUSE = 'transfer_refuse';
 
+    /**
+     * 事件枚举
+     * @param null $id
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public static function events($id = null){
         $list = [
             self::BEADDED => '被加好友',
@@ -33,6 +39,12 @@ class Reply
         return isset($list[$id]) ? $list[$id] : $list;
     }
 
+    /**
+     * 响应枚举
+     * @param null $id
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public static function handleTypes($id = null){
         $list = [
             self::HANDLE_MSG => '消息回复',

@@ -14,6 +14,7 @@ use app\common\service\Addon as AppService;
 use app\constants\Addon;
 use app\constants\Task;
 use ky\Logger;
+use zjkal\ChinaHoliday;
 
 class Bot extends Base
 {
@@ -145,11 +146,19 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function sendBatch(){
+        $or_arr = [
+            "(complete_time=0 and circle=".Task::CIRCLE_SINGLE." and plan_time <= ".time().")",
+            "(circle=" . Task::CIRCLE_DAILY . " and plan_hour<='".date('H:i:s')."' and complete_time<".strtotime(date('Ymd 00:00')).")",
+            "(circle=" . Task::CIRCLE_WORKDAY ." and plan_hour<='".date('H:i:s')."' and 1=" . intval(ChinaHoliday::isWorkday(time())) . " AND complete_time<".strtotime(date('Ymd 00:00')).")",
+            "(circle=" . Task::CIRCLE_HOLIDAY ." and plan_hour<='".date('H:i:s')."' and 1=" . intval(ChinaHoliday::isHoliday(time())) . " AND complete_time<".strtotime(date('Ymd 00:00')).")",
+        ];
+        $where = "(complete_time=0 and circle=".Task::CIRCLE_SINGLE." and plan_time <= ".time().") or (circle=" . Task::CIRCLE_DAILY .
+            " and plan_hour<='".date('H:i:s')."' and complete_time<".strtotime(date('Ymd 00:00')).")";
+        $where = implode(' OR ', $or_arr);
         $view_table = $this->taskM->where('status', 1)
             //->whereNotNull('wxids')
             ->whereNotNull('medias')
-            ->where("(complete_time=0 and circle=".Task::CIRCLE_SINGLE." and plan_time <= ".time().") or (circle=" . Task::CIRCLE_DAILY .
-                " and plan_hour<='".date('H:i:s')."' and complete_time<".strtotime(date('Ymd 00:00')).")")
+            ->where($where)
             ->field('id')
             ->buildSql();
 

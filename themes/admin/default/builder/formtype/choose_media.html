@@ -1,18 +1,5 @@
 <!--控制组件显示隐藏-->
 <div class="layui-form-item media-box" id="media-box-{$form.name}">
-    <style>
-        .media-box .layui-card{padding-top: 30px;}
-        .media-box .box{
-            font-size: 16px;line-height: 80px;text-align: center;width: 90%;border: #e7e7eb 1px solid;margin-bottom: 7px;
-            cursor: pointer;
-        }
-        .media-box .box i{color: #B2B2B2;}
-        .media-box .box:hover{background-color: #f4f6f9; color: var(--green);}
-        .media-box .box:hover i{color: var(--green);}
-        .media-content img{width: 180px;border: #e7e7eb 1px solid;}
-        .media-content .addon-logo{width: 30px;margin-right: 15px;}
-        .media-box video{width: 210px;height: 169px;}
-    </style>
     <label class="layui-form-label {$form['extra_class']??''}">
         {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
         <span class="text-danger">*</span>
@@ -29,7 +16,7 @@
                     <div class="layui-col-xs6 layui-col-md3">
                         <div class="box" data-type="{$k}" data-type-title="{$type}">
                             <i class="fa fa-<?php
-                                $icons=['text'=>'pencil','image'=>'image','file'=>'file-o','video'=>'file-video-o','link'=>'address-card','addon' => 'cube'];
+                                $icons=['text'=>'pencil','image'=>'image','file'=>'file-o','video'=>'file-video-o','link'=>'address-card','addon' => 'cube','xml' => 'cube'];
                                 echo $icons[$k];
                             ?>
                             "></i>&nbsp;<?= $type;?>
@@ -45,6 +32,7 @@
                                 <!--选中结果-->
                                 {if condition="isset($form['options']['id']) && !empty($material)"}
                                 {switch $form.options.type}
+                                {case xml}<textarea class="xml-content" readonly>{$material.content}</textarea>{/case}
                                 {case text}<pre>{$material.content}</pre>{/case}
                                 {case image}<img src="{$material.url}">{/case}
                                 {case file}<i class="fa fa-file-o"></i> <a href='{$material.url}' target='_blank'>{$material.title}</a>{/case}
@@ -139,6 +127,15 @@
             };
         }
 
+        if(typeof setXmlValue === 'undefined'){
+            var setXmlValue = function(res, field){
+                $("input[name={$form.name}_id]").val(res[0].id);
+                $("input[name={$form.name}_type]").val("xml");
+                $("#media-box-{$form.name} .media-content").html('<textarea class="xml-content" readonly>'+res[0].content+'</textarea>');
+                $("#media-box-{$form.name} hr").show();
+            };
+        }
+
         $("#media-box-{$form.name}").on('click', '.box', function () {
             layer.open({
                 type: 2,
@@ -150,4 +147,19 @@
             });
         });
     </script>
+
+    <style>
+        .media-box .layui-card{padding-top: 30px;}
+        .media-box .box{
+            font-size: 16px;line-height: 80px;text-align: center;width: 90%;border: #e7e7eb 1px solid;margin-bottom: 7px;
+            cursor: pointer;
+        }
+        .media-box .box i{color: #B2B2B2;}
+        .media-box .box:hover{background-color: #f4f6f9; color: var(--green);}
+        .media-box .box:hover i{color: var(--green);}
+        .media-content img{width: 180px;border: #e7e7eb 1px solid;}
+        .media-content .addon-logo{width: 30px;margin-right: 15px;}
+        .media-box video{width: 210px;height: 169px;}
+        .xml-content{width: 100%;height: 100px;border-color: #ccc;}
+    </style>
 </div>

@@ -1,0 +1,107 @@
+<div class="layui-row">
+    <div class="layui-col-xs6">
+        <div class="layui-col-xs8">
+            <div class="layui-form-item">
+                <input name="search_key" placeholder="请输入名称搜索" value="{:input('search_key')}" class="layui-input"
+                       type="text">
+            </div>
+        </div>
+        <div class="layui-col-xs4">
+            <button class="layui-btn layui-btn-primary" lay-submit="" lay-filter="formDemo">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <div class="layui-col-xs6 text-right">
+        <input type="checkbox" lay-filter="ids" title="全选" id="ids">
+        <div class="layui-btn-group">
+            <button type="button" class="layui-btn  layui-btn-sm layui-btn-normal" id="set-group">
+                <i class="fa fa-bookmark-o"></i>设置分组
+            </button>
+            <a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="clickDelBatch()">
+                <i class="fa fa-trash-o"></i>批量删除
+            </a>
+            <button type="button" class="layui-btn  layui-btn-sm" id="picker-add">
+                <i class="fa fa-plus"></i>新增xml卡片
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="layui-row">
+    <table class="layui-table" lay-skin="line">
+        <tbody>
+        {volist name="data_list" id="item"}
+        <tr>
+            <td>
+                <input
+                        type="checkbox"
+                        class="id"
+                        lay-filter="id"
+                        value="{$item.id}"
+                        lay-skin="primary"
+                        data-content="{$item.content}"
+                />
+            </td>
+            <td>{$item.title}</td>
+            <td>
+                <a class="layui-btn layui-btn-xs" onclick="viewArticle('xml-{$item.id}')">点击查看</a>
+                <div id="xml-{$item.id}" style="display: none;">{$item.content}</div>
+            </td>
+            <td class="text-right">
+                <div class="layui-btn-group">
+                <a href="javascript:;" class="picker-edit layui-btn layui-btn-normal layui-btn-sm" data-id="{$item.id}">编辑</a>
+                <a href="javascript:;" onclick="clickDelOne('{$item.id}')" class="layui-btn layui-btn-danger layui-btn-sm">删除</a>
+                </div>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>
+<div id="page">
+    {$pager|raw}
+</div>
+<script>
+    layui.use(['jquery','layer'],function(){
+        var layer = layui.layer
+                , $ = layui.jquery;
+        //点击确认
+        clickSure = function () {
+            var list = [];
+            $('.id:checked').each(function (i, item) {
+                list.push({id: $(item).val(), content: $(item).data('content')});
+            });
+            if(list.length < 1){
+                layer.alert("请选择素材");
+                return;
+            }
+            parent.setXmlValue(list, "{$field}");
+            parent.layer.close(parent_index);
+        };
+
+        $(function () {
+            $("#picker-add").on('click', function () {
+                layer.open({
+                    title: "新增xml内容",
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    area: ['90%', '90%'],
+                    content: ["{:url('mediaxml/add')}", 'no'] //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                });
+            });
+            $(".picker-edit").on('click', function () {
+                var url = "{:url('mediaxml/edit')}?id=" + $(this).data('id');
+                layer.open({
+                    title: "编辑xml内容",
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    area: ['90%', '90%'],
+                    content: [url, 'no'] //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                });
+            });
+        });
+    });
+</script>

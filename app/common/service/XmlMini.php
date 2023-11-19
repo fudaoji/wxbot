@@ -13,9 +13,18 @@ use ky\Xml;
 
 class XmlMini extends Xml
 {
+    static $instance = null;
+
     public function __construct($xml = '')
     {
         parent::__construct($xml);
+    }
+
+    static function getInstance($xml = ''){
+        if(is_null(self::$instance)){
+            self::$instance = new self($xml);
+        }
+        return self::$instance;
     }
 
     function decodeObject()

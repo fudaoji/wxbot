@@ -94,6 +94,14 @@ class Reply extends Base
                     'file_storage_path' => config('system.bot.file_storage_path')
                 ]);
                 break;
+            case Media::XML:
+                $client->sendXmlToFriends([
+                    'robot_wxid' => $bot['uin'],
+                    'uuid' => $bot['uuid'],
+                    'to_wxid' => $to_wxid,
+                    'xml' => $media['content']
+                ]);
+                break;
         }
     }
 }

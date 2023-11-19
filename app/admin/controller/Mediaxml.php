@@ -2,14 +2,14 @@
 
 namespace app\admin\controller;
 
-use app\common\model\MediaText as TextM;
+use app\common\model\MediaXml as XmlM;
 use app\constants\Media;
 use app\common\service\MediaGroup as GroupService;
 
-class Mediatext extends Bbase
+class Mediaxml extends Bbase
 {
     /**
-     * @var TextM
+     * @var XmlM
      */
     protected $model;
     /**
@@ -23,12 +23,7 @@ class Mediatext extends Bbase
     public function initialize()
     {
         parent::initialize();
-        $this->model = new TextM();
-        $this->tip = "占位符替换规则如下：<br>
-<ul>
-<li>[昵称]:将被替换成好友昵称或群友昵称</li>
-<li>[群名称]:将被替换成群名称</li>
-</ul>";
+        $this->model = new XmlM();
     }
 
     public function index()
@@ -44,6 +39,10 @@ class Mediatext extends Bbase
                     [$post_data['page'], $post_data['limit']], $where,
                     ['id' => 'desc'], true, true
                 );
+                foreach ($list as $k => $item){
+                    $item['content'] = '<xmp>'.$item['content'].'</xmp>';
+                    $list[$k] = $item;
+                }
             } else {
                 $list = [];
             }
@@ -51,14 +50,14 @@ class Mediatext extends Bbase
         }
 
         $builder = new ListBuilder();
-        $builder->setTabNav($this->mediaTabs(), Media::TEXT)
+        $builder->setTabNav($this->mediaTabs(), Media::XML)
             ->setSearch([
                 ['type' => 'select', 'name' => 'group_id', 'title' => '分组', 'options' => [0=>'全部'] + GroupService::getIdToTitle()],
                 ['type' => 'text', 'name' => 'search_key', 'title' => '关键词'],
         ])
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '备注', 'field' => 'title', 'minWidth' => 100])
-            ->addTableColumn(['title' => '文本内容', 'field' => 'content', 'minWidth' => 400])
+            ->addTableColumn(['title' => '内容', 'field' => 'content', 'type' => 'article','minWidth' => 400])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
@@ -75,12 +74,11 @@ class Mediatext extends Bbase
     {
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
-        $builder->setMetaTitle('新增文本')
-            ->setTip($this->tip)
+        $builder->setMetaTitle('新增xml')
             ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000');
+            ->addFormItem('content', 'textarea', 'xml内容', '10000字内', [], 'required maxlength=10000');
 
         return $builder->show();
     }
@@ -96,13 +94,12 @@ class Mediatext extends Bbase
 
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
-        $builder->setMetaTitle('编辑文本')
-            ->setTip($this->tip)
+        $builder->setMetaTitle('编辑xml')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000')
+            ->addFormItem('content', 'textarea', 'xml内容', '10000字内', [], 'required maxlength=10000')
             ->setFormData($data);
 
         return $builder->show();

@@ -17,6 +17,7 @@ class Media
     const FILE = "file";
     const VIDEO = "video";
     const LINK = "link";
+    const XML = "xml";
 
     public static function types($id = null){
         $list = [
@@ -24,7 +25,8 @@ class Media
             Media::IMAGE => '图片',
             Media::FILE => '文件',
             Media::VIDEO => '视频',
-            Media::LINK => '分享链接'
+            Media::LINK => '分享链接',
+            Media::XML => 'XML卡片'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

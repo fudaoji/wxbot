@@ -119,12 +119,22 @@
                     break;
                 case 'article':
                     item = Object.assign(item, {templet: function (d) {
-                            return templets.article(`${d[item.field]}`);
+                            return templets.article(`${d[item.field]}`, d.LAY_INDEX);
                         }});
                     break;
                 case 'pre':
                     item = Object.assign(item, {templet: function (d) {
                             return "<pre>"+d[item.field]+"</pre>";
+                        }});
+                    break;
+                case 'code':
+                    item = Object.assign(item, {templet: function (d) {
+                            return "<code>"+d[item.field]+"</code>";
+                        }});
+                    break;
+                case 'xmp':
+                    item = Object.assign(item, {templet: function (d) {
+                            return "<xmp>"+d[item.field]+"</xmp>";
                         }});
                     break;
                 case 'index':

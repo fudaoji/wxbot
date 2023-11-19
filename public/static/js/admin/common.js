@@ -140,13 +140,13 @@ window.chooseEmoji = function () {
     });
 };
 
-window.viewArticle = function (html = '') {
-    html = "<div style='margin: 20px;line-height: 2em;overflow-wrap:anywhere;'>" + html + '</div>';
+window.viewArticle = function (id) {
+    //html = "<div style='margin: 20px;line-height: 2em;overflow-wrap:anywhere;'>" + html + '</div>';
     layer.open({
         type: 1,
         title: "内容查看",
-        content: html,
-        shadeClose: false,
+        content: $('#'+id),
+        shadeClose: true,
         shade: 0.8,
         area: ['80%', '80%'],
     });
@@ -200,8 +200,11 @@ window.templets = {
     , video : function (src = '') {
         return '<a href="'+src+'" class="layui-btn layui-btn-xs" target="_blank">预览</a>';
     }
-    , article : function (html = '') {
-        return '<div><a onclick="viewArticle(\''+html+'\');" class="layui-btn layui-btn-xs">点击查看</a></div>';
+    , article : function (html = '', id=null) {
+        if(id === null) id = parseInt(Math.random() * 10);
+        id = "article-"+id;
+        var html = '<div id="'+id+'" style="display: none;white-space:normal;">'+html+'</div>';
+        return '<div>'+html+'<a onclick="viewArticle(\''+id+'\');" class="layui-btn layui-btn-xs">点击查看</a></div>';
     }
 };
 

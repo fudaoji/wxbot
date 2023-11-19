@@ -19,6 +19,7 @@ use app\common\service\MediaGroup as GroupService;
 use think\facade\Db;
 use think\facade\Log;
 use app\constants\Media as MediaConst;
+use app\common\model\MediaXml;
 
 class Media extends Bbase
 {
@@ -47,10 +48,11 @@ class Media extends Bbase
      */
     private $videoM;
 
-    private $types = [
-        'text','image', 'video', 'file', 'link'
-    ];
     private $adminId;
+    /**
+     * @var MediaXml
+     */
+    private $xmlM;
 
     public function initialize()
     {
@@ -61,6 +63,7 @@ class Media extends Bbase
         $this->fileM = new MediaFile();
         $this->videoM = new MediaVideo();
         $this->linkM = new MediaLink();
+        $this->xmlM = new MediaXml();
         $this->adminId = $this->adminInfo['id'];
         $this->assign('config', config('system.upload'));
         set_time_limit(0);
@@ -132,6 +135,7 @@ class Media extends Bbase
             MediaConst::FILE => $this->fileM,
             MediaConst::VIDEO => $this->videoM,
             MediaConst::LINK => $this->linkM,
+            MediaConst::XML => $this->xmlM,
         ];
         return isset($list[$type]) ? $list[$type] : null;
     }
@@ -156,6 +160,7 @@ class Media extends Bbase
         }
 
         $data_list = $this->getModel($type)->page(12, $where, ['id' => 'desc'], true, true);
+        //dump($data_list);exit;
         $pager = $data_list->appends(['type' => $type, 'search_key' => $search_key])->render();
         $assign = [
             'data_list' => $data_list,

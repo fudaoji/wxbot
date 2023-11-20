@@ -52,7 +52,6 @@ class Worker extends Server
 			}
 		});
 
-
 		Timer::add(1, function () use ($worker, $redis) {
 			$key = 'receive_private_chat';
 			$limit = 1000;
@@ -61,13 +60,13 @@ class Worker extends Server
 				$msg = $redis->lPop($key);
 				if ($msg) {
 					$res = json_decode($msg, true);
-					Logger::write("发送消息---" . json_encode($res));
-					echo "用户：";
-					dump($this->worker);
+					//Logger::write("发送消息---" . json_encode($res));
+					//echo "用户：";
+					//dump($this->worker);
 					$lock_key = 'lock_'.$res['client'];
 					$lock = $redis->get($lock_key);
 					if ($lock) {
-						echo "用户锁：".$lock_key;
+						//echo "用户锁：".$lock_key;
 						sleep(1);
 						$redis->rpush($key, json_encode($res));
 						continue;
@@ -90,8 +89,8 @@ class Worker extends Server
 							$last_chat_log = $res['last_chat_content'];
 							$res['msg'] = $content;
 							$conn->send(json_encode($res));
-							Logger::write("最终发送消息---" . json_encode($res));
-							echo "work发送消息：" . json_encode($res);
+							//Logger::write("最终发送消息---" . json_encode($res));
+							//echo "work发送消息：" . json_encode($res);
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$hkey = $res['from_wxid'];
@@ -109,8 +108,7 @@ class Worker extends Server
 							$conn->send($msg);
 						} else if ($res['event'] == 'callback') {
 							//消息发送回调
-							Logger::write("定时器消息发送回调---" . json_encode($res));
-							echo "定时器消息发送回调---" . json_encode($res);
+							//echo "定时器消息发送回调---" . json_encode($res);
 							//最后一条聊天记录放redis
 							$last_log_key = 'last_chat_log:' . $res['robot_wxid'];
 							$last_chat_log = $res['friend']['last_chat_content'];
@@ -129,19 +127,12 @@ class Worker extends Server
 							$conn->send($msg);
 						}
 					} else {
-						dump("未找到客户端：");
-						dump($res['client']);
+						echo("未找到客户端：" . $res['client']);
 					}
-
 					$redis->del($lock_key);
-
 				}
 			}
-
-			// $msg = json_encode(['msg' => 'zzy测试测试', 'date' => date("Y-m-d H:i:s"), 'msg_id' => time(), 'headimgurl' => '', 'from_wxid' => 'wxid_53fet7200ygs22', 'robot_wxid' => 'cengzhiyang4294']);
-
 		});
-
 
 		/**
 		 * 
@@ -155,11 +146,9 @@ class Worker extends Server
 				if ($msg) {
 					$time = time();
 					$data = json_decode($msg, true);
-					echo "文件接收延迟---" . json_encode($data) . "\n";
+					//echo "文件接收延迟---" . json_encode($data) . "\n";
 					if ($time < $data['start_time']) {
-						echo "延迟时间还没到,放回---" . json_encode($data) . "\n";
-						// Logger::write("延迟时间还没到,放回---" . json_encode($data));
-						//延迟时间还没到,放回
+						//echo "延迟时间还没到,放回---" . json_encode($data) . "\n";
 						$redis->rpush($key, json_encode($data));
 						sleep(1);
 						continue;
@@ -167,26 +156,14 @@ class Worker extends Server
 					$lock_key = 'lock_'.$data['client'];
 					$lock = $redis->get($lock_key);
 					if ($lock) {
-						echo "用户锁：".$lock_key;
+						//echo "用户锁：".$lock_key;
 						sleep(1);
 						$redis->rpush($key, json_encode($data));
 						continue;
 					} else {
-						$redis->setex($lock_key,60, 1);
+						$redis->setex($lock_key, 60, 1);
 					}
-					// $r_data = [
-					// 	'msg_type' => $data['type'],
-					// 	'msg' => $data['msg'],
-					// 	'delay_second' => 10,
-					// 	'start_time' => $time + $delay_second,
-					// 	'num' => 0,//执行次数
-					// 	'msg_id' => $data['msg_id'],
-					// 	'id' => $id,
-					// 	'bot' => $bot,
-					// 	'client' => $bot['admin_id'], //对应用户id
-					// 	'robot_wxid' => $data['robot_wxid'],
-					// 	'from_wxid' => $data['from_wxid'],
-					// ];
+
 					$chatLogM = new ChatLog();
 					// echo "开始转换数据：".$data['msg']."\n".$data['msg_type']."\n".json_encode($data['bot'])."\n";
 					$convert = $chatLogM->convertReceiveMsg($data['msg'], $data['msg_type'], $data['bot']);
@@ -202,15 +179,15 @@ class Worker extends Server
 							$data['msg'] = $convert['content'];
 							$data['event'] = 'delay';
 							$conn->send(json_encode($data));
-							echo "视频转换成功，发送前端：" . json_encode($data) . "\n";
+							//echo "视频转换成功，发送前端：" . json_encode($data) . "\n";
 						}
 					} else {
-						echo "延迟数据转换失败" . json_encode($convert) . "\n";
+						//echo "延迟数据转换失败" . json_encode($convert) . "\n";
 						if ($data['num'] < 100) {
 							//失败+10秒再补回
 							$data['start_time'] = $data['start_time'] + $data['delay_second'];
 							$redis->rpush($key, json_encode($data));
-							sleep(1);
+							//sleep(1);
 						}
 					}
 
@@ -261,7 +238,6 @@ class Worker extends Server
 		// }
 
 	}
-
 
 	public function onError($connection, $code, $msg)
 	{

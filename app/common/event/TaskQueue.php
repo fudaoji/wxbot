@@ -17,7 +17,7 @@
 
 namespace app\common\event;
 use ky\ErrorCode;
-use think\facade\Log;
+use ky\Logger;
 use think\facade\Queue;
 
 class TaskQueue extends Base

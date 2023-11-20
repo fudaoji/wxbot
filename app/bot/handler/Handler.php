@@ -14,6 +14,7 @@ use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
 use app\common\controller\BaseCtl;
 use app\common\service\Addon as AppService;
+use app\common\service\MsgLog;
 use app\common\service\Platform;
 use app\constants\Addon;
 use app\constants\Bot as BotConst;
@@ -176,6 +177,28 @@ class Handler extends BaseCtl
         empty($this->content['from_group_name']) && $this->content['from_group_name'] = $this->groupName;
         empty($this->content['from_name']) && $this->content['from_name'] = $this->fromName;
         empty($this->content['robot_wxid']) && $this->content['robot_wxid'] = $this->botWxid;
+
+        //save msg log seconds later
+        invoke('\\app\\common\\event\\TaskQueue')->push([
+            'delay' => 10,
+            'params' => [
+                'do' => ['\\app\\common\\event\\MsgLog', 'addLog'],
+                'content' => $this->content,
+                'bot' => $this->bot,
+                'from_wxid' => $this->fromWxid,
+                'from_nickname' => $this->fromName,
+                'group_wxid' => $this->groupWxid,
+                'group_nickname' => $this->groupName
+            ]
+        ]);
+        /*MsgLog::saveData([
+            'content' => $this->content,
+            'bot' => $this->bot,
+            'from_wxid' => $this->fromWxid,
+            'from_nickname' => $this->fromName,
+            'group_wxid' => $this->groupWxid,
+            'group_nickname' => $this->groupName
+        ]);*/
     }
 
     /**

@@ -48,7 +48,7 @@ class ChatLog extends Kefu
         //信息转换
         $convert = $this->convertReceiveMsg($data['msg'], $data['type'], $bot);
         //Logger::write("收到信息" . json_encode($data['msg']) . "\n");
-        Logger::write("转化信息" . json_encode($convert) . "\n");
+        //Logger::write("转化信息" . json_encode($convert) . "\n");
         $member['last_chat_time'] = $time;
         $member['last_chat_content'] = $convert['last_chat_content'];
         // $bot = $bot_model->where(['uin' => $data['robot_wxid']])->find();
@@ -81,7 +81,7 @@ class ChatLog extends Kefu
         ];
         $id = $chat_model->partition('p' . $year)->insertGetId($insert_data);
         $redis->rpush($key, $msg);
-        //Logger::write("存储数据OK：" . json_encode($msg) . "\n");
+        //Logger::error("消息入队列OK：" . json_encode($msg) . "\n");
         //视频转换失败
         if (in_array($data['type'], [43, 2004]) && $convert['content'] == '') {
             $delay_second = 10;
@@ -186,20 +186,19 @@ class ChatLog extends Kefu
                 $last_chat_content = '向你推荐了' . $convert['nickname'];
                 break;
             case 43:
-                Logger::write("视频消息转换");
+                //Logger::write("视频消息转换");
                 //视频消息
                 //[mp4=C:\Users\Administrator\Documents\WeChat Files\wxid_bg2yo1n6rh2m22\FileStorage\Video\2022-11\0777bb2b86444a5ac848234dd1071683.mp4]
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 5, -1);
                 if ($path) {
-                    Logger::write("视频消息path" .$path."\n");
+                    //Logger::write("视频消息path" .$path."\n");
                     $res = $bot_client->downloadFile(['path' => $path]);
                     //Logger::write("res:" .json_encode($res));
                     if ($res['Code'] != 0) {
-                        echo "转换视频消息为base64错误:" . json_encode($res) . "\n";
-                        Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
-                        // Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
+                        echo "转换视频消息为base64错误:" . json_encode($res, JSON_UNESCAPED_UNICODE) . "\n";
+                        //Logger::write("转换视频消息为base64错误:" . json_encode($res) . "\n");
                         $url = '';
                     } else {
                         //Logger::write("转换成功11111" . "\n");
@@ -409,7 +408,7 @@ class ChatLog extends Kefu
             $r_data = [
                 'msg_type' => $data['type'],
                 'msg' => $data['msg'],
-                'delay_second' => 10,
+                'delay_second' => $delay_second,
                 'start_time' => $time + $delay_second,
                 'num' => 0, //执行次数
                 'msg_id' => $data['msg_id'],
@@ -593,7 +592,7 @@ class ChatLog extends Kefu
             $r_data = [
                 'msg_type' => $data['type'],
                 'msg' => $data['msg'],
-                'delay_second' => 10,
+                'delay_second' => $delay_second,
                 'start_time' => $time + $delay_second,
                 'num' => 0, //执行次数
                 'msg_id' => $data['msg_id'],

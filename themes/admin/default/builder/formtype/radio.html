@@ -22,5 +22,8 @@
         {/foreach}
     {/notempty}
         <label class="error-msg"></label>
+        {if !empty($form['tip'])}
+        <tip class="form-tip">{$form['tip']}</tip>
+        {/if}
     </div>
 </div>

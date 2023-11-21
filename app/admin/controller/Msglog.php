@@ -50,7 +50,7 @@ class Msglog extends Botbase
         $this->gatherM = new GatherM();
         $this->tabList = [
             'index' => ['title' => '消息列表', 'href' => url('index')],
-            'rule' => ['title' => '保存规则', 'href' => url('rule')],
+            'rule' => ['title' => '消息存档规则', 'href' => url('rule')],
         ];
     }
 
@@ -68,6 +68,10 @@ class Msglog extends Botbase
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = ['bot_id' => $this->bot['id'], 'year' => $year];
+            $search_key = input('search_key', '');
+            $search_key && $where['from_wxid|from_nickname|group_wxid|group_nickname'] = ['like', "%{$search_key}%"];
+            $msg_type = input('msg_type', 0);
+            $msg_type && $where['msg_type'] = $msg_type;
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList([$post_data['page'], $post_data['limit']], $where, ['id' => 'desc'], true, true);
@@ -87,6 +91,10 @@ class Msglog extends Botbase
         }
         $builder = new ListBuilder();
         $builder->setTabNav($this->tabList, __FUNCTION__)
+            ->setSearch([
+                ['type' => 'select', 'name' => 'msg_type', 'title' => '内容类型', 'options' => [0=>'全部'] + BotConst::msgTypes()],
+                ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "placeholder" => '好友昵称、wxid、群昵称、群wxid搜索']
+            ])
                 ->addTableColumn(['title' => 'msgid', 'field' => 'msg_id', 'minWidth' => 70])
                 ->addTableColumn(['title' => '内容类型', 'field' => 'msg_type','minWidth' => 70])
                 ->addTableColumn(['title' => '内容', 'field' => 'content', 'type' => 'article','minWidth' => 200])

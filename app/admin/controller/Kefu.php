@@ -478,7 +478,7 @@ php think worker:server start -d
             $from_date = strtotime(date("Y-m-d"));
             $to_date = time();
             // $where[] = ['create_time', 'between', [$from_date, $to_date]];
-            $order = [];
+            $order = ['id' => 'desc'];
             $limit = $post_data['limit'] ?? 30;
             $page = $post_data['page'] ?? 1;
             $total = $chat_model->partition('p' . $year)->where($where)->count();

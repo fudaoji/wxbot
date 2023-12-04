@@ -18,46 +18,11 @@
                     <div class="layui-form-item" style="margin: 0;">
                         {foreach $search as $v}
                         {switch name="v.type" }
-                        {case datetime_range}
-                        <div class="layui-inline">
-                            <label class="layui-form-label">{$v.title}</label>
-                            <div class="layui-input-inline" style="width: 290px;">
-                                <input type="text" id="{$v.name}" name="{$v.name}" value="" class="layui-input" placeholder="{$v.placeholder ?? $v.title}">
-                            </div>
-                        </div>
-                        <script>
-                            layui.use(['laydate'], function() {
-                                var laydate = layui.laydate;
-                                //执行一个laydate实例
-                                laydate.render({
-                                    elem: '#{$v.name}'
-                                    , type: 'datetime'
-                                    , max: 1 //7天后
-                                    , range: '~'
-                                    , rangeLinked: true
-                                });
-                            });
-                        </script>
-                        {/case}
-                        {case select}
-                        <div class="layui-inline">
-                            <label class="layui-form-label">{$v.title}</label>
-                            <div class="layui-input-inline">
-                                <select name="{$v.name}">
-                                    {volist name="v.options" id="o"}
-                                    <option value="{$key}">{$o}</option>
-                                    {/volist}
-                                </select>
-                            </div>
-                        </div>
-                        {/case}
-                        {default /}
-                        <div class="layui-inline">
-                            <label class="layui-form-label">{$v.title}</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="{$v.name}" autocomplete="off" class="layui-input" placeholder="{$v.placeholder ?? $v.title}">
-                            </div>
-                        </div>
+                        {case date} {include file="default/builder/searchtype/date" /} {/case}
+                        {case datetime} {include file="default/builder/searchtype/datetime" /}{/case}
+                        {case datetime_range}{include file="default/builder/searchtype/datetime_range" /}{/case}
+                        {case select} {include file="default/builder/searchtype/select" /} {/case}
+                        {default /}{include file="default/builder/searchtype/text" /}
                         {/switch}
                         {/foreach}
                         <div class="layui-inline">

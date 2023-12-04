@@ -72,6 +72,10 @@ class Msglog extends Botbase
             $search_key && $where['from_wxid|from_nickname|group_wxid|group_nickname'] = ['like', "%{$search_key}%"];
             $msg_type = input('msg_type', 0);
             $msg_type && $where['msg_type'] = $msg_type;
+            if(!empty($post_data['create_time'])){
+                $times = explode('~', $post_data['create_time']);
+                $where['create_time'] = ['between', [strtotime($times[0]), strtotime($times[1])]];
+            }
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList([$post_data['page'], $post_data['limit']], $where, ['id' => 'desc'], true, true);
@@ -93,7 +97,8 @@ class Msglog extends Botbase
         $builder->setTabNav($this->tabList, __FUNCTION__)
             ->setSearch([
                 ['type' => 'select', 'name' => 'msg_type', 'title' => '内容类型', 'options' => [0=>'全部'] + BotConst::msgTypes()],
-                ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "placeholder" => '好友昵称、wxid、群昵称、群wxid搜索']
+                ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "placeholder" => '好友昵称、wxid、群昵称、群wxid搜索'],
+                ['type' => 'datetime_range', 'name' => 'create_time', 'title' => '消息时间', "placeholder" => '消息时间']
             ])
                 ->addTableColumn(['title' => 'msgid', 'field' => 'msg_id', 'minWidth' => 70])
                 ->addTableColumn(['title' => '内容类型', 'field' => 'msg_type','minWidth' => 70])

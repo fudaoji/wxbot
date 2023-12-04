@@ -1,0 +1,19 @@
+<div class="layui-inline">
+    <label class="layui-form-label">{$v.title}</label>
+    <div class="layui-input-inline" style="width: 290px;">
+        <input type="text" id="{$v.name}" name="{$v.name}" value="" class="layui-input" placeholder="{$v.placeholder ?? $v.title}">
+    </div>
+</div>
+<script>
+    layui.use(['laydate'], function() {
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#{$v.name}'
+            , type: 'datetime'
+            , max: 1 //7天后
+            , range: '~'
+            , rangeLinked: true
+        });
+    });
+</script>

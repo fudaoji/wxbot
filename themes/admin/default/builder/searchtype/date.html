@@ -1,0 +1,23 @@
+<div class="layui-inline">
+    <label class="layui-form-label">{$v.title}</label>
+    <div class="layui-input-inline">
+        <input
+                type="text"
+                value="{$v.value ?? ''}"
+                id="date-{$v.name}"
+                name="{$v.name}"
+                placeholder="{$v.placeholder ?? $v.title}"
+                class="layui-input"
+                ／>
+    </div>
+</div>
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: "#date-{$v.name}" //指定元素
+            ,type: 'date'
+        });
+    });
+</script>

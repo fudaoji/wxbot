@@ -1,0 +1,10 @@
+<div class="layui-inline">
+    <label class="layui-form-label">{$v.title}</label>
+    <div class="layui-input-inline">
+        <select name="{$v.name}">
+            {volist name="v.options" id="o"}
+            <option value="{$key}">{$o}</option>
+            {/volist}
+        </select>
+    </div>
+</div>

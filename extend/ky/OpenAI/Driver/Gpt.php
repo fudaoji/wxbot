@@ -55,7 +55,7 @@ class Gpt extends Base
 
         $message = [
             ['role' => 'system', 'content' => $role],
-            ['role' => 'system', 'content' => "今天是" . date("Y-m-d") . "，现在时间是" . date("H:i")],
+            ['role' => 'system', 'content' => "今天日期是:" . date("Y-m-d") . "\n现在时间是:" . date("H:i") . "\n今天是星期" . date("N")],
         ];
         if(! empty($params['content_rule'])){
             array_push($message, ['role' => 'system', 'content' => $params['content_rule']]);

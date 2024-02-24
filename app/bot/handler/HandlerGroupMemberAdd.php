@@ -61,7 +61,7 @@ class HandlerGroupMemberAdd extends Handler
         $guest = $this->botClient->getGuest($this->content);
         $nickname = $guest['nickname'];
         $member_wxid = empty($guest['wxid']) ? '' : $guest['wxid'];
-        Logger::error($guest);
+        //Logger::error($guest);
         $member_wxid && $this->groupMemberM->addMember([
             'bot_id' => $this->bot['id'],
             'wxid' => $member_wxid,

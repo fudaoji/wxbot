@@ -15,11 +15,54 @@ use ky\WxBot\Driver\Extian;
 class ExtianTest extends BotTest
 {
     private $botClient;
-    private $clientId = 6652;
+    private $clientId = 5452;
 
     public function __construct() {
         parent::__construct();
         $this->botClient = new Extian(['app_key' => '2B95B3BF370C8C09209E9909B1B6315737DABA14', 'base_uri' => '124.222.4.168:8203']);
+    }
+
+    /**
+     * 设置群名
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSetGroupName() {
+        $res = $this->botClient->setGroupName([
+            'uuid' => $this->clientId,
+            'robot_wxid' => $this->robotFjq,
+            'group_wxid' => '48202976260@chatroom',
+            'group_name' => '龙年大吉2群'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 建群
+     * resp: [
+            "method" => "createRoom_Recv"
+            "myid" => "wxid_7v3b6hncdo6f12"
+            "pid" => 5452
+            "status" => 1
+            "msg" => ""
+            "data" => [
+                "msg" => "Everything is OK"
+                "wxid" => "48202976260@chatroom"
+                "count" => 3
+                "member" => []
+            ]
+            "code" => 1
+        ]
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testBuildingGroup() {
+        $res = $this->botClient->buildingGroup([
+            'uuid' => $this->clientId,
+            'robot_wxid' => $this->robotFjq,
+            'wxids' => [$this->wxidDj, 'wxid_bufi3udlbaqw22', 'wxid_7ittdniwav8k1']
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
     }
 
     /**
@@ -29,8 +72,8 @@ class ExtianTest extends BotTest
     public function testForwardMsg() {
         $res = $this->botClient->forwardMsg([
             'uuid' => $this->clientId,
-            'to_wxid' => $this->group51,
-            'msgid' => '3850343445286997459'
+            'to_wxid' => $this->robotDj,
+            'msgid' => '4838844698643630798'
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
@@ -128,8 +171,8 @@ class ExtianTest extends BotTest
     public function testSendText() {
         $res = $this->botClient->sendTextToFriends([
             'uuid' => $this->clientId,
-            'to_wxid' => [$this->wxidDj, $this->group51],
-            'msg' => 'hi'
+            'to_wxid' => [$this->wxidDj, '48202976260@chatroom'],
+            'msg' => '[玫瑰]欢迎进群！'
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);

@@ -19,6 +19,7 @@ class Addon extends Handler
         $this->fromWxid = $options['from_wxid'];
         $this->fromName = $options['from_name'];
         $this->groupWxid = $options['group_wxid'];
+        $this->groupName = $options['group_name'];
         $this->group = $options['group'];
         $this->content = $options['content'];
         $this->isNewFriend = $options['is_new_friend'];

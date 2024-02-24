@@ -58,9 +58,9 @@
 如果对您有帮助，麻烦star走一波，感谢！
 
 QQ交流群：
-726177820
+490250718
 
-![输入图片说明](https://zyx.images.huihuiba.net/1-5f8afb8796b2f.png "WxBot微信开发框架QQ群聊二维码.png")
+![输入图片说明](qq-group.png "WxBot微信开发框架QQ群聊二维码.png")
 
 微信交流群：
 

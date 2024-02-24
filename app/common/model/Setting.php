@@ -34,6 +34,7 @@ class Setting extends BaseModel
     public function getStepTime(){
         if(config('system.bot.step_time')){
             $arr = explode('-', config('system.bot.step_time'));
+            empty($arr[1]) && array_unshift($arr, 1);
         }else{
             $arr = [1, 4];
         }

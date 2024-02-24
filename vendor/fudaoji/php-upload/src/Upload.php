@@ -439,7 +439,7 @@ class Upload
         $rule = $this->saveName;
         if (empty($rule)) { //保持文件名不变
             /* 解决pathinfo中文文件名BUG */
-            $filename = substr(pathinfo("_{$file['name']}", PATHINFO_FILENAME), 1);
+            $filename = substr(pathinfo("_{$file['name']}", PATHINFO_FILENAME), 1).'-'.date('YmdHis');
             $savename = $filename;
         } else {
             $savename = $this->getName($rule, $file['name']);
@@ -448,7 +448,6 @@ class Upload
                 return false;
             }
         }
-
         /* 文件保存后缀，支持强制更改文件后缀 */
         $ext = empty($this->config['saveExt']) ? $file['ext'] : $this->saveExt;
 

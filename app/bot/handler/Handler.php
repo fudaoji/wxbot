@@ -121,13 +121,21 @@ class Handler extends BaseCtl
                 break;
             case BotConst::PROTOCOL_EXTIAN:
                 $this->botWxid = $this->ajaxData['myid'] ?? '';
-                if(in_array($this->event, [BotConst::EVENT_GROUP_MEMBER_ADD])){
+                if(in_array($this->event, [BotConst::EVENT_GROUP_MEMBER_ADD, BotConst::EVENT_GROUP_MEMBER_DEC])){
                     $new = $this->content['member'][0];
                     $this->fromWxid = $new['wxid'];
                     $this->fromName = $new['nickName'];
                 }else{
-                    $this->fromWxid = empty($this->content['memid']) ? $this->content['fromid'] : $this->content['memid'];
-                    $this->fromName = $this->content['nickName'] ?? $this->content['memname'];
+                    //Logger::error($this->content);
+                    if(empty($this->content['memid'])){
+                        $this->fromWxid = $this->content['fromid'];
+                        $this->fromName = $this->content['nickName'];
+                    }else{
+                        $this->fromWxid = $this->content['memid'];
+                        $this->fromName = $this->content['memname'];
+                        $this->groupName = $this->content['nickName'];
+                        $this->groupWxid = $this->content['fromid'];
+                    }
                 }
                 !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
                 !empty($this->content['id']) && $this->content['msg_id'] = $this->content['id'];
@@ -233,6 +241,7 @@ class Handler extends BaseCtl
                 if($this->ajaxData['type'] == 701){
                     $this->event = BotConst::EVENT_GROUP_MEMBER_ADD;
                 }
+
                 if($this->isGroupEvent()){
                     $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
                     $this->groupName = $this->content['nickName'] ?? '';
@@ -369,6 +378,11 @@ class Handler extends BaseCtl
         $this->addonOptions['content'] = $this->content;
         $this->addonOptions['is_new_friend'] = $this->isNewFriend;
         $this->addonOptions['be_at_str'] = $this->beAtStr;
+
+        /*if($this->groupWxid == '34503818873@chatroom'){
+            Logger::error($this->addonOptions);
+        }*/
+
         return $this->addonOptions;
     }
 

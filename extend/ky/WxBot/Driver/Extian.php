@@ -375,8 +375,26 @@ class Extian extends Base
         return $this->doRequest(self::API_GET_MEMBER_INFO, $params);
     }
 
+    /**
+     *
+     * 修改群名称
+    robot_wxid (string)  // 机器人ID
+    group_wxid (string)  // 群ID
+    group_name (string)  // 新的群名称
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function setGroupName($params = [])
+    {
+        $params['msg'] = $params['group_name'];
+        $params['wxid'] = $params['group_wxid'];
+        return $this->doRequest(self::API_SET_GROUP_NAME, $params);
+    }
+
     public function buildingGroup($params = [])
     {
+        is_string($params['wxids']) && $params['wxids'] = explode(',', $params['wxids']);
         $params['msg'] = implode('|', $params['wxids']);
         return $this->doRequest(self::API_BUILDING_GROUP, $params);
     }
@@ -464,13 +482,6 @@ class Extian extends Base
     {
         $params['wxid'] = $params['group_wxid'];
         return $this->doRequest(self::API_QUIT_GROUP, $params);
-    }
-
-    public function setGroupName($params = [])
-    {
-        $params['wxid'] = $params['group_wxid'];
-        $params['msg'] = $params['group_name'];
-        return $this->doRequest(self::API_SET_GROUP_NAME, $params);
     }
 
     public function setGroupNotice($params = [])

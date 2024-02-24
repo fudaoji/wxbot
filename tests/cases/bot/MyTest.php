@@ -236,8 +236,8 @@ class MyTest extends BotTest
      */
     public function testBuildingGroup() {
         $res = $this->botClient->buildingGroup([
-            'robot_wxid' => $this->robotJane,
-            'wxids' => [$this->robotJane, $this->wxidDj, $this->wxidYyp, $this->wxidYlp, $this->wxidDcq]
+            'robot_wxid' => $this->robotFjq,
+            'wxids' => [$this->robotJane, $this->wxidDj, $this->wxidYyp]
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
@@ -483,7 +483,7 @@ class MyTest extends BotTest
      */
     public function testSendText() {
         $res = $this->botClient2->sendTextToFriends([
-            'robot_wxid' => $this->robotJane,
+            'robot_wxid' => $this->robotFjq,
             'to_wxid' => $this->wxidDj,
             'msg' => 'https://devhhb.images.huihuiba.net/1-6258eebb2ad7f.pdf',
         ]);

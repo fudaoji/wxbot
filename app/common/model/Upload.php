@@ -68,6 +68,7 @@ class Upload extends BaseModel
         /* 上传文件 */
         //$config['callback'] = [$this, 'isFile'];
         $config['removeTrash'] = [$this, 'removeTrash'];
+        $config['saveName'] = false;
 
         $driver = self::$setting['driver'];
         $Upload = new Uploader($config, $driver, self::driverConfig($driver));

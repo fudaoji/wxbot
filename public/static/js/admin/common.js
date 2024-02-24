@@ -203,7 +203,7 @@ window.templets = {
     , article : function (html = '', id=null) {
         if(id === null) id = parseInt(Math.random() * 10);
         id = "article-"+id;
-        var html = '<div id="'+id+'" style="display: none;white-space:normal;">'+html+'</div>';
+        var html = '<div id="'+id+'" style="display: none;white-space:normal;padding: 5px;">'+html+'</div>';
         return '<div>'+html+'<a onclick="viewArticle(\''+id+'\');" class="layui-btn layui-btn-xs">点击查看</a></div>';
     }
 };

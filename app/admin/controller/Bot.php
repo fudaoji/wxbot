@@ -550,6 +550,7 @@ class Bot extends Bbase
             $data['uuid'] = session('bot_client_id');
             //获取机器人信息
             $info = $this->model->getRobotInfo($data);
+
             if(!empty($info) && !is_string($info)){
                 if($bot = $this->model->getOneByMap(['uin' => $info['wxid'], 'staff_id' => $this->adminInfo['id']])){
                     $data = $this->model->updateOne([

@@ -24,12 +24,12 @@ class Api extends BaseCtl
         if(request()->isPost() && isset(BotConst::protocols()[$this->driver])) {
             set_time_limit(0);
             Helper::$ajax = $this->getAjax();
-            /*if($this->driver == 'xy'){
+            /*if($this->driver == 'kuv'){
                 Logger::error(Helper::$ajax);
                 exit(0);
             }*/
         }else{
-            Logger::error('Request invalid!');
+            Logger::error('Request invalid!' . request()->method());
             exit(0);
         }
     }

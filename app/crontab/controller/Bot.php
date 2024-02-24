@@ -55,6 +55,7 @@ class Bot extends Base
                     try {
                         $class->minuteTask();
                     }catch (\Exception $e){
+                        //dump($e->getMessage());
                         Logger::error($e->getMessage());
                     }
                 }

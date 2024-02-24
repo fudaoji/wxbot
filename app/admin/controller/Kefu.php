@@ -481,10 +481,12 @@ php think worker:server start -d
             $order = ['id' => 'desc'];
             $limit = $post_data['limit'] ?? 30;
             $page = $post_data['page'] ?? 1;
-            $total = $chat_model->partition('p' . $year)->where($where)->count();
+            //$total = $chat_model->partition('p' . $year)->where($where)->count();
+            $total = $chat_model->where($where)->count();
             $log_list = [];
             if ($total) {
-                $log_list = $chat_model->partition('p' . $year)->where($where)
+                //$log_list = $chat_model->partition('p' . $year)->where($where)
+                $log_list = $chat_model->where($where)
                     ->order($order)
                     ->page($page)
                     ->limit($limit)

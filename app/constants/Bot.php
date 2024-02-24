@@ -22,6 +22,7 @@ class Bot
     const PROTOCOL_EXTIAN = 'extian'; //e小天个微
     const PROTOCOL_XHX = 'xhx'; //小浣熊
     const PROTOCOL_XY = 'xy'; //星云
+    const PROTOCOL_KUV = 'kuv'; //酷v
 
     const FRIEND = 'friend';
     const GROUP = 'group';
@@ -108,6 +109,7 @@ class Bot
     public static function protocols($id = null)
     {
         $list = [
+            self::PROTOCOL_KUV  => 'kuv',
             self::PROTOCOL_XY => '星云',
             self::PROTOCOL_QXUN => '千寻个微',
             self::PROTOCOL_WEB => '网页版',

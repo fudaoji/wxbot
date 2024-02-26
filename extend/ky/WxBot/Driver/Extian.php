@@ -44,7 +44,7 @@ class Extian extends Base
     const API_FORWARD_MSG = 'forwardMsg'; //转发消息
     const API_SEND_VIDEO_MSG = 'sendFile'; // 发送视频消息，
     const API_SEND_FILE_MSG = 'sendFile'; // 发送文件消息，
-    const API_DOWNLOAD_FILE = 'DownloadFile'; //下载文件到机器人服务器本地，
+    const API_DOWNLOAD_FILE = 'getimgbyid'; //下载文件到机器人服务器本地，
     const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
     const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
     const API_SEND_SHARE_LINK_MSG = 'sendAppmsgForward'; //发送普通分享链接
@@ -496,7 +496,8 @@ class Extian extends Base
 
     public function downloadFile($params = [])
     {
-        return $this->apiUnSupport();
+        $params['sid'] = $params['path']; //消息id
+        return $this->doRequest(self::API_DOWNLOAD_FILE, $params);
     }
 
     public function dealRes($res)

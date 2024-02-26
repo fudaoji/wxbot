@@ -16,7 +16,7 @@ class Base
 {
     public function __construct()
     {
-
+        model('common/setting')->settings();
     }
 
     /**

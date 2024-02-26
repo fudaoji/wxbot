@@ -22,6 +22,23 @@ class ExtianTest extends BotTest
         $this->botClient = new Extian(['app_key' => '2B95B3BF370C8C09209E9909B1B6315737DABA14', 'base_uri' => '124.222.4.168:8203']);
     }
 
+    public function testDownloadFile(){
+        $sid = '6029595085508160003';
+        $params = [
+            'path' => $sid
+        ];
+        $res = $this->botClient->downloadFile($params);
+        if(!empty($res['data']['data'])){
+            $url = upload_base64(time() . '.png', $res['data']['data']);
+            dump($url);
+            //dump(public_path(public_path('uploads') . 't.png'));
+            //file_put_contents(public_path('uploads') . 't.png', $res['data']['data']);
+        }else{
+            dump($res);
+        }
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
     /**
      * 设置群名
      * Author: fudaoji<fdj@kuryun.cn>

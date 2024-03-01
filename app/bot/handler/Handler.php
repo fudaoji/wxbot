@@ -85,7 +85,7 @@ class Handler extends BaseCtl
 
         $class = "\\app\\bot\\handler\\{$this->driver}\\" . ucfirst($this->event);
         if(! class_exists($class)){
-            Logger::error("class: " . $class . " not exists!");
+            //Logger::error("class: " . $class . " not exists!");
             exit(0);
         }
 
@@ -112,8 +112,8 @@ class Handler extends BaseCtl
 
         $this->driver = $options['driver'];
         $this->ajaxData = $options['ajax_data'];
-
         $this->checkEvent();
+        //Logger::error($this->ajaxData);
         switch ($this->driver){
             case BotConst::PROTOCOL_XHX:
                 $this->botWxid = $this->ajaxData['wxid'];
@@ -229,6 +229,10 @@ class Handler extends BaseCtl
                 }
                 break;
             case BotConst::PROTOCOL_EXTIAN:
+                $ignore_methods = ['getchatroommemberdetail', 'chatroommember'];
+                if(in_array($this->ajaxData['method'], $ignore_methods) || $this->ajaxData['type'] == 10000){
+                    exit(0);
+                }
                 $this->content = $this->ajaxData['data'] ?? [];
                 $map = [
                     Extian::EVENT_GROUP_MEMBER_ADD => BotConst::EVENT_GROUP_MEMBER_ADD,

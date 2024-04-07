@@ -114,7 +114,6 @@ class AIEdu extends Base
         "code" => 1
         ]
 
-     * @return bool
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function checkKey(){

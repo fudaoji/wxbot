@@ -9,3 +9,4 @@ __MACOSX
 .phpunit.result.cache
 runtime
 *.pid
+.user.ini

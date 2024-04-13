@@ -409,6 +409,8 @@ class Handler extends BaseCtl
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function addon(){
+        //require_once base_path('addon') . 'common.php';
+
         //插件新方案执行
         $addons = AppService::listOpenApps(Platform::WECHAT);
         foreach ($addons as $k => $v){

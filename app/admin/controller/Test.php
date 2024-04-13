@@ -14,6 +14,7 @@ use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
+use ky\Quark;
 use ky\VideoSpider;
 use zjkal\ChinaHoliday;
 
@@ -23,6 +24,13 @@ class Test
     public function index()
     {
         return response('hello thinkphp6');
+    }
+
+    public function testQuark(){
+        $cookie = "_UP_A4A_11_=wb964197c5df4e3a93356111babcf28e; _UP_D_=pc; __pus=3143971626ba28c24829fb5243cf9f68AARQ8ASICIRdh4LJjuJcN6mabkAjSiHBc1yv0BU1Jsp+VqNZEPPB5Yhl9PwOIDycvDX9Teg7tbtuvisFN0inG3Cc; __kp=b37d0a40-f6d4-11ee-81fe-fdf0bd46a26e; __kps=AAT+49IFisv7PYVNRLcat6b5; __ktd=mVQ+sYXO3J5O46pejMK8sQ==; __uid=AAT+49IFisv7PYVNRLcat6b5; __puus=2cc9867ab7b51611cb0876e1f17fe20aAAT6kSkLsYl6Yih8nIo5OfeguuZPO62tmLjxK8Y0iJ9DHW+psIGzfZ/GxOkwGuC+BKxjJ5b0j9/daDM6Eq+KZL2T/1beiOOWWpGuDvjroNTl85v8f8OQ8VLK90ahtNu1en9rvFJ/WY4bLm3J8BrDxeiU91LTp8P25/LjlGJ9we8B9iXNH/gcvBehI76WZJNlwRKUaFuo5URYt8g7BA/pnLxk";
+        $quark = new Quark($cookie);
+        $res = $quark->searchFile(['keyword' => "为母则刚"]);
+        dump($res);
     }
 
     /**

@@ -243,7 +243,7 @@ if(! function_exists('get_redis')){
  */
 function execute_sql($sql_path = '')
 {
-    \think\facade\Db::startTrans();
+    //\think\facade\Db::startTrans();
     try {
         $sql = file_get_contents($sql_path);
         //去除注释
@@ -263,10 +263,10 @@ function execute_sql($sql_path = '')
             }
             \think\facade\Db::execute($value);
         }
-        \think\facade\Db::commit();
+        //\think\facade\Db::commit();
         return true;
     }catch (\Exception $e){
-        \think\facade\Db::rollback();
+        //\think\facade\Db::rollback();
         return  $e->getMessage();
     }
 }

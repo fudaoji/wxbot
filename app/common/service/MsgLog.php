@@ -24,16 +24,33 @@ class MsgLog
         return self::$model;
     }
 
+    function addLogTask($params = []){
+        /**
+         * @var \think\queue\Job
+         */
+        $job = $params['job'];
+        if ($job->attempts() > 2) {
+            $job->delete();
+        }
+        self::saveData($params);
+        $job->delete();
+    }
+
+    /**
+     * 保存消息
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     static function saveData($params = []){
         $content = $params['content'];
         $bot = $params['bot'];
-
         $rules = GatherService::check([
             'bot_id' => $bot['id'],
             'wxid' => empty($params['group_wxid']) ? $params['from_wxid'] : $params['group_wxid'],
-            'type' => $content['type']
+            'type' => $content['type'],
+            'content' => $content
         ]);
-
+        //var_dump(count($rules));
         if(count($rules)){
             $insert = [
                 'admin_id' => $bot['staff_id'],
@@ -45,8 +62,10 @@ class MsgLog
                 'from_nickname' => $params['from_nickname'],
                 'group_wxid' => $params['group_wxid'],
                 'group_nickname' => $params['group_nickname'],
-                'msg_type' => $content['type']
+                'msg_type' => $content['type'],
+                'gather_id' => $rules[0]['id'] ?? 0
             ];
+            //var_dump($rules[0]);
             self::model()->addOne($insert);
             $bot_client = model('admin/bot')->getRobotClient($bot);
 
@@ -64,6 +83,8 @@ class MsgLog
                     case BotConst::MSG_VIDEO:
                     case BotConst::MSG_FILE:
                     case BotConst::MSG_IMG:
+                        //todo 以下的处理方式不适配e小天的
+
                         $lens = [BotConst::MSG_FILE => 6, BotConst::MSG_IMG => 5, BotConst::MSG_VIDEO => 5];
                         $path = mb_substr($content['msg'], $lens[$content['type']], -1);
                         $count = 0;
@@ -91,7 +112,7 @@ class MsgLog
                         $media_data['title'] = XmlMini::getInstance($content['msg'])->getTitle();
                         $media_data['content'] = $content['msg'];
                         break;
-                    default:
+                    case BotConst::MSG_TEXT:
                         $media_data['content'] = $content['msg'];
                         break;
                 }

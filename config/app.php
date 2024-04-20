@@ -15,13 +15,13 @@
 
 return [
     // 应用地址
-    'version' => '2.3.3',
+    'version' => '2.3.4',
     'app_host' => env('app.host', ''),
     'app_key' => env('app_key', '123456'),
     'app_name'               => 'WxBot',
     'app_title'              => env('app_title', '微精灵'),
     'app_prefix'             => env('app_prefix', 'ky_'),
-    'queue_name'             => env('queue_name', 'wxbot'),
+    'queue_name'             => env('queue.name', 'wxbot'),
     // 应用的命名空间
     'app_namespace' => '',
     // 是否启用路由

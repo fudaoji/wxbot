@@ -257,9 +257,18 @@
                     break;
                 case 'self':
                     if($(this).data('ajax')){
-                        requestPost(href, [], function (res) {
-                            table.reload('{$controller}-table');  // 刷新(异步模式)
-                        });
+                        if($(this).data('confirm')) {
+                            layer.confirm('确认操作吗?', function(index){
+                                requestPost(href, [], function (res) {
+                                    table.reload('{$controller}-table');  // 刷新(异步模式)
+                                });
+                                layer.close(index);
+                            });
+                        }else{
+                            requestPost(href, [], function (res) {
+                                table.reload('{$controller}-table');  // 刷新(异步模式)
+                            });
+                        }
                     }else{
                         if($(this).attr('target') === '_blank'){
                             window.open(href);

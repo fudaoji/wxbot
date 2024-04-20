@@ -9,6 +9,7 @@
 
 namespace app\common\service;
 use app\common\model\MsgGather as GatherM;
+use app\common\model\MsgGatherGroup;
 use app\constants\Bot as BotConst;
 use ky\Logger;
 
@@ -35,7 +36,7 @@ class MsgGather
             $data = self::model()->getAll([
                 'where' => $where,
                 'refresh' => $refresh
-            ]);
+            ])->toArray();
         }
         cache($cache_key, $data);
         return $data;
@@ -51,9 +52,17 @@ class MsgGather
         $data = self::searchData([
             'bot_id' => $params['bot_id']
         ]);
+        $list = [];
         if($data){
+            $content = $params['content'];
             $wxid = $params['wxid'];
             foreach ($data as $k => $rule){
+                //去掉过期的
+                if(!empty($rule['expire_time']) && $rule['expire_time'] < time()){
+                    continue;
+                }
+
+                //指定用户筛选
                 $wxids = explode(',', $rule['wxids']);
                 if(empty($wxids) && !empty($rule['member_tags'])){
                     $tags = explode(',', $rule['member_tags']);
@@ -63,16 +72,41 @@ class MsgGather
                 }
                 $wxids = array_unique($wxids);
                 if(!empty($wxids) && !in_array($wxid, $wxids)) {
-                    unset($data[$k]);
                     continue;
                 }
                 $msg_types = explode(',', $rule['msg_types']);
                 if(!empty($msg_types) && !in_array($params['type'], $msg_types)) {
-                    unset($data[$k]);
                     continue;
                 }
+                //关键词判断
+                if(!empty($rule['keyword']) && ($params['type'] == BotConst::MSG_TEXT) && strpos($content['msg'], $rule['keyword']) === false){
+                    continue;
+                }
+                array_push($list, $rule);
             }
         }
-        return $data;
+        return $list;
+    }
+
+    /**
+     *
+     * @param int $admin_id
+     * @param int $bot_id
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function getSelectList($admin_id = 0,$bot_id=0){
+        return self::model()->getField(['id','title'], ['admin_id' => $admin_id,'bot_id' => $bot_id], true);
+    }
+
+    /**
+     *
+     * @param int $admin_id
+     * @param int $bot_id
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function getGroupSelectList($admin_id = 0,$bot_id=0){
+        return (new MsgGatherGroup())->getField(['id','title'], ['admin_id' => $admin_id,'bot_id' => $bot_id], true);
     }
 }

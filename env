@@ -4,6 +4,8 @@ APP_DEBUG = true
 APP_TITLE= WxBot
 APP_NAME = wxbot
 CACHE_TYPE=[cache_type]
+[QUEUE]
+NAME=wxbot
 
 [APP]
 DEFAULT_TIMEZONE = Asia/Shanghai

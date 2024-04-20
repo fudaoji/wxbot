@@ -58,6 +58,7 @@ class HandlerGroupMemberAdd extends Handler
 
     protected function basic()
     {
+        //Logger::error($this->content);
         $guest = $this->botClient->getGuest($this->content);
         $nickname = $guest['nickname'];
         $member_wxid = empty($guest['wxid']) ? '' : $guest['wxid'];

@@ -188,9 +188,9 @@ class Handler extends BaseCtl
 
         //save msg log seconds later
         invoke('\\app\\common\\event\\TaskQueue')->push([
-            'delay' => 10,
+            'delay' => 2,
             'params' => [
-                'do' => ['\\app\\common\\event\\MsgLog', 'addLog'],
+                'do' => ["\\app\\common\\service\\MsgLog", 'addLogTask'],
                 'content' => $this->content,
                 'bot' => $this->bot,
                 'from_wxid' => $this->fromWxid,
@@ -199,14 +199,6 @@ class Handler extends BaseCtl
                 'group_nickname' => $this->groupName
             ]
         ]);
-        /*MsgLog::saveData([
-            'content' => $this->content,
-            'bot' => $this->bot,
-            'from_wxid' => $this->fromWxid,
-            'from_nickname' => $this->fromName,
-            'group_wxid' => $this->groupWxid,
-            'group_nickname' => $this->groupName
-        ]);*/
     }
 
     /**
@@ -460,5 +452,17 @@ class Handler extends BaseCtl
                 exit(0);
             }
         }
+    }
+
+    /**
+     * 去除消息体中的艾特部分
+     * @param string $msg
+     * @return string|string[]|null
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function trimAtStr($msg = ''){
+        empty($msg) && $msg = $this->content['msg'];
+        $msg = trim(str_replace($this->beAtStr, "", $msg));
+        return preg_replace('/[\x{2005}]/u', '', $msg); //e小天需要
     }
 }

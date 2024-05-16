@@ -24,6 +24,10 @@ class HandlerGroupMemberDecrease extends Handler
 
     protected function basic(){
         //Logger::error($this->content);
-        $this->groupMemberM->rmMember(['bot_id' => $this->bot['id'], 'wxid' => $this->content['to_wxid'], 'group_id' => $this->group['id']]);
+        $this->groupMemberM->rmMember([
+            'bot_id' => $this->bot['id'],
+            'wxid' => $this->content['to_wxid'],
+            'group_id' => $this->group['id']
+        ]);
     }
 }

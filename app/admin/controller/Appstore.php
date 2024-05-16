@@ -167,6 +167,7 @@ class Appstore extends Base
                     if(!empty($app) && $v['version'] > $app['version']){
                         $app['new_version'] = $v['version'];
                         $app['update_time'] = $v['update_time'];
+                        $app['id'] = $v['id'];
                         $data_list[] = $app;
                     }
                 }
@@ -184,7 +185,7 @@ class Appstore extends Base
             ->addTableColumn(['title' => '最新版本', 'field' => 'new_version'])
             ->addTableColumn(['title' => '更新时间', 'field' => 'update_time', 'type' => 'datetime'])
             ->addTableColumn(['title' => '操作', 'width' => 150, 'type' => 'toolbar'])
-            ->addRightButton('self', ['text' => '升级', 'href' => url('upgradepost', ['name' => '__data_name__']), 'data-ajax' => true, 'data-confirm' => '升级应用文件将会被更新(系统自动将应用打包备份在runtime/目录下)，你确定升级应用吗？']);
+            ->addRightButton('self', ['text' => '升级', 'href' => url('upgradepost', ['name' => '__data_name__', 'id' => '__data_id__']), 'data-ajax' => true, 'data-confirm' => '升级应用文件将会被更新(系统自动将应用打包备份在runtime/目录下)，你确定升级应用吗？']);
         return $builder->show();
     }
 
@@ -207,12 +208,13 @@ class Appstore extends Base
     public function upgradePost(){
         $post_data = input();
         $app_name = $post_data['name'];
+        $app_id = $post_data['id'];
         $app_path = addon_path($app_name);
         if (!file_exists($app_path))
              $this->error($app_name . '目录不存在');
 
         $app = AppService::getApp($app_name, true);
-        if(is_string($res = DACommunity::getUpgradePackage(['addon' => $app_name, 'version' => $app['version']]))){
+        if(is_string($res = DACommunity::getUpgradePackage(['addon_id' => $app_id, 'addon' => $app_name, 'version' => $app['version']]))){
              $this->error($res);
         }
         $upgrade = $res['upgrade'];

@@ -24,6 +24,7 @@ class HandlerPrivateChat extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function forward(){
+        //Logger::error($this->content);
         if($group = model('common/Forward')->getGather([
             'group_wxid' => '',
             'from_wxid' => $this->fromWxid,
@@ -31,11 +32,22 @@ class HandlerPrivateChat extends Handler
         ])) {
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
-            $this->botClient->forwardMsgToFriends([
+            //save msg log seconds later
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => 3,
+                'params' => [
+                    'do' => ["\\app\\common\\event\\Bot", 'forwardMsg'],
+                    'bot_info' => $this->bot,
+                    'to_wxid' => $groups,
+                    'msgid' => $this->content['msg_id'],
+                    'content_type' => $this->content['type']
+                ]
+            ]);
+            /*$this->botClient->forwardMsgToFriends([
                 'robot_wxid' => $this->botWxid,
                 'to_wxid' => $groups,
                 'msgid' => $this->content['msg_id']
-            ]);
+            ]);*/
         }
     }
 

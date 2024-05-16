@@ -16,6 +16,8 @@ use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
 use ky\Quark;
 use ky\VideoSpider;
+use ky\WxBot\Driver\Extian\AutoAuth;
+use Symfony\Component\Panther\Client as PantherClient;
 use zjkal\ChinaHoliday;
 
 class Test
@@ -26,10 +28,70 @@ class Test
         return response('hello thinkphp6');
     }
 
-    public function testQuark(){
-        $cookie = "_UP_A4A_11_=wb964197c5df4e3a93356111babcf28e; _UP_D_=pc; __pus=3143971626ba28c24829fb5243cf9f68AARQ8ASICIRdh4LJjuJcN6mabkAjSiHBc1yv0BU1Jsp+VqNZEPPB5Yhl9PwOIDycvDX9Teg7tbtuvisFN0inG3Cc; __kp=b37d0a40-f6d4-11ee-81fe-fdf0bd46a26e; __kps=AAT+49IFisv7PYVNRLcat6b5; __ktd=mVQ+sYXO3J5O46pejMK8sQ==; __uid=AAT+49IFisv7PYVNRLcat6b5; __puus=2cc9867ab7b51611cb0876e1f17fe20aAAT6kSkLsYl6Yih8nIo5OfeguuZPO62tmLjxK8Y0iJ9DHW+psIGzfZ/GxOkwGuC+BKxjJ5b0j9/daDM6Eq+KZL2T/1beiOOWWpGuDvjroNTl85v8f8OQ8VLK90ahtNu1en9rvFJ/WY4bLm3J8BrDxeiU91LTp8P25/LjlGJ9we8B9iXNH/gcvBehI76WZJNlwRKUaFuo5URYt8g7BA/pnLxk";
-        $quark = new Quark($cookie);
-        $res = $quark->searchFile(['keyword' => "为母则刚"]);
+    function testAuth(){
+        $checkToken = input('token', '');
+        $data = "hfN3/Yx+anzdfMddTo+BdjkyWdNIz6z8YG6Z4P92dsTY5/6r4aNt1dRN5uGpVtx7Fl1zWz35Z6LI9OYwyhyRJySGHRwhPDPM7hIcK1zuOZPuiZB+bTuSShKWTY+ZM8j5wRG4OiyLwHX3q2PHtXwd/elpjWUs1JVSiRMy7HCZnUmsASJH3nfUqupH5j9E01w6jtVQ6shVtRgqm/Lg3E6/wjA4dmiDfIUFxBA62ghNUCh+pNmx7XNbx1/qRrZERfGSkkJ/PtGR6iVWgQS0aG41ZWJUBDjUxEcth+SQIhXJnR6EJHVze1fn/jCLeuU7sIgNRSlPb5H9W7Ahps0oR8hboA==";
+        $pcid = 'D0DF70A3E9666164DE4FDD739B67F2A0BA4BF05596C8ABB434ECEB2BEB40048A';
+
+        $client = new AutoAuth(['key' => '2B95B3BF370C8C09209E9909B1B6315737DABA14',
+            'base_uri' => 'http://124.222.4.168:8203'
+        ]);
+        $client_token = 'd8b927447a96b2eae3cd43ce08a12df2';
+        $params = [
+            'app' => 1,
+            'auth' => 'ls',
+            'sid' => null,
+            'wxid' => 'wxid_7v3b6hncdo6f12',
+            'pcid' => $pcid,
+            'data' =>  $data,
+            'checkToken' => $checkToken
+        ];
+        $res = $client->auth($params);
+        dump($res);
+    }
+
+    function testCheck(){
+        $client = new AutoAuth(['key' => '2B95B3BF370C8C09209E9909B1B6315737DABA14',
+            'base_uri' => 'http://124.222.4.168:8203'
+        ]);
+        $client_token = 'd8b927447a96b2eae3cd43ce08a12df2';
+        $res = $client->check([
+            'client_token' => $client_token,
+            'index' => 1
+        ]);
+        dump($res);
+    }
+
+    function testGetCheckCode(){
+        $client = new AutoAuth(['key' => '2B95B3BF370C8C09209E9909B1B6315737DABA14',
+            'base_uri' => 'http://124.222.4.168:8203'
+        ]);
+        $client_token = md5(random_int(10, 10000));
+        //dump($client_token);exit;
+        $client_token = "dd26df30c64e6bd0efe9b5196f66d94f";
+        $res = $client->getCheckCode(['client_token' => $client_token]);
+        if(!empty($res['code']) && $res['code'] == 200 && !empty($res['data'])){
+            $tries = 0;
+            do{
+                $res = $client->check([
+                    'client_token' => $client_token,
+                    'index' => 1
+                ]);
+                dump($res);
+                sleep(random_int(3,5));
+                $tries++;
+            }while($res['code'] == 400 && $tries < 5);
+            dump($res);
+        }
+    }
+
+    function testPanther(){
+        $client = new AutoAuth([
+            'key' => '2B95B3BF370C8C09209E9909B1B6315737DABA14',
+            'base_uri' => 'http://124.222.4.168:8203',
+            'chromedriver' => '/usr/bin/chromedriver'
+        ]);
+        $res = $client->run();
         dump($res);
     }
 

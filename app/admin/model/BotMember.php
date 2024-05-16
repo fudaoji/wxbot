@@ -269,6 +269,23 @@ class BotMember extends Base
     }
 
     /**
+     * 是否忽略
+     * @param $data
+     * @param string $driver
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function isIgnore($data, $driver = Bot::PROTOCOL_EXTIAN){
+        switch ($driver){
+            default:
+                if($data['type'] != 3 || $data['wxid'] == 'weixin' || strpos($data['wxid'], 'gh_') !== false){
+                    return true;
+                }
+        }
+        return false;
+    }
+
+    /**
      * 拉取好友
      * @param $bot
      * @return int
@@ -293,8 +310,9 @@ class BotMember extends Base
                     $list = $res['data'];
                     $wxid_arr = [];
                     $count = 0;
+                    //dump($list);exit;
                     foreach ($list as $k => $v){
-                        if($v['type'] != 3){
+                        if($this->isIgnore($v)){
                             continue;
                         }
                         $count++;

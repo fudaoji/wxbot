@@ -50,7 +50,7 @@ class MsgLog
             'type' => $content['type'],
             'content' => $content
         ]);
-        //var_dump(count($rules));
+        //Logger::error(count($rules));
         if(count($rules)){
             $insert = [
                 'admin_id' => $bot['staff_id'],

@@ -34,16 +34,22 @@ class Bot extends Bbase
         parent::initialize();
         $this->model = new BotM();
         $this->tabs = [
-            'index' => ['title' => 'PC机器人', 'href' => url('index')],
-            'web' => ['title' => 'Web机器人', 'href' => url('web')]
+            'index' => ['title' => 'e小天', 'href' => url('index')],
+            //'web' => ['title' => 'Web机器人', 'href' => url('web')]
         ];
-        $this->tip = "<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p> 
-<ul><li>西瓜框架的接口回调地址: <a href='javascript:;' id='url-xg' class='js-clipboard' data-clipboard-target='#url-xg'>".request()->domain()."/bot/api/my</a></li>
-<li>可爱猫的接口回调地址: <a href='javascript:;' id='url-cat' class='js-clipboard' data-clipboard-target='#url-cat'>".request()->domain()."/bot/api/cat</a></li>
-<li>e小天的接口回调地址: ".request()->domain()."/bot/api/extian</li>
-<!--<li>XBot框架的接口回调地址: ".request()->domain()."/bot/api/xbot</li>   
-<li>千寻的接口回调地址: ".request()->domain()."/bot/api/qianxun</li>-->
-<li>详细接入教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='http://daoadmin.kuryun.com/home/guide/bot/id/74/v/1.x.html'>点击查看</a></li></ul>";
+        $this->tip = "<!--<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p>--> 
+<ul><li>e小天的接口回调地址: <a href='javascript:;' id='url-extian' class='js-clipboard' data-clipboard-target='#url-extian'>".request()->domain()."/bot/api/extian</a></li>
+<li>详细接入教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://daoadmin.kuryun.com/home/guide/bot/id/90/v/1.x.html'>点击查看</a></li></ul>";
+    }
+
+    function configTabs($id = 0){
+        $tabs = [
+            'edit' => ['title' => '编辑', 'href' => url('edit', ['id' => $id])]
+        ];
+        if(AdminM::isLeader($this->adminInfo)){
+            $tabs['allocate'] = ['title' => '分配员工', 'href' => url('allocate', ['id' => $id])];
+        }
+        return $tabs;
     }
 
     /**
@@ -59,11 +65,11 @@ class Bot extends Bbase
         if (request()->isPost()) {
             $post_data = input('post.');
             $where = array_merge($this->staffWhere(), [
-                'protocol' => ['<>', BotConst::PROTOCOL_WEB],
+                'protocol' => BotConst::PROTOCOL_EXTIAN,
                 'status' => 1
             ]);
 
-            !empty($post_data['search_key']) && $where['nickname|title|uuid'] = ['like', '%' . $post_data['search_key'] . '%'];
+            !empty($post_data['search_key']) && $where['nickname|title|uin'] = ['like', '%' . $post_data['search_key'] . '%'];
             $total = $this->model->total($where, true);
             if ($total) {
                 $list = $this->model->getList(
@@ -79,27 +85,27 @@ class Bot extends Bbase
         $bot = $this->getCurrentBot();
         $builder = new ListBuilder();
         $builder->setSearch([
-            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '名称|昵称|微信号']
+            ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '名称|昵称|wxid']
         ])
             ->setTabNav($this->tabs, 'index')
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
             ->addTopButton('addnew', ['title' => '手动添加'])
-            ->addTopButton('addnew', ['title' => '扫码登录(限wxbot会员)', 'href' => url('hookadd')])
+            //->addTopButton('addnew', ['title' => '扫码登录(限wxbot会员)', 'href' => url('hookadd')])
+            ->addTableColumn(['title' => 'PID', 'field' => 'uuid', 'minWidth' => 90])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 150])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 100])
-            ->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => BotConst::protocols(), 'minWidth' => 90])
+            //->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => BotConst::protocols(), 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 100])
             ->addTableColumn(['title' => '所属员工', 'type' => 'enum', 'field' => 'staff_id', 'options' => AdminM::getTeamIdToName($this->adminInfo), 'minWidth' => 90])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 80])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 240, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120])
-            ->addRightButton('edit');
+            ->addRightButton('edit', ['title' => '配置']);
         if(AdminM::isLeader($this->adminInfo)){
-            $builder->addRightButton('edit', ['title' => '分配员工', 'href' => url('allocate', ['id' => '__data_id__'])])
-                /*->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1])*/
+            $builder/*->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1])*/
                 ->addRightButton('delete', ['href' => url('delPost', ['id' => '__data_id__'])]);
         }
 
@@ -134,6 +140,7 @@ class Bot extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('分配员工')
+            ->setTabNav($this->configTabs($id), __FUNCTION__)
             ->setPostUrl(url('allocate'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('staff_id', 'select', '选择员工', '选择员工', AdminM::getTeamIdToName(), 'required')
@@ -189,29 +196,80 @@ class Bot extends Bbase
      */
     public function add()
     {
+        if($this->request->isPost()){
+            $params = input('post.');
+            $res = $this->model->getRobotList($params);
+            if(is_string($res)){
+                $this->error($res);
+            }
+            foreach ($res as $item){
+                $bot = $this->model->getOneByMap(['uin' => $item['uin']], true, true);
+                if($bot){
+                    $res = $this->model->updateOne([
+                        'id' => $bot['id'],
+                        'username' => $item['username'],
+                        'nickname' => $item['nickname'],
+                        'headimgurl' => $item['headimgurl'],
+                        'alive' => 1,
+                        'uuid' => $item['uuid'] ?? 0
+                    ]);
+                }else{
+                    $res = $this->model->addOne([
+                        'uin' => $item['uin'],
+                        'admin_id' => AdminM::getCompanyId($this->adminInfo),
+                        'staff_id' => $this->adminInfo['id'],
+                        'username' => $item['username'],
+                        'title' => $item['nickname'],
+                        'nickname' => $item['nickname'],
+                        'headimgurl' => $item['headimgurl'],
+                        'alive' => 1,
+                        'uuid' => $item['uuid'] ?? 0
+                    ]);
+                }
+                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '新增微信机器人']);
+                //同步好友任务
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                        'bot' => $res
+                    ]
+                ]);
+            }
+            $this->success("操作成功！", '/undefined');
+        }
         $data = array_merge([
             'login_code' => 0,
-            'protocol' => BotConst::PROTOCOL_MY,
-            'app_key' => get_rand_char(32)
+            'protocol' => BotConst::PROTOCOL_EXTIAN,
+            //'app_key' => get_rand_char(32)
         ], $this->getConfig());
 
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
             ->setTip($this->tip)
-            ->setPostUrl(url('savePost'))
+            ->setPostUrl(url('add'))
             ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
-            ->addFormItem('uuid', 'text', 'client_id', 'e小天、xbot类型的必填')
-            ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
-            ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
-            ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
-            ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
-            ->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
+            //->addFormItem('uuid', 'text', 'client_id', 'e小天、xbot类型的必填')
+            //->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
+            //->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
+            ->addFormItem('app_key', 'text', 'ext的KEY', '请到ext管理面板中获取', [], 'required')
+            ->addFormItem('url', 'text', '服务器地址', 'ip:port', [], 'required')
+            //->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
             ->setFormData($data);
 
         return $builder->show();
     }
 
+    /**
+     * 编辑
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function edit()
     {
         $id = input('id', null);
@@ -220,20 +278,25 @@ class Bot extends Bbase
         if (!$data) {
             $this->error('参数错误');
         }
+        if($this->request->isPost()){
+            AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '编辑微信机器人'.$data['nickname'].'的信息']);
+            parent::savePost();
+        }
         $data['login_code'] = 0;
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑机器人')
+            ->setTabNav($this->configTabs($id), __FUNCTION__)
             ->setTip($this->tip)
-            ->setPostUrl(url('savePost'))
+            ->setPostUrl(url('edit'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
-            ->addFormItem('uuid', 'text', 'client_id', 'e小天、xbot类型的必填')
+            //->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
+            //->addFormItem('uuid', 'text', 'PID', 'e小天、xbot类型的必填')
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
-            ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
-            ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
-            ->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
+            ->addFormItem('app_key', 'text', 'ext的KEY', '请到ext管理面板中获取', [], 'required')
+            ->addFormItem('url', 'text', '服务器地址', 'ip:port', [], 'required')
+            //->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
             ->setFormData($data);
 
         return $builder->show();

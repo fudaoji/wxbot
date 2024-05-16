@@ -23,6 +23,8 @@ class Extian extends Base
      */
     private $clientId;
 
+    const API_NOTIFY = 'notify';
+    const API_GET_ROBOT_LIST = 'list'; //获取机器人列表
     const API_GET_ROBOT_INFO = 'getInfo';
     const API_INJECT_WECHAT = 'run'; //
     const API_GET_LOGIN_CODE = 'gotoQr';
@@ -38,6 +40,7 @@ class Extian extends Base
     const API_SET_GROUP_NAME = 'setRoomName';
     const API_GET_MEMBER_INFO = 'getUserInfo';
 
+    const API_GET_MSG = 'getMsg'; //获取消息内容
     const API_SEND_XML = 'sendAppmsgForward'; //发送xml消息
     const API_SEND_IMG = 'sendImage'; //发送图片
     const API_SEND_TEXT = 'sendText'; //发送文本
@@ -45,6 +48,7 @@ class Extian extends Base
     const API_SEND_VIDEO_MSG = 'sendFile'; // 发送视频消息，
     const API_SEND_FILE_MSG = 'sendFile'; // 发送文件消息，
     const API_DOWNLOAD_FILE = 'getimgbyid'; //下载文件到机器人服务器本地，
+    const API_SAVE_FILE = 'savefile'; //保存文件
     const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
     const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
     const API_SEND_SHARE_LINK_MSG = 'sendAppmsgForward'; //发送普通分享链接
@@ -71,6 +75,16 @@ class Extian extends Base
             'url' => '/api?json&key=' . $this->appKey,
             'data' => $params
         ]);
+    }
+
+    /**
+     * 获取机器人列表
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getRobotList($params = []){
+        return $this->doRequest(self::API_GET_ROBOT_LIST, $params);
     }
 
     /**
@@ -189,7 +203,10 @@ class Extian extends Base
         $to_wxid = is_array($params['to_wxid']) ? $params['to_wxid'] : explode(',', $params['to_wxid']);
         foreach($to_wxid as $id){
             $params['to_wxid'] = $id;
-            $this->sendVideoMsg($params);
+            $res = $this->sendVideoMsg($params);
+            if(empty($res['code'])){
+                return $res;
+            }
             $this->sleep();
         }
         return ['code' => 1];
@@ -197,9 +214,18 @@ class Extian extends Base
 
     public function sendVideoMsg($params = [])
     {
-        return $this->apiUnSupport();
-        $params['file'] = $params['path'];
-        $params['fileType'] = empty($params['file_type']) ? 'url' : $params['file_type'];
+        $path = $params['path'];
+        if(strpos($path, 'http') !== false){ //先下载到本地
+            $res = $this->saveFile([
+                'uuid' => $params['uuid'],
+                'data' => $path
+            ]);
+            if(!empty($res['code'])){
+                $path = $res['data'];
+            }
+        }
+        $params['file'] = $path;
+        $params['fileType'] = empty($params['file_type']) ? 'file' : $params['file_type'];
         $params['wxid'] = $params['to_wxid'];
         return $this->doRequest(self::API_SEND_VIDEO_MSG, $params);
     }
@@ -412,6 +438,25 @@ class Extian extends Base
                 'headimgurl' => ''
             ];
         }
+        /*$member_info = $this->getMemberInfo([
+            'uuid' => $content['uuid'] ?? '',
+            'to_wxid' => $content['from_wxid']
+        ]);
+        if(!empty($member_info['data'])){
+            $guest = [
+                'nickname' => $member_info['data']['nickName'] ?? '',
+                'wxid' => $content['from_wxid'],
+                'headimgurl' => $member_info['data']['headImg']
+            ];
+            $guest['nickname'] = $guest['nickName'];
+            $guest['headimgurl'] = $guest['img'];
+        }else{
+            $guest = [
+                'nickname' => '',
+                'wxid' => '',
+                'headimgurl' => ''
+            ];
+        }*/
         return isset($guest[$field]) ? $guest[$field] : $guest;
     }
 
@@ -502,12 +547,19 @@ class Extian extends Base
 
     public function dealRes($res)
     {
-        if(!empty($res['pid'])){
+        /*if((isset($res['status']) && $res['status']!= 0) || !empty($res['pid']) || !empty($res['pids']) || !empty($res['data'])){
             $res['code'] = 1;
         }else{
             $this->errMsg = $res['msg'];
             $res['errmsg'] = $this->errMsg;
             $res['code'] = 0;
+        }*/
+        if((isset($res['status']) && $res['status']== 0) || !empty($res['msg'])){
+            $this->errMsg = $res['msg'] ?? '';
+            $res['errmsg'] = $this->errMsg;
+            $res['code'] = 0;
+        }else{
+            $res['code'] = 1;
         }
         return $res;
     }
@@ -515,5 +567,31 @@ class Extian extends Base
     public static function response()
     {
         echo json_encode(['code' => 200, 'msg' => 'ok', 'timestamp' => time() * 1000]);
+    }
+
+    public function notify($params = [])
+    {
+        return $this->doRequest(self::API_NOTIFY, $params);
+    }
+
+    public function getMsg($params = []){
+        $params['sid'] = $params['msgid'];
+        return $this->doRequest(self::API_GET_MSG, $params);
+    }
+
+    /**
+     * 手动保存文件
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function saveFile($params = []){
+        $params["type"] = empty($params['type']) ? "url" : $params['type'];
+        if(empty($params['path'])){
+            $path_arr = explode('/', $params['data']);
+            $params['path'] = time().'-'.end($path_arr);
+        }
+        //$params['data'] = $params['path'];
+        return $this->doRequest(self::API_SAVE_FILE, $params);
     }
 }

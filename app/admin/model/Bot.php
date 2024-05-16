@@ -27,6 +27,33 @@ use ky\WxBot\Driver\Wxwork;
 class Bot extends Base
 {
     /**
+     * 获取机器人列表
+     * @param $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function getRobotList($params){
+        $bot_client = $this->getRobotClient($params);
+        $res = $bot_client->getRobotList();
+        if(empty($res['code'])){
+            return $res['errmsg'];
+        }
+        $list = $res['data'];
+        $return = [];
+        foreach ($list as $item){
+            if(empty($item['isLogin'])) continue;
+            $return[] = [
+                'uin' => $item['wxid'],
+                'nickname' => $item['nickName'] ?? '',
+                'username' => $item['alias'] ?? '',
+                'headimgurl' => $item['headImg'] ?? '',
+                'uuid' => $item['pid'] ?? 0
+            ];
+        }
+        return $return;
+    }
+
+    /**
      * 获取机器人客户端
      * @param array $bot
      * @return Cat|Vlw|Wxwork|Webgo|Qianxun|My|Mycom|Extian
@@ -34,7 +61,7 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getRobotClient($bot = []){
-        $options = ['app_key' => $bot['app_key'], 'base_uri' => $bot['url'], 'uuid' => $bot['uuid']];
+        $options = ['app_key' => $bot['app_key'], 'base_uri' => $bot['url'], 'uuid' => $bot['uuid'] ?? ''];
         config('system.bot.step_time') && $options['step_time'] = explode('-', config('system.bot.step_time'));
         return Client::getInstance($options, $bot['protocol'])->getBot();
     }

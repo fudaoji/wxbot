@@ -146,18 +146,23 @@ class Client
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private static function setClient(){
-        self::$client = new GuzzleHttpClient(['base_uri' => self::$baseUrl . '/api/']);
+        self::$client = new \GuzzleHttp\Client([
+            'base_uri' => self::$baseUrl . '/api/',
+            'verify' => false
+        ]);
     }
 
     protected function doRequest($params = []){
         $data = empty($params['data']) ? [] : $params['data'];
         !empty($params['token']) && $this->token = $params['token'];
-        $request = new \GuzzleHttp\Psr7\Request('post', $params['uri'], ['token' => $this->token, 'project' => $this->project]);
+        $method = 'post';
+        $extra = [
+            'http_errors' => false,
+            'json' => $data,
+            'headers' => ['token' => $this->token, 'project' => $this->project]
+        ];
         try {
-            $res = self::$client->send($request, [
-                'json' => $data,
-                'verify' => false
-            ]);
+            $res = self::$client->request($method, $params['uri'], $extra);
             if($res->getStatusCode() == 200){
                 return json_decode($res->getBody()->getContents(), true);
             }else{

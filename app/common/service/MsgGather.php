@@ -63,25 +63,32 @@ class MsgGather
                 }
 
                 //指定用户筛选
-                $wxids = explode(',', $rule['wxids']);
+                $wxids = [];
                 if(empty($wxids) && !empty($rule['member_tags'])){
                     $tags = explode(',', $rule['member_tags']);
+                    $wxids = explode(',', $rule['wxids']);
                     foreach ($tags as $tag){
                         $wxids = array_merge($wxids, model('admin/botMember')->getField('wxid', ['tags' => ['like', '%'.$tag.'%']]));
                     }
                 }
+
                 $wxids = array_unique($wxids);
+
                 if(!empty($wxids) && !in_array($wxid, $wxids)) {
                     continue;
                 }
+
                 $msg_types = explode(',', $rule['msg_types']);
+                //Logger::error('types:'.implode(',', $msg_types));
                 if(!empty($msg_types) && !in_array($params['type'], $msg_types)) {
                     continue;
                 }
+
                 //关键词判断
                 if(!empty($rule['keyword']) && ($params['type'] == BotConst::MSG_TEXT) && strpos($content['msg'], $rule['keyword']) === false){
                     continue;
                 }
+                //Logger::error(4);
                 array_push($list, $rule);
             }
         }

@@ -39,6 +39,7 @@ class DACommunity
     static function getUpgradePackage($params = []){
         $params['token'] = self::checkLogin();
         $res = DaoCommunity::instance()->appUpgradeGet($params);
+
         if($res['code']){
             return $res['data'];
         }

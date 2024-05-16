@@ -81,6 +81,7 @@ class Handler extends BaseCtl
         $this->addonOptions = $options;
         $this->driver = $options['driver'];
         $this->ajaxData = $options['ajax_data'];
+        //Logger::error($this->ajaxData);
         $this->checkEvent();
 
         $class = "\\app\\bot\\handler\\{$this->driver}\\" . ucfirst($this->event);
@@ -113,6 +114,7 @@ class Handler extends BaseCtl
         $this->driver = $options['driver'];
         $this->ajaxData = $options['ajax_data'];
         $this->checkEvent();
+
         //Logger::error($this->ajaxData);
         switch ($this->driver){
             case BotConst::PROTOCOL_XHX:
@@ -124,7 +126,8 @@ class Handler extends BaseCtl
                 if(in_array($this->event, [BotConst::EVENT_GROUP_MEMBER_ADD, BotConst::EVENT_GROUP_MEMBER_DEC])){
                     $new = $this->content['member'][0];
                     $this->fromWxid = $new['wxid'];
-                    $this->fromName = $new['nickName'];
+                    $this->fromName = $new['nickName'] ?? '';
+                    $this->content['to_wxid'] = $new['wxid'] ?? '';
                 }else{
                     //Logger::error($this->content);
                     if(empty($this->content['memid'])){
@@ -221,7 +224,7 @@ class Handler extends BaseCtl
                 }
                 break;
             case BotConst::PROTOCOL_EXTIAN:
-                $ignore_methods = ['getchatroommemberdetail', 'chatroommember'];
+                $ignore_methods = [/*'getchatroommemberdetail',*/ 'chatroommember'];
                 if(in_array($this->ajaxData['method'], $ignore_methods) || $this->ajaxData['type'] == 10000){
                     exit(0);
                 }
@@ -236,11 +239,34 @@ class Handler extends BaseCtl
                 }
                 if($this->ajaxData['type'] == 701){
                     $this->event = BotConst::EVENT_GROUP_MEMBER_ADD;
+                    //Logger::error($this->ajaxData);
                 }
-
+                /*if($this->ajaxData['method'] == 'chatroommember'){
+                    $members = $this->ajaxData['data']['member'];
+                    $wxid_list = array_column($members, 'wxid');
+                    $this->memberM = new BotMember();
+                    $group = $this->memberM->getOneByMap([
+                        'uin' => $this->ajaxData['myid'],
+                        'wxid' => $this->ajaxData['data']['wxid']
+                    ]);
+                    $this->groupMemberM = new BotGroupmember();
+                    $wxid_list_db = $this->groupMemberM->getField('wxid', ['group_id' => $group['id']]);
+                    if(count($wxid_list) < count($wxid_list_db)){ //说明减员
+                        $this->event = BotConst::EVENT_GROUP_MEMBER_DEC;
+                        $diff = array_diff($wxid_list_db, $wxid_list);
+                    }elseif (count($wxid_list) > count($wxid_list_db)){ //说明增员
+                        $this->event = BotConst::EVENT_GROUP_MEMBER_ADD;
+                        $diff = array_diff($wxid_list, $wxid_list_db);
+                    }
+                    $this->fromWxid = $diff[0] ?? '';
+                    $this->content['to_wxid'] = $this->fromWxid;
+                    Logger::error($this->event);
+                }*/
+                //Logger::error($this->event);
+                //Logger::error($this->ajaxData);
                 if($this->isGroupEvent()){
                     $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
-                    $this->groupName = $this->content['nickName'] ?? '';
+                    $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
                 }
                 break;
             case BotConst::PROTOCOL_XBOT:
@@ -406,33 +432,37 @@ class Handler extends BaseCtl
         //插件新方案执行
         $addons = AppService::listOpenApps(Platform::WECHAT);
         foreach ($addons as $k => $v){
-            $class_name = "\\".config('addon.pathname')."\\".$v['name']."\\platform\\controller\\Bot";
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, $this->addonHandlerName)){
-                    file_exists($common = addon_path($v['name'], 'common.php')) and require_once $common;
-                    try {
+            try {
+                $class_name = "\\".config('addon.pathname')."\\".$v['name']."\\platform\\controller\\Bot";
+                if(class_exists($class_name)){
+                    $class = new $class_name();
+                    if(method_exists($class, $this->addonHandlerName)){
+                        file_exists($common = addon_path($v['name'], 'common.php')) and require_once $common;
+
                         $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
-                    }catch (\Exception $e){
-                        Logger::error($e->getMessage());
+
                     }
                 }
+            }catch (\Exception $e){
+                Logger::error($e->getMessage());
             }
         }
 
         //插件旧方案
         $addons = Addon::addons();
         foreach ($addons as $k => $v){
-            $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
-            if(class_exists($class_name)){
-                $class = new $class_name();
-                if(method_exists($class, $this->addonHandlerName)){
-                    try {
+            try {
+                $class_name = '\\app\\bot\\controller\\' . ucfirst($k);
+                if(class_exists($class_name)){
+                    $class = new $class_name();
+                    if(method_exists($class, $this->addonHandlerName)){
+
                         $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
-                    }catch (\Exception $e){
-                        Logger::error($e->getMessage());
+
                     }
                 }
+            }catch (\Exception $e){
+                Logger::error($e->getMessage());
             }
         }
     }

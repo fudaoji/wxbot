@@ -147,9 +147,9 @@ class Bot
     public static function hooks($id = null)
     {
         $list = [
-            self::PROTOCOL_MY => '西瓜个微',
-            self::PROTOCOL_MYCOM => '西瓜企微',
-            self::PROTOCOL_CAT => '可爱猫个微',
+            //self::PROTOCOL_MY => '西瓜个微',
+            //self::PROTOCOL_MYCOM => '西瓜企微',
+            //self::PROTOCOL_CAT => '可爱猫个微',
             self::PROTOCOL_EXTIAN => 'e小天个微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;

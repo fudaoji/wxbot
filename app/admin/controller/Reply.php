@@ -271,7 +271,8 @@ class Reply extends Botbase
             'bot_id' => $this->bot['id'],
             'event' => $current_name,
             'status' => 1,
-            'handle_type' => ReplyConst::HANDLE_MSG
+            'handle_type' => ReplyConst::HANDLE_MSG,
+            'sort' => 1
         ];
 
         $builder = new FormBuilder();

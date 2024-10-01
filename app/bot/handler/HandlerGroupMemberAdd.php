@@ -17,6 +17,9 @@ use ky\Logger;
 class HandlerGroupMemberAdd extends Handler
 {
     protected $addonHandlerName = 'groupMemberAddHandle';
+    /**
+     * @var ReplyM
+     */
     public $replyM;
 
     /**
@@ -80,12 +83,25 @@ class HandlerGroupMemberAdd extends Handler
                 'status' => 1
             ]
         ]);
+
         foreach ($replys as $k => $reply){
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false){
-                $this->replyM->botReply(
-                    $this->bot, $this->botClient, $reply, $this->groupWxid,
-                    ['nickname' => $nickname, 'need_at' => $reply['need_at'], 'member_wxid' => $member_wxid]
-                );
+                if(empty($reply['medias'])){
+                    $this->replyM->botReply(
+                        $this->bot, $this->botClient, $reply, $this->groupWxid,
+                        ['nickname' => $nickname, 'need_at' => $reply['need_at'], 'member_wxid' => $member_wxid]
+                    );
+                }else{
+                    $medias = json_decode($reply['medias'], true);
+                    foreach ($medias as $media) {
+                        $reply['media_type'] = $media['type'];
+                        $reply['media_id'] = $media['id'];
+                        $this->replyM->botReply(
+                            $this->bot, $this->botClient, $reply, $this->groupWxid,
+                            ['nickname' => $nickname, 'need_at' => $reply['need_at'], 'member_wxid' => $member_wxid]
+                        );
+                    }
+                }
             }
         }
     }

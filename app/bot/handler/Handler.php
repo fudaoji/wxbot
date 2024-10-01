@@ -129,7 +129,6 @@ class Handler extends BaseCtl
                     $this->fromName = $new['nickName'] ?? '';
                     $this->content['to_wxid'] = $new['wxid'] ?? '';
                 }else{
-                    //Logger::error($this->content);
                     if(empty($this->content['memid'])){
                         $this->fromWxid = $this->content['fromid'];
                         $this->fromName = $this->content['nickName'];
@@ -140,7 +139,10 @@ class Handler extends BaseCtl
                         $this->groupWxid = $this->content['fromid'];
                     }
                 }
-                !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
+                if($this->ajaxData['type'] == 49){ //特殊消息类型
+                    $this->content = BotConst::getContentType($this->content);
+                }
+
                 !empty($this->content['id']) && $this->content['msg_id'] = $this->content['id'];
                 break;
             case BotConst::PROTOCOL_XBOT:
@@ -210,6 +212,40 @@ class Handler extends BaseCtl
      */
     public function checkEvent(){
         switch ($this->driver){
+            case BotConst::PROTOCOL_EXTIAN:
+                $ignore_methods = ['chatroommember'];
+                if(in_array($this->ajaxData['method'], $ignore_methods) || $this->ajaxData['type'] == 10000){
+                    exit(0);
+                }
+
+                $this->content = $this->ajaxData['data'] ?? [];
+                $map = [
+                    Extian::EVENT_GROUP_MEMBER_ADD => BotConst::EVENT_GROUP_MEMBER_ADD,
+                    Extian::EVENT_GROUP_MEMBER_DEC => BotConst::EVENT_GROUP_MEMBER_DEC
+                ];
+                $this->event = isset($map[$this->ajaxData['method']]) ? $map[$this->ajaxData['method']] : $this->ajaxData['method'];
+                if($this->ajaxData['method'] == Extian::EVENT_NEW_MSG){
+                    $this->event = empty($this->content['memid']) ? BotConst::EVENT_PRIVATE_CHAT : BotConst::EVENT_GROUP_CHAT;
+                }
+
+                if($this->ajaxData['method'] == 'getchatroommemberdetail') { //用此方法判断被邀请入群
+                    if(!empty($this->content['member'][0])
+                        && $this->content['member'][0]['wxid'] == $this->ajaxData['myid']
+                        && !empty($this->content['member'][0]['invite'])
+                    ){
+                        $this->event = BotConst::EVENT_INVITED_IN_GROUP;
+
+                        $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
+                        $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
+                    }
+                }
+                if($this->isGroupEvent()){
+                    $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
+                    $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
+                }else{
+                    //Logger::error($this->ajaxData);
+                }
+                break;
             case BotConst::PROTOCOL_XHX:
                 $this->content = empty($this->ajaxData['data']['data']) ? $this->ajaxData['data'] : $this->ajaxData['data']['data'];
                 !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
@@ -221,52 +257,6 @@ class Handler extends BaseCtl
                 $this->event = isset($map[$this->ajaxData['event']]) ? $map[$this->ajaxData['event']] : $this->ajaxData['event'];
                 if($this->isGroupEvent()){
                     $this->groupWxid = $this->content['room_wxid'];
-                }
-                break;
-            case BotConst::PROTOCOL_EXTIAN:
-                $ignore_methods = [/*'getchatroommemberdetail',*/ 'chatroommember'];
-                if(in_array($this->ajaxData['method'], $ignore_methods) || $this->ajaxData['type'] == 10000){
-                    exit(0);
-                }
-                $this->content = $this->ajaxData['data'] ?? [];
-                $map = [
-                    Extian::EVENT_GROUP_MEMBER_ADD => BotConst::EVENT_GROUP_MEMBER_ADD,
-                    Extian::EVENT_GROUP_MEMBER_DEC => BotConst::EVENT_GROUP_MEMBER_DEC
-                ];
-                $this->event = isset($map[$this->ajaxData['method']]) ? $map[$this->ajaxData['method']] : $this->ajaxData['method'];
-                if($this->ajaxData['method'] == Extian::EVENT_NEW_MSG){
-                    $this->event = empty($this->content['memid']) ? BotConst::EVENT_PRIVATE_CHAT : BotConst::EVENT_GROUP_CHAT;
-                }
-                if($this->ajaxData['type'] == 701){
-                    $this->event = BotConst::EVENT_GROUP_MEMBER_ADD;
-                    //Logger::error($this->ajaxData);
-                }
-                /*if($this->ajaxData['method'] == 'chatroommember'){
-                    $members = $this->ajaxData['data']['member'];
-                    $wxid_list = array_column($members, 'wxid');
-                    $this->memberM = new BotMember();
-                    $group = $this->memberM->getOneByMap([
-                        'uin' => $this->ajaxData['myid'],
-                        'wxid' => $this->ajaxData['data']['wxid']
-                    ]);
-                    $this->groupMemberM = new BotGroupmember();
-                    $wxid_list_db = $this->groupMemberM->getField('wxid', ['group_id' => $group['id']]);
-                    if(count($wxid_list) < count($wxid_list_db)){ //说明减员
-                        $this->event = BotConst::EVENT_GROUP_MEMBER_DEC;
-                        $diff = array_diff($wxid_list_db, $wxid_list);
-                    }elseif (count($wxid_list) > count($wxid_list_db)){ //说明增员
-                        $this->event = BotConst::EVENT_GROUP_MEMBER_ADD;
-                        $diff = array_diff($wxid_list, $wxid_list_db);
-                    }
-                    $this->fromWxid = $diff[0] ?? '';
-                    $this->content['to_wxid'] = $this->fromWxid;
-                    Logger::error($this->event);
-                }*/
-                //Logger::error($this->event);
-                //Logger::error($this->ajaxData);
-                if($this->isGroupEvent()){
-                    $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
-                    $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
                 }
                 break;
             case BotConst::PROTOCOL_XBOT:

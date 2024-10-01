@@ -88,7 +88,7 @@ class Qianwen extends Base
             'proxy' => $this->proxy,
         ];
         !empty($params) && $options['data'] = $params;
-        Logger::error(json_encode($options, JSON_UNESCAPED_UNICODE));
+        //Logger::error(json_encode($options, JSON_UNESCAPED_UNICODE));
         return $this->request($options);
     }
 

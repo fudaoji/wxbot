@@ -17,6 +17,9 @@
 
 namespace app\common\model;
 
+use Dao\Upload\Driver\Aliyun;
+use Dao\Upload\Driver\Qcloud;
+use Dao\Upload\Driver\Qiniu;
 use ky\BaseModel;
 use Dao\Upload\Upload as Uploader;
 
@@ -428,5 +431,63 @@ class Upload extends BaseModel
                 ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
             ] /* 列出的文件类型 */
         ];
+    }
+
+    /**
+     * 将远程文件上传到云存储
+     * @param string $url
+     * @param string $key
+     * @return bool|string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function fetchToOss($url = '', $key = ''){
+        $key = $key ?: md5($url);
+        $res = false;
+        switch (self::$setting['driver']){
+            case Uploader::QINIU:
+                $qiniu = new Qiniu(self::driverConfig(self::$setting['driver']));
+                if($qiniu->fetch($url, $key)){
+                    $res = $qiniu->downLink($key);
+                }
+                break;
+            case Uploader::ALIYUN:
+                $aliyun = new Aliyun(self::driverConfig(self::$setting['driver']));
+                $res = $aliyun->putString(['string' => file_get_contents($url), 'key' => $key]);
+                break;
+            case Uploader::QCLOUD:
+                $qcloud = new Qcloud(self::driverConfig(self::$setting['driver']));
+                $res = $qcloud->putString(['string' => file_get_contents($url), 'key' => $key]);
+                break;
+        }
+        return $res;
+    }
+
+    /**
+     * 将文件流写入到文件，并返回文件链接
+     * @param string $string
+     * @param string $key
+     * @return array|string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function putString($string = '', $key = ''){
+        $key = $key ?: get_rand_char(16);
+        switch (self::$setting['driver']){
+            case Uploader::QCLOUD:
+                $client = new Qcloud(self::driverConfig(self::$setting['driver']));
+                break;
+            case Uploader::ALIYUN:
+                $client = new Aliyun(self::driverConfig(self::$setting['driver']));
+                break;
+            default:
+                $client = new Qiniu(self::driverConfig(self::$setting['driver']));
+                break;
+        }
+        if(($res = $client->putString([
+                'string' => $string,
+                'key' => $key
+            ])) === false){
+            return $client->getError();
+        }
+        return ['url' => $res];
     }
 }

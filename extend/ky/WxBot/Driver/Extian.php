@@ -16,6 +16,8 @@ class Extian extends Base
 {
     const EVENT_GROUP_MEMBER_DEC = 'chatroommemberSub';
     const EVENT_GROUP_MEMBER_ADD = 'chatroommemberAdd';
+    const EVENT_FRIEND_VERIFY = 'verifyuser'; // TYPE=706             好友验证结果
+    //tenpay  705                 收款结果
     const EVENT_NEW_MSG = 'newmsg';
 
     /**

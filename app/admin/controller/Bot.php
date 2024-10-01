@@ -205,16 +205,16 @@ class Bot extends Bbase
             foreach ($res as $item){
                 $bot = $this->model->getOneByMap(['uin' => $item['uin']], true, true);
                 if($bot){
-                    $res = $this->model->updateOne([
+                    $res = $this->model->updateOne(array_merge($params, [
                         'id' => $bot['id'],
                         'username' => $item['username'],
                         'nickname' => $item['nickname'],
                         'headimgurl' => $item['headimgurl'],
                         'alive' => 1,
                         'uuid' => $item['uuid'] ?? 0
-                    ]);
+                    ]));
                 }else{
-                    $res = $this->model->addOne([
+                    $res = $this->model->addOne(array_merge($params, [
                         'uin' => $item['uin'],
                         'admin_id' => AdminM::getCompanyId($this->adminInfo),
                         'staff_id' => $this->adminInfo['id'],
@@ -224,7 +224,7 @@ class Bot extends Bbase
                         'headimgurl' => $item['headimgurl'],
                         'alive' => 1,
                         'uuid' => $item['uuid'] ?? 0
-                    ]);
+                    ]));
                 }
                 AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '新增微信机器人']);
                 //同步好友任务

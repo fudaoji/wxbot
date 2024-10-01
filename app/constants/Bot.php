@@ -9,6 +9,10 @@
 
 namespace app\constants;
 
+use app\common\service\XmlMini;
+use ky\Logger;
+use function GuzzleHttp\Psr7\str;
+
 class Bot
 {
     const PROTOCOL_WEB = 'webgo';
@@ -28,6 +32,7 @@ class Bot
     const GROUP = 'group';
     const MP = 'mp';
 
+    const EVENT_INVITED_IN_GROUP = 'EventInvitedInGroup'; //被邀请进群
     const EVENT_GROUP_ESTABLISH = 'EventGroupEstablish'; //创建新群
     const EVENT_GROUP_MEMBER_ADD = 'EventGroupMemberAdd'; //群人员减少
     const EVENT_GROUP_MEMBER_DEC = 'EventGroupMemberDecrease'; //群人员减少
@@ -44,9 +49,13 @@ class Bot
 
     const MSG_TEXT = 1; //文本消息
     const MSG_IMG = 3; //图片消息
+    const MSG_NEWS = 5; //图文链接
+    const MSG_MINI = 33; //小程序
     const MSG_VOICE = 34; //语音消息
     const MSG_VIDEO = 43; //视频
-    const MSG_LINK = 49; //分享链接
+    const MSG_LINK = 49; //分享链接、视频号
+    const MSG_FINDER = 50; //视频号
+    const MSG_FINDER_VIDEO = 51; //视频号短视频
     const MSG_FILE = 2004;  //文件消息
     const MSG_EMOTICON = 47;   // 表情消息
     const MSG_CARD = 42; //名片消息
@@ -84,13 +93,17 @@ class Bot
             self::MSG_FILE => '文件',
             self::MSG_VOICE => '语音',
             self::MSG_VIDEO => '视频',
+            self::MSG_NEWS => '图文链接',
             self::MSG_LINK => '分享链接',
             self::MSG_EMOTICON => '动态表情',
             self::MSG_CARD => '微信名片',
+            self::MSG_MINI => '小程序',
+            self::MSG_FINDER => '视频号',
+            self::MSG_FINDER_VIDEO => '视频号短视频',
             self::MSG_LOCATION => '地理位置',
             self::MSG_TRANSFER => '转账',
             self::MSG_RED => '红包',
-            self::MSG_APP => '小程序',
+            self::MSG_APP => 'app',
             self::MSG_GROUPINVITE => '进群邀请',
             self::MSG_VERIFY => '加好友验证',
             self::MSG_RECALLED => '消息撤回',
@@ -170,5 +183,22 @@ class Bot
             //self::PROTOCOL_XBOT=> 'XBot个微'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
+    }
+
+    /**
+     * 解析消息类型
+     * @param $content
+     * @param string $protocol
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function getContentType(&$content, $protocol = self::PROTOCOL_EXTIAN){
+        switch ($protocol){
+            default:
+                $object = new XmlMini($content['msg']);
+                $content['type'] = (string) $object->decodeObject()->type;
+                //Logger::error($content);
+        }
+        return $content;
     }
 }

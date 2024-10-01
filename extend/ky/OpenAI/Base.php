@@ -90,6 +90,7 @@ Abstract class Base
         if($response->getStatusCode() !== 200){
             $this->setError($response->getStatusCode());
             Logger::error($this->errMsg);
+            //dump($response->getBody()->getContents(), $url, $extra);
             return ['code' => 0];
         }
         //Logger::error($response->getBody()->getContents());

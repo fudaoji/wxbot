@@ -13,12 +13,13 @@
 // | 缓存设置
 // +----------------------------------------------------------------------
 
+$prefix = env('cache_prefix', env('app_prefix', 'wxbot_'));
 $configs = [
     'file' => [
         // 驱动方式
         'type'       => 'File',
         // 缓存前缀
-        'prefix' => env('app_prefix', 'ky_'),
+        'prefix' => $prefix,
         // 设置不同的缓存保存目录
         //'path'   => root_path() . 'runtime/cache/',
         // 缓存有效期 0表示永久缓存
@@ -32,7 +33,7 @@ $configs = [
     // redis缓存
     'redis' => [
         // 缓存前缀
-        'prefix' => env('app_name', ''),
+        'prefix' => $prefix,
         // 驱动方式
         'type' => 'redis',
         // 服务器地址
@@ -44,7 +45,7 @@ $configs = [
     'memcache' => [
         'type'  => 'memcached',
         // 缓存前缀
-        'prefix' => env('app_prefix', 'ky_'),
+        'prefix' => $prefix,
         'host'  => env('memcached.host', 'localhost'),
         'port'  => env('memcached.port', 11211),
         // 缓存有效期 0表示永久缓存

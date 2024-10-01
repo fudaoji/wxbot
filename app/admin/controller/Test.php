@@ -28,6 +28,18 @@ class Test
         return response('hello thinkphp6');
     }
 
+    function clearCache(){
+        // 假设你的缓存配置标识符为cache_1
+        $cache = get_redis();
+        //dump(config('cache.stores')[config('cache.default')]['prefix']);exit;
+        // 获取缓存的所有键
+        $keys = $cache->keys(config('cache.stores')[config('cache.default')]['prefix'] . '*');
+        // 遍历所有匹配的键，并删除它们
+        foreach ($keys as $key) {
+            dump($key);
+            //$cache->del($key);
+        }
+    }
     function testAuth(){
         $checkToken = input('token', '');
         $data = "hfN3/Yx+anzdfMddTo+BdjkyWdNIz6z8YG6Z4P92dsTY5/6r4aNt1dRN5uGpVtx7Fl1zWz35Z6LI9OYwyhyRJySGHRwhPDPM7hIcK1zuOZPuiZB+bTuSShKWTY+ZM8j5wRG4OiyLwHX3q2PHtXwd/elpjWUs1JVSiRMy7HCZnUmsASJH3nfUqupH5j9E01w6jtVQ6shVtRgqm/Lg3E6/wjA4dmiDfIUFxBA62ghNUCh+pNmx7XNbx1/qRrZERfGSkkJ/PtGR6iVWgQS0aG41ZWJUBDjUxEcth+SQIhXJnR6EJHVze1fn/jCLeuU7sIgNRSlPb5H9W7Ahps0oR8hboA==";

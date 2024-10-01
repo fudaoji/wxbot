@@ -20,6 +20,9 @@ class EventPrivateChat extends HandlerPrivateChat
      * 私聊消息接收器
      */
     public function handle(){
+        /*if($this->content['fromid'] == 'wxid_xokb2ezu1p6t21'){
+            Logger::error($this->content['type']);
+        }*/
         $this->friend = $this->memberM->getOneByMap(['uin' => $this->bot['uin'], 'wxid' => $this->fromWxid]);
         $this->basic();
         $this->addon();

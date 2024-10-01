@@ -38,14 +38,14 @@ class Keyword extends Base
         $cache_key = md5(__FUNCTION__ . serialize($params));
         $data = cache($cache_key);
         if($refresh || empty($data)){
-            $where = [
-                'sql'=>"bot_id={$params['bot_id']} and status=1 and ((match_type=0 and keyword = '{$params['keyword']}') OR (match_type=1 and LOCATE(`keyword`, '{$params['keyword']}')))",
-            ];
-            $data = $this->getAll([
-                'order' => ['sort' => 'desc'],
-                'where' => $where,
-                'refresh' => $refresh
-            ]);
+            $data = $this->whereRaw("bot_id=? and status=1 and ((match_type=0 and keyword=?) OR (match_type=1 and LOCATE(`keyword`, ?)))", [
+                $params['bot_id'], // 第一个?的值
+                $params['keyword'], // 第二个?的值，对应keyword=?
+                $params['keyword'] // 第三个?的值，对应LOCATE(?, keyword)
+            ])
+                ->order(['sort' => 'desc'])
+                ->select()
+                ->toArray();
         }
         cache($cache_key, $data);
         return $data;

@@ -9,13 +9,14 @@
 
 namespace tests\cases\bot;
 
+use app\common\service\XmlMini;
 use app\constants\Bot;
 use ky\WxBot\Driver\Extian;
 
 class ExtianTest extends BotTest
 {
     private $botClient;
-    private $clientId = 4608;
+    private $clientId = 2916;
 
     private $baseUri = 'http://124.222.4.168:8203';
     private $key = '2B95B3BF370C8C09209E9909B1B6315737DABA14';
@@ -23,6 +24,49 @@ class ExtianTest extends BotTest
     public function __construct() {
         parent::__construct();
         $this->botClient = new Extian(['app_key' => $this->key, 'base_uri' => $this->baseUri]);
+    }
+
+    function testDecryptXml(){
+        $xml = '<?xml version="1.0"?>
+<msg>
+	<appmsg appid="" sdkver="">
+		<title><![CDATA[微信转账]]></title>
+		<des><![CDATA[收到转账0.01元。如需收钱，请点此升级至最新版本]]></des>
+		<action />
+		<type>2000</type>
+		<content><![CDATA[]]></content>
+		<url><![CDATA[https://support.weixin.qq.com/cgi-bin/mmsupport-bin/readtemplate?t=page/common_page__upgrade&text=text001&btn_text=btn_text_0]]></url>
+		<thumburl><![CDATA[https://support.weixin.qq.com/cgi-bin/mmsupport-bin/readtemplate?t=page/common_page__upgrade&text=text001&btn_text=btn_text_0]]></thumburl>
+		<lowurl />
+		<extinfo />
+		<wcpayinfo>
+			<paysubtype>1</paysubtype>
+			<feedesc><![CDATA[￥0.01]]></feedesc>
+			<transcationid><![CDATA[53010000354040202405222190861491]]></transcationid>
+			<transferid><![CDATA[1000050001202405220128752180618]]></transferid>
+			<invalidtime><![CDATA[1716445797]]></invalidtime>
+			<begintransfertime><![CDATA[1716359397]]></begintransfertime>
+			<effectivedate><![CDATA[1]]></effectivedate>
+			<pay_memo><![CDATA[]]></pay_memo>
+			<receiver_username><![CDATA[wxid_7v3b6hncdo6f12]]></receiver_username>
+			<payer_username><![CDATA[]]></payer_username>
+		</wcpayinfo>
+	</appmsg>
+</msg>';
+        $obj = new XmlMini($xml);
+        $key = "transferid";
+        dump((string)$obj->decodeObject()->wcpayinfo->$key);
+    }
+
+    public function testAcceptTransfer(){
+        $res = $this->botClient->acceptTransfer([
+            'uuid' => $this->clientId,
+            'robot_wxid' => $this->robotFjq,
+            'from_wxids' => $this->wxidDj,
+            'payer_pay_id' => ''
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
     }
 
     /**

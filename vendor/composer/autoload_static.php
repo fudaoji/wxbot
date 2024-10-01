@@ -56,6 +56,7 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'W' => 
         array (
             'Workerman\\' => 10,
+            'WebSocket\\' => 10,
         ),
         'S' => 
         array (
@@ -80,6 +81,8 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Phrity\\Util\\' => 12,
+            'Phrity\\Net\\' => 11,
             'PhpParser\\' => 10,
         ),
         'O' => 
@@ -170,6 +173,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         array (
             0 => __DIR__ . '/..' . '/workerman/workerman',
         ),
+        'WebSocket\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/textalk/websocket/lib',
+        ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
@@ -225,10 +232,19 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Phrity\\Util\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phrity/util-errorhandler/src',
+        ),
+        'Phrity\\Net\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phrity/net-uri/src',
         ),
         'PhpParser\\' => 
         array (

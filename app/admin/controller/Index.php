@@ -154,7 +154,13 @@ class Index extends Base
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function clearCache(){
-        Cache::clear();
+        $cache = get_redis();
+        // 获取缓存的所有键
+        $keys = $cache->keys(config('cache.stores')[config('cache.default')]['prefix'] . '*');
+        // 遍历所有匹配的键，并删除它们
+        foreach ($keys as $key) {
+            $cache->del($key);
+        }
         $this->success('清理成功');
     }
 

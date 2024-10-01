@@ -34,7 +34,8 @@
     "topthink/think-worker": "^3.0",
     "league/flysystem": "^2.5",
     "fudaoji/php-upload": "^1.1",
-    "zjkal/time-helper": "^1.1"
+    "zjkal/time-helper": "^1.1",
+    "textalk/websocket": "^1.6"
   },
   "require-dev": {
     "symfony/var-dumper": "^4.2",

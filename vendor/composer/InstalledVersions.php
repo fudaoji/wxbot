@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'ea13806d8b799a2fe298eb9943482561097de362',
+    'reference' => '653d62428ca7761dc9b01b357e565d94a3e5ebf3',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -231,6 +231,24 @@ private static $installed = array (
       ),
       'reference' => 'a6d351645c3fe5a30f5e86be6577d946af65a328',
     ),
+    'phrity/net-uri' => 
+    array (
+      'pretty_version' => '1.3.0',
+      'version' => '1.3.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '3f458e0c4d1ddc0e218d7a5b9420127c63925f43',
+    ),
+    'phrity/util-errorhandler' => 
+    array (
+      'pretty_version' => '1.1.0',
+      'version' => '1.1.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '4016d9f9615a4c602f525b0542e4835e316a42e4',
+    ),
     'psr/container' => 
     array (
       'pretty_version' => '1.1.2',
@@ -239,6 +257,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '513e0666f7216c7459170d56df27dfcefe1689ea',
+    ),
+    'psr/http-factory' => 
+    array (
+      'pretty_version' => '1.1.0',
+      'version' => '1.1.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '2b4765fddfe3b508ac62f829e852b1501d3f6e8a',
     ),
     'psr/http-message' => 
     array (
@@ -542,6 +569,15 @@ private static $installed = array (
       ),
       'reference' => '1069c7a3fca74578022fab6f81643248d02f8e63',
     ),
+    'textalk/websocket' => 
+    array (
+      'pretty_version' => '1.6.3',
+      'version' => '1.6.3.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '67de79745b1a357caf812bfc44e0abf481cee012',
+    ),
     'theseer/tokenizer' => 
     array (
       'pretty_version' => '1.2.1',
@@ -567,7 +603,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'ea13806d8b799a2fe298eb9943482561097de362',
+      'reference' => '653d62428ca7761dc9b01b357e565d94a3e5ebf3',
     ),
     'topthink/think-captcha' => 
     array (

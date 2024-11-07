@@ -69,7 +69,7 @@ class EventPrivateChat extends HandlerPrivateChat
             ($this->content['type'] == Bot::MSG_SYS && (strpos($this->content['msg'],'你已添加了') !== false))){
             $this->isNewFriend = true;
         }else{
-            exit(0); //说明不是新好友
+            return true; //说明不是新好友
         }
 
         $reply_m = new \app\common\model\Reply();

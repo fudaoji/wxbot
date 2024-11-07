@@ -319,6 +319,7 @@ class Extian extends Base
     public function sendTextToFriend($params = [])
     {
         $params['wxid'] = $params['to_wxid'];
+        $params['msg'] = str_replace("\r", "", $params['msg']);
         return $this->doRequest(self::API_SEND_TEXT, $params);
     }
 

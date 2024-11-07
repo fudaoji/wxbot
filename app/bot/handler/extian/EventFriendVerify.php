@@ -10,6 +10,7 @@
 namespace app\bot\handler\extian;
 
 use app\bot\handler\HandlerFriendVerify;
+use ky\Logger;
 
 class EventFriendVerify extends HandlerFriendVerify
 {

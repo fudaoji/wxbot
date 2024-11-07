@@ -64,7 +64,7 @@ class Bot
     const MSG_RED = 2001;  //红包消息
     const MSG_APP = 2002;  // 小程序消息
     const MSG_GROUPINVITE = 2003;  //群邀请
-    const MSG_VERIFY = 37;    // 好友验证
+    const MSG_VERIFY = 37;    // 好友请求
     const MSG_SYS = 10000; // 系统消息
     const MSG_RECALLED = 2005;  // 消息撤回
     const MSG_OTHER = 0; // 其他消息
@@ -195,10 +195,23 @@ class Bot
     public static function getContentType(&$content, $protocol = self::PROTOCOL_EXTIAN){
         switch ($protocol){
             default:
-                $object = new XmlMini($content['msg']);
-                $content['type'] = (string) $object->decodeObject()->type;
-                //Logger::error($content);
+                switch ($content['type']){
+                    case self::MSG_VERIFY:
+                        $object = (new XmlMini($content['msg']))->getObject();
+                        $content['encryptusername'] = (string)$object['encryptusername'];
+                        $content['ticket'] = (string)$object['ticket'];
+                        $content['scene'] = (string)$object['scene'];
+                        $content['fromid'] = (string)$object['fromusername'];
+                        $content['nickName'] = (string)$object['fromnickname'];
+                        $content['headImg'] = (string)$object['smallheadimgurl'];
+                        break;
+                    case self::MSG_LINK: //49
+                        $object = new XmlMini($content['msg']);
+                        $content['type'] = (string) $object->decodeObject()->type;
+                        break;
+                }
         }
+        //Logger::error($content);
         return $content;
     }
 }

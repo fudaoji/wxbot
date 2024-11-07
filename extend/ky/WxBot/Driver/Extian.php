@@ -41,6 +41,7 @@ class Extian extends Base
     const API_CLEAN_CHAT_HISTORY = 'ClearMsgList';
     const API_SET_GROUP_NAME = 'setRoomName';
     const API_GET_MEMBER_INFO = 'getUserInfo';
+    const API_AGREE_FRIEND_VERIFY = 'agreeUser'; // 同意好友请求
 
     const API_GET_MSG = 'getMsg'; //获取消息内容
     const API_SEND_XML = 'sendAppmsgForward'; //发送xml消息
@@ -77,6 +78,23 @@ class Extian extends Base
             'url' => '/api?json&key=' . $this->appKey,
             'data' => $params
         ]);
+    }
+
+    /**
+    res: 同意好友请求
+    robot_wxid (string)  // 机器人ID
+    encryptusername (string)  // 收到好友验证消息中（json）的v1属性
+    ticket (string)  // 收到好友验证消息中（json）的v2属性
+    scene (int)  // 收到好友验证消息中（json）的type属性
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function agreeFriendVerify($params = []){
+        $params['encryptusername'] = $params['encryptusername'] ?? $params['v1'];
+        $params['ticket'] = $params['ticket'] ?? $params['v2'];
+        $params['scene'] = $params['scene'] ?? $params['type'];
+        return $this->doRequest(self::API_AGREE_FRIEND_VERIFY, $params);
     }
 
     /**
@@ -374,11 +392,6 @@ class Extian extends Base
     {
         $params['wxid'] = $params['to_wxid'];
         return $this->doRequest(self::API_DELETE_FRIEND, $params);
-    }
-
-    public function agreeFriendVerify($params = [])
-    {
-        return $this->apiUnSupport();
     }
 
     public function searchAccount($params = [])

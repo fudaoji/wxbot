@@ -105,4 +105,8 @@ class XmlMini extends Xml
         }
         return $params;
     }
+
+    function getObject(){
+        return $this->object;
+    }
 }

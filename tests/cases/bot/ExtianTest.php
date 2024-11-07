@@ -11,12 +11,14 @@ namespace tests\cases\bot;
 
 use app\common\service\XmlMini;
 use app\constants\Bot;
+use app\constants\Bot as BotConst;
+use app\constants\Reply;
 use ky\WxBot\Driver\Extian;
 
 class ExtianTest extends BotTest
 {
     private $botClient;
-    private $clientId = 2916;
+    private $clientId = 3436;
 
     private $baseUri = 'http://124.222.4.168:8203';
     private $key = '2B95B3BF370C8C09209E9909B1B6315737DABA14';
@@ -26,6 +28,16 @@ class ExtianTest extends BotTest
         $this->botClient = new Extian(['app_key' => $this->key, 'base_uri' => $this->baseUri]);
     }
 
+    function testDecryptVerifyUserXml(){
+        $xml = '<msg fromusername="wxid_a98qqf9m4bny22" encryptusername="v3_020b3826fd03010000000000f2370ac2aca22d000000501ea9a3dba12f95f6b60a0536a1adb6f43f7197a82254882795abf27decb54cf3095abef0b12d207a10a7bb85bef73298fc6e26c7f87d820fb5541cdc00942b5b6d614797f429d74d911b1f55@stranger" fromnickname="Jane" content="我是Jane" fullpy="Jane" shortpy="JANE" imagestatus="3" scene="3" country="" province="" city="" sign="加入樱花日记体验官 o元轻创业 欢迎咨询" percar="janezzpp" weibo="" albumflag="0" albumstyle="0" albumbgimgid="" snsflag="257" snsbgimgid="http://szmmsns.qpic.cn/mmsns/HvrrK218DXY5ib0DcW86gU7KkBRQruRlRUpVOtCvQ83w8DQWynoWicgZGViaibNicmmFbBOuibia0AC5TI/0" snsbgobjectid="14242923050269684286" mhash="d02ebd43987ca762ffc71537e288463c" mfullhash="d02ebd43987ca762ffc71537e288463c" bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/eDbKadZSIT2dO7QoR7hVkxV2M6N535WpFYzbo8t5J4cLYTz4BWgzgw5J0p4N32NhiaNFzSHE7zlHKgWJAic0kHQKaVtS9pWxgwQxx95EwicHfMITPKFaJaOGKCWM6fhHukW/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/eDbKadZSIT2dO7QoR7hVkxV2M6N535WpFYzbo8t5J4cLYTz4BWgzgw5J0p4N32NhiaNFzSHE7zlHKgWJAic0kHQKaVtS9pWxgwQxx95EwicHfMITPKFaJaOGKCWM6fhHukW/96" ticket="v4_000b708f0b040000010000000000d568f27e6135d8a01db93cca2a671000000050ded0b020927e3c97896a09d47e6e9ee2913f94fdf7f3bd6508fd1ce61a37fac8933d742dd017b2b398a0aa8e6a511da07604c1987f1d039bdf88400f18ae570825916cbfb485ec3a6cf805d6b2ffe48ee6bc35a243e8c6e1b4af37557163e7d982b14aa75f66e00f7513137f124b1cfdb89a1b799cdc818f@stranger" opcode="2" googlecontact="" qrticket="" chatroomusername="" sourceusername="" sourcenickname="" sharecardusername="" sharecardnickname="" cardversion="" extflag="0"><brandlist count="0" ver="812838312"></brandlist></msg>';
+        $xml = (new XmlMini($xml))->getObject();
+        dump((string)$xml['fromusername']);
+    }
+
+    /**
+     * composer test --  --filter='ExtianTest::testDecryptXml'
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     function testDecryptXml(){
         $xml = '<?xml version="1.0"?>
 <msg>
@@ -56,6 +68,23 @@ class ExtianTest extends BotTest
         $obj = new XmlMini($xml);
         $key = "transferid";
         dump((string)$obj->decodeObject()->wcpayinfo->$key);
+    }
+
+    /**
+     * 同意好友请求
+     * composer test --  --filter='ExtianTest::testAgreeFriendVerify'
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testAgreeFriendVerify(){
+        $res = $this->botClient->agreeFriendVerify([
+            'uuid' => $this->clientId,
+            'robot_wxid' => $this->robotFjq,
+            'encryptusername' => 'v3_020b3826fd03010000000000f2370ac2aca22d000000501ea9a3dba12f95f6b60a0536a1adb6f43f7197a82254882795abf27decb54cf3095abef0b12d207a10a7bb85bef73298fc6e26c7f87d820fb5541cdc00942b5b6d614797f429d74d911b1f55@stranger',
+            'ticket' => 'v4_000b708f0b040000010000000000d568f27e6135d8a01db93cca2a671000000050ded0b020927e3c97896a09d47e6e9ee2913f94fdf7f3bd6508fd1ce61a37fac8933d742dd017b2b398a0aa8e6a511da07604c1987f1d039bdf88400f18ae570825916cbfb485ec3a6cf805d6b2ffe48ee6bc35a243e8c6e1b4af37557163e7d982b14aa75f66e00f7513137f124b1cfdb89a1b799cdc818f@stranger',
+            'scene' => 3
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
     }
 
     public function testAcceptTransfer(){
@@ -352,7 +381,11 @@ class ExtianTest extends BotTest
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function testGetRobotList() {
-        $res = $this->botClient->getRobotList();
+        $res = \app\common\service\Bot::model()->getRobotList([
+            'app_key' => $this->key,
+            'url' => $this->baseUri,
+            'protocol' => BotConst::PROTOCOL_EXTIAN
+        ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
     }

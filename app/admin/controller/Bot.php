@@ -53,6 +53,52 @@ class Bot extends Bbase
     }
 
     /**
+     * 同步数据
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function syncBots(){
+        $bots = \app\common\service\Bot::model()->getAll([
+            'where' => ['staff_id' => $this->adminInfo['id'], 'status' => 1]
+        ])->toArray();
+        foreach ($bots as $bot){
+            $res = $this->model->getRobotList($bot);
+            if(is_string($res)){
+                continue;
+            }
+            foreach ($res as $item){
+                $bot = $this->model->getOneByMap(['uin' => $item['uin']], true, true);
+                if($bot){
+                    $res = $this->model->updateOne([
+                        'id' => $bot['id'],
+                        'username' => $item['username'],
+                        'nickname' => $item['nickname'],
+                        'headimgurl' => $item['headimgurl'],
+                        'alive' => 1,
+                        'uuid' => $item['uuid'] ?? 0
+                    ]);
+                }else{
+                    $res = $this->model->addOne(array_merge(['protocol' => BotConst::PROTOCOL_EXTIAN], [
+                        'uin' => $item['uin'],
+                        'admin_id' => AdminM::getCompanyId($this->adminInfo),
+                        'staff_id' => $this->adminInfo['id'],
+                        'username' => $item['username'],
+                        'title' => $item['nickname'],
+                        'nickname' => $item['nickname'],
+                        'headimgurl' => $item['headimgurl'],
+                        'alive' => 1,
+                        'uuid' => $item['uuid'] ?? 0
+                    ]));
+                }
+            }
+        }
+        $this->success('同步成功！');
+    }
+
+    /**
      * 机器人
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException

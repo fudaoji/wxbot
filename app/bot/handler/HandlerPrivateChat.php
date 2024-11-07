@@ -115,7 +115,7 @@ class HandlerPrivateChat extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function beAdded(){
-        if(empty($this->friend)){
+        if(empty($this->friend) || strpos($this->content['msg'],'通过了你的朋友验证请求') || '你已添加了'){
             $reply_m = new \app\common\model\Reply();
             $this->isNewFriend = true;
 

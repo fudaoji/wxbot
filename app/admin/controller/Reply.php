@@ -158,16 +158,18 @@ class Reply extends Botbase
         /*if(isset($post_data['media_id']) && empty($post_data['media_id'])){
             $this->error('请选择素材');
         }*/
-        if(count($post_data['media_id_type']) > 0){
-            $medias = [];
-            foreach ($post_data['media_id_type'] as $id_type){
-                list($id, $type) = explode('_', $id_type);
-                $medias[] = ['id' => $id, 'type' => $type];
+        if(isset($post_data['media_id_type'])){
+            if(count($post_data['media_id_type']) > 0){
+                $medias = [];
+                foreach ($post_data['media_id_type'] as $id_type){
+                    list($id, $type) = explode('_', $id_type);
+                    $medias[] = ['id' => $id, 'type' => $type];
+                }
+                $post_data['medias'] = json_encode($medias, JSON_UNESCAPED_UNICODE);
+                unset($post_data['media_id_type']);
+            }else{
+                $this->error('请选择素材');
             }
-            $post_data['medias'] = json_encode($medias, JSON_UNESCAPED_UNICODE);
-            unset($post_data['media_id_type']);
-        }else{
-            $this->error('请选择素材');
         }
 
         if(empty($post_data[$this->pk])){
@@ -325,7 +327,7 @@ class Reply extends Botbase
             ->addFormItem('bot_id', 'hidden', 'botid', 'botid')
             ->addFormItem('event', 'hidden', 'event', 'event')
             ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
-            ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers(), 'required')
+            ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers())
             ->addFormItem('handle_type', 'select', '响应动作', '删除好友对私聊起作用，移出群对群聊起作用', ReplyConst::actionTypes())
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')
@@ -351,7 +353,7 @@ class Reply extends Botbase
         $builder->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
-            ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers(), 'required')
+            ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers())
             ->addFormItem('handle_type', 'select', '响应动作', '删除好友对私聊起作用，移出群对群聊起作用', ReplyConst::actionTypes())
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')

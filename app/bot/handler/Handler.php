@@ -83,6 +83,7 @@ class Handler extends BaseCtl
         $this->ajaxData = $options['ajax_data'];
         //Logger::error($this->ajaxData);
         $this->checkEvent();
+        //Logger::error($this->event);
 
         $class = "\\app\\bot\\handler\\{$this->driver}\\" . ucfirst($this->event);
         if(! class_exists($class)){
@@ -139,7 +140,7 @@ class Handler extends BaseCtl
                         $this->groupWxid = $this->content['fromid'];
                     }
                 }
-                if($this->ajaxData['type'] == 49){ //特殊消息类型
+                if(in_array($this->ajaxData['type'], [BotConst::MSG_LINK, BotConst::MSG_VERIFY])){ //特殊消息类型
                     $this->content = BotConst::getContentType($this->content);
                 }
 
@@ -214,7 +215,7 @@ class Handler extends BaseCtl
         switch ($this->driver){
             case BotConst::PROTOCOL_EXTIAN:
                 $ignore_methods = ['chatroommember'];
-                if(in_array($this->ajaxData['method'], $ignore_methods) || $this->ajaxData['type'] == 10000){
+                if(in_array($this->ajaxData['method'], $ignore_methods) /*|| $this->ajaxData['type'] == 10000*/){
                     exit(0);
                 }
 
@@ -226,6 +227,9 @@ class Handler extends BaseCtl
                 $this->event = isset($map[$this->ajaxData['method']]) ? $map[$this->ajaxData['method']] : $this->ajaxData['method'];
                 if($this->ajaxData['method'] == Extian::EVENT_NEW_MSG){
                     $this->event = empty($this->content['memid']) ? BotConst::EVENT_PRIVATE_CHAT : BotConst::EVENT_GROUP_CHAT;
+                }
+                if(!empty($this->content['type']) && $this->content['type'] == 37){
+                    $this->event = BotConst::EVENT_FRIEND_VERIFY;  //好友申请请求事件
                 }
 
                 if($this->ajaxData['method'] == 'getchatroommemberdetail') { //用此方法判断被邀请入群

@@ -100,6 +100,7 @@ Abstract class Base
     //设置好友备注名 note  to_wxid
     abstract public function setFriendRemarkName($params = []);
     abstract public function deleteFriend($params = []);
+    //{data:{robot_wxid: '', v1|encryptusername:'', v2|ticket:'', msg:'拒绝时填写', type: 1|2}}
     abstract public function agreeFriendVerify($params = []);
     //{robot_wxid:'',  content:'手机号、QQ或微信号'}
     abstract public function searchAccount($params = []);

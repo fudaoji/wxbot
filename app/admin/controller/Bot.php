@@ -242,7 +242,6 @@ class Bot extends Bbase
     public function xbotcomAdd()
     {
         $data = array_merge([
-            'login_code' => 0,
             'protocol' => BotConst::PROTOCOL_XBOTCOM,
             //'app_key' => get_rand_char(32)
         ], $this->getConfig());
@@ -258,7 +257,6 @@ class Bot extends Bbase
             ->addFormItem('uin', 'text', 'Wxid', '从xbot打开的窗口获取，也就是消息体中的user_id', [], 'required maxlength=30')
             //->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
             ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
-            ->addFormItem('login_code', 'hidden', '扫码登录', '是否扫码登录', [])
             ->setFormData($data);
 
         return $builder->show();

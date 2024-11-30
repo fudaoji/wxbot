@@ -29,6 +29,7 @@ use ky\WxBot\Driver\Cat;
 use ky\Logger;
 use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Xbot;
+use ky\WxBot\Driver\Xbotcom;
 use ky\WxBot\Driver\Xhx;
 
 class Handler extends BaseCtl
@@ -63,6 +64,7 @@ class Handler extends BaseCtl
     protected $addonOptions;
     protected $isNewFriend = false;
     protected $beAtStr = [];
+    protected $conversationId = '';
 
     protected $addonHandlerName;
     protected static $replied = false;
@@ -83,8 +85,6 @@ class Handler extends BaseCtl
         $this->ajaxData = $options['ajax_data'];
         //Logger::error($this->ajaxData);
         $this->checkEvent();
-        //Logger::error($this->event);
-
         $class = "\\app\\bot\\handler\\{$this->driver}\\" . ucfirst($this->event);
         if(! class_exists($class)){
             //Logger::error("class: " . $class . " not exists!");
@@ -97,7 +97,7 @@ class Handler extends BaseCtl
         $handler = new $class();
         $handler->initData($options);
         $handler->handle();
-
+        //Logger::error($this->content['type']);
         //response
         $this->response();
     }
@@ -152,6 +152,15 @@ class Handler extends BaseCtl
                 !empty($this->content['wx_type']) && $this->content['type'] = $this->content['wx_type'];
                 !empty($this->content['msgid']) && $this->content['msg_id'] = $this->content['msgid'];
                 break;
+            case BotConst::PROTOCOL_XBOTCOM:
+                $this->botWxid = $this->ajaxData['user_id'];
+                if(!empty($this->content['sender'])){
+                    $this->fromWxid = $this->content['sender'];
+                    $this->fromName = $this->content['sender_name'];
+                }
+                $this->content['type'] = Xbotcom::contentTypes($this->content['contenttype'] ?? $this->content['content_type']);
+                !empty($this->content['content']) && $this->content['msg'] = $this->content['content'];
+                break;
             case BotConst::PROTOCOL_QXUN:
                 $this->botWxid = $this->ajaxData['wxid'];
                 $this->fromWxid = empty($this->content['finalFromWxid']) ? (
@@ -191,7 +200,7 @@ class Handler extends BaseCtl
         empty($this->content['from_group_name']) && $this->content['from_group_name'] = $this->groupName;
         empty($this->content['from_name']) && $this->content['from_name'] = $this->fromName;
         empty($this->content['robot_wxid']) && $this->content['robot_wxid'] = $this->botWxid;
-
+        //Logger::error($this->content);
         //save msg log seconds later
         invoke('\\app\\common\\event\\TaskQueue')->push([
             'delay' => 2,
@@ -248,6 +257,28 @@ class Handler extends BaseCtl
                     $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
                 }else{
                     //Logger::error($this->ajaxData);
+                }
+                break;
+            case BotConst::PROTOCOL_XBOTCOM:
+                $this->content = $this->ajaxData['data'] ?? [];
+                $map = [
+                    Xbotcom::EVENT_LOGIN_CODE => BotConst::EVENT_LOGIN_CODE,
+                    Xbotcom::EVENT_CONNECTED => BotConst::EVENT_CONNECTED,
+                    Xbotcom::EVENT_LOGIN => BotConst::EVENT_LOGIN,
+                    Xbotcom::EVENT_LOGOUT => BotConst::EVENT_LOGOUT,
+                    Xbotcom::EVENT_GROUP_MEMBER_ADD => BotConst::EVENT_GROUP_MEMBER_ADD,
+                    Xbotcom::EVENT_GROUP_MEMBER_DEC => BotConst::EVENT_GROUP_MEMBER_DEC
+                ];
+                $this->event = isset($map[$this->ajaxData['type']]) ? $map[$this->ajaxData['type']] : $this->ajaxData['type'];
+                if(!empty($this->content['conversation_id'])){
+                    if(strpos($this->content['conversation_id'], 'S:') === 0){
+                        $this->event = BotConst::EVENT_PRIVATE_CHAT;
+                    }elseif (strpos($this->content['conversation_id'], 'R:') === 0) {
+                        $this->event = BotConst::EVENT_GROUP_CHAT;
+                    }
+                }
+                if($this->isGroupEvent()){
+                    $this->groupWxid = str_replace("R:", "", $this->content['conversation_id']);
                 }
                 break;
             case BotConst::PROTOCOL_XHX:

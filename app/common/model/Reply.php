@@ -9,6 +9,8 @@
 
 namespace app\common\model;
 
+use app\admin\model\BotMember;
+use app\constants\Bot as BotConst;
 use app\constants\Media;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
@@ -42,6 +44,15 @@ class Reply extends Base
             'id' => $reply['media_id']
         ]))){
             return false;
+        }
+        if(in_array($bot['protocol'], [BotConst::PROTOCOL_XBOTCOM])){ //企业微信特殊处理
+            $to_wxid_arr = is_array($to_wxid) ? $to_wxid : explode(',', $to_wxid);
+            $member_m = new BotMember();
+            $to_wxid = [];
+            foreach ($to_wxid_arr as $wxid){
+                $m = $member_m->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['username']);
+                $to_wxid[] = $m['username'];
+            }
         }
         switch($reply['media_type']){
             case Media::LINK:

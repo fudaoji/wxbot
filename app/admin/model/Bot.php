@@ -23,6 +23,7 @@ use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Webgo;
 use ky\WxBot\Driver\Wxwork;
+use ky\WxBot\Driver\Xbotcom;
 
 class Bot extends Base
 {
@@ -56,12 +57,12 @@ class Bot extends Base
     /**
      * 获取机器人客户端
      * @param array $bot
-     * @return Cat|Vlw|Wxwork|Webgo|Qianxun|My|Mycom|Extian
+     * @return Cat|Vlw|Wxwork|Webgo|Qianxun|My|Mycom|Extian|Xbotcom
      * @throws \Exception
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function getRobotClient($bot = []){
-        $options = ['app_key' => $bot['app_key'], 'base_uri' => $bot['url'], 'uuid' => $bot['uuid'] ?? ''];
+        $options = ['app_key' => $bot['app_key'] ?? '', 'base_uri' => $bot['url'] ?? '', 'uuid' => $bot['uuid'] ?? ''];
         config('system.bot.step_time') && $options['step_time'] = explode('-', config('system.bot.step_time'));
         return Client::getInstance($options, $bot['protocol'])->getBot();
     }

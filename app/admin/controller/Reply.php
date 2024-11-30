@@ -347,6 +347,8 @@ class Reply extends Botbase
 
         if(!empty($reply['wxids'])){
             $reply['wxids'] = explode(',', $reply['wxids']);
+        }else{
+            $reply['wxids'] = [];
         }
 
         $builder = new FormBuilder();

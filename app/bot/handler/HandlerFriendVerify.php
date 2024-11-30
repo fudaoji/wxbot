@@ -17,7 +17,6 @@ class HandlerFriendVerify extends Handler
     protected $addonHandlerName = 'friendVerifyHandle';
 
     public function handle(){
-        $this->basic();
         $this->addon();
     }
 

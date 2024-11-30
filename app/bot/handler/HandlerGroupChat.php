@@ -205,7 +205,9 @@ class HandlerGroupChat extends Handler
                         }
                         $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
                     }
+                    //Logger::error('groupWxid:'.$this->groupWxid);
                     if(strpos($keyword['wxids'], $this->groupWxid) !== false){
+                        //Logger::error('wxids:'.$keyword['wxids']);
                         model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid,
                             ['nickname' => $this->fromName, 'need_at' => $keyword['need_at'], 'member_wxid' => $this->fromWxid]
                         );

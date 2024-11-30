@@ -26,6 +26,7 @@ class BotTest extends UnitTestCase
     protected $wxidDcq = 'wxid_96uxa953gra341';
     protected $group51 = '22972226702@chatroom';
     protected $groupTd = '21361397515@chatroom';
+    protected $comDj = '7881299942929761';
 
     public function __construct($name = null, array $data = array(), $dataName = '')
     {

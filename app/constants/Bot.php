@@ -23,6 +23,7 @@ class Bot
     const PROTOCOL_MYCOM = 'mycom'; //西瓜企微
     const PROTOCOL_QXUN = 'qianxun'; //千寻个微
     const PROTOCOL_XBOT = 'xbot'; //XBOT个微
+    const PROTOCOL_XBOTCOM = 'xbotcom'; //XBOT企微
     const PROTOCOL_EXTIAN = 'extian'; //e小天个微
     const PROTOCOL_XHX = 'xhx'; //小浣熊
     const PROTOCOL_XY = 'xy'; //星云
@@ -132,6 +133,7 @@ class Bot
             self::PROTOCOL_VLW => 'VLW个微',
             self::PROTOCOL_WXWORK => 'VLW企微',
             self::PROTOCOL_XBOT => 'XBOT个微',
+            self::PROTOCOL_XBOTCOM => 'XBOT企微',
             self::PROTOCOL_EXTIAN => 'e小天个微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;

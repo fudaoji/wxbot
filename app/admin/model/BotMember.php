@@ -86,6 +86,46 @@ class BotMember extends Base
                     return count($list);
                 }
                 break;
+            case Bot::PROTOCOL_XBOTCOM:
+                $page_num = 1;
+                $wxid_arr = [];
+                while ($res['code'] && !empty($res['data']['roomdata'])){
+                    $list = $res['data']['roomdata']['datas'];
+                    foreach ($list as $k => $v){
+                        $nickname = filter_emoji($v['roomname']);
+                        $username = 'R:'.$v['roomid'];
+                        $headimgurl = $v['roomurl'];
+                        $wxid = $v['roomid'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'username' => $username,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'uin' => $bot['uin'],
+                                'nickname' => $nickname,
+                                'username' => $username,
+                                'wxid' => $wxid,
+                                'type' => Bot::GROUP,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }
+                    }
+                    $res = $client->getGroups([
+                        'data' => [
+                            'robot_wxid' => $bot['uin'], 'uuid' => $bot['uuid'],
+                            'start_index' => ++$page_num
+                        ]
+                    ]);
+                }
+                //删除无效数据
+                $this->delByMap(['uin' => $bot['uin'],'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
+                return count($list);
+                break;
             case Bot::PROTOCOL_XBOT:
                 if($res['code'] && count($res['data'])){
                     $list = $res['data'];
@@ -346,6 +386,49 @@ class BotMember extends Base
                     $this->delByMap(['uin' => $bot['uin'],'type' => Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
                     return $count;
                 }
+                break;
+            case Bot::PROTOCOL_XBOTCOM:
+                $page_num = 1;
+                $wxid_arr = [];
+                while ($res['code'] && $page_num <= $res['data']['total_page']){
+                    $list = $res['data']['user_list'];
+                    foreach ($list as $k => $v){
+                        $nickname = filter_emoji($v['username']);
+                        $remark_name = empty($v['nickname']) ? '' : filter_emoji($v['nickname']);
+                        $username = $v['conversation_id'];
+                        $headimgurl = $v['avatar'];
+                        $wxid = $v['user_id'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'remark_name' => $remark_name,
+                                'username' => $username,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'uin' => $bot['uin'],
+                                'nickname' => $nickname,
+                                'remark_name' => $remark_name,
+                                'username' => $username,
+                                'wxid' => $wxid,
+                                'type' => Bot::FRIEND,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }
+                    }
+                    $res = $client->getFriends([
+                        'data' => [
+                            'robot_wxid' => $bot['uin'], 'uuid' => $bot['uuid'],
+                            'page_num' => ++$page_num
+                        ]
+                    ]);
+                }
+                //删除无效好友
+                $this->delByMap(['uin' => $bot['uin'],'type' => Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
+                return count($list);
                 break;
             case Bot::PROTOCOL_XBOT:
                 if($res['code'] && count($res['data'])){

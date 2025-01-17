@@ -24,7 +24,7 @@ class Api extends BaseCtl
         if(request()->isPost() && isset(BotConst::protocols()[$this->driver])) {
             set_time_limit(0);
             Helper::$ajax = $this->getAjax();
-            if($this->driver == 'xbotcom'){
+            if($this->driver == 'extian'){
                 //Logger::error(Helper::$ajax);
                 //exit(0);
             }

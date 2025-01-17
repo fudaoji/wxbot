@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '653d62428ca7761dc9b01b357e565d94a3e5ebf3',
+    'reference' => '7a47f9908d7be44c013fdf0f5dd7ec629ea6b1f6',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -41,6 +41,24 @@ private static $installed = array (
       array (
       ),
       'reference' => '0a0fa9780f5d4e507415a065172d26a98d02047b',
+    ),
+    'ethanhann/redis-raw' => 
+    array (
+      'pretty_version' => '0.3.2',
+      'version' => '0.3.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'f4186c6ed5c9d2a37da70508c2780970865fcf2d',
+    ),
+    'ethanhann/redisearch-php' => 
+    array (
+      'pretty_version' => '1.9.0',
+      'version' => '1.9.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '01490a47ba09e2883f07f87ee4cc00a09886e8d4',
     ),
     'fudaoji/php-upload' => 
     array (
@@ -603,7 +621,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '653d62428ca7761dc9b01b357e565d94a3e5ebf3',
+      'reference' => '7a47f9908d7be44c013fdf0f5dd7ec629ea6b1f6',
     ),
     'topthink/think-captcha' => 
     array (

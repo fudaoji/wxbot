@@ -122,6 +122,94 @@
             "install-path": "../doctrine/instantiator"
         },
         {
+            "name": "ethanhann/redis-raw",
+            "version": "0.3.2",
+            "version_normalized": "0.3.2.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/ethanhann/redis-raw/0.3.2/ethanhann-redis-raw-0.3.2.zip",
+                "reference": "f4186c6ed5c9d2a37da70508c2780970865fcf2d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7",
+                "psr/log": "^1.0"
+            },
+            "require-dev": {
+                "cheprasov/php-redis-client": "^1.8",
+                "consolidation/robo": "^1.0",
+                "friendsofphp/php-cs-fixer": "^2.2",
+                "mockery/mockery": "^0.9.9",
+                "monolog/monolog": "^1.23",
+                "phpunit/phpunit": "^6.0",
+                "predis/predis": "^1.1",
+                "ukko/phpredis-phpdoc": "^2.2@dev"
+            },
+            "time": "2022-06-04T21:11:47+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Ehann\\RedisRaw\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ethan Hann",
+                    "email": "ethanhann@gmail.com"
+                }
+            ],
+            "description": "Redis/PHP connectors.",
+            "install-path": "../ethanhann/redis-raw"
+        },
+        {
+            "name": "ethanhann/redisearch-php",
+            "version": "1.9.0",
+            "version_normalized": "1.9.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/ethanhann/redisearch-php/1.9.0/ethanhann-redisearch-php-1.9.0.zip",
+                "reference": "01490a47ba09e2883f07f87ee4cc00a09886e8d4",
+                "shasum": ""
+            },
+            "require": {
+                "ethanhann/redis-raw": "^0.3",
+                "php": ">=7",
+                "psr/log": "^1.0"
+            },
+            "require-dev": {
+                "cheprasov/php-redis-client": "^1.8",
+                "consolidation/robo": "^1.0",
+                "friendsofphp/php-cs-fixer": "^2.2",
+                "mockery/mockery": "^0.9.9",
+                "monolog/monolog": "^1.23",
+                "phpunit/phpunit": "^6.0",
+                "predis/predis": "^1.1",
+                "ukko/phpredis-phpdoc": "^5.0@beta"
+            },
+            "time": "2019-11-02T10:21:18+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Ehann\\RediSearch\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ethan Hann",
+                    "email": "ethanhann@gmail.com"
+                }
+            ],
+            "install-path": "../ethanhann/redisearch-php"
+        },
+        {
             "name": "fudaoji/php-upload",
             "version": "1.1.1",
             "version_normalized": "1.1.1.0",

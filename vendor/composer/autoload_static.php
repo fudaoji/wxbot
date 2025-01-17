@@ -107,6 +107,11 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
             'GuzzleHttp\\' => 11,
             'GatewayWorker\\' => 14,
         ),
+        'E' => 
+        array (
+            'Ehann\\RedisRaw\\' => 15,
+            'Ehann\\RediSearch\\' => 17,
+        ),
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
@@ -231,8 +236,8 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Container\\' => 
         array (
@@ -289,6 +294,14 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'GatewayWorker\\' => 
         array (
             0 => __DIR__ . '/..' . '/workerman/gateway-worker/src',
+        ),
+        'Ehann\\RedisRaw\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ethanhann/redis-raw/src',
+        ),
+        'Ehann\\RediSearch\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ethanhann/redisearch-php/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (

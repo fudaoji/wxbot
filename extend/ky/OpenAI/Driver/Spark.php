@@ -20,6 +20,7 @@ class Spark extends Base
     const HOST_TEXT = 'spark-api.xf-yun.com';
     const HOST_GENERATE_IMG = 'spark-api.cn-huabei-1.xf-yun.com';
     const HOST_READ_IMG = 'spark-api.cn-huabei-1.xf-yun.com';
+    const HOST_EMB = 'emb-cn-huabei-1.xf-yun.com';
     const API_READ_IMG = '/v2.1/image';
     const API_GENERATE_IMG = '/v2.1/tti';
     const API_LITE = '/v1.1/chat';
@@ -40,7 +41,93 @@ class Spark extends Base
     }
 
     /**
+     * {
+    "header": {
+    "app_id": appid,
+    "uid": "39769795890",
+    "status": 3,
+    },
+    "parameter": {
+    "emb": {
+    "domain": "query" # 可选值：query 和para
+    "feature": {
+    "encoding": "utf8",
+    "compress": "raw",
+    "format": "plain"
+    }
+    }
+    },
+    "payload": {
+    "messages": {
+    "encoding": "utf8",
+    "compress": "raw",
+    "format": "json",
+    "status": 3,
+    "text": ""
+    }
+    }
+    }
+     * @param $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function emb($params){
+        $header = [
+            'status' => 3
+        ];
+        $parameter = [
+            "emb" => [
+                "domain" => $params['domain'] ?? "query", # 可选值：query 和para
+                "feature" => [
+                    "encoding" => "utf8",
+                    "compress" =>  "raw",
+                    "format" => "plain"
+                ]
+            ]
+        ];
+        $message = [
+            'text' => base64_encode(json_encode($params['msg']))
+        ];
+        $data = $this->createMsg(['messages' => $message], $parameter, $header);
+        $this->baseUri = 'https://'.self::HOST_EMB;
+        //Logger::error($data);
+        $res = $this->httpRequest($data, '/', 'emb');
+        //Logger::error($res);
+        return  $res;
+    }
+
+    /**
      * 图片理解
+     * {
+    "header": {
+    "app_id": "123456",
+    "uid": "39769795890"
+    },
+    "parameter": {
+    "chat": {
+    "domain": "general",
+    "temperature": 0.5,
+    "top_k": 4,
+    "max_tokens": 2028
+    }
+    },
+    "payload": {
+    "message": {
+    "text": [
+    {
+    "role": "user",
+    "content": "base64",
+    "content_type": "image"
+    },
+    {
+    "role": "user",
+    "content": "这张图片是什么内容",
+    "content_type": "text"
+    }
+    ]
+    }
+    }
+    }
      * @param $params
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>
@@ -56,10 +143,13 @@ class Spark extends Base
             ['role' => 'user', 'content' => $params['msg']],
         ];
 
-        $data = $this->createMsg($message, [
+        $message = ['text' => $message];
+        $parameter = ['chat' => [
+            'domain' => 'general',
             "top_k" => 4,
-            "auditing" => "strict"
-        ]);
+            "max_tokens" => 8192
+        ]];
+        $data = $this->createMsg($message, $parameter);
         //Logger::error($data);
         $res = $this->wssRequest($data, 'read_img');
         if(!empty($res['code'])){
@@ -71,19 +161,44 @@ class Spark extends Base
 
     /**
      * 文生图
+     * {
+    "header": {
+    "app_id": "your_appid"
+    },
+    "parameter": {
+    "chat": {
+    "domain": "general",
+    "width": 512,
+    "height": 512
+    }
+    },
+    "payload": {
+    "message": {
+    "text": [
+    {
+    "role": "user",
+    "content": "帮我画一座山"
+    }
+    ]
+    }
+    }
+    }
      * @param array $params
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     function generateImg($params = []){
-        $chat = [
-            'width' => 512,
-            'height' => 512
-        ];
         $message = [
-            ['role' => 'user', 'content' => $params['msg']]
+            'text' => ['role' => 'user', 'content' => $params['msg']]
         ];
-        $data = $this->createMsg($message, $chat);
+        $parameter = [
+            'chat' => [
+                'domain' => 'general',
+                'width' => 512,
+                'height' => 512
+            ]
+        ];
+        $data = $this->createMsg($message, $parameter);
         $this->baseUri = 'https://'.self::HOST_GENERATE_IMG;
         $res = $this->httpRequest($data, self::API_GENERATE_IMG, 'generate_img');
         if(!empty($res['code'])){
@@ -104,6 +219,34 @@ class Spark extends Base
 
     /**
      * lite模型
+     * # 参数构造示例如下
+    {
+    "header": {
+    "app_id": "12345",
+    "uid": "12345"
+    },
+    "parameter": {
+    "chat": {
+    "domain": "lite",
+    "temperature": 0.5,
+    "max_tokens": 1024,
+    }
+    },
+    "payload": {
+    "message": {
+    # 如果想获取结合上下文的回答，需要开发者每次将历史问答信息一起传给服务端，如下示例
+    # 注意：text里面的所有content内容加一起的tokens需要控制在8192以内，开发者如有较长对话需求，需要适当裁剪历史信息
+    "text": [
+    #如果传入system参数，需要保证第一条是system
+    {"role":"system","content":"你现在扮演李白，你豪情万丈，狂放不羁；接下来请用李白的口吻和用户对话。"} #设置对话背景或者模型角色
+    {"role": "user", "content": "你是谁"} # 用户的历史问题
+    {"role": "assistant", "content": "....."}  # AI的历史回答结果
+    # ....... 省略的历史对话
+    {"role": "user", "content": "你会做什么"}  # 最新的一条问题，如无需上下文，可只传最新一条问题
+    ]
+    }
+    }
+    }
      * @param $params
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>
@@ -134,8 +277,15 @@ class Spark extends Base
         }
 
         array_push($message, ['role' => 'user', 'content' => $params['msg']]);
-
-        $data = $this->createMsg($message);
+        //Logger::error($message);
+        $message = ['text' => $message];
+        $parameter = [
+            'chat' => [
+                'domain' => 'lite',
+                'max_tokens' => 4096
+            ]
+        ];
+        $data = $this->createMsg($message, $parameter);
         //Logger::error($data);
         $res = $this->wssRequest($data, 'lite');
         if(!empty($res['code'])){
@@ -199,30 +349,39 @@ class Spark extends Base
     /**
      * 生成要发送的消息体
      * @param array $message
-     * @param array $chat
+     * @param array $_parameter
+     * @param array $_header
      * @return array
      */
-    private function createMsg($message = [], $chat = [])
+    private function createMsg($message = [], $_parameter = [], $_header = [])
     {
         //Logger::error($message);
-        $_chat = array_merge([
-            "domain"=> "general",
-            "temperature"=> 0.5,
-            "max_tokens"=> 4096,
-        ], $chat);
+        $parameter = [
+            /*'chat' => [
+                "domain"=> "general",
+                "temperature"=> 0.5,
+                "max_tokens"=> 4096,
+            ]*/
+        ];
 
+        if(!empty($_parameter)){
+            $parameter = array_merge($parameter, $_parameter);
+        }
+
+        $header = [
+            'app_id' => $this->appId,
+        ];
+        if(!empty($_header)){
+            $header = array_merge($header, $_header);
+        }
+
+        $payload = isset($message['message']) ? [
+            "message" => $message
+        ] : $message;
         return [
-            'header' => [
-                'app_id' => $this->appId,
-            ],
-            'parameter' => [
-                "chat"=> $_chat
-            ],
-            'payload' => [
-                "message"=> [
-                    "text"=> $message
-                ]
-            ],
+            'header' => $header,
+            'parameter' => $parameter,
+            'payload' => $payload,
         ];
     }
 
@@ -256,6 +415,11 @@ class Spark extends Base
     private function createUrl($model = 'lite', $uri = self::API_LITE)
     {
         switch ($model){
+            case 'emb':
+                $host = self::HOST_EMB;
+                $url = $uri;
+                $method = strtoupper('post');
+                break;
             case 'read_img':
                 $host = self::HOST_READ_IMG;
                 $uri = self::API_READ_IMG;

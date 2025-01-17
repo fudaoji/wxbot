@@ -16,7 +16,7 @@ use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
 use ky\Quark;
 use ky\VideoSpider;
-use ky\WxBot\Driver\Extian\AutoAuth;
+use tests\cases\bot\AutoAuth;
 use Symfony\Component\Panther\Client as PantherClient;
 use zjkal\ChinaHoliday;
 
@@ -99,7 +99,7 @@ class Test
 
     function testPanther(){
         $client = new AutoAuth([
-            'key' => '2B95B3BF370C8C09209E9909B1B6315737DABA14',
+            'key' => 'A87CEE288D84730A082765755BBAECB3ED411133',
             'base_uri' => 'http://124.222.4.168:8203',
             'chromedriver' => '/usr/bin/chromedriver'
         ]);

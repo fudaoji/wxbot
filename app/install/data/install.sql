@@ -388,7 +388,7 @@ CREATE TABLE `__PREFIX__media_image_2`  (
   `location` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '位置Local，Qiniu',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '图片素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '图片素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_image_3
@@ -406,7 +406,7 @@ CREATE TABLE `__PREFIX__media_image_3`  (
   `location` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '位置Local，Qiniu',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '图片素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '图片素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_image_4
@@ -478,7 +478,7 @@ CREATE TABLE `__PREFIX__media_link_2`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE,
   INDEX `title`(`title`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '分享链接素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '分享链接素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_link_3
@@ -547,7 +547,7 @@ CREATE TABLE `__PREFIX__media_text_1`  (
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uid`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_text_2
@@ -562,7 +562,7 @@ CREATE TABLE `__PREFIX__media_text_2`  (
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uid`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_text_3
@@ -577,7 +577,7 @@ CREATE TABLE `__PREFIX__media_text_3`  (
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uid`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_text_4
@@ -592,7 +592,7 @@ CREATE TABLE `__PREFIX__media_text_4`  (
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uid`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_text_5
@@ -607,7 +607,7 @@ CREATE TABLE `__PREFIX__media_text_5`  (
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uid`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文本素材' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_video_1
@@ -954,7 +954,13 @@ CREATE TABLE `__PREFIX__admin_log` (
 PARTITION BY RANGE (`year`)
 (PARTITION p2022 VALUES LESS THAN (2023) ENGINE = InnoDB,
  PARTITION p2023 VALUES LESS THAN (2024) ENGINE = InnoDB,
- PARTITION p2024 VALUES LESS THAN (2025) ENGINE = InnoDB);
+ PARTITION p2024 VALUES LESS THAN (2025) ENGINE = InnoDB,
+ PARTITION p2025 VALUES LESS THAN (2026) ENGINE = InnoDB,
+ PARTITION p2026 VALUES LESS THAN (2027) ENGINE = InnoDB,
+ PARTITION p2027 VALUES LESS THAN (2028) ENGINE = InnoDB,
+ PARTITION p2028 VALUES LESS THAN (2029) ENGINE = InnoDB,
+ PARTITION p2029 VALUES LESS THAN (2030) ENGINE = InnoDB
+ );
 
 -- ----------------------------
 -- 2.3.2
@@ -1039,7 +1045,12 @@ CREATE TABLE `__PREFIX__msg_log` (
 PARTITION BY RANGE (`year`)
 (PARTITION p2022 VALUES LESS THAN (2023) ENGINE = InnoDB,
  PARTITION p2023 VALUES LESS THAN (2024) ENGINE = InnoDB,
- PARTITION p2024 VALUES LESS THAN (2025) ENGINE = InnoDB);
+ PARTITION p2024 VALUES LESS THAN (2025) ENGINE = InnoDB,
+ PARTITION p2025 VALUES LESS THAN (2026) ENGINE = InnoDB,
+ PARTITION p2026 VALUES LESS THAN (2027) ENGINE = InnoDB,
+ PARTITION p2027 VALUES LESS THAN (2028) ENGINE = InnoDB,
+ PARTITION p2028 VALUES LESS THAN (2029) ENGINE = InnoDB,
+ PARTITION p2029 VALUES LESS THAN (2030) ENGINE = InnoDB);
 
  CREATE TABLE `__PREFIX__msg_gather` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

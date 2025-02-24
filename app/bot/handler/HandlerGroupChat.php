@@ -67,7 +67,12 @@ class HandlerGroupChat extends Handler
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->groupWxid) !== false){
                 switch ($reply['handle_type']){
                     case Reply::HANDLE_RM:
-                        $this->botClient->removeGroupMember(['robot_wxid' => $this->botWxid, 'group_wxid' => $this->groupWxid, 'to_wxid' => $this->fromWxid]);
+                        $this->botClient->removeGroupMember([
+                            'robot_wxid' => $this->botWxid,
+                            'uuid' => $this->bot['uuid'],
+                            'group_wxid' => $this->groupWxid,
+                            'to_wxid' => $this->fromWxid
+                        ]);
                         break;
                     case Reply::HANDLE_MSG:
                         if(empty($reply['medias'])){
@@ -133,6 +138,7 @@ class HandlerGroupChat extends Handler
                     if($num+1 >= $rule['value']){
                         $this->botClient->sendTextToFriends(
                             [
+                                'uuid' => $this->bot['uuid'],
                                 'robot_wxid' => $this->botWxid,
                                 'to_wxid' => $this->groupWxid,
                                 'msg' => "@".$nickname." 你已经被[弱]{$rule['value']}次，现将你移出群。"
@@ -142,6 +148,7 @@ class HandlerGroupChat extends Handler
                         if(! $res = $this->botClient->removeGroupMember(
                             [
                                 'robot_wxid' => $this->botWxid,
+                                'uuid' => $this->bot['uuid'],
                                 'to_wxid' => $gm['wxid'],
                                 'group_wxid' => $this->groupWxid
                             ]

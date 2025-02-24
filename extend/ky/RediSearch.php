@@ -46,7 +46,7 @@ class RediSearch
 
         /** 创建Redis客户端 */
         $this->redis = (new PhpRedisAdapter())->connect($this->host, $this->port, $this->db, $this->password);
-        $this->scheme = (new Index($this->redis, $this->indexName))->language('chinese');
+        $this->scheme = (new Index($this->redis, $this->indexName));
         $this->setScheme();
     }
 
@@ -70,23 +70,41 @@ class RediSearch
         try {
             $this->scheme->create();
         }catch (\Exception $e){
-            //var_dump("索引'{$this->>indexName}' 已存在！");
+            //var_dump($e->getMessage());
         }
     }
 
     function delDocument($id){
-        return $this->scheme->delete($id);
+        if(!is_array($id)){
+            $id = array($id);
+        }
+        foreach ($id as $_id){
+            $this->scheme->delete($_id);
+        }
+        return count($id);
     }
 
     function page($params = []){
         $limit = $params['limit'] ?? null;
         $order = $params['order'] ?? null;
         $search = $params['search_key'] ?? '*';
+        $tag_filter = $params['tag_filter'] ?? null;
+        $numeric_filter = $params['numeric_filter'] ?? null;
+        $geo_filter = $params['geo_filter'] ?? null;
         if($limit){
             $this->scheme = $this->scheme->limit(max(0,($limit[0] - 1)) * $limit[1], $limit[1]);
         }
         if($order){
             $this->scheme = $this->scheme->sortBy($order[0], $order[1]);
+        }
+        if($tag_filter){
+            $this->scheme = $this->scheme->tagFilter($tag_filter[0], $tag_filter[1]);
+        }
+        if($numeric_filter){
+            $this->scheme = $this->scheme->numericFilter($numeric_filter[0], $numeric_filter[1], $numeric_filter[2]);
+        }
+        if($geo_filter){
+            $this->scheme = $this->scheme->geoFilter($geo_filter[0], $geo_filter[1], $geo_filter[2], $geo_filter[3], $geo_filter[4]);
         }
         return $this->scheme->search($search);
     }
@@ -99,10 +117,14 @@ class RediSearch
     function updateDocument($document, $data){
         $new_document = $this->scheme->makeDocument($document->id);
         foreach ($this->fields as $field){
-            $new_document->$field['name']->setValue($data[$field['name']] ?? $document->$field['name']);
+            $new_document->{$field['name']}->setValue($data[$field['name']] ?? $document->{$field['name']});
         }
         $this->scheme->replace($new_document);
         return $new_document;
+    }
+
+    function getDocument($id){
+        return $this->scheme->makeDocument($id);
     }
 
     function dropScheme(){

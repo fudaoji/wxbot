@@ -81,6 +81,7 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Predis\\' => 7,
             'Phrity\\Util\\' => 12,
             'Phrity\\Net\\' => 11,
             'PhpParser\\' => 10,
@@ -242,6 +243,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Predis\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/predis/predis/src',
         ),
         'Phrity\\Util\\' => 
         array (

@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '7a47f9908d7be44c013fdf0f5dd7ec629ea6b1f6',
+    'reference' => 'a239068989c1ddd5917f9979e17ec5ebf5841708',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -266,6 +266,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '4016d9f9615a4c602f525b0542e4835e316a42e4',
+    ),
+    'predis/predis' => 
+    array (
+      'pretty_version' => 'v2.3.0',
+      'version' => '2.3.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'bac46bfdb78cd6e9c7926c697012aae740cb9ec9',
     ),
     'psr/container' => 
     array (
@@ -621,7 +630,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '7a47f9908d7be44c013fdf0f5dd7ec629ea6b1f6',
+      'reference' => 'a239068989c1ddd5917f9979e17ec5ebf5841708',
     ),
     'topthink/think-captcha' => 
     array (

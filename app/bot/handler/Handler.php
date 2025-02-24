@@ -97,7 +97,7 @@ class Handler extends BaseCtl
         $handler = new $class();
         $handler->initData($options);
         $handler->handle();
-        //Logger::error($this->content['type']);
+
         //response
         $this->response();
     }
@@ -140,6 +140,7 @@ class Handler extends BaseCtl
                         $this->groupWxid = $this->content['fromid'];
                     }
                 }
+
                 if(in_array($this->ajaxData['type'], [BotConst::MSG_LINK, BotConst::MSG_VERIFY])){ //特殊消息类型
                     $this->content = BotConst::getContentType($this->content);
                 }
@@ -224,7 +225,8 @@ class Handler extends BaseCtl
         switch ($this->driver){
             case BotConst::PROTOCOL_EXTIAN:
                 $ignore_methods = ['chatroommember'];
-                if(in_array($this->ajaxData['method'], $ignore_methods) /*|| $this->ajaxData['type'] == 10000*/){
+                if(in_array($this->ajaxData['method'], $ignore_methods) ||
+                    ($this->ajaxData['type'] == 10000 && !empty($this->ajaxData['data']['fromid']) && strpos($this->ajaxData['data']['fromid'], '@chatroom') !== false)){ //群的系统消息
                     exit(0);
                 }
 

@@ -50,7 +50,7 @@ $configs = [
         'port'  => env('memcached.port', 11211),
         // 缓存有效期 0表示永久缓存
         'expire' => 86400,
-    ],
+    ]
 ];
 
 

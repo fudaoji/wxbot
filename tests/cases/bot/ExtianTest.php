@@ -18,10 +18,10 @@ use ky\WxBot\Driver\Extian;
 class ExtianTest extends BotTest
 {
     private $botClient;
-    private $clientId = 3436;
+    private $clientId = 8792;
 
-    private $baseUri = 'http://124.222.4.168:8203';
-    private $key = '2B95B3BF370C8C09209E9909B1B6315737DABA14';
+    private $baseUri = 'http://120.55.76.46:8203';
+    private $key = 'B910837ED6A3CB9C109A55E394CB480212FD68F9';
 
     public function __construct() {
         parent::__construct();
@@ -320,9 +320,9 @@ class ExtianTest extends BotTest
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function testSendText() {
-        $res = $this->botClient->sendTextToFriends([
+        $res = $this->botClient->sendTextToFriend([
             'uuid' => $this->clientId,
-            'to_wxid' => [$this->wxidDj, '48202976260@chatroom'],
+            'to_wxid' => $this->wxidDj,
             'msg' => '[玫瑰]欢迎进群！'
         ]);
         dump($res);

@@ -70,14 +70,30 @@ class Reply extends Base
                 $msg = empty($extra['nickname']) ? $media['content'] : str_replace('[昵称]', $extra['nickname'], $media['content']);
                 $msg = empty($extra['group_name']) ? $msg : str_replace('[群名称]', $extra['group_name'], $msg);
                 if(!empty($extra['need_at'])){
-                    $client->sendGroupMsgAndAt(['robot_wxid' => $bot['uin'], 'group_wxid' => $to_wxid, 'member_wxid' => $extra['member_wxid'], 'msg' => $msg]);
+                    $client->sendGroupMsgAndAt([
+                        'robot_wxid' => $bot['uin'],
+                        'uuid' => $bot['uuid'],
+                        'group_wxid' => $to_wxid,
+                        'member_wxid' => $extra['member_wxid'],
+                        'msg' => $msg
+                    ]);
                 }elseif(!empty($extra['atall'])){
                     $group_ids = explode(',', $to_wxid);
                     foreach ($group_ids as $gid){
-                        $client->sendMsgAtAll(['robot_wxid' => $bot['uin'], 'group_wxid' => $gid, 'msg' => $msg]);
+                        $client->sendMsgAtAll([
+                            'robot_wxid' => $bot['uin'],
+                            'uuid' => $bot['uuid'],
+                            'group_wxid' => $gid,
+                            'msg' => $msg
+                        ]);
                     }
                 }else{
-                    $client->sendTextToFriends(['robot_wxid' => $bot['uin'], 'uuid' => $bot['uuid'], 'to_wxid' => $to_wxid, 'msg' => $msg]);
+                    $client->sendTextToFriends([
+                        'robot_wxid' => $bot['uin'],
+                        'uuid' => $bot['uuid'],
+                        'to_wxid' => $to_wxid,
+                        'msg' => $msg
+                    ]);
                 }
                 break;
             case Media::IMAGE:

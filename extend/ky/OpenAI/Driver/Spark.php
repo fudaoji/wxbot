@@ -24,13 +24,56 @@ class Spark extends Base
     const API_READ_IMG = '/v2.1/image';
     const API_GENERATE_IMG = '/v2.1/tti';
     const API_LITE = '/v1.1/chat';
-    //const API_CHECK_KEY = '/fc/verify-key?key=';
-    //protected $baseUri = 'https://api.aigcfun.com';
+    const API_PRO = '/v3.1/chat';
+    const API_PRO_128 = '/chat/pro-128k';
+    const API_MAX = '/v3.5/chat';
+    const API_MAX_32 = '/chat/max-32k';
+    const API_ULTRA = '/v4.0/chat';
+    const MODEL_LITE = 'lite';
+    const MODEL_PRO = 'pro';
+    const MODEL_PRO_128 = 'pro_128';
+    const MODEL_MAX = 'max';
+    const MODEL_MAX_32 = 'max_32';
+    const MODEL_ULTRA_4 = 'ultra_4';
+    const MODEL_KJWX = 'kjwx';//kjwx
+
     protected $errMsg = '';
     protected $apiKey = '';
-    protected $model = 'gpt-3.5-turbo';
+    protected $model = 'lite';
     private $method = 'post';
     private $apiSecret;
+    private $domains = [
+        self::MODEL_LITE => 'lite',
+        self::MODEL_PRO => 'generalv3',
+        self::MODEL_PRO_128 => 'pro-128k',
+        self::MODEL_MAX => 'generalv3.5',
+        self::MODEL_MAX_32 => 'max-32k',
+        self::MODEL_ULTRA_4 => '4.0Ultra',
+        self::MODEL_KJWX => 'kjwx'
+    ];
+
+    const MODEL_LIST = [
+        self::MODEL_LITE => 'Lite',
+        self::MODEL_PRO => 'Pro',
+        self::MODEL_PRO_128 => 'Pro-128K',
+        self::MODEL_MAX => 'Max',
+        self::MODEL_MAX_32 => 'Max-32k',
+        self::MODEL_ULTRA_4 => '4.0 Ultra',
+        self::MODEL_KJWX => 'kjwx'
+    ];
+
+    /**
+     * @var string
+     * 指定访问的模型版本:
+    lite 指向Lite版本;
+    generalv3 指向Pro版本;
+    pro-128k 指向Pro-128K版本;
+    generalv3.5 指向Max版本;
+    max-32k 指向Max-32K版本;
+    4.0Ultra 指向4.0 Ultra版本;
+    kjwx 指向科技文献大模型（重点优化论文问答、写作等垂直领域）;
+     */
+    private $domain = 'lite';
 
     public function __construct($options = [])
     {
@@ -38,6 +81,7 @@ class Spark extends Base
         !empty($options['api_key']) && $this->apiKey = $options['api_key'];
         !empty($options['api_secret']) && $this->apiSecret = $options['api_secret'];
         !empty($options['appid']) && $this->appId = $options['appid'];
+        !empty($options['model']) && $this->model = $options['model'];
     }
 
     /**
@@ -252,23 +296,7 @@ class Spark extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function smart($params){
-        $week = [
-            0 => '周日',
-            1 => '周一',
-            2 => '周二',
-            3 => '周三',
-            4 => '周四',
-            5 => '周五',
-            6 => '周六'
-        ];
-
-        $message = [
-            //['role' => 'system', 'content' => "你是一个智能助手assistant"],
-            ['role' => 'system', 'content' => "请务必记住，今天是".$week[date('w')]."，日期是" . date("Y-m-d") . "，现在时间是" . date("H:i").'。有人问你时，请基于我给你的时间进行测算。'],
-        ];
-        if(! empty($params['content_rule'])){
-            array_push($message, ['role' => 'system', 'content' => $params['content_rule']]);
-        }
+        $message = [];
         if(! empty($params['background'])){
             array_push($message, ['role' => 'system', 'content' => $params['background']]);
         }
@@ -281,13 +309,16 @@ class Spark extends Base
         $message = ['text' => $message];
         $parameter = [
             'chat' => [
-                'domain' => 'lite',
+                'domain' => $this->domains[$this->model],
                 'max_tokens' => 4096
             ]
         ];
-        $data = $this->createMsg($message, $parameter);
+        $_header = [];
+        !empty($params['userid']) && $_header['uid'] = $params['userid'];
+        $data = $this->createMsg($message, $parameter, $_header);
         //Logger::error($data);
-        $res = $this->wssRequest($data, 'lite');
+
+        $res = $this->wssRequest($data, $this->model);
         if(!empty($res['code'])){
             $res['answer_type'] = self::ANSWER_TEXT;
         }
@@ -337,6 +368,7 @@ class Spark extends Base
                 'msg' => 'success',
             ];
         } catch (\Exception $e) {
+            dump($e->getMessage());
             return [
                 'code' => 0,
                 'errmsg' => $e->getMessage(),
@@ -375,9 +407,14 @@ class Spark extends Base
             $header = array_merge($header, $_header);
         }
 
-        $payload = isset($message['message']) ? [
-            "message" => $message
-        ] : $message;
+        if(isset($message['messages'])){
+            $payload = $message;
+        }else{
+            $payload = !isset($message['message']) ? [
+                "message" => $message
+            ] : $message;
+        }
+        //var_dump($payload);exit;
         return [
             'header' => $header,
             'parameter' => $parameter,
@@ -430,6 +467,12 @@ class Spark extends Base
                 $host = self::HOST_GENERATE_IMG;
                 $url = $uri;
                 $method = strtoupper('post');
+                break;
+            case self::MODEL_PRO:
+                $host = self::HOST_TEXT;
+                $uri = self::API_PRO;
+                $url = 'wss://'.$host.$uri;
+                $method = strtoupper('get');
                 break;
             default:
                 $host = self::HOST_TEXT;

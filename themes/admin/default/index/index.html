@@ -49,7 +49,7 @@
                     <ul class="layui-nav layui-layout-right">
                         {if !empty($bot_info)}
                         <li class="layui-nav-item layuimini-setting" style="margin-right: 40px;">
-                            <a href="javascript:;">当前微信：{$bot_info.title}</a>
+                            <a href="javascript:;">当前微信：{$bot_info.nickname}</a>
                             {if count($bot_list) > 1}
                             <dl class="layui-nav-child">
                                 {foreach $bot_list as $k => $v }

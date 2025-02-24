@@ -73,7 +73,7 @@ class Extian extends Base
     private function doRequest($api = '', $params = []){
         $params['method'] = $api;
         $params['client_id'] = $this->clientId;
-        isset($params['uuid']) && $params['client_id'] = $params['uuid'];
+        isset($params['uuid']) && $params['pid'] = $params['uuid'];
         return $this->request([
             'url' => '/api?json&key=' . $this->appKey,
             'data' => $params

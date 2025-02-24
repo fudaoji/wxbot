@@ -49,6 +49,7 @@ class Index extends AbstractIndex implements IndexInterface
             $properties[] = count($this->stopWords);
             $properties = array_merge($properties, $this->stopWords);
         }
+        //$properties[] = "Language 'chinese'";
         $properties[] = 'SCHEMA';
 
         $fieldDefinitions = [];
@@ -61,7 +62,7 @@ class Index extends AbstractIndex implements IndexInterface
         if (count($fieldDefinitions) === 0) {
             throw new NoFieldsInIndexException();
         }
-
+        //var_dump(array_merge($properties, $fieldDefinitions));exit;
         return $this->rawCommand('FT.CREATE', array_merge($properties, $fieldDefinitions));
     }
 

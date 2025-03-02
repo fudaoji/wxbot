@@ -79,11 +79,10 @@ class Forward extends Base
      */
     public static function onAfterUpdate($data){
         $res = self::find($data['id']);
+        $group_wxid = '';
         if(!empty($res['group_id'])){
             $group = model('admin/botMember')->getOne($res['group_id']);
-            $group_wxid = $group['wxid'];
-        }else{
-            $group_wxid = '';
+            $group && $group_wxid = $group['wxid'];
         }
         $bot = model('admin/bot')->getOne($res['bot_id']);
         (new self())->getGather([

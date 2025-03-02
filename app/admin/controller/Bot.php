@@ -46,7 +46,7 @@ class Bot extends Bbase
 
     function configTabs($id = 0){
         $tabs = [
-            'edit' => ['title' => '编辑', 'href' => url('edit', ['id' => $id])]
+            'edit' => ['title' => '连接信息', 'href' => url('edit', ['id' => $id])]
         ];
         if(AdminM::isLeader($this->adminInfo)){
             $tabs['allocate'] = ['title' => '分配员工', 'href' => url('allocate', ['id' => $id])];
@@ -153,7 +153,7 @@ class Bot extends Bbase
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120])
-            ->addRightButton('edit', ['title' => '配置', 'href' => url('edit', ['tab' => $tab, 'id' => '__data_id__'])]);
+            ->addRightButton('edit', ['title' => '设置', 'href' => url('edit', ['tab' => $tab, 'id' => '__data_id__'])]);
         if(AdminM::isLeader($this->adminInfo)){
             $builder/*->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1])*/
                 ->addRightButton('delete', ['href' => url('delPost', ['id' => '__data_id__'])]);
@@ -425,7 +425,7 @@ class Bot extends Bbase
             ->setPostUrl(url('edit'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             //->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
-            //->addFormItem('uuid', 'text', 'PID', 'e小天、xbot类型的必填')
+            ->addFormItem('uuid', 'text', 'PID', '从e小天页面的微信列表中查看',[], 'required')
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'ext的KEY', '请到ext管理面板中获取', [], 'required')

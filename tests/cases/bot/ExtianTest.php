@@ -18,14 +18,103 @@ use ky\WxBot\Driver\Extian;
 class ExtianTest extends BotTest
 {
     private $botClient;
-    private $clientId = 8792;
+    private $clientId = 7860;
 
     private $baseUri = 'http://120.55.76.46:8203';
     private $key = 'B910837ED6A3CB9C109A55E394CB480212FD68F9';
 
     public function __construct() {
         parent::__construct();
-        $this->botClient = new Extian(['app_key' => $this->key, 'base_uri' => $this->baseUri]);
+        $this->botClient = new Extian([
+            'app_key' => $this->key,
+            'base_uri' => $this->baseUri,
+            'uuid' => $this->clientId
+        ]);
+    }
+
+    /**
+     * 转发信息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testForwardMsg() {
+        $res = $this->botClient->forwardMsg([
+            'uuid' => $this->clientId,
+            'to_wxid' => $this->robotDj,
+            'msgid' => '8131007268833536822'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+    
+    /**
+     * 保存文件
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSaveFile() {
+        $emoji_data = "https://guandaoji.oss-cn-hangzhou.aliyuncs.com/image/1-sex-20250226223515.gif";
+        $video_data = "https://devhhb.images.huihuiba.net/1-62df9dac60d2c.mp4";
+        $res = $this->botClient->saveFile([
+            'uuid' => $this->clientId,
+            'data' => $emoji_data,
+            'type' => 'url'
+            //'path' => '1-62df9dac60d2c.mp4'
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 发送emoji消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendEmoji() {
+        $res = $this->botClient->sendEmojiToFriend([
+            'uuid' => $this->clientId,
+            'to_wxid' => $this->wxidDj,
+            'path' => "C:\\Users\\Administrator\\Documents\\WeChat Files\\wxid_7v3b6hncdo6f12\\FileStorage\\CustomEmotion\\C6\\1740581602-1-sex-20250226223515.gif"
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 发送图片消息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testSendImg() {
+        $res = $this->botClient->sendImgToFriend([
+            'uuid' => $this->clientId,
+            'to_wxid' => $this->wxidDj,
+            'path' => "https://guandaoji.oss-cn-hangzhou.aliyuncs.com/image/1-sex-20250226223515.gif"
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 语音电话
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testCallVoipAudio() {
+        $params = [
+            'wxid' => $this->wxidDj,
+        ];
+        $res = $this->botClient->callVoipAudio($params);  //
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
+    /**
+     * 清空聊天记录
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function testClearMsg() {
+        $params = [
+
+        ];
+        $res = $this->botClient->cleanChatHistory($params);  //
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
     }
 
     /**
@@ -111,19 +200,7 @@ class ExtianTest extends BotTest
         $this->assertContains($res['code'], $this->codeArr);
     }
 
-    /**
-     * 保存文件
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function testSaveFile() {
-        $res = $this->botClient->saveFile([
-            'uuid' => $this->clientId,
-            'data' => "https://devhhb.images.huihuiba.net/1-62df9dac60d2c.mp4",
-            'path' => '1-62df9dac60d2c.mp4'
-        ]);
-        dump($res);
-        $this->assertContains($res['code'], $this->codeArr);
-    }
+
 
     /**
      * 获取信息
@@ -206,19 +283,7 @@ class ExtianTest extends BotTest
         $this->assertContains($res['code'], $this->codeArr);
     }
 
-    /**
-     * 转发信息
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function testForwardMsg() {
-        $res = $this->botClient->forwardMsg([
-            'uuid' => $this->clientId,
-            'to_wxid' => $this->robotDj,
-            'msgid' => '8131007268833536822'
-        ]);
-        dump($res);
-        $this->assertContains($res['code'], $this->codeArr);
-    }
+
 
     /**
      * 发送卡片
@@ -293,28 +358,17 @@ class ExtianTest extends BotTest
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function testSendFile() {
-        $res = $this->botClient->sendFileToFriends([
+        $res = $this->botClient->sendFileMsg([
             'uuid' => $this->clientId,
             'to_wxid' => $this->wxidDj,
             'path' => "http://mmbiz.qpic.cn/mmbiz_png/FUmbJicO6FCicxObbUXj5FcQ5a551rd1a9hgJAz5wnp3bU9I9vsHaq0g1lRxat0bYprRdianwnibibYgYMjTacicrnwA/640"
+            //'path' => 'https://guandaoji.oss-cn-hangzhou.aliyuncs.com/image/1-sex-20250226223515.gif'
         ]);
         dump($res);
         $this->assertContains($res['code'], $this->codeArr);
     }
 
-    /**
-     * 发送图片消息
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function testSendImg() {
-        $res = $this->botClient->sendImgToFriends([
-            'uuid' => $this->clientId,
-            'to_wxid' => $this->wxidDj,
-            'path' => "https://devhhb.images.huihuiba.net/1-637ae5c99e334.png"
-        ]);
-        dump($res);
-        $this->assertContains($res['code'], $this->codeArr);
-    }
+
     /**
      * 发送文本消息
      * Author: fudaoji<fdj@kuryun.cn>

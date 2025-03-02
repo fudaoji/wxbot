@@ -40,10 +40,16 @@ class Extian extends Base
     const API_DELETE_FRIEND = 'deleteUser';
     const API_CLEAN_CHAT_HISTORY = 'ClearMsgList';
     const API_SET_GROUP_NAME = 'setRoomName';
+    const API_BUILDING_GROUP = 'createRoom'; //建群
     const API_GET_MEMBER_INFO = 'getUserInfo';
     const API_AGREE_FRIEND_VERIFY = 'agreeUser'; // 同意好友请求
 
     const API_GET_MSG = 'getMsg'; //获取消息内容
+    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
+    const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
+    const API_SAVE_FILE = 'savefile'; //保存文件
+
+    const API_SEND_EMOJI = 'sendEmoji'; //发送表情
     const API_SEND_XML = 'sendAppmsgForward'; //发送xml消息
     const API_SEND_IMG = 'sendImage'; //发送图片
     const API_SEND_TEXT = 'sendText'; //发送文本
@@ -51,15 +57,13 @@ class Extian extends Base
     const API_SEND_VIDEO_MSG = 'sendFile'; // 发送视频消息，
     const API_SEND_FILE_MSG = 'sendFile'; // 发送文件消息，
     const API_DOWNLOAD_FILE = 'getimgbyid'; //下载文件到机器人服务器本地，
-    const API_SAVE_FILE = 'savefile'; //保存文件
-    const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
-    const API_SEND_MUSIC_LINK_MSG = 'SendMusicLinkMsg'; //发送一条可播放的歌曲链接
     const API_SEND_SHARE_LINK_MSG = 'sendAppmsgForward'; //发送普通分享链接
     const API_SEND_LINK_MSG = 'SendLinkMsg'; //发送链接消息，只支持pro版
     const API_SEND_CARD_MSG = "sendCard"; //发送名片消息
     const API_INVITE_IN_GROUP_BY_LINK = 'sendGroupInvite';
     const API_SEND_GROUP_MSG_AND_AT = 'sendText';
-    const API_BUILDING_GROUP = 'createRoom'; //建群
+    const API_CALL_VOIP_AUDIO = 'callVoipAudio'; //拨打语音电话
+
 
     const API_ACCEPTE_TRANSFER = 'agreeCash'; //同意转账
     const API_REJECT_TRANSFER = ''; //拒收转账
@@ -72,12 +76,31 @@ class Extian extends Base
 
     private function doRequest($api = '', $params = []){
         $params['method'] = $api;
-        $params['client_id'] = $this->clientId;
+        $params['pid'] = $this->clientId;
         isset($params['uuid']) && $params['pid'] = $params['uuid'];
         return $this->request([
             'url' => '/api?json&key=' . $this->appKey,
             'data' => $params
         ]);
+    }
+
+    public function sendEmojiToFriend($params = [])
+    {
+        $params['wxid'] = $params['to_wxid'];
+        return $this->doRequest(self::API_SEND_EMOJI, $params);
+    }
+
+    /**
+     * res:{
+            "method": "callVoipAudio",
+            "wxid": "wxid_vw2prmx8xv5n22"
+        }
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function callVoipAudio($params = []){
+        return $this->doRequest(self::API_CALL_VOIP_AUDIO, $params);
     }
 
     /**
@@ -597,6 +620,11 @@ class Extian extends Base
 
     /**
      * 手动保存文件
+     * req{
+            type: 可选type:base64,hex,url
+     *      data: "",
+     *      path: "保存文件名称"
+     * }
      * @param array $params
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>

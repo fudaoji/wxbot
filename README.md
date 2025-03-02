@@ -39,13 +39,10 @@
 - [Layui](https://www.layui.com/) 
 - [Layuimini](http://layuimini.99php.cn/)
 - [e小天](http://www.wxext.cn)
-- [Vlw](http://a.vlwai.cn/)
-- [Vlw配套接口Xyo](https://www.yuque.com/httpapi/)
-- [Web微信(Go-wxbot)](https://gitee.com/fudaoji/go-wxbot)
 
 #### 安装及使用文档
 
-开发文档：[http://daoadmin.kuryun.com/home/guide/bot/id/74/v/1.x.html](https://kyphp.kuryun.com/home/guide/bot/id/74/v/1.x.html)
+开发文档：[http://daoadmin.kuryun.com/home/guide/bot/id/74/v/1.x.html](http://daoadmin.kuryun.com/home/guide/bot/id/74/v/1.x.html)
 
 #### 参与贡献
 
@@ -64,7 +61,7 @@ QQ交流群：
 
 微信交流群：
 
-![输入图片说明](wx_group.png)
+加微信：【doogiefu】，备注：加入wxbot群
 
 #### 声明
 本项目仅供技术研究，请勿用于任何商业用途，请勿用于非法用途，如有任何人凭此做何非法事情，均于作者无关，特此声明。

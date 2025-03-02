@@ -16,6 +16,7 @@ use ky\OpenAI\Base;
 class Volces extends Base
 {
     const API_SMART = '/api/v3/chat/completions';
+    const API_EMBEDINGS = '/api/v3/embeddings';
     protected $baseUri = 'https://ark.cn-beijing.volces.com';
     protected $errMsg = '';
     protected $appKey = '';
@@ -30,6 +31,27 @@ class Volces extends Base
         !empty($options['api_key']) && $this->appKey = $options['api_key'];
         !empty($options['model']) && $this->model = $options['model'];
         isset($options['use_context']) && $this->useContext = $options['use_context'];
+    }
+
+    /**
+     * 文本向量化
+     * @param $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function embedding($params){
+        $data = [
+            'input' => $params['msg'],
+            'model' => $params['model'] ?? $this->model,
+            'encoding_format' => $params['encoding_format'] ?? 'base64'
+        ];
+
+        $res = $this->doRequest($data, self::API_EMBEDINGS);
+        $res['code'] = 1;
+        if (empty($res['data'])) {
+            $res['code'] = 0;
+        }
+        return  $res;
     }
 
     /**
@@ -58,6 +80,14 @@ class Volces extends Base
         ];
 
         $res = $this->doRequest($data, self::API_SMART);
+        $res['code'] = 1;
+        if (!empty($res['choices'])) {
+            $res['answer_type'] = self::ANSWER_TEXT;
+            $text = isset($res['choices'][0]['message']['content']) ? $res['choices'][0]['message']['content'] : '';
+            $res['answer'] = str_replace('<br/>', "\n", trim($text, "<br/>"));
+        } else {
+            $res['code'] = 0;
+        }
         return  $res;
     }
 
@@ -87,6 +117,7 @@ class Volces extends Base
 
     public function dealRes($params)
     {
+        return $params;
         $res = $params;
         $res['code'] = 1;
         if (!empty($res['choices'])) {

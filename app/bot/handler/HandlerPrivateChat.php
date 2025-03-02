@@ -43,6 +43,7 @@ class HandlerPrivateChat extends Handler
                     'content_type' => $this->content['type']
                 ]
             ]);
+            parent::$replied = true;
             /*$this->botClient->forwardMsgToFriends([
                 'robot_wxid' => $this->botWxid,
                 'to_wxid' => $groups,

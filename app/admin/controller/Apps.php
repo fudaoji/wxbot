@@ -68,7 +68,7 @@ class Apps extends Base
 
         $search_key && $where['title|desc'] = ['like', '%'.$search_key.'%'];
 
-        $data_list = $this->model->page($page_size, $where, ['id' => 'desc'], true, true);
+        $data_list = $this->model->page($page_size, $where, ['sort_reply' => 'desc', 'id' => 'desc'], true, true);
         $page = $data_list->appends(['search_key' => $search_key])->render();
 
         $assign = [
@@ -159,6 +159,10 @@ class Apps extends Base
             }
 
             $cf = get_addon_info($name);
+            //检查框架版本依赖
+            if(!empty($cf['depend_wxbot']) && $cf['depend_wxbot'] > config('app.version')){
+                $this->error('请先升级wxbot！');
+            }
             $data = [
                 'name' => $cf['name'],
                 'title' => $cf['title'],

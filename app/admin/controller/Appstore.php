@@ -247,6 +247,12 @@ class Appstore extends Base
         }
         @unlink($tem_file);
 
+        //检查框架版本依赖
+        $cf = get_addon_info($app_name);
+        if(!empty($cf['depend_wxbot']) && $cf['depend_wxbot'] > config('app.version')){
+            $this->error('请先升级wxbot！');
+        }
+
         if (is_file($app_path . 'upgrade.sql')) {
             try {
                 execute_sql($app_path . 'upgrade.sql');

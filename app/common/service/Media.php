@@ -30,4 +30,28 @@ class Media
         ];
         return isset($list[$type]) ? $list[$type] : null;
     }
+
+    /**
+     * @param array $params
+     * @param bool $refresh
+     * @return array|false|mixed|\PDOStatement|string|\think\Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function getMedia($params = [], $refresh = false){
+        ksort($params);
+        $cache_key = serialize($params);
+        $data = cache($cache_key);
+        if(empty($data)){
+            $data = model('media_' . $params['media_type'])->getOneByMap([
+                'admin_id' => ['in', [$params['staff_id'], $params['admin_id']]],
+                'id' => $params['media_id']
+            ]);
+        }
+
+        cache($cache_key, $data);
+        return $data;
+    }
 }

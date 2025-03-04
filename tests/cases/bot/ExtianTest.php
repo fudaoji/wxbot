@@ -32,6 +32,16 @@ class ExtianTest extends BotTest
         ]);
     }
 
+    function testSendGroupMsgAndAt(){
+        $res = $this->botClient->sendGroupMsgAndAt([
+            'group_wxid' => $this->groupTest,
+            'member_wxid' => $this->wxidDj,
+            'msg' => "欢迎！"
+        ]);
+        dump($res);
+        $this->assertContains($res['code'], $this->codeArr);
+    }
+
     /**
      * 转发信息
      * Author: fudaoji<fdj@kuryun.cn>

@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\model\MediaLink as LinkM;
+use app\common\service\Media as MediaService;
 use app\common\service\MediaGroup as GroupService;
 use app\constants\Media;
 
@@ -115,7 +116,13 @@ class Medialink extends Bbase
             $res = $this->model->updateOne($post_data);
         }
         if($res){
-            $this->refreshMedia($res['id']);
+            //$this->refreshMedia($res['id']);
+            MediaService::getMedia([
+                'media_type' => 'text',
+                'staff_id' => $this->bot['staff_id'],
+                'admin_id' => $this->bot['admin_id'],
+                'media_id' => $res['id']
+            ]);
             $this->success('数据保存成功', $jump_to);
         }else{
             $this->error('数据保存出错');

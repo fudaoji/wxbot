@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\model\MediaFile as FileM;
+use app\common\service\Media as MediaService;
 use app\common\service\MediaGroup as GroupService;
 use app\constants\Media;
 
@@ -107,7 +108,12 @@ class Mediafile extends Bbase
             $res = $this->model->updateOne($post_data);
         }
         if($res){
-            $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'id' => $res['id']], true, true);
+            MediaService::getMedia([
+                'media_type' => 'text',
+                'staff_id' => $this->bot['staff_id'],
+                'admin_id' => $this->bot['admin_id'],
+                'media_id' => $res['id']
+            ]);
             $this->success('数据保存成功', $jump_to);
         }else{
             $this->error('数据保存出错');

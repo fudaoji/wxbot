@@ -102,6 +102,7 @@ class HandlerGroupMemberAdd extends Handler
                         );
                     }
                 }
+                //Logger::error($reply);
             }
         }
     }

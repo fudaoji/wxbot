@@ -20,6 +20,7 @@ use ky\WxBot\Driver\Mycom;
 use ky\WxBot\Driver\Qianxun;
 use ky\WxBot\Driver\Vlw;
 use ky\WxBot\Driver\Wxwork;
+use app\common\service\Media as MediaService;
 
 class Reply extends Base
 {
@@ -39,10 +40,17 @@ class Reply extends Base
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function botReply($bot, $client, $reply, $to_wxid = '', $extra = []){
-        if(empty($media = model('media_' . $reply['media_type'])->getOneByMap([
+        /*$media = model('media_' . $reply['media_type'])->getOneByMap([
             'admin_id' => ['in', [$bot['staff_id'], $bot['admin_id']]],
             'id' => $reply['media_id']
-        ]))){
+        ]);*/
+        $media = MediaService::getMedia([
+            'media_type' => $reply['media_type'],
+            'staff_id' => $bot['staff_id'],
+            'admin_id' => $bot['admin_id'],
+            'media_id' => $reply['media_id']
+        ]);
+        if(empty($media)){
             return false;
         }
         if(in_array($bot['protocol'], [BotConst::PROTOCOL_XBOTCOM])){ //企业微信特殊处理
@@ -69,6 +77,7 @@ class Reply extends Base
             case Media::TEXT:
                 $msg = empty($extra['nickname']) ? $media['content'] : str_replace('[昵称]', $extra['nickname'], $media['content']);
                 $msg = empty($extra['group_name']) ? $msg : str_replace('[群名称]', $extra['group_name'], $msg);
+
                 if(!empty($extra['need_at'])){
                     $client->sendGroupMsgAndAt([
                         'robot_wxid' => $bot['uin'],

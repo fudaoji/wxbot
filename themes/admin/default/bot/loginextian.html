@@ -1,0 +1,59 @@
+<div class="layui-row">
+    <div class="layui-col-md4 layui-col-xs6 layui-col-md-offset4 layui-col-xs-offset3" >
+        <h2>机器人登录的正确姿势：</h2>
+        <ol style="margin-bottom: 30px;margin-top: 15px;">
+            <li>1、打开微信扫一扫扫描下方二维码</li>
+            <li>2、手机上点击“登录”（如果有安全提示，只管点击“继续登录”）</li>
+            <li>3、手机上登录后回到当前页面点击二维码下方的“已扫码并点击登录”</li>
+        </ol>
+
+        <div style="text-align: center;">
+            <div>
+                <img style="width: 80%;margin-bottom: 40px;" src="{$code}"
+                     alt="二维码" id="code-img">
+            </div>
+
+            <div class="layui-btn-group" style="margin-bottom: 50px;">
+                <button class="layui-btn layui-btn-sm"
+                        id="btn-login"
+                >已扫码并点击登录</button>
+
+                <a class="layui-btn layui-btn-sm layui-btn-primary"
+                   href="javascript:location.reload();"
+                ><i class="layui-icon layui-icon-refresh"></i>刷新</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'miniTab'], function() {
+        var $ = layui.jquery,
+                miniTab = layui.miniTab;
+
+        var parent_index = parent.layer.getFrameIndex(window.name);
+        $('#btn-login').on('click', () => {
+            requestPost("", {}, (res) => {
+                if(res.url === '/undefined'){
+                    if(parent_index){ //表单页为内页的情况
+                        parent.layer.close(parent_index);
+                        parent.location.reload();
+                    }else{
+                        miniTab.deleteCurrentByIframe();
+                    }
+                }else if(res.url.indexOf('/index/index') !== -1){
+                    top.location.href = res.url;
+                }else if(res.url){
+                    location.href = res.url;
+                }
+            });
+        });
+
+        /*$(document).ready(function () {
+            requestPost("", {do:"getcode"}, (res) => {
+                $('#code-img').attr('src', res.data.code).removeClass('hide');
+                $('#spin').addClass('hide');
+            }, false, false);
+        });*/
+    });
+</script>

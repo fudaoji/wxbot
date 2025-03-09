@@ -17,6 +17,7 @@
 namespace app\admin\controller;
 
 use app\common\model\Upload;
+use \Dao\Upload\Upload as UploadCli;
 
 class Uploader extends Base
 {
@@ -53,18 +54,14 @@ class Uploader extends Base
      */
     public function fileToRootPost(){
         if(request()->isPost()){
-            // 获取表单上传文件 例如上传了001.jpg
-            $file = request()->file('file');
-            // 移动到服务器的上传目录 并且使用原文件名
-            $res = $file->validate([
-                    'size'=>config('system.upload.file_size'),
-                    'ext'=> config('system.upload.file_ext')]
-            )->move($this->app->getRootPath(), '');
-
+            $config = ['rootPath' => request()->post('save_path', $this->app->getRootPath())];
+            $uploader = new UploadCli($config, UploadCli::LOCAL);
+            $res = $uploader->upload();
             if($res){
-                $this->success('上传成功', '', ['src' => '/' . $res->getFilename()]);
+                $file = $res['file'];
+                $this->success('上传成功', '', $file);
             }
-            $this->error($file->getError());
+            $this->error();
         }
     }
 

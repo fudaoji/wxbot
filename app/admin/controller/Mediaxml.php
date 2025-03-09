@@ -79,7 +79,7 @@ class Mediaxml extends Bbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textarea', 'xml内容', '10000字内', [], 'required maxlength=10000');
+            ->addFormItem('content', 'textarea', 'xml内容', '查看消息体中的xml', [], 'required maxlength=1000000');
 
         return $builder->show();
     }
@@ -100,7 +100,7 @@ class Mediaxml extends Bbase
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textarea', 'xml内容', '10000字内', [], 'required maxlength=10000')
+            ->addFormItem('content', 'textarea', 'xml内容', '查看消息体中的xml', [], 'required maxlength=1000000')
             ->setFormData($data);
 
         return $builder->show();

@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot as BotM;
 use app\admin\model\Admin as AdminM;
+use app\common\model\Upload;
 use app\common\service\AdminLog as AdminLogService;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
@@ -139,8 +140,8 @@ class Bot extends Bbase
             ->setDataUrl(url('index', ['tab' => $tab]))
             ->setTabNav($this->tabs, $tab)
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
-            ->addTopButton('addnew', ['title' => '手动添加', 'href' => url('add', ['tab' => $tab])])
-            //->addTopButton('addnew', ['title' => '扫码登录(限wxbot会员)', 'href' => url('hookadd')])
+            ->addTopButton('addnew', ['title' => '扫码登录微信', 'href' => url('hookadd')])
+            ->addTopButton('addnew', ['title' => '拉取已登录微信', 'href' => url('add', ['tab' => $tab]),'class' => "layui-btn-warm"])
             ->addTableColumn(['title' => 'PID|client_id', 'field' => 'uuid', 'minWidth' => 90])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 150])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 100])
@@ -163,80 +164,138 @@ class Bot extends Bbase
     }
 
     /**
-     * 分配员工
+     * e小天机器人
      * @return mixed
+     * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function allocate()
-    {
-        $id = input('id', null);
-        $data = $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'id' => $id]);
-
+    public function loginExtian(){
+        $data = cache('botadd' . $this->adminInfo['id']);
+        $jump = $data['jump'] ?? '/undefined';
         if (!$data) {
             $this->error('参数错误');
         }
-        if($this->request->isPost()){
-            $post_data = input('post.');
-            $this->model->updateOne([
-                'id' => $data['id'],
-                'staff_id' => $post_data['staff_id']
+
+        $data['uuid'] = '';
+        /**
+         * @var $bot_client Extian
+         */
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            $data['uuid'] = session('bot_client_id');
+            //获取机器人信息
+            $info = $this->model->getRobotInfo($data);
+
+            if(!empty($info) && !is_string($info)){
+                if($bot = $this->model->getOneByMap(['uin' => $info['wxid']])){
+                    $data = $this->model->updateOne([
+                        'id' => $bot['id'],
+                        'username' => $info['username'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl'],
+                        'alive' => 1,
+                        'uuid' => $data['uuid'],
+                        'protocol' => $data['protocol'],
+                        'url' => $data['url'],
+                        'app_key' => $data['app_key'],
+                    ]);
+                }else{
+                    $data = $this->model->addOne([
+                        'uin' => $info['wxid'],
+                        'admin_id' => AdminM::getCompanyId($this->adminInfo),
+                        'staff_id' => $this->adminInfo['id'],
+                        'title' => $info['nickname'],
+                        'username' => $info['username'],
+                        'app_key' => $data['app_key'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl'],
+                        'protocol' => $data['protocol'],
+                        'url' => $data['url'],
+                        'alive' => 1,
+                        'uuid' => $data['uuid']
+                    ]);
+                }
+                //把此机器人之前登录的状态下线
+                $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
+                    ['alive' => 0]
+                );
+                $jump = ($jump == '/undefined' ? url('index/index', ['id' => $data['id']]) : $jump);
+            }else{
+                $this->error($info);
+            }
+
+            AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '扫码登录微信'.$info['nickname']]);
+            //同步好友任务
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => 3,
+                'params' => [
+                    'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                    'bot' => $data
+                ]
             ]);
-            $this->success('操作成功！', '/undefined');
+            $this->success('登录成功', $jump);
         }
 
+        $res = $bot_client->injectWechat();
+        if(empty($res['code'])){
+            $this->error($res['errmsg']);
+        }
+        sleep(1);
+        $login_code = $bot_client->getLoginCode(['client_id' => $res['pid']]);
+        if(empty($login_code['code'])){
+            $this->error($login_code['errmsg']);
+        }
+        session('bot_client_id', $login_code['pid']);
+        $data['code'] = generate_qr(['text' => 'http://weixin.qq.com/x/' . $login_code['data']]);
+        return $this->show($data);
+    }
+
+    /**
+     * 扫码添加
+     * @return mixed
+     * @throws \think\db\exception\DbException
+     */
+    public function hookAdd()
+    {
+        if(request()->isPost()){
+            $post_data = input('post.');
+            cache('botadd' . $this->adminInfo['id'], $post_data);
+            switch ($post_data['protocol']){
+                case  BotConst::PROTOCOL_EXTIAN:
+                    $action = 'loginextian';
+                    break;
+                case  BotConst::PROTOCOL_XBOT:
+                    $action = 'loginxbot';
+                    break;
+                default:
+                    $action = 'loginmy';
+                    break;
+            }
+
+            $this->success('请等待加载登录二维码！', url($action, input('post.')));
+        }
+
+        $data = array_merge([
+            'protocol' => BotConst::PROTOCOL_EXTIAN,
+            'app_key' => get_rand_char(32)
+        ], $this->getConfig());
+
+        $tip = "<p>微信二维码加载需要几秒钟，点击提交后请耐心等待！</p>
+<p>app_key和url读取顺序：上个机器人配置 > 系统配置值 </p>
+<p>如果无法正常通信，请检查key和接口地址是否和机器人框架上的一致</p>";
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
-        $builder->setMetaTitle('分配员工')
-            ->setTabNav($this->configTabs($id), __FUNCTION__)
-            ->setPostUrl(url('allocate'))
-            ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('staff_id', 'select', '选择员工', '选择员工', AdminM::getTeamIdToName(), 'required')
+        $builder->setMetaTitle('扫码登录微信')
+            ->setTip($tip)
+            ->setPostUrl(url('hookAdd'))
+            ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::canScan())
+            ->addFormItem('app_key', 'text', 'Key', '请保证当前key与机器人框架上的配置相同', [], 'required')
+            ->addFormItem('url', 'text', '接口地址', '机器人框架所在服务器的IP:端口', [], 'required')
             ->setFormData($data);
-
         return $builder->show();
-    }
-
-    /**
-     * 删除机器人
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function delPost(){
-        if(request()->isPost()){
-            $id = input('id', 0);
-            $map = ['admin_id' => $this->adminInfo['id'], 'id' => $id];
-            if($this->model->delByMap($map)){
-                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::DEL, 'desc' => $this->adminInfo['username'] . '删除数据'.$this->model->getName().':'.$id]);
-                $this->success('删除成功');
-            }else{
-                $this->error('删除失败');
-            }
-        }
-    }
-
-    /**
-     * 操作机器人
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function console(){
-        $id = input('id', null);
-        $data = $this->model->where(array_merge($this->staffWhere(), ['status' => 1]))
-            ->find($id);
-
-        if (!$data) {
-            $this->error('参数错误');
-        }
-        session(SESSION_BOT, $data);
-        $this->redirect(url('botfriend/index'));
     }
 
     public function xbotcomAdd()
@@ -383,7 +442,7 @@ class Bot extends Bbase
             //->addFormItem('uuid', 'text', 'client_id', 'e小天、xbot类型的必填')
             //->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             //->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
-            ->addFormItem('app_key', 'text', 'ext的KEY', '请到ext管理面板中获取', [], 'required')
+            ->addFormItem('app_key', 'text', 'e小天的KEY', '请到e小天管理面板中获取', [], 'required')
             ->addFormItem('url', 'text', '服务器地址', 'ip:port', [], 'required')
             //->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
             ->setFormData($data);
@@ -498,45 +557,80 @@ class Bot extends Bbase
     }
 
     /**
-     * 扫码添加
+     * 分配员工
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function hookAdd()
+    public function allocate()
     {
-        if(request()->isPost()){
-            $post_data = input('post.');
-            cache('botadd' . $this->adminInfo['id'], $post_data);
-            switch ($post_data['protocol']){
-                case  BotConst::PROTOCOL_EXTIAN:
-                    $action = 'loginextian';
-                    break;
-                case  BotConst::PROTOCOL_XBOT:
-                    $action = 'loginxbot';
-                    break;
-                default:
-                    $action = 'loginmy';
-                    break;
-            }
+        $id = input('id', null);
+        $data = $this->model->getOneByMap(['admin_id' => $this->adminInfo['id'], 'id' => $id]);
 
-            $this->success('请等待加载登录二维码！', url($action, input('post.')));
+        if (!$data) {
+            $this->error('参数错误');
         }
-
-        $data = array_merge([
-            'protocol' => BotConst::PROTOCOL_MY,
-            'app_key' => get_rand_char(32)
-        ], $this->getConfig());
+        if($this->request->isPost()){
+            $post_data = input('post.');
+            $this->model->updateOne([
+                'id' => $data['id'],
+                'staff_id' => $post_data['staff_id']
+            ]);
+            $this->success('操作成功！', '/undefined');
+        }
 
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
-        $builder->setMetaTitle('新增机器人')
-            ->setTip("<div style='color: red;font-weight: bold;'>使用免费的西瓜框架无法用此功能。</div>微信二维码加载需要几秒钟，点击提交后请耐心等待！<br>app_key和url读取顺序：上个机器人 > 设置默认值 <br> 如果需要填写新的，请先在服务器上完成框架设置并获取APPKey和http调用地址")
-            ->setPostUrl(url('hookAdd'))
-            ->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::canScan())
-            ->addFormItem('app_key', 'text', 'AppKey', '请保证当前appkey与机器人框架上的配置相同', [], 'required')
-            ->addFormItem('url', 'text', '接口地址', '请从机器人框架上获取', [], 'required')
+        $builder->setMetaTitle('分配员工')
+            ->setTabNav($this->configTabs($id), __FUNCTION__)
+            ->setPostUrl(url('allocate'))
+            ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('staff_id', 'select', '选择员工', '选择员工', AdminM::getTeamIdToName(), 'required')
             ->setFormData($data);
+
         return $builder->show();
+    }
+
+    /**
+     * 删除机器人
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function delPost(){
+        if(request()->isPost()){
+            $id = input('id', 0);
+            $map = ['admin_id' => $this->adminInfo['id'], 'id' => $id];
+            if($this->model->delByMap($map)){
+                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::DEL, 'desc' => $this->adminInfo['username'] . '删除数据'.$this->model->getName().':'.$id]);
+                $this->success('删除成功');
+            }else{
+                $this->error('删除失败');
+            }
+        }
+    }
+
+    /**
+     * 操作机器人
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function console(){
+        $id = input('id', null);
+        $data = $this->model->where(array_merge($this->staffWhere(), ['status' => 1]))
+            ->find($id);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        session(SESSION_BOT, $data);
+        $this->redirect(url('botfriend/index'));
     }
 
     /**
@@ -555,150 +649,21 @@ class Bot extends Bbase
         }else{
             $config = config('system.bot');
         }
+        if(empty($config)){
+            $key = '';
+            try{
+                if(file_exists("C:\Users\Public\Documents\wxext.cn\WxExt.ini")){
+                    $content = file_get_contents("C:\Users\Public\Documents\wxext.cn\WxExt.ini");
+                    $content = json_decode($content, true);
+                    $key = !empty($content['key']) && $key = $content['key'];
+                }
+            }catch (\Exception $e){}
+            $config = [
+                'url' => '127.0.0.1:8203',
+                'app_key' => $key
+            ];
+        }
         return empty($config) ? [] : $config;
-    }
-
-    /**
-     * My扫码登录
-     * @return mixed
-     * Author: fudaoji<fdj@kuryun.cn>
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\Exception
-     */
-    public function loginMy(){
-        $data = cache('botadd' . $this->adminInfo['id']);
-        $jump = $data['jump'] ?? '/undefined';
-        if (!$data) {
-            $this->error('参数错误');
-        }
-        $data['uuid'] = '';
-        $bot_client = $this->model->getRobotClient($data);
-        if(request()->isPost()){
-            $do = input('post.do', 'confirm');
-            if($do == 'getcode'){
-                $res = $bot_client->getLoginCode();
-                // Log::write("获取微信二维码：".json_encode($res));
-                if($res['code'] == 0){
-                    $this->error($res['errmsg']);
-                }
-                if(empty($res['data'])){
-                    // $bot_client->exitLoginCode();
-                }
-                $data['code'] = base64_to_pic($res['data']);
-                $this->success('请打开微信扫码!', null, $data);
-            }
-            sleep(2);
-            $return = $bot_client->getRobotList();
-            if($return['code'] && !empty($return['data'])){
-                foreach ($return['data'] as $v){
-                    if(! in_array($v['username'], \app\common\model\BotApply::getActiveWx($this->adminInfo['id']))){
-                        continue;  //不在白名单中的机器人不拉取
-                    }
-                    if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'staff_id' => $this->adminInfo['id']])){
-                        $data = $this->model->updateOne([
-                            'id' => $bot['id'],
-                            'username' => $v['username'],
-                            'nickname' => $v['nickname'],
-                            'headimgurl' => $v['headimgurl'],
-                            'alive' => 1,
-                            'url' => $data['url'],
-                            'app_key' => $data['app_key'],
-                            'protocol' => $data['protocol'],
-                        ]);
-                    }else{
-                        $data = $this->model->addOne([
-                            'uin' => $v['wxid'],
-                            'admin_id' => AdminM::getCompanyId($this->adminInfo),
-                            'staff_id' => $this->adminInfo['id'],
-                            'title' => $v['nickname'],
-                            'username' => $v['username'],
-                            'nickname' => $v['nickname'],
-                            'headimgurl' => $v['headimgurl'],
-                            'protocol' => $data['protocol'],
-                            'url' => $data['url'],
-                            'app_key' => $data['app_key'],
-                            'alive' => 1
-                        ]);
-                    }
-                    //把其他机器人下线
-                    $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
-                        ['alive' => 0]
-                    );
-                    //同步好友任务
-                    invoke('\\app\\common\\event\\TaskQueue')->push([
-                        'delay' => 3,
-                        'params' => [
-                            'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
-                            'bot' => $data
-                        ]
-                    ]);
-                }
-                $this->success('登录成功', $jump);
-            }else{
-                $this->success('登录失败：' . $bot_client->getError());
-            }
-        }
-        return $this->show($data);
-    }
-
-    /**
-     * 编辑情况下的扫码登录
-     * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function reLoginMy(){
-        $id = input('id', null);
-        $data = $this->model->getOne($id);
-
-        if (!$data) {
-            $this->error('参数错误');
-        }
-
-        $bot_client = $this->model->getRobotClient($data);
-        if(request()->isPost()){
-            $do = input('post.do', 'confirm');
-            if($do == 'getcode'){
-                $res = $bot_client->getLoginCode();
-                // Log::write("获取微信二维码：".json_encode($res));
-                if($res['code'] == 0){
-                    $this->error($res['errmsg']);
-                }
-                if(empty($res['data'])){
-                    // $bot_client->exitLoginCode();
-                }
-                $data['code'] = base64_to_pic($res['data']);
-                $this->success('请打开微信扫码!', null, $data);
-            }
-            if($data['alive']){
-                //获取机器人信息
-                $info = $this->model->getRobotInfo($data);
-                if(!empty($info) && !is_string($info)){
-                    $this->model->updateOne([
-                        'id' => $data['id'],
-                        'username' => $info['username'],
-                        'nickname' => $info['nickname'],
-                        'headimgurl' => $info['headimgurl']
-                    ]);
-                }
-
-                //同步好友任he
-                invoke('\\app\\common\\event\\TaskQueue')->push([
-                    'delay' => 3,
-                    'params' => [
-                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
-                        'bot' => $data
-                    ]
-                ]);
-                $this->success('登录成功', '/undefined');
-            }
-        }
-
-        return $this->show($data->toArray());
     }
 
     /**
@@ -725,94 +690,6 @@ class Bot extends Bbase
         $this->error('操作失败：' . $res['errmsg']);
     }
 
-    /**
-     * e小天机器人
-     * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function loginExtian(){
-        $data = cache('botadd' . $this->adminInfo['id']);
-        $jump = $data['jump'] ?? '/undefined';
-        if (!$data) {
-            $this->error('参数错误');
-        }
-
-        $data['uuid'] = '';
-        /**
-         * @var $bot_client Extian
-         */
-        $bot_client = $this->model->getRobotClient($data);
-        if(request()->isPost()){
-            $data['uuid'] = session('bot_client_id');
-            //获取机器人信息
-            $info = $this->model->getRobotInfo($data);
-
-            if(!empty($info) && !is_string($info)){
-                if($bot = $this->model->getOneByMap(['uin' => $info['wxid'], 'staff_id' => $this->adminInfo['id']])){
-                    $data = $this->model->updateOne([
-                        'id' => $bot['id'],
-                        'username' => $info['username'],
-                        'nickname' => $info['nickname'],
-                        'headimgurl' => $info['headimgurl'],
-                        'alive' => 1,
-                        'uuid' => $data['uuid'],
-                        'protocol' => $data['protocol'],
-                        'url' => $data['url'],
-                        'app_key' => $data['app_key'],
-                    ]);
-                }else{
-                    $data = $this->model->addOne([
-                        'uin' => $info['wxid'],
-                        'admin_id' => AdminM::getCompanyId($this->adminInfo),
-                        'staff_id' => $this->adminInfo['id'],
-                        'title' => $info['nickname'],
-                        'username' => $info['username'],
-                        'app_key' => $data['app_key'],
-                        'nickname' => $info['nickname'],
-                        'headimgurl' => $info['headimgurl'],
-                        'protocol' => $data['protocol'],
-                        'url' => $data['url'],
-                        'alive' => 1,
-                        'uuid' => $data['uuid']
-                    ]);
-                }
-                //把其他机器人下线
-                $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
-                    ['alive' => 0]
-                );
-                $jump = ($jump == '/undefined' ? url('index/index', ['id' => $data['id']]) : $jump);
-            }else{
-                $this->error($info);
-            }
-
-            //同步好友任务
-            invoke('\\app\\common\\event\\TaskQueue')->push([
-                'delay' => 3,
-                'params' => [
-                    'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
-                    'bot' => $data
-                ]
-            ]);
-            $this->success('登录成功', $jump);
-        }
-
-        $res = $bot_client->injectWechat();
-        if(empty($res['code'])){
-            $this->error($res['errmsg']);
-        }
-        sleep(2);
-        $login_code = $bot_client->getLoginCode(['client_id' => $res['pid']]);
-        if(empty($login_code['code'])){
-            $this->error($login_code['errmsg']);
-        }
-        session('bot_client_id', $login_code['pid']);
-        $data['code'] = generate_qr(['text' => 'http://weixin.qq.com/x/' . $login_code['data']]);
-        return $this->show($data, 'bot/loginmy');
-    }
 
     /**
      * 编辑情况下的扫码登录
@@ -1195,5 +1072,148 @@ class Bot extends Bbase
         session('bot_client_id', $client_id['client_id']);
         $data['code'] = generate_qr(['text' => $login_code['data']['code']]);
         return $this->show($data, 'bot/loginmy');
+    }
+
+    /**
+     * My扫码登录
+     * @return mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\Exception
+     */
+    public function loginMy(){
+        $data = cache('botadd' . $this->adminInfo['id']);
+        $jump = $data['jump'] ?? '/undefined';
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $data['uuid'] = '';
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            $do = input('post.do', 'confirm');
+            if($do == 'getcode'){
+                $res = $bot_client->getLoginCode();
+                // Log::write("获取微信二维码：".json_encode($res));
+                if($res['code'] == 0){
+                    $this->error($res['errmsg']);
+                }
+                if(empty($res['data'])){
+                    // $bot_client->exitLoginCode();
+                }
+                $data['code'] = base64_to_pic($res['data']);
+                $this->success('请打开微信扫码!', null, $data);
+            }
+            sleep(2);
+            $return = $bot_client->getRobotList();
+            if($return['code'] && !empty($return['data'])){
+                foreach ($return['data'] as $v){
+                    if(! in_array($v['username'], \app\common\model\BotApply::getActiveWx($this->adminInfo['id']))){
+                        continue;  //不在白名单中的机器人不拉取
+                    }
+                    if($bot = $this->model->getOneByMap(['uin' => $v['wxid'], 'staff_id' => $this->adminInfo['id']])){
+                        $data = $this->model->updateOne([
+                            'id' => $bot['id'],
+                            'username' => $v['username'],
+                            'nickname' => $v['nickname'],
+                            'headimgurl' => $v['headimgurl'],
+                            'alive' => 1,
+                            'url' => $data['url'],
+                            'app_key' => $data['app_key'],
+                            'protocol' => $data['protocol'],
+                        ]);
+                    }else{
+                        $data = $this->model->addOne([
+                            'uin' => $v['wxid'],
+                            'admin_id' => AdminM::getCompanyId($this->adminInfo),
+                            'staff_id' => $this->adminInfo['id'],
+                            'title' => $v['nickname'],
+                            'username' => $v['username'],
+                            'nickname' => $v['nickname'],
+                            'headimgurl' => $v['headimgurl'],
+                            'protocol' => $data['protocol'],
+                            'url' => $data['url'],
+                            'app_key' => $data['app_key'],
+                            'alive' => 1
+                        ]);
+                    }
+                    //把其他机器人下线
+                    $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
+                        ['alive' => 0]
+                    );
+                    //同步好友任务
+                    invoke('\\app\\common\\event\\TaskQueue')->push([
+                        'delay' => 3,
+                        'params' => [
+                            'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                            'bot' => $data
+                        ]
+                    ]);
+                }
+                $this->success('登录成功', $jump);
+            }else{
+                $this->success('登录失败：' . $bot_client->getError());
+            }
+        }
+        return $this->show($data);
+    }
+
+    /**
+     * 编辑情况下的扫码登录
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function reLoginMy(){
+        $id = input('id', null);
+        $data = $this->model->getOne($id);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+
+        $bot_client = $this->model->getRobotClient($data);
+        if(request()->isPost()){
+            $do = input('post.do', 'confirm');
+            if($do == 'getcode'){
+                $res = $bot_client->getLoginCode();
+                // Log::write("获取微信二维码：".json_encode($res));
+                if($res['code'] == 0){
+                    $this->error($res['errmsg']);
+                }
+                if(empty($res['data'])){
+                    // $bot_client->exitLoginCode();
+                }
+                $data['code'] = base64_to_pic($res['data']);
+                $this->success('请打开微信扫码!', null, $data);
+            }
+            if($data['alive']){
+                //获取机器人信息
+                $info = $this->model->getRobotInfo($data);
+                if(!empty($info) && !is_string($info)){
+                    $this->model->updateOne([
+                        'id' => $data['id'],
+                        'username' => $info['username'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl']
+                    ]);
+                }
+
+                //同步好友任he
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                        'bot' => $data
+                    ]
+                ]);
+                $this->success('登录成功', '/undefined');
+            }
+        }
+
+        return $this->show($data->toArray());
     }
 }

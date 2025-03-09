@@ -9,6 +9,8 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+use app\common\model\Upload;
+
 if(!function_exists('replace_in_files')){
     /**
      * 替换文件内容
@@ -191,16 +193,18 @@ if(!function_exists('generate_qr')){
             $qr_url = empty($params['logo'])
                 ? $qrClass->qrCode($params['text'], $file_name, QR_ECLEVEL_H, $size, $margin, false)
                 : $qrClass->qrCodeWithLogo($params['text'], $file_name, QR_ECLEVEL_H, $size, $margin, false, $params['logo']);
-            $qiniu_url = fetch_to_qiniu(request()->domain() . $qr_url, 'qrcode_' . $file_name);
-            if ($qiniu_url) {
+
+            $oss_url = (new Upload())->fetchToOss(request()->domain() . $qr_url, 'qrcode_' . $file_name);
+            //$qiniu_url = fetch_to_qiniu(request()->domain() . $qr_url, 'qrcode_' . $file_name);
+            if ($oss_url) {
                 @unlink('.' . $qr_url);
             }
             unset($qrClass, $text, $file_name, $qr_url, $qiniuClass, $qiniu_key);
         } catch (\Exception $e) {
             \think\facade\Log::write($e->getMessage());
-            $qiniu_url = '';
+            $oss_url = '';
         }
-        return $qiniu_url;
+        return $oss_url;
     }
 }
 

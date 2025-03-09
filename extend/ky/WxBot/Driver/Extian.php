@@ -76,8 +76,11 @@ class Extian extends Base
 
     private function doRequest($api = '', $params = []){
         $params['method'] = $api;
-        $params['pid'] = $this->clientId;
-        isset($params['uuid']) && $params['pid'] = $params['uuid'];
+        if(empty($params['pid'])){
+            $params['pid'] = $this->clientId;
+            isset($params['uuid']) && $params['pid'] = $params['uuid'];
+        }
+
         return $this->request([
             'url' => '/api?json&key=' . $this->appKey,
             'data' => $params
@@ -325,6 +328,7 @@ class Extian extends Base
         $params['img'] = $params['path'];
         $params['imgType'] = empty($params['img_type']) ? 'url' : $params['img_type'];
         $params['wxid'] = $params['to_wxid'];
+        dump($params);
         return $this->doRequest(self::API_SEND_IMG, $params);
     }
 

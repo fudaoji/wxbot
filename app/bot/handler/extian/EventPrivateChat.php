@@ -38,7 +38,7 @@ class EventPrivateChat extends HandlerPrivateChat
 
         //消息转播
         $this->forward();
-
+        //Logger::error($this->content);
         switch ($this->content['type']){
             case Bot::MSG_TEXT:
                 $this->keyword();

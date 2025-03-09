@@ -41,6 +41,7 @@ $configs = [
         'port' => env('redis.port', '6379'),
         // 缓存有效期 0表示永久缓存
         'expire' => 86400,
+        'select' => 0
     ],
     'memcache' => [
         'type'  => 'memcached',

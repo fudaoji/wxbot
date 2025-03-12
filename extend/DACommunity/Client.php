@@ -31,7 +31,7 @@ class Client
     const API_APP_LISTUPGRADE = 'app/listUpgradePost';
     const API_APP_GETUPGRADE =  'app/getUpgradePost';
     const API_USER_GET= 'user/getPost';
-    const API_FRAMEWORK_VERSIONS = 'framework/getVersions';
+    const API_FRAMEWORK_VERSIONS = 'wxbot/getVersions';
     const API_FRAMEWORK_GETUPGRADE = 'framework/getUpgradePackage';
     const API_APP_NOTICE_LIST     = 'notice/listNotice';
 
@@ -43,6 +43,16 @@ class Client
         if(!empty($options['token'])){
             $this->token = $options['token'];
         }
+    }
+
+    /**
+     * 版本列表
+     * @param array $params
+     * @return array|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function versionList($params = []){
+        return $this->doRequest(['uri' => self::API_FRAMEWORK_VERSIONS, 'data' => $params]);
     }
 
     /**

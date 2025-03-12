@@ -10,6 +10,7 @@
 namespace app\admin\controller;
 
 use app\common\service\AdminGroup as GroupService;
+use app\common\service\DACommunity;
 use app\common\service\Platform as PlatformService;
 use app\constants\Common;
 use app\common\model\Addon;
@@ -356,19 +357,28 @@ class Apps extends Base
                 $this->error($res);
             }
         }
+        $version_list = DACommunity::listFrameWorkVersions(['current_page' => 1, 'page_size' => 100]);
+        $versions = [];
+        foreach ($version_list['list'] as $item){
+            $versions[$item['version']] = $item['version'];
+        }
 
         $default_data = [
             'version' => '1.0.0',
-            'author' => $this->adminInfo['realname']
+            'author' => $this->adminInfo['realname'],
+            'depend_wxbot' => config('app.version'),
+            'admin_url_type' => 1
         ];
         $builder = new FormBuilder();
         $builder->setPostUrl(url('build'))
             ->addFormItem('name', 'text', '应用标识', '请输入唯一应用标识，支持小写字母、数字和下划线，且不能以数字开头', [], 'required minlength=2 maxlength=20')
             ->addFormItem('title', 'text', '应用名称', '请输入应用名称，2-50长度', [], 'required minlength=2 maxlength=50')
             ->addFormItem('version', 'text', '应用版本', '例如1.0.0', [], 'required')
+            ->addFormItem('depend_wxbot', 'select', '依赖wxbot版本', '至少需要哪个版本的wxbot', $versions, 'required')
             ->addFormItem('logo', 'picture_url', '应用LOGO', '请上传比例为1:1的应用LOGO', [], 'required')
             ->addFormItem('author', 'text', '作者', '应用作者', [], 'required maxlength=100')
             ->addFormItem('desc', 'textarea', '应用描述', '200字内', [], 'maxlength=200')
+            ->addFormItem('admin_url_type', 'radio', '是否独立后台', '是否独立后台', [1=>'否', 2=>'是'], 'required')
             ->setFormData($default_data);
         return $builder->show();
     }

@@ -65,7 +65,7 @@ CREATE TABLE `__PREFIX__admin_rule`  (
 -- ----------------------------
 -- Records of ky_admin_rule
 -- ----------------------------
-INSERT INTO `__PREFIX__admin_rule` VALUES ('1', '', '系统管理', '0', '', '', '_self', '1', '0', '1626845872', '0', '1'), ('3', '', '员工管理', '194', '', '/admin/admin/index', '_self', '1', '0', '1676530002', '1', '1'), ('4', '', '菜单管理', '1', 'fa fa-align-justify', '/admin/adminrule/index', '_self', '1', '0', '1640017490', '3', '1'), ('6', '', '基础功能', '0', '', '', '_self', '1', '1599463278', '1649926644', '18', '1'), ('105', '', '消息转播', '158', '', '/admin/forward/index', '_self', '1', '1604904482', '1655799164', '1', '1'), ('106', '', '被动回复', '158', '', '/admin/reply/index', '_self', '1', '1604904505', '1640364369', '5', '1'), ('107', '', '角色管理', '194', '', '/admin/admingroup/index', '_self', '1', '1604904540', '1676530036', '1', '1'),  ('148', '', '配置管理', '1', 'fa fa-cogs', '/admin/setting/index', '_self', '1', '1624803694', '1640366685', '4', '1'), ('149', '', '应用管理', '0', '', '', '_self', '1', '1625712595', '1684985921', '15', '1'), ('150', '', '渠道管理', '7', '', '/admin/tpzschannel/index', '_self', '1', '1625712631', '1649233035', '5', '1'), ('151', '', '机器人列表', '162', '', '/admin/bot/index', '_self', '1', '1625725311', '1640018227', '5', '1'), ('152', '', '通讯录', '6', 'fa fa-address-book', '', '_self', '1', '1625737689', '1650419650', '20', '1'), ('153', '', '电商联盟', '7', '', '/admin/tpzsunion/index', '_self', '1', '1625737734', '1648523931', '1', '1'), ('156', '', '群管理', '6', 'fa fa-object-group', '', '_self', '1', '1626505381', '1655732578', '10', '1'), ('157', '', '关键词回复', '158', '', '/admin/keyword/index', '_self', '1', '1626505434', '1650262233', '10', '1'), ('158', '', '快捷设置', '6', 'fa fa-cogs', '', '_self', '1', '1626505455', '1640365845', '40', '1'), ('159', '', '消息群发', '158', '', '/admin/task/index', '_self', '1', '1626505494', '1650459935', '1', '1'), ('160', '', '好友列表', '152', '', '/admin/botfriend/index', '_self', '1', '1626505753', '1682133649', '10', '1'), ('162', '', '机器人管理', '169', 'fa fa-android', '', '_self', '1', '1626507555', '1640844683', '50', '1'), ('166', '', '群组列表', '152', '', '/admin/botgroup/index', '_self', '1', '1626509815', '1646837078', '9', '1'), ('167', '', '群规则', '156', '', '/admin/rule/index', '_self', '1', '1626593222', '1650952528', '20', '1'), ('168', '', '素材库', '169', 'fa fa-book', '', '_self', '1', '1640786676', '1683701902', '1', '1'), ('169', '', '全局设置', '0', '', '', '_self', '1', '1640844673', '1650466761', '20', '1'), ('170', '', '基础设置', '7', '', '/admin/tpzsconfig/index', '_self', '1', '1646839737', '1648534905', '0', '1'), ('171', '', '采品群', '7', '', '/admin/tpzsgather/index', '_self', '1', '1646839758', '1648546385', '45', '1'), ('172', '', '机器人负责群', '7', '', '/admin/tpzsteam/index', '_self', '0', '1646839780', '1653879660', '40', '1'), ('173', '', '发送列表', '7', '', '/admin/tpzstask/index', '_self', '1', '1646839807', '1648439722', '50', '1'), ('176', '', '系统升级', '1', 'fa fa-cloud-upload', '/admin/upgrade/index', '_self', '1', '1657205545', '1657205566', '1', '1'), ('186', '', '朋友圈', '6', 'fa fa-chrome', '', '_self', '1', '1663308146', '1663308146', '5', '1'), ('187', '', '获取朋友圈', '186', '', '/admin/moments/pull', '_self', '1', '1663308205', '1663308336', '10', '1'), ('188', '', '发朋友圈', '186', '', '/admin/moments/index', '_self', '1', '1663308300', '1663308300', '8', '1'), ('192', '', '客户管理', '1', 'fa fa-users', '', '_self', '1', '1676518784', '1677032365', '10', '1'), ('193', '', '运营管理', '0', '', '', '_self', '1', '1676518921', '1676518921', '10', '1'), ('194', '', '组织管理', '193', 'fa fa-connectdevelop', '', '_self', '1', '1676529954', '1676529982', '1', '1'), ('195', '', '账号额度管理', '193', 'fa fa-cc', '', '_self', '1', '1677031565', '1677031565', '5', '1'), ('196', '', '账号申请', '195', '', '/admin/botapply/index', '_self', '1', '1677031582', '1677031600', '5', '1'), ('197', '', '客户列表', '192', '', '/admin/tenant/index', '_self', '1', '1677032354', '1677032354', '10', '1'), ('198', '', '账号额度申请', '192', '', '/admin/botapply/applylist', '_self', '1', '1677032418', '1677033819', '5', '1'), ('199', '', '服务器管理', '1', 'fa fa-server', '', '_self', '1', '1677144245', '1677144245', '5', '1'), ('200', '', '服务器列表', '199', '', '/admin/server/index', '_self', '1', '1677144271', '1677144271', '5', '1'), ('201', '', '抱个房', '149', 'fa fa-braille', '', '_self', '1', '1681798566', '1684915672', '10', '1'), ('207', '', '分组管理', '152', '', '/admin/membertag/index', '_self', '1', '1682133616', '1682133616', '1', '1'), ('208', '', '素材列表', '168', '', '/admin/mediatext/index', '_self', '1', '1683701924', '1683702229', '5', '1'), ('209', '', '素材分组', '168', '', '/admin/mediagroup/index', '_self', '1', '1683702001', '1683702001', '1', '1'), ('210', '', '官方市场', '149', 'fa fa-apple', '', '_self', '1', '1684915556', '1684915556', '20', '1'), ('211', '', '应用商店', '210', '', '/admin/appstore/index', '_self', '1', '1684915593', '1684915593', '10', '1'), ('212', '', '应用升级', '210', '', '/admin/appstore/upgrade', '_self', '1', '1684915629', '1684915629', '1', '1'), ('213', '', '应用中心', '149', 'fa fa-cubes', '', '_self', '1', '1684936224', '1684985949', '50', '1'), ('214', '', '操作台', '149', 'fa fa-dashboard', '/admin/apps/index', '_self', '1', '1684936261', '1684984019', '100', '1'), ('215', '', '应用管理', '213', '', '/admin/apps/installedlist', '_self', '1', '1684936301', '1684983898', '1', '1');
+INSERT INTO `__PREFIX__admin_rule` VALUES ('1', '', '系统管理', '0', '', '', '_self', '1', '0', '1626845872', '0', '1'), ('3', '', '员工管理', '194', '', '/admin/admin/index', '_self', '1', '0', '1676530002', '1', '1'), ('4', '', '菜单管理', '1', 'fa fa-align-justify', '/admin/adminrule/index', '_self', '1', '0', '1640017490', '3', '1'), ('6', '', '基础功能', '0', '', '', '_self', '1', '1599463278', '1649926644', '18', '1'), ('1000', '', '消息记录', '158', '', '/admin/msglog/index', '_self', '1', '1604904482', '1655799164', '0', '1'), ('105', '', '消息转播', '158', '', '/admin/forward/index', '_self', '1', '1604904482', '1655799164', '1', '1'), ('106', '', '被动回复', '158', '', '/admin/reply/index', '_self', '1', '1604904505', '1640364369', '5', '1'), ('107', '', '角色管理', '194', '', '/admin/admingroup/index', '_self', '1', '1604904540', '1676530036', '1', '1'),  ('148', '', '配置管理', '1', 'fa fa-cogs', '/admin/setting/index', '_self', '1', '1624803694', '1640366685', '4', '1'), ('149', '', '应用管理', '0', '', '', '_self', '1', '1625712595', '1684985921', '15', '1'), ('150', '', '渠道管理', '7', '', '/admin/tpzschannel/index', '_self', '1', '1625712631', '1649233035', '5', '1'), ('151', '', '机器人列表', '162', '', '/admin/bot/index', '_self', '1', '1625725311', '1640018227', '5', '1'), ('152', '', '通讯录', '6', 'fa fa-address-book', '', '_self', '1', '1625737689', '1650419650', '20', '1'), ('153', '', '电商联盟', '7', '', '/admin/tpzsunion/index', '_self', '1', '1625737734', '1648523931', '1', '1'), ('156', '', '群管理', '6', 'fa fa-object-group', '', '_self', '1', '1626505381', '1655732578', '10', '1'), ('157', '', '关键词回复', '158', '', '/admin/keyword/index', '_self', '1', '1626505434', '1650262233', '10', '1'), ('158', '', '快捷设置', '6', 'fa fa-cogs', '', '_self', '1', '1626505455', '1640365845', '40', '1'), ('159', '', '消息群发', '158', '', '/admin/task/index', '_self', '1', '1626505494', '1650459935', '1', '1'), ('160', '', '好友列表', '152', '', '/admin/botfriend/index', '_self', '1', '1626505753', '1682133649', '10', '1'), ('162', '', '机器人管理', '169', 'fa fa-android', '', '_self', '1', '1626507555', '1640844683', '50', '1'), ('166', '', '群组列表', '152', '', '/admin/botgroup/index', '_self', '1', '1626509815', '1646837078', '9', '1'), ('167', '', '群规则', '156', '', '/admin/rule/index', '_self', '1', '1626593222', '1650952528', '20', '1'), ('168', '', '素材库', '169', 'fa fa-book', '', '_self', '1', '1640786676', '1683701902', '1', '1'), ('169', '', '全局设置', '0', '', '', '_self', '1', '1640844673', '1650466761', '20', '1'), ('170', '', '基础设置', '7', '', '/admin/tpzsconfig/index', '_self', '1', '1646839737', '1648534905', '0', '1'), ('171', '', '采品群', '7', '', '/admin/tpzsgather/index', '_self', '1', '1646839758', '1648546385', '45', '1'), ('172', '', '机器人负责群', '7', '', '/admin/tpzsteam/index', '_self', '0', '1646839780', '1653879660', '40', '1'), ('173', '', '发送列表', '7', '', '/admin/tpzstask/index', '_self', '1', '1646839807', '1648439722', '50', '1'), ('176', '', '系统升级', '1', 'fa fa-cloud-upload', '/admin/upgrade/index', '_self', '1', '1657205545', '1657205566', '1', '1'), ('186', '', '朋友圈', '6', 'fa fa-chrome', '', '_self', '1', '1663308146', '1663308146', '5', '1'), ('187', '', '获取朋友圈', '186', '', '/admin/moments/pull', '_self', '1', '1663308205', '1663308336', '10', '1'), ('188', '', '发朋友圈', '186', '', '/admin/moments/index', '_self', '1', '1663308300', '1663308300', '8', '1'), ('192', '', '客户管理', '1', 'fa fa-users', '', '_self', '1', '1676518784', '1677032365', '10', '1'), ('193', '', '运营管理', '0', '', '', '_self', '1', '1676518921', '1676518921', '10', '1'), ('194', '', '组织管理', '193', 'fa fa-connectdevelop', '', '_self', '1', '1676529954', '1676529982', '1', '1'), ('195', '', '账号额度管理', '193', 'fa fa-cc', '', '_self', '1', '1677031565', '1677031565', '5', '1'), ('196', '', '账号申请', '195', '', '/admin/botapply/index', '_self', '1', '1677031582', '1677031600', '5', '1'), ('197', '', '客户列表', '192', '', '/admin/tenant/index', '_self', '1', '1677032354', '1677032354', '10', '1'), ('198', '', '账号额度申请', '192', '', '/admin/botapply/applylist', '_self', '1', '1677032418', '1677033819', '5', '1'), ('199', '', '服务器管理', '1', 'fa fa-server', '', '_self', '1', '1677144245', '1677144245', '5', '1'), ('200', '', '服务器列表', '199', '', '/admin/server/index', '_self', '1', '1677144271', '1677144271', '5', '1'), ('207', '', '分组管理', '152', '', '/admin/membertag/index', '_self', '1', '1682133616', '1682133616', '1', '1'), ('208', '', '素材列表', '168', '', '/admin/mediatext/index', '_self', '1', '1683701924', '1683702229', '5', '1'), ('209', '', '素材分组', '168', '', '/admin/mediagroup/index', '_self', '1', '1683702001', '1683702001', '1', '1'), ('210', '', '官方市场', '149', 'fa fa-apple', '', '_self', '1', '1684915556', '1684915556', '20', '1'), ('211', '', '应用商店', '210', '', '/admin/appstore/index', '_self', '1', '1684915593', '1684915593', '10', '1'), ('212', '', '应用升级', '210', '', '/admin/appstore/upgrade', '_self', '1', '1684915629', '1684915629', '1', '1'), ('213', '', '应用中心', '149', 'fa fa-cubes', '', '_self', '1', '1684936224', '1684985949', '50', '1'), ('214', '', '操作台', '149', 'fa fa-dashboard', '/admin/apps/index', '_self', '1', '1684936261', '1684984019', '100', '1'), ('215', '', '应用管理', '213', '', '/admin/apps/installedlist', '_self', '1', '1684936301', '1684983898', '1', '1');
 
 
 -- ----------------------------
@@ -76,7 +76,7 @@ CREATE TABLE `__PREFIX__bot`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 1 COMMENT '商户ID',
   `staff_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '员工ID',
-  `title` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '账号',
+  `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '账号',
   `app_key` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '密码',
   `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '微信用户昵称',
   `headimgurl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '头像',
@@ -95,7 +95,7 @@ CREATE TABLE `__PREFIX__bot`  (
   INDEX `app_key`(`app_key`) USING BTREE,
   INDEX `uin`(`uin`, `alive`) USING BTREE,
   INDEX `admin_id`(`admin_id`, `staff_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '个微机器人' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '个微机器人' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_bot_apply
@@ -112,7 +112,7 @@ CREATE TABLE `__PREFIX__bot_apply`  (
   `month` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '开通月数',
   `staff_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '绑定员工id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_bot_groupmember
@@ -132,7 +132,7 @@ CREATE TABLE `__PREFIX__bot_groupmember`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`wxid`, `group_id`) USING BTREE,
   INDEX `group_id`(`group_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2231 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群成员' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群成员' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_bot_member
@@ -159,7 +159,7 @@ CREATE TABLE `__PREFIX__bot_member`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `wxid_botid`(`uin`, `wxid`) USING BTREE,
   INDEX `uin`(`uin`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7900 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '通讯录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '通讯录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_district
@@ -205,7 +205,7 @@ CREATE TABLE `__PREFIX__forward`  (
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1,
   `wxids` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '转发对象',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群聊-推广位关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群聊-推广位关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_group_rule
@@ -222,7 +222,7 @@ CREATE TABLE `__PREFIX__group_rule`  (
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `value` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '设置值',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群规则设置' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群规则设置' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_hanzi_config
@@ -238,7 +238,7 @@ CREATE TABLE `__PREFIX__hanzi_config`  (
   `update_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `wxids` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '指定对象',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '推品助手配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '推品助手配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_keyword
@@ -262,7 +262,7 @@ CREATE TABLE `__PREFIX__keyword`  (
   `medias` text COMMENT '素材',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `unique`(`keyword`, `bot_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 139 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '被动回复' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '被动回复' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_file_1
@@ -280,7 +280,7 @@ CREATE TABLE `__PREFIX__media_file_1`  (
   `location` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'qiniu',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_file_2
@@ -298,7 +298,7 @@ CREATE TABLE `__PREFIX__media_file_2`  (
   `location` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'qiniu',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_file_3
@@ -316,7 +316,7 @@ CREATE TABLE `__PREFIX__media_file_3`  (
   `location` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'qiniu',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_file_4
@@ -334,7 +334,7 @@ CREATE TABLE `__PREFIX__media_file_4`  (
   `location` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'qiniu',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_file_5
@@ -641,7 +641,7 @@ CREATE TABLE `__PREFIX__media_video_2`  (
   `ext` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '格式',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '视频素材库' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '视频素材库' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_media_video_3
@@ -710,7 +710,7 @@ CREATE TABLE `__PREFIX__moments`  (
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '配文',
   `publish_time` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '被动回复' ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '被动回复' ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for ky_reply
@@ -802,7 +802,7 @@ CREATE TABLE `__PREFIX__tj_group`  (
   `bot_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `group_id_day`(`group_id`, `day`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 232 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '店铺日统计' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '店铺日统计' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for ky_whiteid

@@ -18,9 +18,13 @@ class Spark extends Base
 {
 
     const HOST_TEXT = 'spark-api.xf-yun.com';
+    const HOST_CHAT = 'https://spark-api-open.xf-yun.com';
     const HOST_GENERATE_IMG = 'spark-api.cn-huabei-1.xf-yun.com';
     const HOST_READ_IMG = 'spark-api.cn-huabei-1.xf-yun.com';
     const HOST_EMB = 'emb-cn-huabei-1.xf-yun.com';
+    const HOST_CHATDOC = 'chatdoc.xfyun.cn';
+    const API_CHAT = '/v1/chat/completions';
+    const API_CHATDOC = '/openapi/chat';
     const API_READ_IMG = '/v2.1/image';
     const API_GENERATE_IMG = '/v2.1/tti';
     const API_LITE = '/v1.1/chat';
@@ -74,12 +78,14 @@ class Spark extends Base
     kjwx 指向科技文献大模型（重点优化论文问答、写作等垂直领域）;
      */
     private $domain = 'lite';
+    private $apiPassword = '';
 
     public function __construct($options = [])
     {
         parent::__construct($options);
         !empty($options['api_key']) && $this->apiKey = $options['api_key'];
         !empty($options['api_secret']) && $this->apiSecret = $options['api_secret'];
+        !empty($options['api_password']) && $this->apiPassword = $options['api_password'];
         !empty($options['appid']) && $this->appId = $options['appid'];
         !empty($options['model']) && $this->model = $options['model'];
     }
@@ -138,6 +144,119 @@ class Spark extends Base
         $res = $this->httpRequest($data, '/', 'emb');
         //Logger::error($res);
         return  $res;
+    }
+
+    /**
+     * 知识库问答
+     * https://chatdoc.xfyun.cn/openapi/chat?appId=xxx&timestamp=xxx&signature=xxxxxx
+     * @req:{
+            "chatExtends": {
+                "wikiPromptTpl": "请将以下内容作为已知信息：\n<wikicontent>\n请根据以上内容回答用户的问题。\n问题:<wikiquestion>\n回答:",
+                "wikiFilterScore": 0.82,
+                "temperature": 0.5,
+                "spark": true
+            },
+            "topN: 5,  //向知识库查询数量
+             "repoId: "知识库id",  //repoId和fileIds 二选一必填
+            "fileIds": ["8b1b17171212121212114fd0806"],
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "如何理赔"
+                }
+            ]
+        }
+     * @param $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function chatDoc($params){
+        $time = time();
+        // Base64编码后返回
+        $generate_signature = function () use ($time){
+            $auth = md5($this->appId . $time);
+            // 生成HMAC-SHA1二进制数据
+            $rawHmac = hash_hmac('sha1', $auth, $this->apiSecret, true);
+            return base64_encode($rawHmac);
+        };
+        $signature = $generate_signature();
+
+        $this->baseUri = "wss://".self::HOST_CHATDOC;
+        $api = self::API_CHATDOC . "?appId={$this->appId}&timestamp={$time}&signature={$signature}";
+
+        $messages = [];
+        $wikiPromptTpl = "";
+        if(! empty($params['background'])){
+            $wikiPromptTpl = $params['background'];
+        }
+        if(! empty($params['context'])){
+            $messages = array_merge_recursive($messages, $params['context']);
+        }
+
+        array_push($messages, ['role' => 'user', 'content' => $params['msg']]);
+        $data = [
+            "chatExtends" =>  [
+                "wikiPromptTpl" => $wikiPromptTpl,
+                //"wikiFilterScore" => 0.82,
+                //"temperature" => 0.5,
+                "spark" => true
+            ],
+            "topN" => 5,  //向知识库查询数量
+            "repoId" => $params['repo_id'],  //repoId和fileIds 二选一必填
+            //"fileIds" => ["936f3e0e92e64522bf5e64befb0c2e5a"],
+            "messages" => $messages
+        ];
+        $client = new Client($this->baseUri . $api);
+        try {
+            $client->send(json_encode($data, true));
+            $response = $client->receive();
+
+            $response_arr = json_decode($response, true);
+            $content = [];
+            // 科大讯飞会分多次发送消息
+            do {
+                if ($response_arr['code'] != '0') {
+                    throw  new \Exception($response_arr['message']); //错误
+                    break;
+                }
+
+                $content[] = $response_arr['content'] ?? '';
+
+                if ($response_arr['status'] == 2) {
+                    break;
+                }
+                //继续接收消息
+                $response = $client->receive();
+                $response_arr = json_decode($response, true);
+            } while (true);
+            $content = implode('', $content);
+
+            return [
+                'code' => 1,
+                'answer' => $content,
+                'msg' => 'success',
+            ];
+        } catch (\Exception $e) {
+            dump($e->getMessage());
+            return [
+                'code' => 0,
+                'errmsg' => $e->getMessage(),
+            ];
+        } finally {
+            $client->close();
+        }
+        //dump($api);exit;
+        /*$res = $this->wssRequest([
+            'headers' => [
+                "appId" => $this->appId,
+                "timestamp" => $time,
+                "signature" => $signature
+            ],
+            'data' => $data,
+            'url' => $api
+        ]);
+        //Logger::error($res);
+        return  $res;*/
     }
 
     /**
@@ -295,7 +414,7 @@ class Spark extends Base
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function smart($params){
+    public function smart1($params){
         $message = [];
         if(! empty($params['background'])){
             array_push($message, ['role' => 'system', 'content' => $params['background']]);
@@ -324,6 +443,72 @@ class Spark extends Base
         }
         //Logger::error($res);
         return  $res;
+    }
+
+    /**
+     * 带联网功能
+     * @param $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function smart($params){
+        $message = [];
+        if(! empty($params['background'])){
+            array_push($message, ['role' => 'system', 'content' => $params['background']]);
+        }
+        if(! empty($params['context'])){
+            $message = array_merge_recursive($message, $params['context']);
+        }
+
+        array_push($message, ['role' => 'user', 'content' => $params['msg']]);
+
+        $this->baseUri = self::HOST_CHAT;
+        $stream = empty($params['stream']) ? false : true;
+        $web_search = empty($params['web_search']) ? false : true;
+        $tools = [
+            [
+                'type' => 'web_search',
+                'web_search' => [
+                    'enable' => $web_search
+                ]
+            ]
+        ];
+
+        !empty($params['tools']) && $tools = array_merge($tools, $params['tools']);
+        $payload = [
+            'model' => $this->model,
+            'user' => $params['userid'] ?? '',
+            'messages' => $message,
+            'stream' => $stream,
+            'tools' => $tools
+        ];
+
+        isset($params['response_format']) && $payload['response_format'] = $params['response_format'];
+        isset($params['suppress_plugin']) && $payload['suppress_plugin'] = $params['suppress_plugin'];
+        isset($params['max_tokens']) && $payload['max_tokens'] = $params['max_tokens'];
+        isset($params['presence_penalty']) && $payload['presence_penalty'] = $params['presence_penalty'];
+        isset($params['frequency_penalty']) && $payload['frequency_penalty'] = $params['frequency_penalty'];
+        isset($params['temperature']) && $payload['temperature'] = $params['temperature'];
+        isset($params['top_p']) && $payload['top_p'] = $params['top_p'];
+        isset($params['top_k']) && $payload['top_k'] = $params['top_k'];
+        $options = [
+            'url' => self::API_CHAT,
+            'data' => $payload,
+            'headers' => ["Authorization" => "Bearer ".$this->apiPassword]
+        ];
+        //Logger::error($options);
+        $res = $this->request($options);
+        if(!empty($res['choices'][0]['message']['content'])){
+            $res['answer_type'] = self::ANSWER_TEXT;
+            $res['code'] = 1;
+            $res['answer'] = $res['choices'][0]['message']['content'];
+        }else{
+            $res = [
+                'code' => 0,
+                'errmsg' => $res['error']['message'] ?? ''
+            ];
+        }
+        return $res;
     }
 
     /**
@@ -488,38 +673,44 @@ class Spark extends Base
 
     /**
      * $res:{
-        "header": {
-            "code": 0,
-            "message": "Success",
-            "sid": "cht000704fa@dx16ade44e4d87a1c802",
-            "status": 0
-        },
-        "payload": {
-            "choices": {
-                "status": 2,
-                "seq": 0,
-                "text": [
-                    {
-                        "content": "base64",
-                        "index": 0,
-                        "role": "assistant"
-                    }
-                ]
-            }
-        }
-    }
+     * "header": {
+     * "code": 0,
+     * "message": "Success",
+     * "sid": "cht000704fa@dx16ade44e4d87a1c802",
+     * "status": 0
+     * },
+     * "payload": {
+     * "choices": {
+     * "status": 2,
+     * "seq": 0,
+     * "text": [
+     * {
+     * "content": "base64",
+     * "index": 0,
+     * "role": "assistant"
+     * }
+     * ]
+     * }
+     * }
+     * }
      * @param $res
      * Author: fudaoji<fdj@kuryun.cn>
+     * @param string $url
+     * @return array
      */
-    public function dealRes($res)
+    public function dealRes($res, $url = '')
     {
         $return = [];
-        if($res['header']['code'] == 0){
-            $return['code'] = 1;
-            $return['payload'] = $res['payload'];
+        if (strpos($url, self::HOST_CHAT) !== false){
+            return  $res;
         }else{
-            $return['code'] = 0;
-            $return['errmsg'] = $res['header']['message'];
+            if($res['header']['code'] == 0){
+                $return['code'] = 1;
+                $return['payload'] = $res['payload'];
+            }else{
+                $return['code'] = 0;
+                $return['errmsg'] = $res['header']['message'];
+            }
         }
         return $return;
     }

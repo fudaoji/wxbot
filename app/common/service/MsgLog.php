@@ -12,6 +12,7 @@ use app\common\model\MsgLog as LogM;
 use app\constants\Bot as BotConst;
 use app\common\service\MsgGather as GatherService;
 use ky\Logger;
+use ky\WxBot\Driver\Extian;
 
 class MsgLog
 {
@@ -52,24 +53,15 @@ class MsgLog
         ]);
         //Logger::error(count($rules));
         if(count($rules)){
-            $insert = [
-                'admin_id' => $bot['staff_id'],
-                'bot_id' => $bot['id'],
-                'year' => intval(date('Y')),
-                'msg_id' => $content['msg_id'],
-                'content' => $content['msg'],
-                'from_wxid' => $params['from_wxid'],
-                'from_nickname' => $params['from_nickname'],
-                'group_wxid' => $params['group_wxid'],
-                'group_nickname' => $params['group_nickname'],
-                'msg_type' => $content['type'],
-                'gather_id' => $rules[0]['id'] ?? 0
-            ];
-            //var_dump($rules[0]);
-            self::model()->addOne($insert);
+            $log_content = $content['msg'];
+
+            /**
+             * @var $bot_client Extian
+             */
             $bot_client = model('admin/bot')->getRobotClient($bot);
 
             foreach ($rules as $rule){
+                //Logger::error($rule);
                 if(empty($rule['to_media']) || !in_array($content['type'], [
                     BotConst::MSG_TEXT, BotConst::MSG_APP, BotConst::MSG_IMG, BotConst::MSG_FILE, BotConst::MSG_VIDEO
                     ])){
@@ -79,38 +71,28 @@ class MsgLog
                 $media_data = [
                     'admin_id' => $bot['staff_id'],
                 ];
+
                 switch ($content['type']){
+                    case BotConst::MSG_IMG:
+                        $res = $bot_client->downloadFile(['path' => $content['msg_id']]);
+                        if(!empty($res['data']['data'])){
+                            $filename = rand(1000, 9999) . time() . '.png';
+                            $url = upload_base64($filename, $res['data']['data']);
+                            $media_data['title'] = $filename;
+                            $media_data['url'] = $url;
+
+                            $log_content = $url;
+                        }else{
+                            continue 2;
+                        }
+                        break;
                     case BotConst::MSG_VIDEO:
                     case BotConst::MSG_FILE:
-                    case BotConst::MSG_IMG:
-                        //todo 以下的处理方式不适配e小天的
-
-                        $lens = [BotConst::MSG_FILE => 6, BotConst::MSG_IMG => 5, BotConst::MSG_VIDEO => 5];
-                        $path = mb_substr($content['msg'], $lens[$content['type']], -1);
-                        $count = 0;
-                        do{
-                            $count++;
-                            if($count > 5){
-                                break;
-                            }
-                            $res = $bot_client->downloadFile(['path' => $path]);
-                            sleep(3);
-                        }while(empty($res['ReturnStr']));
-
-                        $filename = basename(str_replace("\\", "/",$path));
-                        if(!empty($res['ReturnStr'])){
-                            $base64 = $res['ReturnStr'];
-                            $url = upload_base64(rand(1000, 9999) . time() . $filename, $base64);
-                        }else{
-                            $url = $path;
-                        }
-
-                        $media_data['title'] = $filename;
-                        $media_data['url'] = $url;
-                        break;
                     case BotConst::MSG_APP:
+                        $media_model = model('MediaXml');
                         $media_data['title'] = XmlMini::getInstance($content['msg'])->getTitle();
                         $media_data['content'] = $content['msg'];
+                        //Logger::error($media_data['title']);
                         break;
                     case BotConst::MSG_TEXT:
                         $media_data['content'] = $content['msg'];
@@ -118,6 +100,21 @@ class MsgLog
                 }
                 $media_model->addOne($media_data);
             }
+            $insert = [
+                'admin_id' => $bot['staff_id'],
+                'bot_id' => $bot['id'],
+                'year' => intval(date('Y')),
+                'msg_id' => $content['msg_id'],
+                'content' => $log_content,
+                'from_wxid' => $params['from_wxid'],
+                'from_nickname' => $params['from_nickname'],
+                'group_wxid' => $params['group_wxid'],
+                'group_nickname' => $params['group_nickname'],
+                'msg_type' => $content['type'],
+                'gather_id' => $rules[0]['id'] ?? 0
+            ];
+
+            self::model()->addOne($insert);
         }
     }
 

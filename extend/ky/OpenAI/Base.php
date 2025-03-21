@@ -37,7 +37,7 @@ Abstract class Base
         }
     }
 
-    abstract public function dealRes($res);
+    abstract public function dealRes($res, $url);
 
     public function setAppId($appid = ''){
         $this->appId = $appid;
@@ -86,16 +86,15 @@ Abstract class Base
         }
 
         $response = $this->client->request($method, $url, $extra);
-
         if($response->getStatusCode() !== 200){
             $this->setError($response->getStatusCode());
             Logger::error($this->errMsg);
             //dump($extra);
-            //dump($response->getBody()->getContents());
+            dump($response->getBody()->getContents());
             return ['code' => 0];
         }
         //Logger::error($response->getBody()->getContents());
-        return $this->dealRes(json_decode($response->getBody()->getContents(), true));
+        return $this->dealRes(json_decode($response->getBody()->getContents(), true), $this->baseUri.$url);
     }
 
     public function setError($code = 200){

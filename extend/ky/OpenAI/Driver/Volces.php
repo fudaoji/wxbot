@@ -16,6 +16,7 @@ use ky\OpenAI\Base;
 class Volces extends Base
 {
     const API_SMART = '/api/v3/chat/completions';
+    const API_CHATDOC = '/api/v3/bots/chat/completions';
     const API_EMBEDINGS = '/api/v3/embeddings';
     protected $baseUri = 'https://ark.cn-beijing.volces.com';
     protected $errMsg = '';
@@ -71,7 +72,6 @@ class Volces extends Base
             $message = array_merge_recursive($message, $params['context']);
         }
         array_push($message, ['role' => 'user', 'content' => $params['msg']]);
-        // $length = mb_strlen($params['msg']);
         //Logger::error($message);
         //dump($message);
         $data = [
@@ -79,12 +79,14 @@ class Volces extends Base
             'model' => $this->model,
         ];
 
-        $res = $this->doRequest($data, self::API_SMART);
+        $api = (strpos($this->model, 'bot-') !== false) ? self::API_CHATDOC : self::API_SMART;
+        //Logger::error($api . $this->model);
+        $res = $this->doRequest($data, $api);
         $res['code'] = 1;
         if (!empty($res['choices'])) {
             $res['answer_type'] = self::ANSWER_TEXT;
             $text = isset($res['choices'][0]['message']['content']) ? $res['choices'][0]['message']['content'] : '';
-            $res['answer'] = str_replace('<br/>', "\n", trim($text, "<br/>"));
+            $res['answer'] = trim(str_replace("<br/>", "\n", $text), "\n");
         } else {
             $res['code'] = 0;
         }
@@ -115,7 +117,7 @@ class Volces extends Base
         $this->errMsg = isset($list[$code]) ? ($code . ':' . $list[$code]) : ($code . ':未知错误');
     }
 
-    public function dealRes($params)
+    public function dealRes($params, $url = '')
     {
         return $params;
         $res = $params;

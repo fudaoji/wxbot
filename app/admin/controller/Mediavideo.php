@@ -112,7 +112,7 @@ class Mediavideo extends Bbase
                 'staff_id' => $this->bot['staff_id'],
                 'admin_id' => $this->bot['admin_id'],
                 'media_id' => $res['id']
-            ]);
+            ], true);
             $this->success('数据保存成功', $jump_to);
         }else{
             $this->error('数据保存出错');

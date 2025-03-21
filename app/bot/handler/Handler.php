@@ -239,9 +239,17 @@ class Handler extends BaseCtl
                 if($this->ajaxData['method'] == Extian::EVENT_NEW_MSG){
                     $this->event = empty($this->content['memid']) ? BotConst::EVENT_PRIVATE_CHAT : BotConst::EVENT_GROUP_CHAT;
                 }
-                if(!empty($this->content['type']) && $this->content['type'] == 37){
-                    $this->event = BotConst::EVENT_FRIEND_VERIFY;  //好友申请请求事件
+
+                if(!empty($this->content['type'])){
+                    //矫正类型
+                    $this->content['type'] = Extian::msgMap($this->content['type']);
+
+                    if($this->content['type'] == 37){
+                        $this->event = BotConst::EVENT_FRIEND_VERIFY;  //好友申请请求事件
+                    }
                 }
+
+                //Logger::error($this->content['type']);
 
                 if($this->ajaxData['method'] == 'getchatroommemberdetail') { //用此方法判断被邀请入群
                     if(!empty($this->content['member'][0])

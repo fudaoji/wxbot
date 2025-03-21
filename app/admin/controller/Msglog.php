@@ -51,7 +51,7 @@ class Msglog extends Botbase
         $this->gatherM = new GatherM();
         $this->tabList = [
             'index' => ['title' => '消息列表', 'href' => url('index')],
-            'rule' => ['title' => '消息存档规则', 'href' => url('rule')],
+            'rule' => ['title' => '存档规则', 'href' => url('rule')],
             'group' => ['title' => '存档规则分组', 'href' => url('msggathergroup/index')],
         ];
     }

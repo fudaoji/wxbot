@@ -44,7 +44,7 @@ class Media
         ksort($params);
         $cache_key = serialize($params);
         $data = cache($cache_key);
-        if(empty($data)){
+        if(empty($data) || $refresh){
             $data = model('media_' . $params['media_type'])->getOneByMap([
                 'admin_id' => ['in', [$params['staff_id'], $params['admin_id']]],
                 'id' => $params['media_id']

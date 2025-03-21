@@ -81,6 +81,7 @@ class BotMember extends Base
                             ]);
                         }
                     }
+
                     //删除无效
                     $this->delByMap(['uin' => $bot['uin'], 'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
@@ -318,7 +319,7 @@ class BotMember extends Base
     function isIgnore($data, $driver = Bot::PROTOCOL_EXTIAN){
         switch ($driver){
             default:
-                if($data['type'] != 3 || $data['wxid'] == 'weixin' || strpos($data['wxid'], 'gh_') !== false){
+                if(!in_array($data['type'], [3, 32771]) || $data['wxid'] == 'weixin' || strpos($data['wxid'], 'gh_') !== false){
                     return true;
                 }
         }
@@ -384,6 +385,7 @@ class BotMember extends Base
                     }
                     //删除无效好友
                     $this->delByMap(['uin' => $bot['uin'],'type' => Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);
+                    //dump($this->getLastSql());exit;
                     return $count;
                 }
                 break;

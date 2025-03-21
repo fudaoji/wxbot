@@ -85,9 +85,15 @@ class MsgGather
                 }
 
                 //关键词判断
-                if(!empty($rule['keyword']) && ($params['type'] == BotConst::MSG_TEXT) && strpos($content['msg'], $rule['keyword']) === false){
-                    continue;
+                if(!empty($rule['keyword']) && $params['type'] == BotConst::MSG_TEXT){
+                    $keyword_arr = explode(',', $rule['keyword']);
+                    foreach ($keyword_arr as $keyword){
+                        if(strpos($content['msg'], $keyword) !== false){
+                            break; //只要有一个命中就记录
+                        }
+                    }
                 }
+
                 //Logger::error(4);
                 array_push($list, $rule);
             }

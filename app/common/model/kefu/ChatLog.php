@@ -143,7 +143,7 @@ class ChatLog extends Kefu
                 //文件
                 //[file=E:\北遇框架(兼容我的框架)\Data\xxx]
             case 2004:
-                Logger::write("文件消息" . json_encode($msg) . "\n");
+                //Logger::write("文件消息" . json_encode($msg) . "\n");
                 $bot_model = new Bot();
                 $bot_client = $bot_model->getRobotClient($bot);
                 $path = mb_substr($msg, 6, -1);
@@ -152,7 +152,7 @@ class ChatLog extends Kefu
                     $file_name = substr(strrchr($path, "\\"), 1);
                     $res = $bot_client->downloadFile(['path' => $path]);
                     if ($res['Code'] != 0) {
-                        Logger::write("转换文件消息为base64错误:" . json_encode($res, JSON_UNESCAPED_UNICODE) . "\n");
+                        //Logger::write("转换文件消息为base64错误:" . json_encode($res, JSON_UNESCAPED_UNICODE) . "\n");
                         $content = '';
                     } else {
                         $base64 = $res['ReturnStr'];

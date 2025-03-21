@@ -10,6 +10,8 @@
 namespace ky\WxBot\Driver;
 
 
+use app\constants\Bot;
+use ky\Logger;
 use ky\WxBot\Base;
 
 class Extian extends Base
@@ -19,6 +21,13 @@ class Extian extends Base
     const EVENT_FRIEND_VERIFY = 'verifyuser'; // TYPE=706             好友验证结果
     //tenpay  705                 收款结果
     const EVENT_NEW_MSG = 'newmsg';
+
+    const MSG_FILE = 49;
+
+    //消息类型映射
+    const MSG_TYPES = [
+        self::MSG_FILE => Bot::MSG_FILE
+    ];
 
     /**
      * @var int
@@ -85,6 +94,17 @@ class Extian extends Base
             'url' => '/api?json&key=' . $this->appKey,
             'data' => $params
         ]);
+    }
+
+    /**
+     * 统一类型
+     * @param int $type
+     * @return int|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function msgMap($type = 0){
+        //Logger::error('ex'.$type);
+        return self::MSG_TYPES[$type] ?? $type;
     }
 
     public function sendEmojiToFriend($params = [])

@@ -652,10 +652,12 @@ class Bot extends Bbase
         if(empty($config['app_key'])){
             $key = '';
             try{
-                if(file_exists("C:\Users\Public\Documents\wxext.cn\WxExt.ini")){
-                    $content = file_get_contents("C:\Users\Public\Documents\wxext.cn\WxExt.ini");
+                //针对win系统有效
+                $ext_ini = "C:\Users\Public\Documents\wxext.cn\WxExt.ini";
+                if(file_exists($ext_ini)){
+                    $content = file_get_contents($ext_ini);
                     $content = json_decode($content, true);
-                    $key = !empty($content['key']) && $key = $content['key'];
+                    ($key = !empty($content['key'])) && $key = $content['key'];
                 }
             }catch (\Exception $e){}
             $config = [

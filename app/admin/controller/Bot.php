@@ -649,7 +649,7 @@ class Bot extends Bbase
         }else{
             $config = config('system.bot');
         }
-        if(empty($config)){
+        if(empty($config['app_key'])){
             $key = '';
             try{
                 if(file_exists("C:\Users\Public\Documents\wxext.cn\WxExt.ini")){

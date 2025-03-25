@@ -16,7 +16,7 @@ use WebSocket\Client;
 
 class Spark extends Base
 {
-
+    const HOST_WORKFLOW = 'xingchen-api.xf-yun.com';
     const HOST_TEXT = 'spark-api.xf-yun.com';
     const HOST_CHAT = 'https://spark-api-open.xf-yun.com';
     const HOST_GENERATE_IMG = 'spark-api.cn-huabei-1.xf-yun.com';
@@ -24,6 +24,7 @@ class Spark extends Base
     const HOST_EMB = 'emb-cn-huabei-1.xf-yun.com';
     const HOST_CHATDOC = 'chatdoc.xfyun.cn';
     const API_CHAT = '/v1/chat/completions';
+    const API_WORKFLOW = '/workflow/v1/chat/completions';
     const API_CHATDOC = '/openapi/chat';
     const API_READ_IMG = '/v2.1/image';
     const API_GENERATE_IMG = '/v2.1/tti';
@@ -86,8 +87,125 @@ class Spark extends Base
         !empty($options['api_key']) && $this->apiKey = $options['api_key'];
         !empty($options['api_secret']) && $this->apiSecret = $options['api_secret'];
         !empty($options['api_password']) && $this->apiPassword = $options['api_password'];
+        !empty($options['agent_id']) && $this->agentId = $options['agent_id'];
         !empty($options['appid']) && $this->appId = $options['appid'];
         !empty($options['model']) && $this->model = $options['model'];
+    }
+
+    /**
+     * 根据参数自动判断是使用chat还是agent
+     * @param $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return array
+     */
+    public function smart($params){
+        $flow_id = $params['agent_id'] ?? $this->agentId;
+        return $flow_id ? $this->agent($params) : $this->chat($params);
+    }
+
+    /**
+     * 大模型对话
+     * @param $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function chat($params){
+        $message = [];
+        if(! empty($params['background'])){
+            array_push($message, ['role' => 'system', 'content' => $params['background']]);
+        }
+        if(! empty($params['context'])){
+            $message = array_merge_recursive($message, $params['context']);
+        }
+
+        array_push($message, ['role' => 'user', 'content' => $params['msg']]);
+
+        $this->baseUri = self::HOST_CHAT;
+        $stream = empty($params['stream']) ? false : true;
+        $web_search = empty($params['web_search']) ? false : true;
+        $tools = [
+            [
+                'type' => 'web_search',
+                'web_search' => [
+                    'enable' => $web_search
+                ]
+            ]
+        ];
+
+        !empty($params['tools']) && $tools = array_merge($tools, $params['tools']);
+        $payload = [
+            'model' => $this->model,
+            'user' => $params['userid'] ?? '',
+            'messages' => $message,
+            'stream' => $stream,
+            'tools' => $tools
+        ];
+
+        isset($params['response_format']) && $payload['response_format'] = $params['response_format'];
+        isset($params['suppress_plugin']) && $payload['suppress_plugin'] = $params['suppress_plugin'];
+        isset($params['max_tokens']) && $payload['max_tokens'] = $params['max_tokens'];
+        isset($params['presence_penalty']) && $payload['presence_penalty'] = $params['presence_penalty'];
+        isset($params['frequency_penalty']) && $payload['frequency_penalty'] = $params['frequency_penalty'];
+        isset($params['temperature']) && $payload['temperature'] = $params['temperature'];
+        isset($params['top_p']) && $payload['top_p'] = $params['top_p'];
+        isset($params['top_k']) && $payload['top_k'] = $params['top_k'];
+        $options = [
+            'url' => self::API_CHAT,
+            'data' => $payload,
+            'headers' => ["Authorization" => "Bearer ".$this->apiPassword]
+        ];
+        //Logger::error($options);
+        $res = $this->request($options);
+        if(!empty($res['choices'][0]['message']['content'])){
+            $res['answer_type'] = self::ANSWER_TEXT;
+            $res['code'] = 1;
+            $res['answer'] = $res['choices'][0]['message']['content'];
+        }else{
+            $res = [
+                'code' => 0,
+                'errmsg' => $res['error']['message'] ?? ''
+            ];
+        }
+        return $res;
+    }
+
+    /**
+     * 智能体调用
+     * @param $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function agent($params){
+        $this->baseUri = 'https://' . self::HOST_WORKFLOW;
+        $stream = empty($params['stream']) ? false : true;
+
+        $payload = [
+            "flow_id" => $params['agent_id'] ?? $this->agentId,
+            "uid" => $params['userid'] ?? '',
+            "parameters" => [
+                "AGENT_USER_INPUT" => $params['msg']
+            ],
+            'stream' => $stream,
+        ];
+
+        $options = [
+            'url' => self::API_WORKFLOW,
+            'data' => $payload,
+            'headers' => ["Authorization" => "Bearer {$this->apiKey}:{$this->apiSecret}"]
+        ];
+        //Logger::error($options);
+        $res = $this->request($options);
+        if($res['code'] == 0 && !empty($res['choices'][0]['delta']['content'])){
+            $res['answer_type'] = self::ANSWER_TEXT;
+            $res['code'] = 1;
+            $res['answer'] = $res['choices'][0]['delta']['content'];
+        }else{
+            $res = [
+                'code' => 0,
+                'errmsg' => $res['error']['message'] ?? ''
+            ];
+        }
+        return $res;
     }
 
     /**
@@ -446,72 +564,6 @@ class Spark extends Base
     }
 
     /**
-     * 带联网功能
-     * @param $params
-     * @return array
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function smart($params){
-        $message = [];
-        if(! empty($params['background'])){
-            array_push($message, ['role' => 'system', 'content' => $params['background']]);
-        }
-        if(! empty($params['context'])){
-            $message = array_merge_recursive($message, $params['context']);
-        }
-
-        array_push($message, ['role' => 'user', 'content' => $params['msg']]);
-
-        $this->baseUri = self::HOST_CHAT;
-        $stream = empty($params['stream']) ? false : true;
-        $web_search = empty($params['web_search']) ? false : true;
-        $tools = [
-            [
-                'type' => 'web_search',
-                'web_search' => [
-                    'enable' => $web_search
-                ]
-            ]
-        ];
-
-        !empty($params['tools']) && $tools = array_merge($tools, $params['tools']);
-        $payload = [
-            'model' => $this->model,
-            'user' => $params['userid'] ?? '',
-            'messages' => $message,
-            'stream' => $stream,
-            'tools' => $tools
-        ];
-
-        isset($params['response_format']) && $payload['response_format'] = $params['response_format'];
-        isset($params['suppress_plugin']) && $payload['suppress_plugin'] = $params['suppress_plugin'];
-        isset($params['max_tokens']) && $payload['max_tokens'] = $params['max_tokens'];
-        isset($params['presence_penalty']) && $payload['presence_penalty'] = $params['presence_penalty'];
-        isset($params['frequency_penalty']) && $payload['frequency_penalty'] = $params['frequency_penalty'];
-        isset($params['temperature']) && $payload['temperature'] = $params['temperature'];
-        isset($params['top_p']) && $payload['top_p'] = $params['top_p'];
-        isset($params['top_k']) && $payload['top_k'] = $params['top_k'];
-        $options = [
-            'url' => self::API_CHAT,
-            'data' => $payload,
-            'headers' => ["Authorization" => "Bearer ".$this->apiPassword]
-        ];
-        //Logger::error($options);
-        $res = $this->request($options);
-        if(!empty($res['choices'][0]['message']['content'])){
-            $res['answer_type'] = self::ANSWER_TEXT;
-            $res['code'] = 1;
-            $res['answer'] = $res['choices'][0]['message']['content'];
-        }else{
-            $res = [
-                'code' => 0,
-                'errmsg' => $res['error']['message'] ?? ''
-            ];
-        }
-        return $res;
-    }
-
-    /**
      * 调用科大讯飞星火认知模型
      * @param $message
      * @param $model
@@ -701,7 +753,7 @@ class Spark extends Base
     public function dealRes($res, $url = '')
     {
         $return = [];
-        if (strpos($url, self::HOST_CHAT) !== false){
+        if (strpos($url, self::HOST_CHAT) !== false || strpos($url, self::HOST_WORKFLOW) !== false){
             return  $res;
         }else{
             if($res['header']['code'] == 0){

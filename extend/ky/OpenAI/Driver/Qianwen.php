@@ -15,7 +15,8 @@ use ky\OpenAI\Base;
 
 class Qianwen extends Base
 {
-    const API_SMART = '/compatible-mode/v1/chat/completions';
+    const API_AGENT = "/api/v1/apps/{APPID}/completion";
+    const API_CHAT = '/compatible-mode/v1/chat/completions';
     const API_SMART_IMG = '/v1/images/generations';
     const API_EMBEDINGS = '/compatible-mode/v1/embeddings';
     protected $baseUri = 'https://dashscope.aliyuncs.com';
@@ -35,6 +36,7 @@ class Qianwen extends Base
         !empty($options['api_key']) && $this->appKey = $options['api_key'];
         !empty($options['proxy']) && $this->proxy = $options['proxy'];
         !empty($options['model']) && $this->model = $options['model'];
+        !empty($options['agent_id']) && $this->agentId = $options['agent_id'];
     }
 
     /**
@@ -55,12 +57,73 @@ class Qianwen extends Base
     }
 
     /**
-     * 智能聊天
+     * 根据参数自动判断是使用chat还是agent
+     * @param $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @return array
+     */
+    public function smart($params){
+        $app_id = $params['agent_id'] ?? $this->agentId;
+        return $app_id ? $this->agent($params) : $this->chat($params);
+    }
+
+    /**
+     * 智能体对话
      * @param $params
      * @return bool|mixed
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    public function smart($params)
+    public function agent($params)
+    {
+        $message = [];
+        if (!empty($params['background'])) {
+            array_push($message, ['role' => 'system', 'content' => $params['background']]);
+        }
+
+        if (!empty($params['context'])) {
+            $message = array_merge_recursive($message, $params['context']);
+        }
+        array_push($message, ['role' => 'user', 'content' => $params['msg']]);
+
+        $stream = empty($params['stream']) ? false : true;
+
+        $input = [
+            'messages' => $message
+        ];
+
+        $parameters = [];
+        $debug = [];
+        $headers = [];
+        !empty($params['session_id']) && $input['session_id'] = $params['session_id'];
+        !empty($params['biz_params']) && $input['biz_params'] = $params['biz_params'];
+        !empty($params['memory_id']) && $input['memory_id'] = $params['memory_id'];
+        !empty($params['image_list']) && $input['image_list'] = $params['image_list'];
+        !empty($params['workspace']) && $headers['X-DashScope-WorkSpace'] = $params['workspace'];
+        !empty($params['has_thoughts']) && $parameters['has_thoughts'] = $params['has_thoughts'];
+        !empty($params['rag_options']) && $parameters['rag_options'] = $params['rag_options'];
+
+        if($stream){
+            $headers['X-DashScope-SSE'] = 'enable';
+            $parameters['incremental_output'] = $params['incremental_output'] ?? false;
+            !empty($params['flow_stream_mode']) && $parameters['flow_stream_mode'] = $params['flow_stream_mode'];//flow_stream_mode
+        }
+
+        $payload = [
+            'input' => $input,
+            "debug" => $debug
+        ];
+        !empty($parameters) && $payload['parameters'] = $parameters;
+        $api = str_replace("{APPID}", $this->agentId, self::API_AGENT);
+        return $this->doRequest($payload, $api, $headers);
+    }
+
+    /**
+     * 普通对话
+     * @param $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function chat($params)
     {
         $message = [];
         if (!empty($params['background'])) {
@@ -96,18 +159,19 @@ class Qianwen extends Base
         isset($params['seed']) && $payload['seed'] = $params['seed'];
         isset($params['n']) && $payload['n'] = $params['n'];
         //dump($payload);exit;
-        return $this->doRequest($payload, self::API_SMART);
+        return $this->doRequest($payload, self::API_CHAT);
     }
 
-    private function doRequest($params = [], $api = '')
+    private function doRequest($params = [], $api = '', $headers = [])
     {
         $options = [
             'url' => $api,
             'method' => $this->method,
-            'headers' => ["Authorization" => "Bearer " . $this->appKey],
+            'headers' => array_merge(["Authorization" => "Bearer " . $this->appKey], $headers),
             'proxy' => $this->proxy,
         ];
         !empty($params) && $options['data'] = $params;
+        //dump($headers);exit;
         //Logger::error(json_encode($options, JSON_UNESCAPED_UNICODE));
         return $this->request($options);
     }
@@ -130,7 +194,14 @@ class Qianwen extends Base
             'answer' => '',
             'answer_type' => self::ANSWER_TEXT
         ];
-        if(strpos($url, self::API_SMART) !== false){
+        if(strpos($url, "/api/v1/apps/") !== false){
+            if (!empty($params['output']['text'])) {
+                $res['answer'] = $params['output']['text'];
+            } else {
+                $res['code'] = 0;
+                $res['errmsg'] = $params['message'] ?? "出错啦！";
+            }
+        }elseif(strpos($url, self::API_CHAT) !== false){
             if (!empty($params['choices'][0]['message']['content'])) {
                 $res['answer'] = $params['choices'][0]['message']['content'];
             } else {

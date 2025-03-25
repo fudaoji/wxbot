@@ -19,6 +19,7 @@ Abstract class Base
     protected $errMsg = '';
     protected $appId = '';
     protected $baseUri = '';
+    protected $agentId = '';
 
     const ANSWER_TEXT = 'text';
     const ANSWER_MUSIC = 'music';
@@ -90,7 +91,7 @@ Abstract class Base
             $this->setError($response->getStatusCode());
             Logger::error($this->errMsg);
             //dump($extra);
-            dump($response->getBody()->getContents());
+            dump($response->getStatusCode() .':'. $response->getBody()->getContents());
             return ['code' => 0];
         }
         //Logger::error($response->getBody()->getContents());

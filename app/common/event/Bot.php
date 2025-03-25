@@ -66,7 +66,7 @@ class Bot extends Base
                             ]);
                             $tries++;
                             sleep(1);
-                            Logger::error($send_res);
+                            //Logger::error($send_res);
                         }while(empty($send_res['code']) && $tries < 10);
                     }
                     break;

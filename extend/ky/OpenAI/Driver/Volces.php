@@ -15,8 +15,8 @@ use ky\OpenAI\Base;
 
 class Volces extends Base
 {
-    const API_SMART = '/api/v3/chat/completions';
-    const API_CHATDOC = '/api/v3/bots/chat/completions';
+    const API_CHAT = '/api/v3/chat/completions';
+    const API_AGENT = '/api/v3/bots/chat/completions';
     const API_EMBEDINGS = '/api/v3/embeddings';
     protected $baseUri = 'https://ark.cn-beijing.volces.com';
     protected $errMsg = '';
@@ -32,6 +32,7 @@ class Volces extends Base
         !empty($options['api_key']) && $this->appKey = $options['api_key'];
         !empty($options['model']) && $this->model = $options['model'];
         isset($options['use_context']) && $this->useContext = $options['use_context'];
+        !empty($options['agent_id']) && $this->agentId = $options['agent_id'];
     }
 
     /**
@@ -56,7 +57,7 @@ class Volces extends Base
     }
 
     /**
-     * 智能聊天
+     * 智能聊天,根据是否传递appid决定使用普通对话还是调用智能体
      * @param $params
      * @return bool|mixed
      * Author: fudaoji<fdj@kuryun.cn>
@@ -72,24 +73,21 @@ class Volces extends Base
             $message = array_merge_recursive($message, $params['context']);
         }
         array_push($message, ['role' => 'user', 'content' => $params['msg']]);
-        //Logger::error($message);
-        //dump($message);
+
         $data = [
             'messages' => $message,
             'model' => $this->model,
         ];
 
-        $api = (strpos($this->model, 'bot-') !== false) ? self::API_CHATDOC : self::API_SMART;
-        //Logger::error($api . $this->model);
-        $res = $this->doRequest($data, $api);
-        $res['code'] = 1;
-        if (!empty($res['choices'])) {
-            $res['answer_type'] = self::ANSWER_TEXT;
-            $text = isset($res['choices'][0]['message']['content']) ? $res['choices'][0]['message']['content'] : '';
-            $res['answer'] = trim(str_replace("<br/>", "\n", $text), "\n");
-        } else {
-            $res['code'] = 0;
+        $agent_id = $params['agent_id'] ?? $this->agentId;
+        if($agent_id){
+            $api = self::API_AGENT;
+            $data['model'] = $agent_id;
+        }else{
+            $api = self::API_CHAT;
         }
+
+        $res = $this->doRequest($data, $api);
         return  $res;
     }
 
@@ -119,18 +117,21 @@ class Volces extends Base
 
     public function dealRes($params, $url = '')
     {
-        return $params;
-        $res = $params;
-        $res['code'] = 1;
-        if (!empty($res['choices'])) {
-            $res['answer_type'] = self::ANSWER_TEXT;
-            $text = isset($res['choices'][0]['message']['content']) ? $res['choices'][0]['message']['content'] : '';
-            $res['answer'] = str_replace('<br/>', "\n", trim($text, "<br/>"));
-        } else {
-            $res['code'] = 0;
-            $res['choices'][0]['text'] = "异常";
+        $res = [
+            'code' => 1,
+            'answer' => '',
+            'answer_type' => self::ANSWER_TEXT
+        ];
+        if(strpos($url, self::API_CHAT) !== false || strpos($url, self::API_AGENT) !== false){
+            if (!empty($params['choices'])) {
+                $text = isset($params['choices'][0]['message']['content']) ? $params['choices'][0]['message']['content'] : '';
+                $res['answer'] = trim(str_replace("<br/>", "\n", $text), "\n");
+            } else {
+                $res['code'] = 0;
+            }
+        }else{
+            $res = $params;
         }
-        //Logger::error($res);
         return $res;
     }
 }

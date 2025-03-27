@@ -102,10 +102,19 @@ class Setting extends Base
                 break;
             case 'site':
                 empty($data) && $data['close'] = 0;
-                $builder->addFormItem('company_title', 'text', '平台名称', '平台名称')
-                    ->addFormItem('logo', 'picture_url', 'Logo', 'Logo')
-                    ->addFormItem('switch_reg', 'radio', '开发注册', '开发注册', Common::yesOrNo(), 'required')
-                    ->addFormItem('icp', 'text', '备案号', '备案号');
+                empty($data['home_theme']) && $data['home_theme'] = 'default';
+                $builder->addFormItem('app_title', 'text', '平台名称', '平台名称')
+                    ->addFormItem('company_title', 'text', '公司名称', '公司名称')
+                    ->addFormItem('logo', 'picture_url', '前台Logo', '比例860x200')
+                    ->addFormItem('seo_keywords', 'textarea', 'SEO关键词', 'SEO关键词')
+                    ->addFormItem('seo_description', 'textarea', 'SEO描述', 'SEO描述')
+                    ->addFormItem('home_theme', 'text', '前台皮肤', '默认default，非开发者请勿改动')
+                    ->addFormItem('switch_reg', 'radio', '开放注册', '开放注册', Common::yesOrNo(), 'required')
+                    ->addFormItem('icp', 'text', '备案号', '备案号')
+                    ->addFormItem('tongji', 'textarea', '统计代码', '统计代码')
+                    ->addFormItem('close', 'radio', '关闭网站', '关闭网站', Common::yesOrNo(), 'required')
+                    ->addFormItem('close_reason', 'textarea', '关闭原因', '关闭原因')
+                    ->addFormItem('backend_logo', 'picture_url', '后台Logo', '比例1:1');
                 break;
             case 'upload':
                 empty($data) && $data = [

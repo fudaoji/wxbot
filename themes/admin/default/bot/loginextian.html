@@ -9,7 +9,7 @@
 
         <div style="text-align: center;">
             <div>
-                <img style="width: 80%;margin-bottom: 40px;" src="{$code}"
+                <img style="width: 80%;margin-bottom: 40px;" src="{:url('getQrCode', ['text' => $code])}"
                      alt="二维码" id="code-img">
             </div>
 
@@ -20,7 +20,7 @@
 
                 <a class="layui-btn layui-btn-sm layui-btn-primary"
                    href="javascript:location.reload();"
-                ><i class="layui-icon layui-icon-refresh"></i>刷新</a>
+                ><i class="layui-icon layui-icon-refresh"></i><span id="countdown"></span>后自动刷新</a>
             </div>
         </div>
     </div>
@@ -48,6 +48,34 @@
                 }
             });
         });
+
+        // 定义初始时间（10分钟 = 600秒）
+        let timeLeft = 600;
+        const countdownElement = document.getElementById('countdown');
+
+        // 格式化时间显示（补零操作）
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        // 倒计时执行函数
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdownElement.textContent = formatTime(timeLeft);
+
+            // 时间结束执行
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                onTimerComplete();
+            }
+        }, 1000); // 每秒更新一次
+
+        // 时间到后的回调函数
+        function onTimerComplete() {
+            location.reload(); // 刷新页面
+        }
 
         /*$(document).ready(function () {
             requestPost("", {do:"getcode"}, (res) => {

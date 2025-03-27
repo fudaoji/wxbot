@@ -249,7 +249,8 @@ class Bot extends Bbase
             $this->error($login_code['errmsg']);
         }
         session('bot_client_id', $login_code['pid']);
-        $data['code'] = generate_qr(['text' => 'http://weixin.qq.com/x/' . $login_code['data']]);
+        //$data['code'] = generate_qr(['text' => 'http://weixin.qq.com/x/' . $login_code['data']]);
+        $data['code'] = 'http://weixin.qq.com/x/'. $login_code['data'];
         return $this->show($data);
     }
 

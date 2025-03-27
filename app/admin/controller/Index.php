@@ -178,9 +178,9 @@ class Index extends Base
             'href'  => '/admin/index/welcome',
         ];
         $logoInfo = [
-            'title' => config('system.site.company_title'),
+            'title' => config('system.site.app_title'),
             'href' => '/admin/index/index',
-            'image' => config('system.site.logo') ? (string) config('system.site.logo') : '/logo.png',
+            'image' => config('system.site.backend_logo') ? (string) config('system.site.backend_logo') : '/logo.png',
         ];
         $menuInfo = $this->getMenuList();
         $systemInit = [

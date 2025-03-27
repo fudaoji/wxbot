@@ -194,6 +194,10 @@ class Base extends BaseCtl
 
     public function getBots($where = []){
         $where = array_merge(['status' => 1], $this->staffWhere(), $where);
-        return model('admin/bot')->getField(['id','title'], $where);
+        return model('admin/bot')->getFieldByOrder([
+            'field' => ['id','title'],
+            'where' => $where,
+            'order' => ['alive' => 'desc', 'id' => 'desc']
+        ]);
     }
 }

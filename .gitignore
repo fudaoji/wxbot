@@ -10,3 +10,5 @@ __MACOSX
 runtime
 *.pid
 .user.ini
+themes/home/fox
+public/static/home/fox

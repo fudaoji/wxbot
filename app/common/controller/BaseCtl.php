@@ -10,6 +10,7 @@
 namespace app\common\controller;
 
 use app\BaseController;
+use ky\ErWeiCode;
 use think\App;
 use think\facade\View;
 
@@ -74,5 +75,22 @@ class BaseCtl extends BaseController
         if (!is_file($root_path . '.env') || !is_file($root_path . '/install.lock')) {
             $this->redirect('install/index/index');
         }
+    }
+
+    /**
+     * 在线二维码
+     * Author: fudaoji<fdj@kuryun.cn>
+     * @param array $options
+     */
+    public function getQrCode($options = []){
+        $params = empty($options) ? input() : $options;
+        if(empty($params['text'])){
+            echo '参数错误';exit;
+        }
+        $code_o = new ErWeiCode();
+        $level = empty($params['level']) ? QR_ECLEVEL_M : $params['level'];
+        $size = empty($params['size']) ? 6 : $params['size'];
+        $margin = empty($params['margin']) ? 1 : $params['margin'];
+        $code_o->qrCode($params['text'], false, $level, $size, $margin);
     }
 }

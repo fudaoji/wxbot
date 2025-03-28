@@ -11,6 +11,7 @@
 namespace app\crontab\controller;
 
 use app\common\service\Addon as AppService;
+use app\common\service\Bot as BotService;
 use app\constants\Addon;
 use app\constants\Task;
 use ky\Logger;
@@ -38,6 +39,35 @@ class Bot extends Base
         $this->taskM = new \app\common\model\Task();
         $this->momentsM = new \app\common\model\Moments();
         $this->momentsFollowM = new \app\common\model\MomentsFollow();
+    }
+
+    /**
+     * 每分钟任务
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function minuteTask(){
+        $this->basicMinute();
+        $this->addonMinute();
+    }
+
+    /**
+     * 检查机器人在线状态
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    private function checkBotStatus(){
+        $bot_list = BotService::model()->getList([1, 100], ['alive' => 1], []);
+        foreach ($bot_list as $bot){
+            $res = BotService::model()->getRobotInfo($bot);
+            if(is_string($res)){
+                BotService::model()->updateOne(['id' => $bot['id'], 'alive' => 0]);
+                echo $bot['id'] . "下线了";
+                //todo 增加短信或公众号提醒
+            }
+        }
     }
 
     /**
@@ -85,18 +115,10 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function basicMinute(){
+        $this->checkBotStatus();
         $this->sendBatch();
-        $this->sendMoments();
-        $this->followMoments();
-    }
-
-    /**
-     * 每分钟任务
-     * Author: fudaoji<fdj@kuryun.cn>
-     */
-    public function minuteTask(){
-        $this->basicMinute();
-        $this->addonMinute();
+        //$this->sendMoments();
+        //$this->followMoments();
     }
 
     /**

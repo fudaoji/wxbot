@@ -9,7 +9,9 @@
 
 namespace app\bot\handler;
 
+use app\common\service\BotConfig as ConfigService;
 use app\constants\Bot;
+use app\constants\Media;
 use app\constants\Reply;
 use app\constants\Task;
 use ky\Logger;
@@ -18,6 +20,29 @@ class HandlerPrivateChat extends Handler
 {
     protected $friend;
     protected $addonHandlerName = 'privateChatHandle';
+
+    protected function handle(){
+        if($res = ConfigService::handleCommand($this->bot['id'], $this->content['msg'], $this->fromWxid)){
+            $params = [
+                'type' => Media::TEXT,
+                'bot' => is_array($this->bot) ? $this->bot : $this->bot->toArray(),
+                'payload' => [
+                    'robot_wxid' => $this->bot['uin'],
+                    'uuid' => $this->bot['uuid'],
+                    'to_wxid' => $this->fromWxid,
+                    'msg' => $res
+                ],
+                'do' => ['\\app\\common\\model\\Reply', 'sendJob']
+            ];
+
+            //Logger::error($params);
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => 2,
+                'params' => $params
+            ]);
+            exit(1);
+        }
+    }
 
     /**
      * 消息转播

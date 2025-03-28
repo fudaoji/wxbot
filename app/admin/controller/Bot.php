@@ -45,16 +45,6 @@ class Bot extends Bbase
 <li>详细接入教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://daoadmin.kuryun.com/home/guide/bot/id/90/v/1.x.html'>点击查看</a></li></ul>";
     }
 
-    function configTabs($id = 0){
-        $tabs = [
-            'edit' => ['title' => '连接信息', 'href' => url('edit', ['id' => $id])]
-        ];
-        if(AdminM::isLeader($this->adminInfo)){
-            $tabs['allocate'] = ['title' => '分配员工', 'href' => url('allocate', ['id' => $id])];
-        }
-        return $tabs;
-    }
-
     /**
      * 同步数据
      * @throws \think\Exception
@@ -116,7 +106,7 @@ class Bot extends Bbase
             $post_data = input('post.');
             $where = array_merge($this->staffWhere(), [
                 'protocol' => $tab,
-                'status' => 1
+                //'status' => 1
             ]);
 
             !empty($post_data['search_key']) && $where['nickname|title|uin'] = ['like', '%' . $post_data['search_key'] . '%'];
@@ -140,17 +130,17 @@ class Bot extends Bbase
             ->setDataUrl(url('index', ['tab' => $tab]))
             ->setTabNav($this->tabs, $tab)
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
-            ->addTopButton('addnew', ['title' => '扫码登录微信', 'href' => url('hookadd')])
             ->addTopButton('addnew', ['title' => '拉取已登录微信', 'href' => url('add', ['tab' => $tab]),'class' => "layui-btn-warm"])
+            ->addTopButton('addnew', ['title' => '扫码登录微信', 'href' => url('hookadd')])
             ->addTableColumn(['title' => 'PID|client_id', 'field' => 'uuid', 'minWidth' => 90])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 150])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 100])
-            //->addTableColumn(['title' => '类型', 'field' => 'protocol', 'type' => 'enum', 'options' => BotConst::protocols(), 'minWidth' => 90])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture','minWidth' => 100])
             ->addTableColumn(['title' => '所属员工', 'type' => 'enum', 'field' => 'staff_id', 'options' => AdminM::getTeamIdToName($this->adminInfo), 'minWidth' => 90])
             ->addTableColumn(['title' => '昵称', 'field' => 'nickname', 'minWidth' => 80])
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
+            ->addTableColumn(['title' => '启用状态', 'field' => 'status', 'type' => 'enum', 'options' => Common::status(), 'minWidth' => 90])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120])
@@ -476,21 +466,20 @@ class Bot extends Bbase
             AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '编辑微信机器人'.$data['nickname'].'的信息']);
             parent::savePost();
         }
-        $data['login_code'] = 0;
+
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑机器人')
-            ->setTabNav($this->configTabs($id), __FUNCTION__)
+            ->setTabNav($this->botConfigTabs($id), __FUNCTION__)
             ->setTip($this->tip)
             ->setPostUrl(url('edit'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            //->addFormItem('protocol', 'radio', '类型', '机器人类型', BotConst::hooks())
             ->addFormItem('uuid', 'text', 'PID', '从e小天页面的微信列表中查看',[], 'required')
             ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
             ->addFormItem('uin', 'text', 'Wxid', '微信在机器人框架登陆后可获取', [], 'required maxlength=30')
             ->addFormItem('app_key', 'text', 'ext的KEY', '请到ext管理面板中获取', [], 'required')
             ->addFormItem('url', 'text', '服务器地址', 'ip:port', [], 'required')
-            //->addFormItem('login_code', 'radio', '扫码登录', '是否扫码登录', [0 => '否', 1 => '是'])
+            ->addFormItem('status', 'radio', '启用', '是否启用', Common::yesOrNo())
             ->setFormData($data);
 
         return $builder->show();
@@ -585,10 +574,10 @@ class Bot extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('分配员工')
-            ->setTabNav($this->configTabs($id), __FUNCTION__)
+            ->setTabNav($this->botConfigTabs($id), __FUNCTION__)
             ->setPostUrl(url('allocate'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('staff_id', 'select', '选择员工', '选择员工', AdminM::getTeamIdToName(), 'required')
+            ->addFormItem('staff_id', 'select', '选择员工', '将当前微信号'.$data['nickname'].'分配给哪个员工', AdminM::getTeamIdToName(), 'required')
             ->setFormData($data);
 
         return $builder->show();

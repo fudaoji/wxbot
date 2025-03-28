@@ -36,10 +36,10 @@ class Setting extends Base
                 'title' => '附件设置',
                 'href' => url('index', ['name' => 'upload'])
             ],
-            'addon' => [
+            /*'addon' => [
                 'title' => '应用插件',
                 'href' => url('index', ['name' => 'addon'])
-            ],
+            ],*/
         ];
     }
 
@@ -104,6 +104,7 @@ class Setting extends Base
                 empty($data) && $data['close'] = 0;
                 empty($data['home_theme']) && $data['home_theme'] = 'default';
                 $builder->addFormItem('app_title', 'text', '平台名称', '平台名称')
+                    ->addFormItem('slogan', 'textarea', 'Slogan', 'Slogan')
                     ->addFormItem('company_title', 'text', '公司名称', '公司名称')
                     ->addFormItem('logo', 'picture_url', '前台Logo', '比例860x200')
                     ->addFormItem('seo_keywords', 'textarea', 'SEO关键词', 'SEO关键词')

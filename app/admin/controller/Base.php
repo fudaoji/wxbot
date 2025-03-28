@@ -200,4 +200,21 @@ class Base extends BaseCtl
             'order' => ['alive' => 'desc', 'id' => 'desc']
         ]);
     }
+
+    /**
+     * 机器人配置选项
+     * @param int $id
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function botConfigTabs($id = 0){
+        $tabs = [
+            'edit' => ['title' => '连接信息', 'href' => url('bot/edit', ['id' => $id])]
+        ];
+        if(AdminM::isLeader($this->adminInfo)){
+            $tabs['allocate'] = ['title' => '分配员工', 'href' => url('bot/allocate', ['id' => $id])];
+        }
+        $tabs['other'] = ['title' => '其他配置', 'href' => url('botconfig/index', ['id' => $id])];
+        return $tabs;
+    }
 }

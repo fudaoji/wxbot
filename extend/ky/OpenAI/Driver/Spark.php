@@ -120,6 +120,7 @@ class Spark extends Base
 
         array_push($message, ['role' => 'user', 'content' => $params['msg']]);
 
+        //Logger::error($message);
         $this->baseUri = self::HOST_CHAT;
         $stream = empty($params['stream']) ? false : true;
         $web_search = empty($params['web_search']) ? false : true;
@@ -179,11 +180,16 @@ class Spark extends Base
         $this->baseUri = 'https://' . self::HOST_WORKFLOW;
         $stream = empty($params['stream']) ? false : true;
 
+        $msg = $params['msg'];
+        if(!empty($params['background'])){
+            $msg = $params['background'] . $msg;
+        }
+
         $payload = [
             "flow_id" => $params['agent_id'] ?? $this->agentId,
             "uid" => $params['userid'] ?? '',
             "parameters" => [
-                "AGENT_USER_INPUT" => $params['msg']
+                "AGENT_USER_INPUT" => $msg
             ],
             'stream' => $stream,
         ];
@@ -193,7 +199,7 @@ class Spark extends Base
             'data' => $payload,
             'headers' => ["Authorization" => "Bearer {$this->apiKey}:{$this->apiSecret}"]
         ];
-        //Logger::error($options);
+
         $res = $this->request($options);
         if($res['code'] == 0 && !empty($res['choices'][0]['delta']['content'])){
             $res['answer_type'] = self::ANSWER_TEXT;

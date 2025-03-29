@@ -42,7 +42,7 @@ class Bot extends Bbase
         $this->tip = "<!--<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p>--> 
 <ul><li>e小天的接口回调地址: <a href='javascript:;' id='url-extian' class='js-clipboard' data-clipboard-target='#url-extian'>".request()->domain()."/bot/api/extian</a></li>
 <li>xbot企微的接口回调地址: <a href='javascript:;' id='url-xbotcom' class='js-clipboard' data-clipboard-target='#url-xbotcom'>".request()->domain()."/bot/api/xbotcom</a></li>
-<li>详细接入教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://daoadmin.kuryun.com/home/guide/bot/id/90/v/1.x.html'>点击查看</a></li></ul>";
+<li>详细接入教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://doc.kuryun.com/web/#/642350114/229559988'>点击查看</a></li></ul>";
     }
 
     /**
@@ -636,8 +636,8 @@ class Bot extends Bbase
             'field' => ['app_key', 'url']
         ])){
             $config = $config->toArray();
-        }else{
-            $config = config('system.bot');
+        /*}else{
+            $config = config('system.bot');*/
         }
         if(empty($config['app_key'])){
             $key = '';

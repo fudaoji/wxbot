@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>步骤进度条sample</title>
+
+<link rel="stylesheet" href="../layui/css/layui.css">
+
+<style>
+body{padding:100px 0;}
+
+</style>
+</head>
+<body>
+
+  <div class="layui-container">
+    <div id="stepProgressBar"></div>
+	<div class="layui-btn-container">
+		<div style="text-align: center;margin-top: 10px;">
+			<button id="pre" class="layui-btn layui-btn-normal">Pre</button>
+			<button id="move" class="layui-btn layui-btn-normal">MoveTo</button>
+			<button id="next" class="layui-btn layui-btn-normal">Next</button>
+			<button id="reload" class="layui-btn layui-btn-normal">Reload</button>
+		</div>
+	</div>
+  </div>
+
+<script src="../layui/layui.js"></script>
+<script>
+layui.config({
+    base:'./stepprogress/'
+}).use(['stepprogress', 'layer'], function(){
+	var stepprogress = layui.stepprogress;
+	var $ = layui.$;
+	var layer = layui.layer;
+	
+	renderStepProgress();
+	
+	$("#next").click(function(){
+		stepprogress.next('stepProgressBar');
+	});
+	$("#pre").click(function(){
+		stepprogress.pre('stepProgressBar');
+	});
+	$("#move").click(function(){
+		layer.prompt({title: '输入想要移动到的目标位置，并确认', formType: 0}, function(position, index){
+			layer.close(index);
+			stepprogress.move('stepProgressBar', position);
+		});
+	});
+	$("#reload").click(function(){
+		stepprogress.reload('stepProgressBar',{position: 0});
+	});
+	
+	// 绑定进度变化事件
+	stepprogress.on('change(stepProgressBar)', function(options){
+		console.log(options);
+	});
+	
+	// 渲染步骤进度条
+	function renderStepProgress() {
+		let stepItems = [{
+			title: '开始',
+			code: '01'
+		},{
+			title: '做成基础数据',
+			code: '02'
+		},{
+			title: '手工调整',
+			code: '03'
+		},{
+			title: '生成报表',
+			code: '90'
+		}];
+		stepprogress.render({
+			elem: '#stepProgressBar',
+			stepItems: stepItems,
+			position: 0
+		});
+	}
+});
+</script>
+</body>
+</html>

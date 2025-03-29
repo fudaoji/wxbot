@@ -11,12 +11,12 @@
             <div class="center">
                 <div class="item">
                     <span class="icon icon-2"></span>
-                    <input type="text" name="username" lay-verify="required"  placeholder="请输入登录账号" maxlength="20"/>
+                    <input type="text" name="username" lay-verify="required"  placeholder="请输入由数字、字母、特殊符号组成4-20长度的账号" minlength="4" maxlength="20"/>
                 </div>
 
                 <div class="item">
                     <span class="icon icon-3"></span>
-                    <input type="password" name="password" lay-verify="required"  placeholder="请输入密码" maxlength="20">
+                    <input type="password" name="password" lay-verify="required"  placeholder="请输入密码6-20长度的密码" minlength="6" maxlength="20">
                     <span class="bind-password icon icon-4"></span>
                 </div>
                 <div class="item">
@@ -43,7 +43,7 @@
 </div>
 <div class="footer">
     ©版权所有 2020-{:date('Y')} {:config('system.site.company_title')}<span class="padding-5">|</span>
-    <a target="_blank" href="http://www.miitbeian.gov.cn">闽ICP备19014014号
+    <a target="_blank" href="http://www.miitbeian.gov.cn">{:config('system.site.icp')}
 </a>
 </div>
 
@@ -89,7 +89,7 @@
         //自定义验证
         form.verify({
             username: function (value) {
-                if (value.length < 3) {
+                if (value.length < 4) {
                     return '账号错误';
                 }
             }

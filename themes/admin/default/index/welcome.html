@@ -1,8 +1,18 @@
 <div class="layui-row layui-col-space15">
     <div class="layui-col-md12">
         <div class="layui-card">
-            <div class="layui-card-header"><i class="fa fa-fire icon"></i>欢迎回来，{$admin.username}</div>
+            <div class="layui-card-header">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <i class="fa fa-fire icon"></i>欢迎回来，{$admin.username}
+                    </div>
+                    <div class="layui-col-xs6 text-right">
+                        <a style="color: #ff9f40;" href="https://doc.kuryun.com/web/#/642350114" target="_blank"><i class="fa fa-book"></i>使用手册</a>
+                    </div>
+                </div>
+            </div>
             <div class="layui-card-body">
+                <div id="stepProgressBar" style="margin: 30px auto;"></div>
                 <div class="welcome-module">
                     <div class="layui-row layui-col-space10">
                         <div class="layui-col-xs6">

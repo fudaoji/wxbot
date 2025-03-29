@@ -75,9 +75,13 @@
                     <div id="page">{$page|raw}</div>
                     {else/}
                     <div class="text-center" style="padding: 20px;">
+                        {if $admin.is_founder}
                         <button class="layui-btn layui-btn-normal js-go-appstore">
                             暂无可用应用,去采购 <i class="fa fa-arrow-right"></i>
                         </button>
+                        {else/}
+                            暂无可用应用！
+                        {/if}
                     </div>
                     {/if}
                 </div>

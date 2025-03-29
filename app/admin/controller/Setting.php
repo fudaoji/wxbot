@@ -10,6 +10,7 @@
 
 namespace app\admin\controller;
 use app\common\model\Setting as SettingM;
+use app\common\service\AdminGroup as GroupService;
 use app\constants\Common;
 
 class Setting extends Base
@@ -94,8 +95,8 @@ class Setting extends Base
                 !isset($data['seat_price']) && $data['seat_price'] = 0.0;
                 $builder->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒')
                     ->addFormItem('file_storage_path', 'text', '微信文件保存位置', '请到微信客户端-》设置-》文件位置查看，填写“WeChat Files”之前的部分')
-                    ->addFormItem('app_key', 'text', '默认AppKey', '机器人框架的appkey')
-                    ->addFormItem('url', 'text', '默认接口地址', '默认接口地址')
+                    //->addFormItem('app_key', 'text', '默认AppKey', '机器人框架的appkey')
+                    //->addFormItem('url', 'text', '默认接口地址', '默认接口地址')
                     ->addFormItem('seat', 'legend', '微信号席位', '微信号席位')
                     ->addFormItem('seat_default', 'number', '默认额度', '注册客户默认有几个微信号席位', [], 'min=0')
                     ->addFormItem('seat_price', 'text', '售价', '每个号每月的费用', [], 'min=0');
@@ -111,6 +112,7 @@ class Setting extends Base
                     ->addFormItem('seo_description', 'textarea', 'SEO描述', 'SEO描述')
                     ->addFormItem('home_theme', 'text', '前台皮肤', '默认default，非开发者请勿改动')
                     ->addFormItem('switch_reg', 'radio', '开放注册', '开放注册', Common::yesOrNo(), 'required')
+                    ->addFormItem('default_group_id', 'select', '新用户默认分组', '新用户默认分组', GroupService::getTenantGroupIdToTitle($this->adminInfo), 'required')
                     ->addFormItem('icp', 'text', '备案号', '备案号')
                     ->addFormItem('tongji', 'textarea', '统计代码', '统计代码')
                     ->addFormItem('close', 'radio', '关闭网站', '关闭网站', Common::yesOrNo(), 'required')

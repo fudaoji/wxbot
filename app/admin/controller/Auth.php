@@ -84,7 +84,9 @@ class Auth extends Base
             $data['ip'] = request()->ip();
             $data['last_time'] = time();
             $data['password'] = ky_generate_password($data['password']);
-            $data['group_id'] = \app\admin\model\AdminGroup::getTenantGroup('id')['id'];
+            $data['group_id'] = config('system.site.default_group_id')
+                ? config('system.site.default_group_id')
+                : \app\admin\model\AdminGroup::getTenantGroup('id')['id'];
 
             if ($user = $this->model->addOne($data)) {
                 $this->model->afterReg($user);

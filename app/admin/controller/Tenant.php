@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 use app\admin\model\Admin as AdminM;
 use app\admin\model\AdminGroup as GroupM;
+use app\common\service\AdminGroup as GroupService;
 use app\constants\Common;
 
 class Tenant extends Base
@@ -41,12 +42,13 @@ class Tenant extends Base
     public function index(){
         if(request()->isPost()){
             $post_data = input('post.');
-            $where = ['pid' => 0, 'id' => ['<>', AdminM::getFounderId()]];
+            $fid = AdminM::getFounderId();
+            $where = ['pid' => 0, 'id' => ['<>', $fid]];
             !empty($post_data['search_key']) && $where['username|mobile|realname'] = ['like', '%'.$post_data['search_key'].'%'];
-
+            !empty($post_data['group_id']) && $where['group_id'] = $post_data['group_id'];
             //非超管
-            if($this->adminInfo['id'] != 1) {
-                $where['id'] = ['>', 1];
+            if(!AdminM::isFounder($this->adminInfo)) {
+                $where['id'] = ['>', $fid];
             }
             $total = $this->model->total($where, true);
             if ($total) {
@@ -67,6 +69,7 @@ class Tenant extends Base
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '序号', 'type' => 'index'])
             ->addTableColumn(['title' => '账号', 'field' => 'username'])
+            ->addTableColumn(['title' => '角色', 'field' => 'group_id', 'type' => 'enum', 'options' => $group_list])
             ->addTableColumn(['title' => '手机号', 'field' => 'mobile'])
             ->addTableColumn(['title' => '姓名', 'field' => 'realname'])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status()])
@@ -86,6 +89,7 @@ class Tenant extends Base
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength=4 maxlength=20')
             ->addFormItem('password', 'password', '密码', '6-20位', [], 'required minlength=6 maxlength=20')
+            ->addFormItem('group_id', 'select', '角色', '角色', GroupService::getTenantGroupIdToTitle($this->adminInfo), 'required')
             ->addFormItem('mobile', 'text', '手机', '手机')
             ->addFormItem('realname', 'text', '姓名', '姓名');
 
@@ -105,10 +109,11 @@ class Tenant extends Base
         //使用FormBuilder快速建立表单页面。
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑')  //设置页面标题
-        ->setPostUrl(url('savepost')) //设置表单提交地址
-        ->addFormItem('id', 'hidden', 'id', 'id')
+            ->setPostUrl(url('savepost')) //设置表单提交地址
+            ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('username', 'text', '账号', '4-20位', [], 'required minlength=4 maxlength=20')
             ->addFormItem('password', 'password', '密码', '留空则不修改', [], 'minlength=6 maxlength=20')
+            ->addFormItem('group_id', 'select', '角色', '角色', GroupService::getTenantGroupIdToTitle($this->adminInfo), 'required')
             ->addFormItem('mobile', 'text', '手机', '手机')
             ->addFormItem('realname', 'text', '姓名', '姓名')
             ->setFormData($data);
@@ -123,9 +128,7 @@ class Tenant extends Base
         }else{
             unset($post_data['password']);
         }
-        if(empty($post_data['id'])){
-            $post_data['group_id'] = \app\admin\model\AdminGroup::getTenantGroup('id')['id'];
-        }
+
         if(!empty($post_data['username'])){
             $exists_where = ['username' => $post_data['username']];
             if(! empty($post_data[$this->pk])){

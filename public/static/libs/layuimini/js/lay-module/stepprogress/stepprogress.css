@@ -1,0 +1,65 @@
+.layui-step-progress {
+    padding: 0;
+	margin: 0 auto;
+}
+.layui-step-item {
+    display: inline-block;
+    position: relative;
+    font-size: 14px;
+}
+.layui-step-item-head {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+    color: #16b777;
+    border: 2px solid #16b777;
+    border-radius: 50%;
+    background: #ffffff;
+}
+.layui-step-item-done > .layui-step-item-head > .layui-icon:before {
+    content: "\e605";
+}
+.layui-step-item-active > .layui-step-item-head {
+    background: #16b777;
+    color: #ffffff;
+}
+.layui-step-item-inactive > .layui-step-item-head {
+	color: #aab2bd;
+	border: 2px solid #aab2bd;
+}
+.layui-step-item-tail {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 15px;
+}
+.layui-step-item-tail i {
+    display: inline-block;
+    width: 100%;
+    height: 2px;
+    vertical-align: top;
+    background: #aab2bd;
+    position: relative;
+}
+.layui-step-item-done > .layui-step-item-tail i {
+    background: #16b777;
+}
+.layui-step-item-title {
+    display: block;
+    position: relative;
+    margin-left: -50%;
+    margin-right: 50%;
+    padding-left: 26px;
+    text-align: center;
+}
+.layui-step-item-active > .layui-step-item-title {
+	font-weight: bold;
+}
+.layui-step-item .layui-icon {
+	font-weight: bold;
+    display: inline-block;
+    height: 27px;
+	width: 27px;
+    line-height: 27px;
+}

@@ -18,6 +18,8 @@
                     <div class="layui-form-item" style="margin: 0;">
                         {foreach $search as $v}
                         {switch name="v.type" }
+                        {case btn_group} {include file="default/builder/searchtype/btn_group" /} {/case}
+                        {case linkage} {include file="default/builder/searchtype/linkage" /} {/case}
                         {case date} {include file="default/builder/searchtype/date" /} {/case}
                         {case datetime} {include file="default/builder/searchtype/datetime" /}{/case}
                         {case datetime_range}{include file="default/builder/searchtype/datetime_range" /}{/case}

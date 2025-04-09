@@ -56,6 +56,7 @@ Abstract class Base
             'base_uri' => $this->baseUri,
             'timeout' => empty($this->options['timeout']) ? 0 : $this->options['timeout']
         ];
+
         !empty($params["proxy"]) && $options["proxy"] = $params["proxy"];
         $this->client = new Client($options);
         $url = empty($params['url']) ? '/' : $params['url'];

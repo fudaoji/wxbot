@@ -637,8 +637,22 @@ class Extian extends Base
         return $this->doRequest(self::API_NOTIFY, $params);
     }
 
+    /**
+     * 可选参数:
+    sid:返回等于该id的消息(sid为消息通知中的19位id)
+    id:返回大于该id的消息
+    flag:返回小于上述id的消息
+    type:返回指定类型的消息
+    msg:返回包含相关内容的消息(搜xml加前缀x:)
+    fromid:返回指定对象消息
+    memid:返回指定群成员消息
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
     public function getMsg($params = []){
-        $params['sid'] = $params['msgid'];
+        !empty($params['msgid']) && $params['sid'] = $params['msgid'];
+        //!empty($params['id']) && $params['id'] = $params['id'];
         return $this->doRequest(self::API_GET_MSG, $params);
     }
 

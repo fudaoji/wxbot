@@ -38,7 +38,7 @@ class Client
         if(!$this->bot){
             throw new \Exception("不存在的机器人驱动：{$driver}");
         }
-        return $this->bot;
+        //return $this->bot;
     }
 
     /**

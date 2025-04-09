@@ -40,6 +40,52 @@ class Qianwen extends Base
     }
 
     /**
+     * 理解图片
+     * @param $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function readImg($params)
+    {
+        $message = [
+            [
+                'role' => 'user',
+                "content" => [
+                    ['type' => 'text', 'text' => $params['msg']],
+                    ['type' => 'image_url', 'image_url' => $params['img']]
+                ]
+            ]
+        ];
+
+        $stream = empty($params['stream']) ? false : true;
+        $model = $params['model'] ?? $this->model;
+        $web_search = empty($params['web_search']) ? false : true;
+
+        $payload = [
+            'messages' => $message,
+            'model' => $model,
+            'stream' => $stream,
+            'enable_search' => $web_search
+        ];
+
+        isset($params['stream_options']) && $payload['stream_options'] = $params['stream_options'];
+        isset($params['temperature']) && $payload['temperature'] = $params['temperature'];
+        isset($params['top_p']) && $payload['top_p'] = $params['top_p'];
+        isset($params['presence_penalty']) && $payload['presence_penalty'] = $params['presence_penalty'];
+        isset($params['response_format']) && $payload['response_format'] = $params['response_format'];
+        isset($params['max_tokens']) && $payload['max_tokens'] = $params['max_tokens'];
+        isset($params['n']) && $payload['n'] = $params['n'];
+        isset($params['seed']) && $payload['seed'] = $params['seed'];
+        isset($params['stop']) && $payload['stop'] = $params['stop'];
+        isset($params['tools']) && $payload['tools'] = $params['tools'];
+        isset($params['tool_choice']) && $payload['tool_choice'] = $params['tool_choice'];
+        isset($params['parallel_tool_calls']) && $payload['parallel_tool_calls'] = $params['parallel_tool_calls'];
+        isset($params['search_options']) && $payload['search_options'] = $params['search_options'];
+
+        return $this->doRequest($payload, self::API_CHAT);
+    }
+
+    /**
      * 文本向量化
      * @param $params
      * @return bool|mixed
@@ -171,7 +217,7 @@ class Qianwen extends Base
             'proxy' => $this->proxy,
         ];
         !empty($params) && $options['data'] = $params;
-        //dump($headers);exit;
+        //dump($options);exit;
         //Logger::error(json_encode($options, JSON_UNESCAPED_UNICODE));
         return $this->request($options);
     }
@@ -204,6 +250,7 @@ class Qianwen extends Base
         }elseif(strpos($url, self::API_CHAT) !== false){
             if (!empty($params['choices'][0]['message']['content'])) {
                 $res['answer'] = $params['choices'][0]['message']['content'];
+                $res['usage'] = $params['usage'];
             } else {
                 $res['code'] = 0;
                 $res['errmsg'] = $params['error']['message'] ?? "出错啦！";

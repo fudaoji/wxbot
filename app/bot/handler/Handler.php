@@ -97,7 +97,7 @@ class Handler extends BaseCtl
         $handler = new $class();
         $handler->initData($options);
         $handler->handle();
-
+        //Logger::error($this->content['msg']);
         //response
         $this->response();
     }
@@ -141,7 +141,7 @@ class Handler extends BaseCtl
                     }
                 }
 
-                if(in_array($this->ajaxData['type'], [BotConst::MSG_LINK, BotConst::MSG_VERIFY])){ //特殊消息类型
+                if(in_array($this->ajaxData['type'], [BotConst::MSG_LINK, BotConst::MSG_VERIFY, BotConst::MSG_FILE])){ //特殊消息类型
                     $this->content = BotConst::getContentType($this->content);
                 }
 

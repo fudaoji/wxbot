@@ -1,0 +1,31 @@
+<!--下拉框联动-->
+<div class="layui-form-item" lay-filter="filter-{$v.name}">
+    <label class="layui-form-label">{$v['title']}</label>
+    <div class="layui-input-block" id="linkage-{$v.name}"></div>
+    <script>
+        layui.use(['selectN'], function () {
+            var selectN = layui.selectN;
+            var cateData = {:json_encode($v.options.data)}
+        , selectedData = {:json_encode(empty($v['options']['values']) ? [] : $v['options']['values'])}
+        , tips = {if empty($v['options']['tips'])}"请选择"{else/}{:json_encode($v['options']['values'])}{/if};
+
+            //无限级分类-所有配置
+            var catIns2 = selectN({
+                //元素容器【必填】
+                elem: '#linkage-{$v.name}'
+                //候选数据【必填】
+                , data: cateData
+                //设置了长度
+                , width: null
+                //默认值
+                , selected: selectedData
+                , search: true
+                , tips: tips
+                , name: '{$v.name}'
+                , delimiter: ','
+                , field: {idName: 'id', titleName: 'title', childName: 'children'}
+            });
+
+        });
+    </script>
+</div>

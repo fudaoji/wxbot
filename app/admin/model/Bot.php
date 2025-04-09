@@ -64,7 +64,7 @@ class Bot extends Base
     public function getRobotClient($bot = []){
         $options = ['app_key' => $bot['app_key'] ?? '', 'base_uri' => $bot['url'] ?? '', 'uuid' => $bot['uuid'] ?? ''];
         config('system.bot.step_time') && $options['step_time'] = explode('-', config('system.bot.step_time'));
-        return Client::getInstance($options, $bot['protocol'])->getBot();
+        return (new Client($options, $bot['protocol']))->getBot();
     }
 
     /**

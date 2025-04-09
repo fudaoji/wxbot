@@ -431,11 +431,13 @@ class Spark extends Base
         ];
 
         $message = ['text' => $message];
-        $parameter = ['chat' => [
-            'domain' => 'general',
-            "top_k" => 4,
-            "max_tokens" => 8192
-        ]];
+        $parameter = [
+            'chat' => [
+                'domain' => 'general',
+                "top_k" => 4,
+                "max_tokens" => 8192
+            ]
+        ];
         $data = $this->createMsg($message, $parameter);
         //Logger::error($data);
         $res = $this->wssRequest($data, 'read_img');

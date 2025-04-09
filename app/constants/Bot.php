@@ -210,6 +210,22 @@ class Bot
                     case self::MSG_LINK: //49
                         $object = new XmlMini($content['msg']);
                         $content['type'] = (string) $object->decodeObject()->type;
+                        switch ($content['type']){
+                            case 57:
+                                $content['type'] = self::MSG_QUOTE;
+                                $content['msg'] = (string) $object->decodeObject()->title;
+                                break;
+                        }
+                        break;
+                    case self::MSG_FILE: //2004
+                        $object = new XmlMini($content['msg']);
+                        switch ((string) $object->decodeObject()->type){
+                            case 57:
+                                $content['type'] = self::MSG_QUOTE;
+                                $content['msg'] = (string) $object->decodeObject()->title;
+                                break;
+                        }
+
                         break;
                 }
         }

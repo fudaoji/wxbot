@@ -14,6 +14,8 @@ use app\admin\model\Bot;
 use app\admin\model\BotMember;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use ky\Quark;
 use ky\VideoSpider;
 use tests\cases\bot\AutoAuth;
@@ -22,6 +24,150 @@ use zjkal\ChinaHoliday;
 
 class Test
 {
+    function streamQvqMax() {
+// 流式响应配置
+        header('Content-Type: text/event-stream');
+        header('Cache-Control: no-cache');
+        header('X-Accel-Buffering: no');  // 禁用Nginx代理缓冲‌:ml-citation{ref="6" data="citationList"}
+        ob_implicit_flush(true);
+        ob_end_flush();
+
+
+        $img = "http://images.kuryun.com/1-67e954ff4c252.png";
+        $prompt = '以[xxxx]格式返回这张图片上的四位数验证码';
+        $apiKey = "sk-2d304fb9100046fc9eabef7a848a4ff4"; // 替换为 API-KEY ‌:ml-citation{ref="6" data="citationList"}
+        $client = new Client();
+
+        // 请求参数（需确认模型名是否为 qvq-max，建议参考官方文档）‌:ml-citation{ref="8" data="citationList"}
+        $data = [
+            'model' => 'qvq-max', // 注意模型名称需与官方文档一致
+            'messages' => [
+                [
+                    'role' => 'user',
+                    "content" => [
+                        ['type' => 'text', 'text' => $prompt],
+                        ['type' => 'image_url', 'image_url' => ['url' => $img]]
+                    ]
+                ]
+            ],
+            'stream' => true // 启用流式输出 ‌:ml-citation{ref="1,5" data="citationList"}
+        ];
+        //dump($data);
+        try {
+            $response = $client->post('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', [ // 需确认 API 端点 ‌:ml-citation{ref="6" data="citationList"}
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'text/event-stream' // 指定流式响应格式 ‌:ml-citation{ref="5" data="citationList"}
+                ],
+                'json' => $data,
+                'stream' => true // Guzzle 启用流式接收
+            ]);
+
+            // 逐块处理流式响应
+            $stream = $response->getBody();
+            //dump($stream->getContents());
+            $buffer = '';
+            while (!$stream->eof()) {
+                $chunk = $stream->read(1024); // 读取数据块
+                $lines = explode("\n\n", $chunk); // 按 SSE 协议分割事件
+                foreach ($lines as $line) {
+                    if (strpos($line, 'data:') === 0) {
+                        $jsonData = trim(substr($line, 5)); // 提取 JSON 部分
+                        $data = json_decode($jsonData, true);
+                        //dump($data);
+                        if (isset($data['choices'][0]['delta']['content'])) {
+                            echo $data['choices'][0]['delta']['content'];
+                        }elseif(isset($data['choices'][0]['delta']['reasoning_content'])){
+                            echo $data['choices'][0]['delta']['reasoning_content'];
+                        }
+                        ob_flush(); // 实时输出到客户端
+                        flush();
+                    }
+                }
+            }
+
+        } catch (RequestException $e) {
+            echo '请求失败: ' . $e->getMessage();
+        }
+    }
+
+    function qvqMax(){
+        // 流式响应配置
+        header('Content-Type: text/event-stream');
+        header('Cache-Control: no-cache');
+        header('X-Accel-Buffering: no');  // 禁用Nginx代理缓冲‌:ml-citation{ref="6" data="citationList"}
+        ob_implicit_flush(true);
+        ob_end_flush();
+
+// 初始化cURL
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+            CURLOPT_POST => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer sk-2d304fb9100046fc9eabef7a848a4ff4",
+                "Content-Type: application/json"
+            ],
+            CURLOPT_POSTFIELDS => json_encode([
+                "model" => "qvq-max",
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => [["type" => "text", "text" => "You are a helpful assistant."]]
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => [
+                            [
+                                "type" => "image_url",
+                                "image_url" => ["url" => "http://images.kuryun.com/1-67e954ff4c252.png"]
+                            ],
+                            ["type" => "text", "text" => "以[xxxx]格式返回这张图片上的四位数验证码"]
+                        ]
+                    ]
+                ],
+                "stream" => true,
+                "stream_options" => ["include_usage" => true]
+            ]),
+            CURLOPT_WRITEFUNCTION => function ($ch, $data) {
+                // 实时输出数据块‌:ml-citation{ref="2,6" data="citationList"}
+                $data = trim($data, "\n\n");
+                $lines = explode("\n\n", $data); // 按 SSE 协议分割事件
+                foreach ($lines as $line) {
+                    if (strpos($line, 'data:') === 0) {
+                        $jsonData = trim(substr($line, 5)); // 提取 JSON 部分
+                        $data = json_decode($jsonData, true);
+                        if (isset($data['choices']['delta']['content'])) {
+                            echo $data['choices']['delta']['content'];
+                            //ob_flush(); // 实时输出到客户端
+                            flush();
+                        }
+                    }
+                }
+                var_dump($data);
+                flush();
+                //echo $data;
+                //flush();
+                //return strlen($data);
+            },
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_TIMEOUT => 300  // 长连接超时设置‌:ml-citation{ref="3,6" data="citationList"}
+        ]);
+
+        curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            // 错误处理保持流式特性‌:ml-citation{ref="5" data="citationList"}
+            echo "data: [ERROR] " . curl_error($ch) . "\n\n";
+            flush();
+        }
+
+        curl_close($ch);
+
+    }
 
     public function index()
     {

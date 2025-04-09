@@ -28,6 +28,7 @@
                 elem: "#{$form['name']}"
                 ,type: 'datetime'
                 ,range: true
+                ,rangeLinked: true
                 ,change: function(value, date, endDate){
                     $("input[name={$form.name}_from_date]").val(''+date.year+'-'+date.month+'-'+date.date + ' ' + date.hours+':'+date.minutes+':'+date.seconds);
                     $("input[name={$form.name}_to_date]").val(''+endDate.year+'-'+endDate.month+'-'+endDate.date + ' ' + endDate.hours+':'+endDate.minutes+':'+endDate.seconds);

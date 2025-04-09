@@ -1,0 +1,26 @@
+<!--按钮组-->
+<div class="layui-inline" lay-filter="filter-{$v.name}">
+    <div class="layui-input-inline" style="width: auto;">
+        <div class="layui-btn-group">
+            {volist name="v.options" id="o"}
+            <button type="button"
+                    class="js-btngroup-{$v.name} layui-btn {:isset($v.value) && $v.value == $key ? 'layui-btn-normal' : 'layui-btn-primary'}"
+                    data-value="{$key}"
+            >{$o}</button>
+            {/volist}
+        </div>
+        <input type="hidden" name="{$v.name}" id="btn_group-{$v.name}">
+    </div>
+    <script>
+        layui.use(['jquery'], function (){
+            var $ = layui.jquery;
+            $(".js-btngroup-{$v.name}").on('click', function () {
+                $('.js-btngroup-{$v.name}').addClass("layui-btn-primary").removeClass('layui-btn-normal');
+                $(this).addClass("layui-btn-normal").removeClass("layui-btn-primary");
+                $("#btn_group-{$v.name}").val($(this).data('value'));
+
+                $('button[lay-filter="data-search-btn"]').trigger('click');
+            });
+        });
+    </script>
+</div>

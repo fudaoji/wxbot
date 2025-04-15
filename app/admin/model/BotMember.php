@@ -72,7 +72,7 @@ class BotMember extends Base
                                 'type' => Bot::GROUP
                             ]);
                         }else{
-                            $this->addOne([
+                            $data = $this->addOne([
                                 'uin' => $bot['uin'],
                                 'nickname' => $nickname,
                                 'wxid' => $wxid,
@@ -80,9 +80,18 @@ class BotMember extends Base
                                 'type' => Bot::GROUP
                             ]);
                         }
+                        //同步群成员任务
+                        invoke('\\app\\common\\event\\TaskQueue')->push([
+                            'delay' => 3,
+                            'params' => [
+                                'do' => ['\\app\\crontab\\task\\Bot', 'pullGroupMembers'],
+                                'bot' => $bot,
+                                'group' => $data
+                            ]
+                        ]);
                     }
 
-                    //删除无效
+                    //删除无效数据
                     $this->delByMap(['uin' => $bot['uin'], 'type' => Bot::GROUP, 'wxid' => ['notin', $wxid_arr]]);
                     return count($list);
                 }
@@ -689,6 +698,30 @@ class BotMember extends Base
                 $insert['internal'] = 2;
                 break;
         }
+        $this->addOne($insert);
+        //refresh
+        return $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $params['wxid']], true, true);
+    }
+
+    /**
+     * 保存新群
+     * @param array $params
+     * @return array|false|\PDOStatement|string|\think\Model
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function addGroup($params = [])
+    {
+        $bot = $params['bot'];
+        $type = Bot::GROUP;
+        $insert = [
+            'uin' => $bot['uin'],
+            'nickname' => $params['nickname'],
+            'username' => empty($params['username']) ? $params['wxid'] : $params['username'],
+            'wxid' => $params['wxid'],
+            'type' => $type
+        ];
         $this->addOne($insert);
         //refresh
         return $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $params['wxid']], true, true);

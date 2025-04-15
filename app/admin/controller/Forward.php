@@ -125,7 +125,8 @@ class Forward extends Botbase
     private function getOfficers(){
         $groups = $this->memberM->getAll([
             'where' => ['uin' => $this->bot['uin'], 'type' => Bot::GROUP],
-            'field' => ['id','nickname as title']
+            'field' => ['id','nickname as title'],
+            'refresh' => true
         ]);
         foreach ($groups as $k => $v){
             $v['children'] = $this->groupMemberM->getAll([

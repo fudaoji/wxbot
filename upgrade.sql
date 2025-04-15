@@ -14,3 +14,5 @@ CREATE TABLE `__PREFIX__bot_config` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `bot_id` (`bot_id`,`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='bot其他配置表';
+
+ALTER TABLE `__PREFIX__bot_groupmember` ADD COLUMN `invite_wxid` varchar(64) NOT NULL DEFAULT '' COMMENT '邀请人wxid' AFTER `headimgurl`, ADD COLUMN `invite_nickname` varchar(50) NOT NULL DEFAULT '' COMMENT '邀请人昵称' AFTER `invite_wxid`, ADD COLUMN `invite_group_nickname` varchar(50) NOT NULL DEFAULT '' COMMENT '邀请人群昵称' AFTER `invite_nickname`;

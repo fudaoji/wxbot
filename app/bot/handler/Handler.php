@@ -131,13 +131,13 @@ class Handler extends BaseCtl
                     $this->content['to_wxid'] = $new['wxid'] ?? '';
                 }else{
                     if(empty($this->content['memid'])){
-                        $this->fromWxid = $this->content['fromid'];
-                        $this->fromName = $this->content['nickName'];
+                        $this->fromWxid = $this->content['fromid'] ?? '';
+                        $this->fromName = $this->content['nickName'] ?? '';
                     }else{
-                        $this->fromWxid = $this->content['memid'];
-                        $this->fromName = $this->content['memname'];
-                        $this->groupName = $this->content['nickName'];
-                        $this->groupWxid = $this->content['fromid'];
+                        $this->fromWxid = $this->content['memid'] ?? '';
+                        $this->fromName = $this->content['memname'] ?? '';
+                        $this->groupName = $this->content['nickName'] ?? '';
+                        $this->groupWxid = $this->content['fromid'] ?? '';
                     }
                 }
 
@@ -224,7 +224,7 @@ class Handler extends BaseCtl
     public function checkEvent(){
         switch ($this->driver){
             case BotConst::PROTOCOL_EXTIAN:
-                $ignore_methods = ['chatroommember'];
+                $ignore_methods = ['chatroommember', Extian::EVENT_GET_CONTACT];
                 if(in_array($this->ajaxData['method'], $ignore_methods) ||
                     ($this->ajaxData['type'] == 10000 && !empty($this->ajaxData['data']['fromid']) && strpos($this->ajaxData['data']['fromid'], '@chatroom') !== false)){ //群的系统消息
                     exit(0);
@@ -249,22 +249,18 @@ class Handler extends BaseCtl
                     }
                 }
 
-                //Logger::error($this->content['type']);
-
-                if($this->ajaxData['method'] == 'getchatroommemberdetail') { //用此方法判断被邀请入群
-                    if(!empty($this->content['member'][0])
-                        && $this->content['member'][0]['wxid'] == $this->ajaxData['myid']
-                        && !empty($this->content['member'][0]['invite'])
-                    ){
-                        $this->event = BotConst::EVENT_INVITED_IN_GROUP;
-
-                        $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
-                        $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
+                if($this->ajaxData['method'] == Extian::EVENT_GROUP_MEMBER_DETAIL) {  //群成员变化
+                    $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
+                    foreach ($this->content['member'] as $gm) { //用此方法判断被邀请入群
+                        if($gm['wxid'] == $this->ajaxData['myid'] && !empty($gm['invite'])){
+                            $this->event = BotConst::EVENT_INVITED_IN_GROUP;
+                            break;
+                        }
                     }
                 }
                 if($this->isGroupEvent()){
-                    $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
-                    $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
+                    empty($this->groupWxid) && $this->groupWxid = $this->content['fromid'] ?? $this->content['wxid'];
+                    empty($this->groupName) && $this->groupName = $this->content['nickName'] ?? ($this->content['myName'] ?? '');
                 }else{
                     //Logger::error($this->ajaxData);
                 }

@@ -75,6 +75,7 @@ class Groupmember extends Botbase
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture', 'minWidth' => 100])
             ->addTableColumn(['title' => '群内昵称', 'field' => 'group_nickname'])
             ->addTableColumn(['title' => '微信号', 'field' => 'username'])
+            ->addTableColumn(['title' => '邀请人', 'field' => 'invite_nickname', 'minWidth' => 100])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
             //->addRightButton('edit', ['title' => '设置备注名'])
             ->addRightButton('self', ['title' => '移出群聊','href' => url('removeMemberPost', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-danger','data-ajax' => 1, 'data-confirm' => 1]);

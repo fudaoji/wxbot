@@ -6,13 +6,15 @@
  * Description: 被邀请入群事件 //企微信不传递此事件
  * Author: fudaoji<fdj@kuryun.cn>
  */
-
 namespace app\bot\handler;
 
 
 use app\common\model\Reply as ReplyM;
+use app\constants\Bot as BotConst;
 use app\constants\Reply;
 use ky\Logger;
+use app\common\service\BotMember as MemberService;
+use ky\WxBot\Driver\Extian;
 
 class HandlerInvitedInGroup extends Handler
 {
@@ -32,18 +34,22 @@ class HandlerInvitedInGroup extends Handler
 
     protected function basic()
     {
-        $guest = $this->botClient->getGuest($this->content);
-        $nickname = $guest['nickname'];
-        $member_wxid = empty($guest['wxid']) ? '' : $guest['wxid'];
-        //Logger::error('新人信息：');
-        //Logger::error($guest);
-        $member_wxid && $this->groupMemberM->addMember([
-            'bot_id' => $this->bot['id'],
-            'wxid' => $member_wxid,
-            'group_id' => $this->group['id'],
-            'nickname' => $nickname,
-            'group_nickname' => $nickname
-        ]);
+        $group_data = MemberService::getInfoByWxid($this->groupWxid, $this->bot);
+        if ($this->bot['protocol'] == BotConst::PROTOCOL_EXTIAN){
+            foreach ($this->content['member'] as $gm) {
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\common\\event\\GroupMember', 'insertOrUpdate'],
+                        'bot' => $this->bot,
+                        'group' => $group_data,
+                        'member' => $gm
+                    ]
+                ]);
+            }
+        }
+
+
 
         //回复消息
         $replys = $this->replyM->getAll([
@@ -60,8 +66,7 @@ class HandlerInvitedInGroup extends Handler
                 //Logger::error('进群后打招呼');
                 if(empty($reply['medias'])){
                     $this->replyM->botReply(
-                        $this->bot, $this->botClient, $reply, $this->groupWxid,
-                        ['nickname' => $nickname, 'member_wxid' => $member_wxid]
+                        $this->bot, $this->botClient, $reply, $this->groupWxid
                     );
                 }else{
                     $medias = json_decode($reply['medias'], true);
@@ -69,8 +74,7 @@ class HandlerInvitedInGroup extends Handler
                         $reply['media_type'] = $media['type'];
                         $reply['media_id'] = $media['id'];
                         $this->replyM->botReply(
-                            $this->bot, $this->botClient, $reply, $this->groupWxid,
-                            ['nickname' => $nickname, 'member_wxid' => $member_wxid]
+                            $this->bot, $this->botClient, $reply, $this->groupWxid
                         );
                     }
                 }

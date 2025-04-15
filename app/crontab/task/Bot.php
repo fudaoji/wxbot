@@ -102,9 +102,32 @@ class Bot extends Base
          * @var \think\queue\Job
          */
         $job = $params['job'];
+        if ($job->attempts() > 2) {
+            $job->delete();
+        }
         $bot = $params['bot'];
         model('admin/BotMember')->pullFriends($bot);
         model('admin/BotMember')->pullGroups($bot);
+
+        $job->delete();
+    }
+
+    /**
+     * 下拉群成员
+     * @param $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function pullGroupMembers($params){
+        /**
+         * @var \think\queue\Job
+         */
+        $job = $params['job'];
+        if ($job->attempts() > 2) {
+            $job->delete();
+        }
+        $bot = $params['bot'];
+        $group = $params['group'];
+        model('admin/BotGroupmember')->pullMembers($bot, $group);
 
         $job->delete();
     }

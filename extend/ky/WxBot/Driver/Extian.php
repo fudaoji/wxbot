@@ -21,6 +21,8 @@ class Extian extends Base
     const EVENT_FRIEND_VERIFY = 'verifyuser'; // TYPE=706             好友验证结果
     //tenpay  705                 收款结果
     const EVENT_NEW_MSG = 'newmsg';
+    const EVENT_GROUP_MEMBER_DETAIL = 'getchatroommemberdetail'; // 701 群成员信息更新（new为1表示新成员，这里有邀请人id）
+    const EVENT_GET_CONTACT = 'getcontact'; //704 联系人信息更新
 
     const MSG_FILE = 49;
 

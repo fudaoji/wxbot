@@ -67,13 +67,14 @@ class Tenant extends Base
             ['type' => 'select', 'name' => 'group_id', 'title' => '角色', 'options' => [0 => '全部角色'] + $group_list]
         ])
             ->addTopButton('addnew')
-            ->addTableColumn(['title' => '序号', 'type' => 'index'])
-            ->addTableColumn(['title' => '账号', 'field' => 'username'])
-            ->addTableColumn(['title' => '角色', 'field' => 'group_id', 'type' => 'enum', 'options' => $group_list])
-            ->addTableColumn(['title' => '手机号', 'field' => 'mobile'])
-            ->addTableColumn(['title' => '姓名', 'field' => 'realname'])
-            ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status()])
-            ->addTableColumn(['title' => '操作', 'width' => 220, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '序号', 'type' => 'index', 'minWidth' => 60])
+            ->addTableColumn(['title' => '账号', 'field' => 'username', 'minWidth' => 100])
+            ->addTableColumn(['title' => '角色', 'field' => 'group_id', 'type' => 'enum', 'options' => $group_list, 'minWidth' => 100])
+            ->addTableColumn(['title' => '手机号', 'field' => 'mobile', 'minWidth' => 100])
+            ->addTableColumn(['title' => '姓名', 'field' => 'realname', 'minWidth' => 100])
+            ->addTableColumn(['title' => '注册时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 170])
+            ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status(), 'minWidth' => 100])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 160, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('self', ['title' => '修改密码','class' => 'layui-btn layui-btn-warm layui-btn-xs','href' => url('admin/setPassword', ['id' => '__data_id__'])]);
         return $builder->show();

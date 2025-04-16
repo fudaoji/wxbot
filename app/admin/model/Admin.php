@@ -75,6 +75,7 @@ class Admin extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     static function getCompanyId($admin_info = []){
+        empty($admin_info) && $admin_info = AdminM::find(session(SESSION_AID));
         return empty($admin_info['pid']) ? $admin_info['id'] : $admin_info['pid'];
     }
 

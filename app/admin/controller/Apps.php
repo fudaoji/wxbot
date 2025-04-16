@@ -14,8 +14,10 @@ use app\common\service\DACommunity;
 use app\common\service\Platform as PlatformService;
 use app\constants\Common;
 use app\common\model\Addon;
+use app\admin\model\Admin as AdminM;
 use app\common\model\AdminAddon;
 use app\common\service\Addon as AppService;
+use app\common\service\AdminAddon as AdminAppService;
 use think\facade\Db;
 
 
@@ -73,6 +75,8 @@ class Apps extends Base
         $page = $data_list->appends(['search_key' => $search_key])->render();
 
         $assign = [
+            'myapps' => AdminAppService::getAppsDict(),
+            'time' => time(),
             'data_list' => $data_list,
             'search_key' => $search_key,
             'page' => $page,
@@ -100,6 +104,32 @@ class Apps extends Base
             ->addFormItem('sort_reply', 'number', '应答顺序', '数字越大越靠前', [], 'required min=0')
             ->setFormData($data);
         return $builder->show();
+    }
+
+    /**
+     * 开启试用
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function tryAppPost()
+    {
+        if (request()->isPost()) {
+            $name = input('name', '');
+            if ($name == '') {
+                $this->error('参数错误');
+            }
+            $res = AdminAppService::getAppData($name);
+            if(empty($res)){
+                $app = AppService::getApp($name);
+                AdminAppService::openApp([
+                    'company_id' => AdminM::getCompanyId(),
+                    'addon_id' => $app['id'],
+                    'deadline' => time() + config('system.site.app_free_days') * 86400
+                ]);
+                $this->success('开通试用成功!');
+            }else{
+                $this->error("非法请求！");
+            }
+        }
     }
 
     /**

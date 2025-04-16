@@ -1,9 +1,9 @@
 <?php
 /**
- * SCRIPT_NAME: Admin.php
+ * SCRIPT_NAME: Adminaddon.php
  * Created by PhpStorm.
  * Time: 2020/9/6 23:23
- * Description: 管理员
+ * Description: 商户应用
  * @author: fudaoji <fdj@kuryun.cn>
  */
 
@@ -42,6 +42,9 @@ class Adminaddon extends Base
                 foreach ($list as $k => $v){
                     $v['app_info'] = $v['title'] . '('.$v['name'].')';
                     $v['tenant_info'] = $v['realname'] . '('.$v['username'].','.$v['mobile'].')';
+                    $v['deadline'] = date('Y-m-d H:i', $v['deadline']);
+                    $v['create_time'] = date('Y-m-d H:i', $v['create_time']);
+                    $v['update_time'] = date('Y-m-d H:i', $v['update_time']);
                     $list[$k] = $v;
                 }
             } else {
@@ -58,10 +61,10 @@ class Adminaddon extends Base
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '应用信息', 'field' => 'app_info', 'minWidth' => 120])
             ->addTableColumn(['title' => '客户信息', 'field' => 'tenant_info', 'minWidth' => 120])
-            ->addTableColumn(['title' => '到期时间', 'field' => 'deadline', 'type' => 'datetime','minWidth' => 120])
+            ->addTableColumn(['title' => '到期时间', 'field' => 'deadline', 'minWidth' => 120])
             ->addTableColumn(['title' => '首次开通时间', 'field' => 'create_time', 'minWidth' => 140])
             ->addTableColumn(['title' => '最后修改时间', 'field' => 'update_time', 'minWidth' => 140])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 200, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 160, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('delete');
         return $builder->show();

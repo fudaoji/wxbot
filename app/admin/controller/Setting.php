@@ -113,6 +113,7 @@ class Setting extends Base
                     ->addFormItem('home_theme', 'text', '前台皮肤', '默认default，非开发者请勿改动')
                     ->addFormItem('switch_reg', 'radio', '开放注册', '开放注册', Common::yesOrNo(), 'required')
                     ->addFormItem('default_group_id', 'select', '新用户默认分组', '新用户默认分组', GroupService::getTenantGroupIdToTitle($this->adminInfo), 'required')
+                    ->addFormItem('app_free_days', 'number', '应用可试用时间', '单位/天', [], 'required min=0')
                     ->addFormItem('icp', 'text', '备案号', '备案号')
                     ->addFormItem('tongji', 'textarea', '统计代码', '统计代码')
                     ->addFormItem('close', 'radio', '关闭网站', '关闭网站', Common::yesOrNo(), 'required')

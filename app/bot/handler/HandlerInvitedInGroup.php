@@ -50,7 +50,6 @@ class HandlerInvitedInGroup extends Handler
         }
 
 
-
         //回复消息
         $replys = $this->replyM->getAll([
             'order' => ['sort' => 'desc'],

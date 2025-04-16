@@ -52,9 +52,12 @@
                             {volist name="data_list" id="v"}
                             <div class="layui-col-xs4 layui-col-md3 layui-col-lg2">
                                 <div class="apps-volist js-manage" data-href="{$v['admin_url']}"
+                                     data-name="{$v['name']}"
                                      data-jump="{$v['admin_url_type']}"
                                      data-title="{$v.title}"
-                                     data-type="{$v.type}">
+                                     data-type="{$v.type}"
+                                     data-deadline="{if empty($myapps[$v.name])}0{else/}{$myapps[$v.name]['deadline']}{/if}"
+                                >
                                     <div class="apps-icon">
                                         <img src="{$v.logo}">
                                     </div>
@@ -63,8 +66,12 @@
                                         <div class="app-desc-body" title="{$v.desc}">
                                             <div class="description">{:cut_str($v.desc, 20)}</div>
                                         </div>
-                                        {if !$v.status}
-                                        <span class="layui-badge status-offline">下架状态</span>
+                                        {if !$admin.is_founder}
+                                        {if empty($myapps[$v.name])}
+                                        <span class="layui-badge layui-bg-green">可试用{:config('system.site.app_free_days')}天</span>
+                                        {else/}
+                                        <span class="layui-badge status-offline">{:date('Y-m-d', $myapps[$v.name]['deadline'])}到期</span>
+                                        {/if}
                                         {/if}
                                     </div>
                                 </div>
@@ -93,6 +100,7 @@
 
 {block name="js"}
 <script>
+    var nowTime = parseInt("{$time}");
     layui.use(['jquery','form','miniTab','layer'], function() {
         var form = layui.form,
                 $ = layui.jquery,
@@ -109,7 +117,13 @@
         $('.js-manage').on('click', function () {
             var href = $(this).data('href'),
                     jump = parseInt($(this).data('jump')),
-            type = $(this).data('type');
+            type = $(this).data('type'),
+                    appName = $(this).data('name'),
+            deadline = parseInt($(this).data('deadline'));
+            if(deadline > 0 && deadline < nowTime){
+                layer.alert("应用已过期，请联系客服续费！", {title: "到期提醒"});
+                return false;
+            }
             //是否有可用机器人
             {if count($bot_list) < 1}
             if(type.indexOf('wechat') !== -1){
@@ -117,17 +131,28 @@
                 return false;
             }
             {/if}
-            if(jump === 1){
-                //location.href = href
+
+                var title = $(this).data('title');
+                if(deadline <= 0){ //开启试用
+                    requestPost("{:url('tryAppPost')}", {name: appName}, function (res) {
+                        goConsole(href, jump, title)
+                    }, true);
+                }else{
+                    goConsole(href, jump, title)
+                }
+
+        });
+
+        var goConsole = function(href, jump_type, title){
+            if(jump_type === 1){
                 miniTab.openNewTabByIframe({
                     href: href,
-                    title: $(this).data('title'),
+                    title: title,
                 });
             }else{
                 window.open(href)
-                //top.location.href = href
             }
-        });
+        };
 
         $('.js-go-appstore').on('click', function () {
             miniTab.openNewTabByIframe({
@@ -169,6 +194,6 @@
     }
     .layui-form-item{margin-bottom: 0;}
     .app-desc{position: relative;}
-    .status-offline{position: absolute;top: 0;right: 0;}
+    .app-desc .layui-badge{position: absolute;top: 0;right: 0;opacity: 0.7}
 </style>
 {/block}

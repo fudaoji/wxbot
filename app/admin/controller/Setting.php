@@ -104,10 +104,11 @@ class Setting extends Base
             case 'site':
                 empty($data) && $data['close'] = 0;
                 empty($data['home_theme']) && $data['home_theme'] = 'default';
-                $builder->addFormItem('app_title', 'text', '平台名称', '平台名称')
+                $builder->addFormItem('app_title', 'text', '平台名称', '平台名称', [], 'required')
                     ->addFormItem('slogan', 'textarea', 'Slogan', 'Slogan')
-                    ->addFormItem('company_title', 'text', '公司名称', '公司名称')
-                    ->addFormItem('logo', 'picture_url', '前台Logo', '比例860x200')
+                    ->addFormItem('company_title', 'text', '公司名称', '公司名称', [], 'required')
+                    ->addFormItem('logo', 'picture_url', '前台Logo', '比例860x200', [], 'required')
+                    ->addFormItem('kefu_qrcode', 'picture_url', '客服二维码', '客服二维码', [])
                     ->addFormItem('seo_keywords', 'textarea', 'SEO关键词', 'SEO关键词')
                     ->addFormItem('seo_description', 'textarea', 'SEO描述', 'SEO描述')
                     ->addFormItem('home_theme', 'text', '前台皮肤', '默认default，非开发者请勿改动')

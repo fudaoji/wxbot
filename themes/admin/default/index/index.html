@@ -155,7 +155,60 @@
             layui.use(['jquery', 'layer', 'miniAdmin'], function () {
                 var $ = layui.jquery,
                         layer = layui.layer,
-                        miniAdmin = layui.miniAdmin;
+                        miniAdmin = layui.miniAdmin,
+                util = layui.util;
+
+                util.fixbar({
+                    bars: [{ // 定义可显示的 bar 列表信息 -- v2.8.0 新增
+                        type: '指导手册',
+                        icon: 'layui-icon-question'
+                    }, {
+                        type: '客服',
+                        icon: 'layui-icon-service',
+                    }],
+                    // bar1: true,
+                    // bar2: true,
+                    // default: false, // 是否显示默认的 bar 列表 --  v2.8.0 新增
+                    // bgcolor: '#393D52', // bar 的默认背景色
+                    // css: {right: 100, bottom: 100},
+                    // target: '#target-test', // 插入 fixbar 节点的目标元素选择器
+                    // duration: 300, // top bar 等动画时长（毫秒）
+                    on: { // 任意事件 --  v2.8.0 新增
+                        mouseenter: function (type) {
+                            layer.tips(type, this, {
+                                tips: 4,
+                                fixed: true
+                            });
+                        },
+                        mouseleave: function (type) {
+                            layer.closeAll('tips');
+                        }
+                    },
+                    // 点击事件
+                    click: function (type) {
+                        switch (type) {
+                            case "指导手册":
+                                window.open("https://doc.kuryun.com/web/#/642350114");
+                                break;
+                            case "客服":
+                                layer.photos({
+                                    photos: {
+                                        "title": "扫码联系客服",
+                                        "start": 0,
+                                        "data": [
+                                            {
+                                                //"alt": "layer",
+                                                "pid": 1,
+                                                "src": "{:config('system.site.kefu_qrcode')}",
+                                            }
+                                        ]
+                                    }
+                                });
+                                break;
+
+                        }
+                    }
+                });
 
                 var options = {
                     iniUrl: "{:url('getSystemInit')}",    // 初始化接口

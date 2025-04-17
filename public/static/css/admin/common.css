@@ -14,6 +14,7 @@ body {
 .layuimini-tool {left: 200px;}
 .layui-layout-left {left: 260px !important;}
 .layuimini-menu-left .layui-nav .layui-nav-more {top: 40%;}
+.layui-nav .layui-nav-item a{padding: 0 15px;}
 .layuimini-logo img{border-radius: 2px;}
 /*.layuimini-logo img{visibility: hidden;width: 0;}
 .layui-layout-admin .layuimini-logo h1{margin: 0;}*/
@@ -103,4 +104,10 @@ body {
 }
 #ajax-form{
     padding-bottom: 60px;
+}
+
+/*blockquote 样式*/
+.layui-elem-quote-right{
+    border-left: none;
+    border-right: 5px solid #16b777;
 }

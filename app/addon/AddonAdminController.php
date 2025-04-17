@@ -65,7 +65,7 @@ class AddonAdminController extends AddonController
      */
     protected function checkOpen(){
         $is_open = AdminAppService::checkAppOpenStatus($this->addonName);
-        if(empty($is_open)){
+        if(empty($is_open) && !AdminM::isFounderTeam()){
             exit("请先开通应用！");
         }
     }

@@ -66,7 +66,7 @@
                                         <div class="app-desc-body" title="{$v.desc}">
                                             <div class="description">{:cut_str($v.desc, 20)}</div>
                                         </div>
-                                        {if !$admin.is_founder}
+                                        {if !$is_founder_team}
                                         {if empty($myapps[$v.name])}
                                         <span class="layui-badge layui-bg-green">可试用{:config('system.site.app_free_days')}天</span>
                                         {else/}
@@ -100,7 +100,8 @@
 
 {block name="js"}
 <script>
-    var nowTime = parseInt("{$time}");
+    var nowTime = parseInt("{$time}")
+    , isFounderTeam = parseInt("{$is_founder_team}");
     layui.use(['jquery','form','miniTab','layer'], function() {
         var form = layui.form,
                 $ = layui.jquery,
@@ -133,7 +134,7 @@
             {/if}
 
                 var title = $(this).data('title');
-                if(deadline <= 0){ //开启试用
+                if(!isFounderTeam && deadline <= 0){ //开启试用
                     requestPost("{:url('tryAppPost')}", {name: appName}, function (res) {
                         goConsole(href, jump, title)
                     }, true);

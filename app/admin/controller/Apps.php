@@ -81,8 +81,10 @@ class Apps extends Base
             'search_key' => $search_key,
             'page' => $page,
             'type' => $type,
-            'types' => ['' => '全部平台'] + PlatformService::types()
+            'types' => ['' => '全部平台'] + PlatformService::types(),
+            'is_founder_team' => (int)AdminM::isFounderTeam()
         ];
+
         return $this->show($assign);
     }
 

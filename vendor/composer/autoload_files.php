@@ -26,4 +26,6 @@ return array(
     '667aeda72477189d0494fecd327c3641' => $vendorDir . '/symfony/var-dumper/Resources/functions/dump.php',
     '1cfd2761b63b0a29ed23657ea394cb2d' => $vendorDir . '/topthink/think-captcha/src/helper.php',
     'cc56288302d9df745d97c934d6a6e5f0' => $vendorDir . '/topthink/think-queue/src/common.php',
+    '6ca3f08a814c4fd9d5830fc6808a9488' => $vendorDir . '/fukuball/jieba-php/src/vendor/multi-array/MultiArray.php',
+    '4d5ee3c1cc66ee941937c247fe6b7d6e' => $vendorDir . '/fukuball/jieba-php/src/vendor/multi-array/Factory/MultiArrayFactory.php',
 );

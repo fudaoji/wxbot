@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '6cc68bcd5e544ded10fc46eedf893ca89413a58b',
+    'reference' => '0385174bf109a9aadfbc880f1f3268e9e673650e',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -68,6 +68,15 @@ private static $installed = array (
       array (
       ),
       'reference' => 'e907a3b406760066d07eabc03be752a08324fdc0',
+    ),
+    'fukuball/jieba-php' => 
+    array (
+      'pretty_version' => 'dev-master',
+      'version' => 'dev-master',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'a485a16e5424b69526f18d4a7d90009692f2284c',
     ),
     'guzzlehttp/command' => 
     array (
@@ -630,7 +639,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '6cc68bcd5e544ded10fc46eedf893ca89413a58b',
+      'reference' => '0385174bf109a9aadfbc880f1f3268e9e673650e',
     ),
     'topthink/think-captcha' => 
     array (

@@ -27,6 +27,8 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
         'cc56288302d9df745d97c934d6a6e5f0' => __DIR__ . '/..' . '/topthink/think-queue/src/common.php',
+        '6ca3f08a814c4fd9d5830fc6808a9488' => __DIR__ . '/..' . '/fukuball/jieba-php/src/vendor/multi-array/MultiArray.php',
+        '4d5ee3c1cc66ee941937c247fe6b7d6e' => __DIR__ . '/..' . '/fukuball/jieba-php/src/vendor/multi-array/Factory/MultiArrayFactory.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -107,6 +109,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
             'GuzzleHttp\\Command\\' => 19,
             'GuzzleHttp\\' => 11,
             'GatewayWorker\\' => 14,
+        ),
+        'F' => 
+        array (
+            'Fukuball\\Jieba\\' => 15,
         ),
         'E' => 
         array (
@@ -299,6 +305,10 @@ class ComposerStaticInit729ed20d3d1fc5a9dca5bae37ec12d89
         'GatewayWorker\\' => 
         array (
             0 => __DIR__ . '/..' . '/workerman/gateway-worker/src',
+        ),
+        'Fukuball\\Jieba\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/fukuball/jieba-php/src/class',
         ),
         'Ehann\\RedisRaw\\' => 
         array (

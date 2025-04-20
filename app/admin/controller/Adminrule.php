@@ -45,7 +45,7 @@ class Adminrule extends Base
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增权限菜单')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
-            ->addFormItem('pid', 'select', '上级菜单', '上级菜单', select_list_as_tree($this->model, ['status' => 1], '==顶级菜单==', 'id', ['sort' => 'desc']))
+            ->addFormItem('pid', 'select', '上级菜单', '上级菜单', select_list_as_tree($this->model, [], '==顶级菜单==', 'id', ['sort' => 'desc']))
             ->addFormItem('type', 'select', '类型', '选择类型', $this->model->types(), 'required')
             ->addFormItem('title', 'text', '标题', '标题', [], 'required maxlength="32"')
             ->addFormItem('name', 'text', '标识', '权限控制使用', [], ' maxlength="32"')
@@ -77,7 +77,7 @@ class Adminrule extends Base
         $builder->setMetaTitle('编辑菜单权限')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('pid', 'select', '上级菜单', '上级菜单', select_list_as_tree($this->model, ['status' => 1], '==顶级菜单==', 'id', ['sort' => 'desc']))
+            ->addFormItem('pid', 'select', '上级菜单', '上级菜单', select_list_as_tree($this->model, [], '==顶级菜单==', 'id', ['sort' => 'desc']))
             ->addFormItem('type', 'select', '类型', '选择类型', $this->model->types(), 'required')
             ->addFormItem('title', 'text', '标题', '标题', [], 'required maxlength="32"')
             ->addFormItem('name', 'text', '标识', '权限控制使用', [], ' maxlength="32"')

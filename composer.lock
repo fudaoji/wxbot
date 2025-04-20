@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be2c755a3dc1a07858b36bc3e74d5121",
+    "content-hash": "c5555deffc6f5081e23c0faf09a8266d",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -166,6 +166,53 @@
             ],
             "description": "Upload Manager",
             "time": "2023-06-26T23:56:50+00:00"
+        },
+        {
+            "name": "fukuball/jieba-php",
+            "version": "dev-master",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/fukuball/jieba-php/dev-master/fukuball-jieba-php-dev-master.zip",
+                "reference": "a485a16e5424b69526f18d4a7d90009692f2284c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.3"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "dev-master",
+                "phpunit/phpunit": "~9.0",
+                "squizlabs/php_codesniffer": "4.0.x-dev"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/vendor/multi-array/MultiArray.php",
+                    "src/vendor/multi-array/Factory/MultiArrayFactory.php"
+                ],
+                "psr-4": {
+                    "Fukuball\\Jieba\\": "src/class/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "fukuball",
+                    "email": "fukuball@gmail.com"
+                }
+            ],
+            "description": "結巴中文分詞（PHP 版本）：做最好的 PHP 中文分詞、中文斷詞組件",
+            "keywords": [
+                "Jieba",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/fukuball/jieba-php/issues",
+                "source": "https://github.com/fukuball/jieba-php/tree/master"
+            },
+            "time": "2022-08-15T06:50:32+00:00"
         },
         {
             "name": "guzzlehttp/command",
@@ -4843,7 +4890,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "fukuball/jieba-php": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

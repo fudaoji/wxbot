@@ -48,6 +48,7 @@ return array(
     'GuzzleHttp\\Command\\' => array($vendorDir . '/guzzlehttp/command/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'GatewayWorker\\' => array($vendorDir . '/workerman/gateway-worker/src'),
+    'Fukuball\\Jieba\\' => array($vendorDir . '/fukuball/jieba-php/src/class'),
     'Ehann\\RedisRaw\\' => array($vendorDir . '/ethanhann/redis-raw/src'),
     'Ehann\\RediSearch\\' => array($vendorDir . '/ethanhann/redisearch-php/src'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),

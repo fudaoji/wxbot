@@ -37,7 +37,8 @@
     "zjkal/time-helper": "^1.1",
     "textalk/websocket": "^1.6",
     "ethanhann/redisearch-php": "^1.9",
-    "predis/predis": "^2.3"
+    "predis/predis": "^2.3",
+    "fukuball/jieba-php": "dev-master"
   },
   "require-dev": {
     "symfony/var-dumper": "^4.2",

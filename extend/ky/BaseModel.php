@@ -397,7 +397,7 @@ abstract class BaseModel extends Model
      * 自带的分页
      * @param $where
      * @param $order
-     * @param $page_size
+     * @param mixed $page_size
      * @param mixed $field
      * @param $refresh
      * @return mixed
@@ -406,7 +406,7 @@ abstract class BaseModel extends Model
      */
     public function page($page_size=10, $where=[], $order=[], $field = true, $refresh=0){
         $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
-        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ .$current_page. $page_size . serialize($where) . serialize($order));
+        $cache_key = md5($this->cachePrefix . $this->getTrueTable($where) . __FUNCTION__ .$current_page. serialize($page_size) . serialize($where) . serialize($order));
         $refresh && cache($cache_key, null);
         $data = cache($cache_key);
         if(empty($data)){

@@ -247,6 +247,56 @@
             "install-path": "../fudaoji/php-upload"
         },
         {
+            "name": "fukuball/jieba-php",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/fukuball/jieba-php/dev-master/fukuball-jieba-php-dev-master.zip",
+                "reference": "a485a16e5424b69526f18d4a7d90009692f2284c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.3"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "dev-master",
+                "phpunit/phpunit": "~9.0",
+                "squizlabs/php_codesniffer": "4.0.x-dev"
+            },
+            "time": "2022-08-15T06:50:32+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "src/vendor/multi-array/MultiArray.php",
+                    "src/vendor/multi-array/Factory/MultiArrayFactory.php"
+                ],
+                "psr-4": {
+                    "Fukuball\\Jieba\\": "src/class/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "fukuball",
+                    "email": "fukuball@gmail.com"
+                }
+            ],
+            "description": "結巴中文分詞（PHP 版本）：做最好的 PHP 中文分詞、中文斷詞組件",
+            "keywords": [
+                "Jieba",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/fukuball/jieba-php/issues",
+                "source": "https://github.com/fukuball/jieba-php/tree/master"
+            },
+            "install-path": "../fukuball/jieba-php"
+        },
+        {
             "name": "guzzlehttp/command",
             "version": "1.0.0",
             "version_normalized": "1.0.0.0",

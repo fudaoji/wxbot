@@ -1095,3 +1095,20 @@ CREATE TABLE `__PREFIX__bot_config` (
   UNIQUE KEY `bot_id` (`bot_id`,`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='bot其他配置表';
 ALTER TABLE `__PREFIX__bot_groupmember` ADD COLUMN `invite_wxid` varchar(64) NOT NULL DEFAULT '' COMMENT '邀请人wxid' AFTER `headimgurl`, ADD COLUMN `invite_nickname` varchar(50) NOT NULL DEFAULT '' COMMENT '邀请人昵称' AFTER `invite_wxid`, ADD COLUMN `invite_group_nickname` varchar(50) NOT NULL DEFAULT '' COMMENT '邀请人群昵称' AFTER `invite_nickname`;
+CREATE TABLE `__PREFIX__user_third` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nickname` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'nickname',
+  `openid` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'openid',
+  `headimgurl` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT ' 头像',
+  `access_token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '个人介绍',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建日期',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0',
+  `ip` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0.0.0.0' COMMENT '登录IP',
+  `gender` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0男 1女',
+  `location` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '地址',
+  `type` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'wx' COMMENT '平台',
+  `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `username` (`nickname`) USING BTREE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='三方登录表';

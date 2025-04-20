@@ -162,10 +162,8 @@ class Spark extends Base
             $res['code'] = 1;
             $res['answer'] = $res['choices'][0]['message']['content'];
         }else{
-            $res = [
-                'code' => 0,
-                'errmsg' => $res['error']['message'] ?? ''
-            ];
+            $res['code'] = 0;
+            $res['errmsg'] = $res['error']['message'] ?? '';
         }
         return $res;
     }
@@ -206,10 +204,8 @@ class Spark extends Base
             $res['code'] = 1;
             $res['answer'] = $res['choices'][0]['delta']['content'];
         }else{
-            $res = [
-                'code' => 0,
-                'errmsg' => $res['error']['message'] ?? ''
-            ];
+            $res['code'] = 0;
+            $res['errmsg'] = $res['error']['message'] ?? '';
         }
         return $res;
     }
@@ -361,7 +357,7 @@ class Spark extends Base
                 'msg' => 'success',
             ];
         } catch (\Exception $e) {
-            dump($e->getMessage());
+            //dump($e->getMessage());
             return [
                 'code' => 0,
                 'errmsg' => $e->getMessage(),

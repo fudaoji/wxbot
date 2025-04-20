@@ -12,3 +12,4 @@ runtime
 .user.ini
 themes/home/fox
 public/static/home/fox
+.well-known/

@@ -1,7 +1,7 @@
 <div class="main-body">
     <div class="login-main">
         <div class="login-top">
-            <div>{:config('system.site.app_title')}</div>
+            <div>{if empty($wx_id)}{:config('system.site.app_title')}{else/}绑定账号{/if}</div>
             <div class="subtitle">{:config('system.site.slogan')}</div>
             <span class="bg1"></span>
             <span class="bg2"></span>
@@ -28,16 +28,26 @@
 
             </div>
             <div class="tip">
-                <span class="icon-nocheck"></span>
-                <span class="login-tip">保持登录</span>
-                <a href="javascript:" class="forget-password">忘记密码？</a>
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        {if config('system.site.switch_reg')}
+                        <a href="{:url('reg')}" class="reg-btn">无账号？去注册</a>
+                        {/if}
+                    </div>
+                    <div class="layui-col-xs6">
+                        <!--<a href="javascript:" class="forget-password">忘记密码？</a>-->
+                    </div>
+                </div>
             </div>
             <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin:0px;">
                 <button class="login-btn" lay-submit="" lay-filter="login">立即登录</button>
             </div>
-            {if config('system.site.switch_reg')}
-            <div class="layui-form-item" style="width: 288px;margin: 20px auto;">
-                <a href="{:url('reg')}" style="float: right;color: #459ae9;font-size: 12px;">无账号？去注册</a>
+            {if config('system.oauth.switch_wx') && empty($wx_id)}
+            <div class="layui-form-item fly-form-app text-center">
+                <fieldset class="layui-elem-field layui-field-title">
+                    <legend>或者使用其他方式登入</legend>
+                </fieldset>
+                <a href="{:url('wxlogin')}" title="微信" class="layui-icon layui-icon-login-wechat"></a>
             </div>
             {/if}
         </form>
@@ -59,10 +69,6 @@
             layer = layui.layer;
 
         var keepLogin = 0;
-
-        /*$('#code-img').on('click', function () {
-            $(this).attr('src', '{:url("verify")}?' + Math.random());
-        });*/
 
         // 登录过期的时候，跳出ifram框架
         if (top.location != self.location) top.location = self.location;
@@ -138,7 +144,7 @@
     .login-main .login-bottom .tip .icon-nocheck {display:inline-block;width:10px;height:10px;border-radius:2px;border:solid 1px #9abcda;position:relative;top:2px;margin:1px 8px 1px 1px;cursor:pointer;}
     .login-main .login-bottom .tip .icon-check {margin:0 7px 0 0;width:14px;height:14px;border:none;background:url(__IMG__/admin/icon-login.png) no-repeat -111px -48px;}
     .login-main .login-bottom .center .item .icon {display:inline-block;width:33px;height:22px;}
-    .login-main .login-bottom .center .item {width:288px;height:35px;border-bottom:1px solid #dae1e6;margin-bottom:35px;}
+    .login-main .login-bottom .center .item {width:288px;height:35px;border-bottom:1px solid #dae1e6;margin-bottom:15px;}
     .login-main {width:428px;position:relative;float:left;}
     .login-main .login-top {height:117px;background-color:#148be4;border-radius:12px 12px 0 0;font-family:SourceHanSansCN-Regular;font-size:30px;font-weight:400;font-stretch:normal;letter-spacing:0;color:#fff;line-height:70px;text-align:center;overflow:hidden;-webkit-transform:rotate(0);-moz-transform:rotate(0);-ms-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);}
     .login-main .login-top .bg1 {display:inline-block;width:74px;height:74px;background:#fff;opacity:.1;border-radius:0 74px 0 0;position:absolute;left:0;top:43px;}
@@ -155,8 +161,8 @@
     input:-webkit-autofill {/* 取消Chrome记住密码的背景颜色 */            -webkit-box-shadow:0 0 0 1000px white inset !important;}
     html {height:100%;}
     .login-main .login-bottom .tip {clear:both;height:16px;line-height:16px;width:288px;margin:0 auto;}
-    .login-main .login-bottom .tip .login-tip {font-family:MicrosoftYaHei;font-size:12px;font-weight:400;font-stretch:normal;letter-spacing:0;color:#9abcda;cursor:pointer;}
-    .login-main .login-bottom .tip .forget-password {font-stretch:normal;letter-spacing:0;color:#1391ff;text-decoration:none;position:absolute;right:62px;}
+    .login-main .login-bottom .tip .reg-btn {color:#1391ff;cursor:pointer;}
+    .login-main .login-bottom .tip .forget-password {font-stretch:normal;letter-spacing:0;color:#1391ff;text-decoration:none;position:absolute;right:0;}
     .login-main .login-bottom .login-btn {width:288px;height:40px;background-color:#1E9FFF;border-radius:16px;margin:24px auto 0;text-align:center;line-height:40px;color:#fff;font-size:14px;letter-spacing:0;cursor:pointer;border:none;}
     .login-main .login-bottom .center .item .validateImg {position:absolute;right:1px;cursor:pointer;height:36px;border:1px solid #e6e6e6;}
     .footer {left:0;bottom:0;color:#fff;width:100%;position:absolute;text-align:center;line-height:30px;padding-bottom:10px;text-shadow:#000 0.1em 0.1em 0.1em;font-size:14px;}
@@ -166,4 +172,7 @@
         .login-main .login-top {width:360px !important;}
         .login-main .login-bottom {width:360px !important;}
     }
+    .fly-form-app .layui-field-title{color: #787878;}
+    .fly-form-app .layui-icon {font-size: 40px;}
+    .fly-form-app .layui-icon-login-wechat{color: #2aae67;}
 </style>

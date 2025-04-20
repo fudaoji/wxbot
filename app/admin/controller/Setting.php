@@ -33,9 +33,17 @@ class Setting extends Base
                 'title' => '机器人设置',
                 'href' => url('index', ['name' => 'bot'])
             ],
+            'oauth' => [
+                'title' => '登录设置',
+                'href' => url('index', ['name' => 'oauth'])
+            ],
             'upload' => [
                 'title' => '附件设置',
                 'href' => url('index', ['name' => 'upload'])
+            ],
+            'protocol' => [
+                'title' => '协议设置',
+                'href' => url('index', ['name' => 'protocol'])
             ],
             /*'addon' => [
                 'title' => '应用插件',
@@ -87,6 +95,15 @@ class Setting extends Base
         }
         $builder = new FormBuilder();
         switch ($current_name){
+            case 'oauth':
+                $builder->addFormItem('apiurl', 'text', 'API地址', 'API地址')
+                    ->addFormItem('appid', 'text', 'Appid', 'Appid')
+                    ->addFormItem('appkey', 'text', 'Appsecret', 'Appsecret')
+                    ->addFormItem('switch_wx', 'radio', '微信登录', '是否开启微信登录', [1 => '开启', 0 => '关闭']);
+                break;
+            case 'protocol':
+                $builder->addFormItem('user', 'ueditor', '用户服务协议', '用户服务协议', [], 'required');
+                break;
             case 'addon':
                 $builder->addFormItem('addons', 'textarea', '扩展插件', '一般无需配置');
                 break;

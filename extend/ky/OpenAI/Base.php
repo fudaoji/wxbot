@@ -92,7 +92,7 @@ Abstract class Base
             $this->setError($response->getStatusCode());
             Logger::error($this->errMsg);
             //dump($extra);
-            dump($response->getStatusCode() .':'. $response->getBody()->getContents());
+            Logger::error($response->getStatusCode() .':'. $response->getBody()->getContents());
             return ['code' => 0];
         }
         //Logger::error($response->getBody()->getContents());

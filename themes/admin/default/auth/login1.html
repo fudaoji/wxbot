@@ -1,7 +1,7 @@
 <div class="main-body">
     <div class="login-main">
         <div class="login-top">
-            <div>{if empty($wx_id)}{:config('system.site.app_title')}{else/}注册并绑定账号{/if}</div>
+            <div>{:config('system.site.app_title')}</div>
             <div class="subtitle">{:config('system.site.slogan')}</div>
             <span class="bg1"></span>
             <span class="bg2"></span>
@@ -11,21 +11,12 @@
             <div class="center">
                 <div class="item">
                     <span class="icon icon-2"></span>
-                    <input type="text" name="username"
-                           value="{$third['nickname'] ?? ''}"
-                           lay-verify="required"
-                           placeholder="请输入由数字、字母、特殊符号组成4-20长度的账号"
-                           minlength="4" maxlength="20"/>
+                    <input type="text" name="username" lay-verify="required"  placeholder="请输入登录账号" maxlength="20"/>
                 </div>
 
                 <div class="item">
                     <span class="icon icon-3"></span>
-                    <input type="password" name="password" lay-verify="required"  placeholder="请输入密码6-20长度的密码" minlength="6" maxlength="20">
-                    <span class="bind-password icon icon-4"></span>
-                </div>
-                <div class="item">
-                    <span class="icon icon-3"></span>
-                    <input type="password" name="repeat_password" lay-verify="required|rePassword"  placeholder="再次输入密码" maxlength="20">
+                    <input type="password" name="password" lay-verify="required"  placeholder="请输入密码" maxlength="20">
                     <span class="bind-password icon icon-4"></span>
                 </div>
 
@@ -36,27 +27,17 @@
                 </div>
 
             </div>
-            <div class="layui-row">
-                <div class="layui-col-xs8">
-                    <div class="tip protocol">
-                        <span class="icon-nocheck"></span>我已阅读并同意<a href="{:url('protocol')}" target="_blank">《用户服务许可协议》</a>
-                    </div>
-                </div>
-                <div class="layui-col-xs4">
-                    <div class="tip">
-                        <a href="{:url('login')}" class="forget-password">已有账号</a>
-                    </div>
-                </div>
+            <div class="tip">
+                <span class="icon-nocheck"></span>
+                <span class="login-tip">保持登录</span>
+                <a href="javascript:" class="forget-password">忘记密码？</a>
             </div>
             <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin:0px;">
-                <button class="login-btn" lay-submit="" lay-filter="reg">立即注册</button>
+                <button class="login-btn" lay-submit="" lay-filter="login">立即登录</button>
             </div>
-            {if config('system.oauth.switch_wx') && empty($wx_id)}
-            <div class="layui-form-item fly-form-app text-center">
-                <fieldset class="layui-elem-field layui-field-title">
-                    <legend>或者使用其他方式登入</legend>
-                </fieldset>
-                <a href="{:url('wxlogin')}" title="微信" class="layui-icon layui-icon-login-wechat"></a>
+            {if config('system.site.switch_reg')}
+            <div class="layui-form-item" style="width: 288px;margin: 20px auto;">
+                <a href="{:url('reg')}" style="float: right;color: #459ae9;font-size: 12px;">无账号？去注册</a>
             </div>
             {/if}
         </form>
@@ -64,8 +45,7 @@
 </div>
 <div class="footer">
     ©版权所有 2020-{:date('Y')} {:config('system.site.company_title')}<span class="padding-5">|</span>
-    <a target="_blank" href="http://www.miitbeian.gov.cn">{:config('system.site.icp')}
-</a>
+    <a target="_blank" href="http://www.miitbeian.gov.cn">{:config('system.site.icp')}</a>
 </div>
 
 <script>
@@ -78,7 +58,7 @@
             form = layui.form,
             layer = layui.layer;
 
-        var agree = 0;
+        var keepLogin = 0;
 
         /*$('#code-img').on('click', function () {
             $(this).attr('src', '{:url("verify")}?' + Math.random());
@@ -100,43 +80,35 @@
         $('.icon-nocheck').on('click', function () {
             if ($(this).hasClass('icon-check')) {
                 $(this).removeClass('icon-check');
-                agree = 0;
+                keepLogin = 0;
             } else {
                 $(this).addClass('icon-check');
-                agree = 1;
+                keepLogin = 1;
             }
         });
 
         //自定义验证
         form.verify({
             username: function (value) {
-                if (value.length < 4) {
+                if (value.length < 3) {
                     return '账号错误';
                 }
             }
             , password: [
                 /^[\S]{6,20}$/
                 , '密码必须6到20位，且不能出现空格'
-            ], rePassword: function (value, item) {
-                if (value !== $('input[name=password]').val()) {
-                    return '两次输入的密码不一致';
-                }
-            }
+            ]
         });
 
         // 进行登录操作
-        form.on('submit(reg)', function (data) {
-            if(agree === 0){
-                layer.alert("请同意用户服务许可协议!");
-                return ;
-            }
+        form.on('submit(login)', function (data) {
             if($('.login-btn').hasClass('layui-btn-disabled')){
                 return ;
             }else{
                 $('.login-btn').addClass('layui-btn-disabled');
             }
 
-            data.field = Object.assign(data.field);
+            data.field = Object.assign(data.field, {keeplogin: keepLogin});
             $.post(data.form.action, data.field, function (res) {
                 layer.msg(res.msg, {time: 1500}, function () {
                     if (res.code === 1) {
@@ -163,12 +135,10 @@
     .login-main .login-bottom .center .item .icon-4 {background:url(__IMG__/admin/icon-login.png) no-repeat 0 -43px;position:absolute;right:-10px;cursor:pointer;}
     .login-main .login-bottom .center .item .icon-5 {background:url(__IMG__/admin/icon-login.png) no-repeat -55px -43px;}
     .login-main .login-bottom .center .item .icon-6 {background:url(__IMG__/admin/icon-login.png) no-repeat 0 -93px;position:absolute;right:-10px;margin-top:8px;cursor:pointer;}
-    .login-main .login-bottom .protocol{padding-left: 30px;}
-    .login-main .login-bottom .protocol a{color:#1391ff;}
     .login-main .login-bottom .tip .icon-nocheck {display:inline-block;width:10px;height:10px;border-radius:2px;border:solid 1px #9abcda;position:relative;top:2px;margin:1px 8px 1px 1px;cursor:pointer;}
     .login-main .login-bottom .tip .icon-check {margin:0 7px 0 0;width:14px;height:14px;border:none;background:url(__IMG__/admin/icon-login.png) no-repeat -111px -48px;}
     .login-main .login-bottom .center .item .icon {display:inline-block;width:33px;height:22px;}
-    .login-main .login-bottom .center .item {width:288px;height:35px;border-bottom:1px solid #dae1e6;margin-bottom:15px;}
+    .login-main .login-bottom .center .item {width:288px;height:35px;border-bottom:1px solid #dae1e6;margin-bottom:35px;}
     .login-main {width:428px;position:relative;float:left;}
     .login-main .login-top {height:117px;background-color:#148be4;border-radius:12px 12px 0 0;font-family:SourceHanSansCN-Regular;font-size:30px;font-weight:400;font-stretch:normal;letter-spacing:0;color:#fff;line-height:70px;text-align:center;overflow:hidden;-webkit-transform:rotate(0);-moz-transform:rotate(0);-ms-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);}
     .login-main .login-top .bg1 {display:inline-block;width:74px;height:74px;background:#fff;opacity:.1;border-radius:0 74px 0 0;position:absolute;left:0;top:43px;}
@@ -196,7 +166,4 @@
         .login-main .login-top {width:360px !important;}
         .login-main .login-bottom {width:360px !important;}
     }
-    .fly-form-app .layui-field-title{color: #787878;}
-    .fly-form-app .layui-icon {font-size: 40px;}
-    .fly-form-app .layui-icon-login-wechat{color: #2aae67;}
 </style>

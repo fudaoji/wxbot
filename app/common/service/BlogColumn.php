@@ -11,6 +11,7 @@ namespace app\common\service;
 
 
 use app\common\model\BlogColumn as M;
+use think\facade\Db;
 
 class BlogColumn
 {
@@ -50,5 +51,22 @@ class BlogColumn
     static function getHots($map = []){
         $list = self::model()->getList([1, 5], ['status' => 1], ['sort' => 'desc'], ['id', 'title']);
         return $list;
+    }
+
+    /**
+     * 修改标题后
+     * @param mixed $ori
+     * @param mixed $res
+     * @return int
+     * @throws \think\db\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function afterUpdateTitle($ori, $res)
+    {
+        // 带条件的替换
+        return Db::name(Blog::model()->getName())
+            ->where('columns', 'LIKE', '%'.$ori['title'].'%')
+            ->exp('columns', "REPLACE(columns, '".$ori['title']."', '".$res['title']."')")
+            ->update();
     }
 }

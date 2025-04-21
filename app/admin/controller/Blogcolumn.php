@@ -8,6 +8,8 @@
  */
 namespace app\admin\controller;
 use app\common\model\BlogColumn as M;
+use think\facade\Db;
+use \app\common\service\BlogColumn as ColumnService;
 
 class Blogcolumn extends Base
 {
@@ -112,5 +114,25 @@ class Blogcolumn extends Base
             ->setFormData(['status' => 1, 'sort' => 0]);
 
         return $builder->show();
+    }
+
+    public function savePost($jump_to = '/undefined', $data = [])
+    {
+        $post_data = $data ? $data : input('post.');
+        if(empty($post_data[$this->pk])){
+            $res = $this->model->addOne($post_data);
+        }else {
+            $ori = $this->model->getOne($post_data[$this->pk]);
+            $res = $this->model->updateOne($post_data);
+            if($res && $ori['title'] != $res['title']){
+                ColumnService::afterUpdateTitle($ori, $res);
+            }
+        }
+
+        if($res){
+            $this->success('数据保存成功', $jump_to);
+        }else{
+            $this->error('数据保存出错');
+        }
     }
 }

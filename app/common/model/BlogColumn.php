@@ -10,6 +10,7 @@
 namespace app\common\model;
 
 
+
 class BlogColumn extends Base
 {
 

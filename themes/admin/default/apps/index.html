@@ -121,7 +121,7 @@
             type = $(this).data('type'),
                     appName = $(this).data('name'),
             deadline = parseInt($(this).data('deadline'));
-            if(deadline > 0 && deadline < nowTime){
+            if(!isFounderTeam && deadline > 0 && deadline < nowTime){
                 layer.alert("应用已过期，请联系客服续费！", {title: "到期提醒"});
                 return false;
             }

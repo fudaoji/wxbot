@@ -122,6 +122,8 @@ class HandlerPrivateChat extends Handler
                             $where['type'] = Bot::FRIEND;
                         } elseif ($keyword['user_type'] == Task::USER_TYPE_GROUP) {
                             $where['type'] = Bot::GROUP;
+                        }else{
+                            $where['wxid'] = $this->fromWxid;
                         }
                         $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
                     }

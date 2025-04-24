@@ -109,25 +109,55 @@ class BotMember
         $headimgurl = $data['headimgurl'];
         $type = $data['type'];
 
-        if($record = self::model()->getOneByMap(['uin' => $uin, 'wxid' => $wxid], ['id'], true)){
-            $record = self::model()->updateOne([
-                'id' => $data['id'],
-                'nickname' => $nickname,
-                'remark_name' => $remark_name,
-                'username' => $username,
-                'headimgurl' => $headimgurl
-            ]);
+        if($type == BotConst::FRIEND){
+            if($record = self::model()->getOneByMap(['uin' => $uin, 'wxid' => $wxid], ['id'], true)){
+                $record = self::model()->updateOne([
+                    'id' => $record['id'],
+                    'nickname' => $nickname,
+                    'remark_name' => $remark_name,
+                    'username' => $username,
+                    'headimgurl' => $headimgurl
+                ]);
+            }else{
+                $record = self::model()->addOne([
+                    'uin' => $uin,
+                    'nickname' => $nickname,
+                    'remark_name' => $remark_name,
+                    'username' => $username,
+                    'wxid' => $wxid,
+                    'type' => $type,
+                    'headimgurl' => $headimgurl
+                ]);
+            }
         }else{
-            $record = self::model()->addOne([
-                'uin' => $uin,
-                'nickname' => $nickname,
-                'remark_name' => $remark_name,
-                'username' => $username,
-                'wxid' => $wxid,
-                'type' => $type,
-                'headimgurl' => $headimgurl
+            if($record = self::model()->getOneByMap(['uin' => $uin, 'wxid' => $wxid], ['id'], true)){
+                self::model()->updateOne([
+                    'id' => $record['id'],
+                    'nickname' => $nickname,
+                    'remark_name' => $remark_name,
+                    'type' => $type
+                ]);
+            }else{
+                $type = self::model()->addOne([
+                    'uin' => $uin,
+                    'nickname' => $nickname,
+                    'wxid' => $wxid,
+                    'remark_name' => $remark_name,
+                    'type' => $type
+                ]);
+            }
+            $bot = $data['bot'];
+            //同步群成员任务
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => 3,
+                'params' => [
+                    'do' => ['\\app\\crontab\\task\\Bot', 'pullGroupMembers'],
+                    'bot' => $bot,
+                    'group' => $type
+                ]
             ]);
         }
+
         return $record;
     }
 }

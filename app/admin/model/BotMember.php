@@ -64,7 +64,7 @@ class BotMember extends Base
                         $wxid = $v['wxid'];
                         $remark_name = filter_emoji($v['reMark']);
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
+                        /*if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -79,14 +79,19 @@ class BotMember extends Base
                                 'remark_name' => $remark_name,
                                 'type' => Bot::GROUP
                             ]);
-                        }
-                        //同步群成员任务
+                        }*/
                         invoke('\\app\\common\\event\\TaskQueue')->push([
-                            'delay' => 3,
+                            'delay' => mt_rand(0, 2),
                             'params' => [
-                                'do' => ['\\app\\crontab\\task\\Bot', 'pullGroupMembers'],
-                                'bot' => $bot,
-                                'group' => $data
+                                'do' => ['\\app\\common\\event\\BotMember', 'insertOrUpdate'],
+                                'data' => [
+                                    'uin' => $bot['uin'],
+                                    'nickname' => $nickname,
+                                    'wxid' => $wxid,
+                                    'remark_name' => $remark_name,
+                                    'type' => Bot::GROUP
+                                ],
+                                'bot' => $bot
                             ]
                         ]);
                     }

@@ -138,7 +138,7 @@ class BotMember
                     'type' => $type
                 ]);
             }else{
-                $type = self::model()->addOne([
+                $record = self::model()->addOne([
                     'uin' => $uin,
                     'nickname' => $nickname,
                     'wxid' => $wxid,
@@ -153,7 +153,7 @@ class BotMember
                 'params' => [
                     'do' => ['\\app\\crontab\\task\\Bot', 'pullGroupMembers'],
                     'bot' => $bot,
-                    'group' => $type
+                    'group' => $record
                 ]
             ]);
         }

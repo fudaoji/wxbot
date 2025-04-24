@@ -23,6 +23,7 @@ class Bot extends Bbase
      * @var string
      */
     private $tip;
+    private $xbotTip;
 
     /**
      * 初始化
@@ -34,15 +35,26 @@ class Bot extends Bbase
 
         parent::initialize();
         $this->model = new BotM();
-        $this->tabs = [
-            BotConst::PROTOCOL_EXTIAN => ['title' => 'e小天', 'href' => url('index')],
-            BotConst::PROTOCOL_XBOTCOM => ['title' => 'xbot企微', 'href' => url('index', ['tab' => BotConst::PROTOCOL_XBOTCOM])],
-            //'web' => ['title' => 'Web机器人', 'href' => url('web')]
-        ];
-        $this->tip = "<!--<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p>--> 
-<ul><li>e小天的接口回调地址: <a href='javascript:;' id='url-extian' class='js-clipboard' data-clipboard-target='#url-extian'>".request()->domain()."/bot/api/extian</a></li>
+        $this->tabs = $this->getActiveDrivers();
+        $customDomains = $this->adminInfo['username'].".frp.kuryun.cn";
+        $this->tip = " <ul><li>【重要】： 本地主机部署e小天，需要安装内网穿透服务（具体教程点击下方新手必看教程）。内网穿透服务的配置为：<br> name=<bold>".$this->adminInfo['username']."</bold>, customDomains=".$customDomains."</li>
+ <li>本地主机部署e小天:  下方服务器地址填写".$customDomains.":8203。如果是云服务，则下方服务器地址填写 云服务器ip:8203。</li>
+ <li>e小天的接口回调地址: <a href='javascript:;' id='url-extian' class='js-clipboard' data-clipboard-target='#url-extian'>".request()->domain()."/bot/api/extian</a>。</li>
+<li>新手必看教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://doc.kuryun.com/web/#/642350114/229559988'>点击查看</a></li>。</ul>";
+        $this->xbotTip = "<!--<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p>--> 
 <li>xbot企微的接口回调地址: <a href='javascript:;' id='url-xbotcom' class='js-clipboard' data-clipboard-target='#url-xbotcom'>".request()->domain()."/bot/api/xbotcom</a></li>
 <li>新手必看教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://doc.kuryun.com/web/#/642350114/229559988'>点击查看</a></li></ul>";
+    }
+
+    private function getActiveDrivers(){
+        $drivers = explode(',', config('system.bot.drivers'));
+        foreach ($drivers as $driver){
+            $this->tabs[$driver] = [
+                'title' => BotConst::hooks($driver),
+                'href' => url('index', ['tab' => $driver])
+            ];
+        }
+        return $this->tabs;
     }
 
     /**
@@ -299,7 +311,7 @@ class Bot extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增机器人')
-            ->setTip($this->tip)
+            ->setTip($this->xbotTip)
             ->setPostUrl(url('xbotSavePost'))
             ->addFormItem('protocol', 'hidden', '类型', '机器人类型')
             ->addFormItem('uuid', 'text', 'client_id', '从xbot打开的窗口获取', [], 'required')
@@ -324,7 +336,7 @@ class Bot extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('编辑机器人')
-            ->setTip($this->tip)
+            ->setTip($this->xbotTip)
             ->setPostUrl(url('xbotSavePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('uuid', 'text', 'client_id', '从xbot打开的窗口获取')

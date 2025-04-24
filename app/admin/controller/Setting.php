@@ -11,6 +11,7 @@
 namespace app\admin\controller;
 use app\common\model\Setting as SettingM;
 use app\common\service\AdminGroup as GroupService;
+use app\constants\Bot as BotConst;
 use app\constants\Common;
 
 class Setting extends Base
@@ -110,9 +111,14 @@ class Setting extends Base
             case 'bot':
                 !isset($data['seat_default']) && $data['seat_default'] = 0;
                 !isset($data['seat_price']) && $data['seat_price'] = 0.0;
-                $builder->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒')
+                if(!empty($data['drivers'])){
+                    $data['drivers'] = explode(',', $data['drivers']);
+                }else{
+                    $data['drivers'] = [BotConst::PROTOCOL_EXTIAN];
+                }
+                $builder->addFormItem('drivers', 'chosen_multi', '可用框架', '开启机器人框架', BotConst::hooks(), 'required')
+                    ->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒')
                     ->addFormItem('file_storage_path', 'text', '微信文件保存位置', '请到微信客户端-》设置-》文件位置查看，填写“WeChat Files”之前的部分')
-                    //->addFormItem('app_key', 'text', '默认AppKey', '机器人框架的appkey')
                     //->addFormItem('url', 'text', '默认接口地址', '默认接口地址')
                     ->addFormItem('seat', 'legend', '微信号席位', '微信号席位')
                     ->addFormItem('seat_default', 'number', '默认额度', '注册客户默认有几个微信号席位', [], 'min=0')

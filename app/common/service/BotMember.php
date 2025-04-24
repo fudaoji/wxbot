@@ -11,6 +11,7 @@ namespace app\common\service;
 
 
 use app\admin\model\BotMember as MemberM;
+use app\constants\Bot;
 use app\constants\Bot as BotConst;
 use app\common\service\Bot as BotService;
 
@@ -86,5 +87,47 @@ class BotMember
         }
         return $data;
 
+    }
+
+    /**
+     * 插入或更新
+     * @param $data
+     * @return array|bool|false|mixed|\PDOStatement|string|\think\Model
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public static function insertOrUpdate($data)
+    {
+        $uin = $data['uin'];
+        $wxid = $data['wxid'];
+        $nickname = $data['nickname'];
+        $remark_name = $data['remark_name'];
+        $username = $data['user_name'];
+        $headimgurl = $data['headimgurl'];
+        $type = $data['type'];
+
+        if($record = self::model()->getOneByMap(['uin' => $uin, 'wxid' => $wxid], ['id'], true)){
+            $record = self::model()->updateOne([
+                'id' => $data['id'],
+                'nickname' => $nickname,
+                'remark_name' => $remark_name,
+                'username' => $username,
+                'headimgurl' => $headimgurl
+            ]);
+        }else{
+            $record = self::model()->addOne([
+                'uin' => $uin,
+                'nickname' => $nickname,
+                'remark_name' => $remark_name,
+                'username' => $username,
+                'wxid' => $wxid,
+                'type' => $type,
+                'headimgurl' => $headimgurl
+            ]);
+        }
+        return $record;
     }
 }

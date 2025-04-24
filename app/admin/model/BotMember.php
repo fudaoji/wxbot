@@ -372,7 +372,22 @@ class BotMember extends Base
                         $headimgurl = $v['headImg'] ?? '';
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
-                        if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
+                        invoke('\\app\\common\\event\\TaskQueue')->push([
+                            'delay' => mt_rand(0, 2),
+                            'params' => [
+                                'do' => ['\\app\\common\\event\\BotMember', 'insertOrUpdate'],
+                                'data' => [
+                                    'uin' => $bot['uin'],
+                                    'nickname' => $nickname,
+                                    'remark_name' => $remark_name,
+                                    'username' => $username,
+                                    'wxid' => $wxid,
+                                    'type' => Bot::FRIEND,
+                                    'headimgurl' => $headimgurl
+                                ]
+                            ]
+                        ]);
+                        /*if($data = $this->getOneByMap(['uin' => $bot['uin'], 'wxid' => $wxid], ['id'], true)){
                             $this->updateOne([
                                 'id' => $data['id'],
                                 'nickname' => $nickname,
@@ -390,7 +405,7 @@ class BotMember extends Base
                                 'type' => Bot::FRIEND,
                                 'headimgurl' => $headimgurl
                             ]);
-                        }
+                        }*/
                     }
                     //删除无效好友
                     $this->delByMap(['uin' => $bot['uin'],'type' => Bot::FRIEND, 'wxid' => ['notin', $wxid_arr]]);

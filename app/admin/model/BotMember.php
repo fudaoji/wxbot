@@ -333,7 +333,7 @@ class BotMember extends Base
     function isIgnore($data, $driver = Bot::PROTOCOL_EXTIAN){
         switch ($driver){
             default:
-                if(!in_array($data['type'], [3, 32771]) || $data['wxid'] == 'weixin' || strpos($data['wxid'], 'gh_') !== false){
+                if(!in_array($data['type'], [3, 32771, 32835]) || $data['wxid'] == 'weixin' || strpos($data['wxid'], 'gh_') !== false){
                     return true;
                 }
         }

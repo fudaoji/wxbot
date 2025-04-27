@@ -54,6 +54,9 @@ class Extian extends Base
     const API_BUILDING_GROUP = 'createRoom'; //建群
     const API_GET_MEMBER_INFO = 'getUserInfo';
     const API_AGREE_FRIEND_VERIFY = 'agreeUser'; // 同意好友请求
+    const API_CHECK_IS_FRIEND = 'addUserCheck'; //判断是否单向好友
+
+    const API_GET_MOMENTS = 'back_get_sns'; //获取朋友圈列表
 
     const API_GET_MSG = 'getMsg'; //获取消息内容
     const API_GET_FILE_FO_BASE64 = 'GetFileFoBase64'; //获取文件 返回该文件的Base64编码
@@ -107,6 +110,17 @@ class Extian extends Base
     static function msgMap($type = 0){
         //Logger::error('ex'.$type);
         return self::MSG_TYPES[$type] ?? $type;
+    }
+
+    /**
+     * 判断是否单向好友
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function checkIsFriend($params = [])
+    {
+        return $this->doRequest(self::API_CHECK_IS_FRIEND, $params);
     }
 
     public function sendEmojiToFriend($params = [])
@@ -456,7 +470,7 @@ class Extian extends Base
 
     public function getFriends($params = [])
     {
-        $params = ['client_id' => $params['data']['uuid']];
+        //$params = ['client_id' => $params['data']['uuid']];
         return $this->doRequest(self::API_GET_FRIEND_LIST, $params);
     }
 

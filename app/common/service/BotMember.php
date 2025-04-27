@@ -14,6 +14,7 @@ use app\admin\model\BotMember as MemberM;
 use app\constants\Bot;
 use app\constants\Bot as BotConst;
 use app\common\service\Bot as BotService;
+use ky\Logger;
 
 class BotMember
 {
@@ -104,9 +105,9 @@ class BotMember
         $uin = $data['uin'];
         $wxid = $data['wxid'];
         $nickname = $data['nickname'];
-        $remark_name = $data['remark_name'];
-        $username = $data['user_name'];
-        $headimgurl = $data['headimgurl'];
+        $remark_name = $data['remark_name'] ?? '';
+        $username = $data['username'] ?? '';
+        $headimgurl = $data['headimgurl'] ?? '';
         $type = $data['type'];
 
         if($type == BotConst::FRIEND){

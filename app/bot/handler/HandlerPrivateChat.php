@@ -97,13 +97,13 @@ class HandlerPrivateChat extends Handler
         foreach ($keywords as $keyword){
             if(empty($keyword['medias'])){ //兼容旧版
                 if (empty($keyword['wxids'])) {
-                    $where = ['uin' => $this->botWxid];
-                    if ($keyword['user_type'] == Task::USER_TYPE_FRIEND) {
-                        $where['type'] = Bot::FRIEND;
-                    } elseif ($keyword['user_type'] == Task::USER_TYPE_GROUP) {
-                        $where['type'] = Bot::GROUP;
+                    if (empty($keyword['wxids'])) {
+                        if ($keyword['user_type'] == Task::USER_TYPE_GROUP) {
+                            continue;
+                        }else{
+                            $keyword['wxids'] = $this->fromWxid;
+                        }
                     }
-                    $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
                 }
                 if (strpos($keyword['wxids'], $this->fromWxid) !== false) {
                     model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);
@@ -117,15 +117,11 @@ class HandlerPrivateChat extends Handler
                     $keyword['media_id'] = $media['id'];
 
                     if (empty($keyword['wxids'])) {
-                        $where = ['uin' => $this->botWxid];
-                        if ($keyword['user_type'] == Task::USER_TYPE_FRIEND) {
-                            $where['type'] = Bot::FRIEND;
-                        } elseif ($keyword['user_type'] == Task::USER_TYPE_GROUP) {
-                            $where['type'] = Bot::GROUP;
+                        if ($keyword['user_type'] == Task::USER_TYPE_GROUP) {
+                            continue;
                         }else{
-                            $where['wxid'] = $this->fromWxid;
+                            $keyword['wxids'] = $this->fromWxid;
                         }
-                        $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
                     }
                     if (strpos($keyword['wxids'], $this->fromWxid) !== false) {
                         model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid);

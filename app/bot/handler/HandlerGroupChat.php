@@ -182,14 +182,12 @@ class HandlerGroupChat extends Handler
         $flag = false;
         foreach ($keywords as $keyword){
             if(empty($keyword['medias'])){
-                if(empty($keyword['wxids'])){
-                    $where = ['uin' => $this->botWxid];
-                    if($keyword['user_type']==Task::USER_TYPE_FRIEND){
-                        $where['type'] = Bot::FRIEND;
-                    }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
-                        $where['type'] = Bot::GROUP;
+                if (empty($keyword['wxids'])) {
+                    if ($keyword['user_type'] == Task::USER_TYPE_FRIEND) {
+                        continue;
+                    }else{
+                        $keyword['wxids'] = $this->groupWxid;
                     }
-                    $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
                 }
                 if(strpos($keyword['wxids'], $this->groupWxid) !== false){
                     model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->groupWxid,
@@ -203,14 +201,12 @@ class HandlerGroupChat extends Handler
                     $keyword['media_type'] = $media['type'];
                     $keyword['media_id'] = $media['id'];
 
-                    if(empty($keyword['wxids'])){
-                        $where = ['uin' => $this->botWxid];
-                        if($keyword['user_type']==Task::USER_TYPE_FRIEND){
-                            $where['type'] = Bot::FRIEND;
-                        }elseif($keyword['user_type']==Task::USER_TYPE_GROUP){
-                            $where['type'] = Bot::GROUP;
+                    if (empty($keyword['wxids'])) {
+                        if ($keyword['user_type'] == Task::USER_TYPE_FRIEND) {
+                            continue;
+                        }else{
+                            $keyword['wxids'] = $this->groupWxid;
                         }
-                        $keyword['wxids'] = implode(',', $this->memberM->getField('wxid', $where));
                     }
                     //Logger::error('groupWxid:'.$this->groupWxid);
                     if(strpos($keyword['wxids'], $this->groupWxid) !== false){

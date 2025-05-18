@@ -40,7 +40,7 @@ class HandlerPrivateChat extends Handler
                 'delay' => 2,
                 'params' => $params
             ]);
-            exit(1);
+            $this->exit();
         }
     }
 

@@ -88,7 +88,7 @@ class Handler extends BaseCtl
         $class = "\\app\\bot\\handler\\{$this->driver}\\" . ucfirst($this->event);
         if(! class_exists($class)){
             //Logger::error("class: " . $class . " not exists!");
-            exit(0);
+            $this->exit();
         }
 
         /**
@@ -193,7 +193,7 @@ class Handler extends BaseCtl
         ];
 
         if (strpos($this->fromWxid, 'gh_') !== false) { //公众号忽略
-            exit(0);
+            $this->exit();
         }
 
         empty($this->content['from_group']) && $this->content['from_group'] = $this->groupWxid;
@@ -227,7 +227,7 @@ class Handler extends BaseCtl
                 $ignore_methods = ['chatroommember', Extian::EVENT_GET_CONTACT];
                 if(in_array($this->ajaxData['method'], $ignore_methods) ||
                     ($this->ajaxData['type'] == 10000 && !empty($this->ajaxData['data']['fromid']) && strpos($this->ajaxData['data']['fromid'], '@chatroom') !== false)){ //群的系统消息
-                    exit(0);
+                    $this->exit();
                 }
 
                 $this->content = $this->ajaxData['data'] ?? [];
@@ -411,7 +411,7 @@ class Handler extends BaseCtl
         if(! $this->bot = $this->botM->getOneByMap($map)) {
             //Logger::error($this->botM->getlastsql());
             Logger::error('Bot not exists or not logged in: ' . $uin);
-            exit(0);
+            $this->exit();
         }
         return $this->bot;
     }
@@ -447,6 +447,11 @@ class Handler extends BaseCtl
             case BotConst::PROTOCOL_EXTIAN:
                 return Extian::response();
         }
+    }
+
+    protected function exit(){
+        $this->response();
+        exit(0);
     }
 
     /**
@@ -510,7 +515,7 @@ class Handler extends BaseCtl
         foreach ($filter as $f){
             if(strpos($msg, $f) !== false){
                 Logger::error('不回复:'.$f);
-                exit(0);
+                $this->exit();
             }
         }
     }

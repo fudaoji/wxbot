@@ -89,9 +89,9 @@ class BotMember extends Base
                                     'nickname' => $nickname,
                                     'wxid' => $wxid,
                                     'remark_name' => $remark_name,
-                                    'type' => Bot::GROUP
-                                ],
-                                'bot' => $bot
+                                    'type' => Bot::GROUP,
+                                    'bot' => $bot
+                                ]
                             ]
                         ]);
                     }

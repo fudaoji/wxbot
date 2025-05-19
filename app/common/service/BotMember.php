@@ -131,11 +131,12 @@ class BotMember
                 ]);
             }
         }else{
-            if($record = self::model()->getOneByMap(['uin' => $uin, 'wxid' => $wxid], ['id'], true)){
+            if($record = self::model()->getOneByMap(['uin' => $uin, 'wxid' => $wxid], true, true)){
                 self::model()->updateOne([
                     'id' => $record['id'],
                     'nickname' => $nickname,
                     'remark_name' => $remark_name,
+                    'wxid' => $wxid,
                     'type' => $type
                 ]);
             }else{

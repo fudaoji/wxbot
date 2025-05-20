@@ -409,8 +409,10 @@ class Handler extends BaseCtl
             unset($map['alive']);
         }
         if(! $this->bot = $this->botM->getOneByMap($map)) {
-            //Logger::error($this->botM->getlastsql());
             Logger::error('Bot not exists or not logged in: ' . $uin);
+            $this->exit();
+        }elseif (empty($this->bot['status'])){
+            Logger::error('Bot is settled disabled: ' . $uin);
             $this->exit();
         }
         return $this->bot;

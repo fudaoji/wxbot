@@ -151,7 +151,7 @@ class BotMember
             $bot = $data['bot'];
             //同步群成员任务
             invoke('\\app\\common\\event\\TaskQueue')->push([
-                'delay' => mt_rand(3, 10),
+                'delay' => mt_rand(5, 100),
                 'params' => [
                     'do' => ['\\app\\crontab\\task\\Bot', 'pullGroupMembers'],
                     'bot' => $bot,

@@ -111,3 +111,7 @@ body {
     border-left: none;
     border-right: 5px solid #16b777;
 }
+
+.xm-select-parent .xm-select{
+    z-index: 0 !important;
+}

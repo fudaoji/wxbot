@@ -114,6 +114,25 @@ class Extian extends Base
 
     /**
      * 判断是否单向好友
+     * {
+     *      ...
+           "data": { //是单向好友
+                "msg": "user need verify",
+                "result": -44,
+                "wxid": "",
+                "encryptusername": ""
+            }
+     * }
+     *
+     * {
+     *      ...
+            "data": { //双向好友
+                "msg": "",
+                "result": 0,
+                "wxid": "",
+                "encryptusername": ""
+            }
+     * }
      * @param array $params
      * @return array
      * Author: fudaoji<fdj@kuryun.cn>

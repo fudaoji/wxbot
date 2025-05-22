@@ -9,6 +9,7 @@
 
 namespace app\crontab\task;
 
+use app\common\service\BotMember;
 use app\constants\Pyq;
 use ky\Logger;
 
@@ -106,9 +107,10 @@ class Bot extends Base
             $job->delete();
         }
         $bot = $params['bot'];
-        model('admin/BotMember')->pullFriends($bot);
-        model('admin/BotMember')->pullGroups($bot);
-
+        if(! BotMember::model()->total(['uin' => $bot['uin']], true)) {
+            model('admin/BotMember')->pullFriends($bot);
+            model('admin/BotMember')->pullGroups($bot);
+        }
         $job->delete();
     }
 

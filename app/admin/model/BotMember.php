@@ -81,7 +81,7 @@ class BotMember extends Base
                             ]);
                         }*/
                         invoke('\\app\\common\\event\\TaskQueue')->push([
-                            'delay' => mt_rand(0, 2),
+                            'delay' => mt_rand(0, 10),
                             'params' => [
                                 'do' => ['\\app\\common\\event\\BotMember', 'insertOrUpdate'],
                                 'data' => [
@@ -378,7 +378,7 @@ class BotMember extends Base
                         $wxid = $v['wxid'];
                         $wxid_arr[] = $wxid;
                         invoke('\\app\\common\\event\\TaskQueue')->push([
-                            'delay' => mt_rand(0, 2),
+                            'delay' => mt_rand(0, 10),
                             'params' => [
                                 'do' => ['\\app\\common\\event\\BotMember', 'insertOrUpdate'],
                                 'data' => [

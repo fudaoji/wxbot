@@ -129,7 +129,7 @@ class Reply extends Base
                 }
                 break;
             case Media::IMAGE:
-                $this->sendMsg([
+                /*$this->sendMsg([
                     'type' => $reply['media_type'],
                     'bot' => $bot,
                     'payload' => [
@@ -138,16 +138,16 @@ class Reply extends Base
                         'to_wxid' => $to_wxid,
                         'path' => $media['url']
                     ]
-                ]);
-                /*$client->sendImgToFriends([
+                ]);*/
+                $client->sendImgToFriends([
                     'robot_wxid' => $bot['uin'],
                     'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
                     'path' => $media['url']
-                ]);*/
+                ]);
                 break;
             case Media::VIDEO:
-                $this->sendMsg([
+                /*$this->sendMsg([
                     'type' => $reply['media_type'],
                     'bot' => $bot,
                     'payload' => [
@@ -156,13 +156,13 @@ class Reply extends Base
                         'to_wxid' => $to_wxid,
                         'path' => $media['url']
                     ]
-                ]);
-                /*$client->sendVideoToFriends([
+                ]);*/
+                $client->sendVideoToFriends([
                     'robot_wxid' => $bot['uin'],
                     'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
                     'path' => $media['url']
-                ]);*/
+                ]);
                 break;
             case Media::FILE:
                 $res = $client->saveFile([

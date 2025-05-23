@@ -35,6 +35,7 @@ class Keyword extends Base
     public function searchByKeyword($params = []){
         $refresh = $params['refresh'] ?? false;
         unset($params['refresh']);
+        ksort($params);
         $cache_key = md5(__FUNCTION__ . serialize($params));
         $data = cache($cache_key);
         if($refresh || empty($data)){

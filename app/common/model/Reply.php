@@ -51,6 +51,7 @@ class Reply extends Base
             'admin_id' => $bot['admin_id'],
             'media_id' => $reply['media_id']
         ]);
+
         if(empty($media)){
             return false;
         }

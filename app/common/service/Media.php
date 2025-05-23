@@ -48,7 +48,7 @@ class Media
             $data = model('media_' . $params['media_type'])->getOneByMap([
                 'admin_id' => $params['staff_id'],
                 'id' => $params['media_id']
-            ]);
+            ], true);
         }
 
         cache($cache_key, $data);

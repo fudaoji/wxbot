@@ -35,7 +35,7 @@ class Setting extends Base
                 'href' => url('index', ['name' => 'bot'])
             ],
             'oauth' => [
-                'title' => '登录设置',
+                'title' => '注册登录',
                 'href' => url('index', ['name' => 'oauth'])
             ],
             'upload' => [
@@ -97,10 +97,13 @@ class Setting extends Base
         $builder = new FormBuilder();
         switch ($current_name){
             case 'oauth':
-                $builder->addFormItem('apiurl', 'text', 'API地址', 'API地址')
+                $builder->addFormItem('login_title', 'legend', '登录', '登录')
+                    ->addFormItem('apiurl', 'text', 'API地址', 'API地址')
                     ->addFormItem('appid', 'text', 'Appid', 'Appid')
                     ->addFormItem('appkey', 'text', 'Appsecret', 'Appsecret')
-                    ->addFormItem('switch_wx', 'radio', '微信登录', '是否开启微信登录', [1 => '开启', 0 => '关闭']);
+                    ->addFormItem('switch_wx', 'radio', '微信登录', '是否开启微信登录', [1 => '开启', 0 => '关闭'])
+                    ->addFormItem('reg_title', 'legend', '注册', '注册')
+                    ->addFormItem('remain_username', 'text', '保留账号', '禁止客户注册的用户名');
                 break;
             case 'protocol':
                 $builder->addFormItem('user', 'ueditor', '用户服务协议', '用户服务协议', [], 'required');

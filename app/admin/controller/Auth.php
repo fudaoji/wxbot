@@ -84,7 +84,10 @@ class Auth extends Base
                 $this->error($validate->getError(), null, ['token' => token()]);
                 return false;
             }
-
+            $remain_username = explode(',', (string)config('system.oauth.remain_username'));
+            if(in_array($post_data['username'], $remain_username)){
+                $this->error('该账号是系统保留账号，请更换！', null, ['token' => token()]);
+            }
             if($user = $this->model->getOneByMap(['username' => $post_data['username']])){
                 $this->error('账号已存在', null, ['token' => token()]);
             }

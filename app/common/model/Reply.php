@@ -110,7 +110,7 @@ class Reply extends Base
                         ]);
                     }
                 }else{
-                    $this->sendMsg([
+                    /*$this->sendMsg([
                         'type' => $reply['media_type'],
                         'bot' => $bot,
                         'payload' => [
@@ -119,13 +119,13 @@ class Reply extends Base
                             'to_wxid' => $to_wxid,
                             'msg' => $msg
                         ]
-                    ]);
-                    /*$client->sendTextToFriends([
+                    ]);*/
+                    $client->sendTextToFriends([
                         'robot_wxid' => $bot['uin'],
                         'uuid' => $bot['uuid'],
                         'to_wxid' => $to_wxid,
                         'msg' => $msg
-                    ]);*/
+                    ]);
                 }
                 break;
             case Media::IMAGE:

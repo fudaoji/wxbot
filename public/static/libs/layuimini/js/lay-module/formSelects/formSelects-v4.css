@@ -16,7 +16,7 @@ select[xm-select]{display: none !important;}
 	from {transform: translate3d(0, 30px, 0);opacity: .3}
 	to {transform: translate3d(0, 0, 0);opacity: 1}
 }
-.xm-select-parent .xm-form-selected dl {display: block;top:-140px !important;}
+.xm-select-parent .xm-form-selected dl {display: block;}
 .xm-select-parent .xm-form-select dl dd,.xm-select-parent .xm-form-select dl dt {padding: 0 10px;line-height: 36px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis}
 .xm-select-parent .xm-form-select dl dd {cursor: pointer;height: 36px;}
 .xm-select-parent .xm-form-select dl dd:hover {background-color: #f2f2f2}

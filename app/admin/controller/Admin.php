@@ -9,6 +9,7 @@
 
 namespace app\admin\controller;
 
+use app\common\service\AdminLog as AdminLogService;
 use app\constants\Common;
 
 class Admin extends Base
@@ -197,6 +198,54 @@ class Admin extends Base
             ->addFormItem('password', 'password', '新密码', '6-20位', [], 'required minlength=6 maxlength=20');
 
         return $builder->show();
+    }
+
+    public function setStatus() {
+        $ids = input('ids/a');
+        $status = input('status');
+
+        if (empty($ids)) {
+            $this->error('请选择要操作的数据');
+        }
+
+        $ids = (array) $ids;
+        if($status == 'delete'){
+            if(in_array($this->adminInfo['id'], $ids)){
+                $this->error('不能删除自己当前的账号！');
+            }
+            if($this->model->delByMap([[$this->pk, 'in', $ids]])){
+                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::DEL, 'desc' => $this->adminInfo['username'] . '删除数据'.$this->model->getName().':'.implode(',', $ids)]);
+                $this->success('删除成功');
+            }else{
+                $this->error('删除失败');
+            }
+        }else{
+            $arr = [];
+            $msg = [
+                'success' => '操作成功！',
+                'error'   => '操作失败！',
+            ];
+            switch ($status) {
+                case 'forbid' :  // 禁用条目
+                    $data['status'] = 0;
+                    break;
+                case 'resume' :  // 启用条目
+                    $data['status'] = 1;
+                    break;
+                default:
+                    $this->error('参数错误');
+                    break;
+            }
+            foreach($ids as $id){
+                $data[$this->pk] = $id;
+                $arr[] = $data;
+            }
+            if($this->model->saveAll($arr)){
+                $this->success($msg['success']);
+            }else{
+                $this->error($msg['error']);
+            }
+        }
     }
 
 }

@@ -1256,9 +1256,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}
 		var reHeight = div[0].offsetTop + div.height() + base;
 		if (up) {
-			dl.css({
+			/*dl.css({
 				top: '-140px',
 				bottom: reHeight + 3 + 'px'
+			});*/
+			dl.css({
+				top: reHeight + 'px',
+				bottom: 'auto'
 			});
 		} else {
 			dl.css({

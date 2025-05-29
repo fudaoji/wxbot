@@ -12,10 +12,13 @@ namespace app\crontab\controller;
 
 use app\common\service\Addon as AppService;
 use app\common\service\Bot as BotService;
+use app\common\service\BotMember;
+use app\common\service\JsfTask;
 use app\constants\Addon;
 use app\constants\Task;
 use ky\Logger;
 use zjkal\ChinaHoliday;
+use app\constants\Bot as BotConst;
 
 class Bot extends Base
 {
@@ -117,8 +120,47 @@ class Bot extends Base
     public function basicMinute(){
         $this->checkBotStatus();
         $this->sendBatch();
+        $this->clearZombie();
         //$this->sendMoments();
         //$this->followMoments();
+    }
+
+    public function clearZombie(){
+        $task_list = JsfTask::model()->getAllJoin([
+            'alias' => 'jsf',
+            'join' => [
+                ['bot', 'bot.id=jsf.bot_id']
+            ],
+            'where' => ['bot.alive' => 1, 'jsf.plan_time' => ['<=', time()], 'jsf.status' => 0],
+            'field' => ['jsf.id', 'bot.uuid', 'bot.uin', 'bot.app_key', 'bot.admin_id', 'bot.staff_id', 'bot.url', 'bot.protocol'],
+            'refresh' => true
+        ]);
+
+        foreach ($task_list as $task){
+            $wxids = BotMember::model()->getField('wxid', ['uin' => $task['uin'], 'type' => BotConst::FRIEND]);
+            $wxids = array_diff(array_unique($wxids), BotMember::wxOfficialAccount(), [$task['uin']]);
+
+            $update = ['id' => $task['id'], 'status' => JsfTask::STATUS_ACTIVE];
+            if(empty($wxids)){
+                $update['status'] = JsfTask::STATUS_OVER;
+            }
+            JsfTask::model()->updateOne($update);
+
+            foreach ($wxids as $k => $wxid){
+                $delay = $k + mt_rand(0, 3);
+                //放入任务队列
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => $delay,
+                    'params' => [
+                        'do' => ['\\app\\crontab\\task\\Bot', 'clearZombie'],
+                        'task' => $task,
+                        'wxid' => $wxid,
+                        'index' => $k+1,
+                        'total' => count($wxids)
+                    ]
+                ]);
+            }
+        }
     }
 
     /**

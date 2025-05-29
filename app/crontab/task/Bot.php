@@ -10,14 +10,57 @@
 namespace app\crontab\task;
 
 use app\common\service\BotMember;
+use app\common\service\JsfTask;
 use app\constants\Pyq;
 use ky\Logger;
+use ky\WxBot\Driver\Extian;
 
 class Bot extends Base
 {
     public function __construct(){
         parent::__construct();
         set_time_limit(0);
+    }
+
+    /**
+     * 清理僵尸粉
+     * @param array $params
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function clearZombie($params = []){
+        /**
+         * @var \think\queue\Job
+         */
+        $job = $params['job'];
+        if ($job->attempts() > 1) {
+            $job->delete();
+        }
+        $task = $params['task'];
+        /**
+         * @var $client Extian
+         */
+        $client = model('admin/bot')->getRobotClient($task);
+        $wxid = $params['wxid'];
+        $total = $params['total'];
+        $index = $params['index'];
+
+        $res = $client->checkIsFriend(['wxid' => $wxid]);
+        if(!empty($res['data']['result'])){
+            $t = JsfTask::model()->getOne($task['id']);
+            $arr = explode(',', $t['wxids']);
+            $arr[] = $wxid;
+            $arr = array_unique($arr);
+            $update = ['id' => $t['id'], 'wxids' => trim(implode(',', $arr), ',')];
+            if($index == $total){
+                $update['complete_time'] = time() + 5;
+                $update['status'] = JsfTask::STATUS_OVER;
+            }
+            JsfTask::model()->updateOne($update);
+            //Logger::error($wxid.'是僵尸粉');
+        }else{
+            //Logger::error($wxid.'是好友');
+        }
+        $job->delete();
     }
 
     /**
@@ -90,7 +133,6 @@ class Bot extends Base
         //Logger::error(date('Y-m-d H:i:s') . '   ' . $to_wxid);
         model('common/reply')->botReply($task, $client, $reply, $to_wxid, $extra);
         $job->delete();
-        dump(date('Y-m-d H:i:s'));
     }
 
     /**

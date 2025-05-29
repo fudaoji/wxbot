@@ -65,7 +65,7 @@ class Botfriend extends Botbase
         ])
             ->setTip($tip)
             ->addTopButton('self', ['title'=>'拉取最新好友', 'href' => url('syncFriends'), 'data-ajax' => 1])
-            ->addTopButton('delete', ['title' => '批量删除好友', 'href' => url('deleteFriendPost')])
+            //->addTopButton('delete', ['title' => '批量删除好友', 'href' => url('deleteFriendPost')])
             ->addTableColumn([ 'type' => 'checkbox', 'minWidth' => 30])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'wxid', 'minWidth' => 90])
             ->addTableColumn(['title' => '头像', 'field' => 'headimgurl', 'type' => 'picture', 'minWidth' => 100])
@@ -76,9 +76,9 @@ class Botfriend extends Botbase
             ->addTableColumn(['title' => '性别', 'field' => 'sex', 'minWidth' => 70, 'type' => 'enum', 'options' => Common::sex()])
             ->addTableColumn(['title' => '省份', 'field' => 'province', 'minWidth' => 90])
             ->addTableColumn(['title' => '城市', 'field' => 'city', 'minWidth' => 90])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 200, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
             ->addRightButton('edit', ['title' => '编辑'])
-            ->addRightButton('delete', ['title' => '删除好友', 'href' => url('deleteFriendPost', ['id' => '__data_id__'])]);
+            /*->addRightButton('delete', ['title' => '删除好友', 'href' => url('deleteFriendPost', ['id' => '__data_id__'])])*/;
 
         return $builder->show();
     }

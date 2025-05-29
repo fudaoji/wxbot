@@ -162,4 +162,8 @@ class BotMember
 
         return $record;
     }
+
+    static function wxOfficialAccount(){
+        return ['notifymessage', 'weixinguanhaozhushou', 'weixin', 'newsapp'];
+    }
 }

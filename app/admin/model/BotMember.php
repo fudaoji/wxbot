@@ -331,12 +331,18 @@ class BotMember extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     function isIgnore($data, $driver = Bot::PROTOCOL_EXTIAN){
-        switch ($driver){
+        if(strpos($data['wxid'], 'wxid_') !== false){
+            return false;
+        }
+        if($data['wxid'] == 'weixin' || strpos($data['wxid'], 'gh_') !== false){
+            return true;
+        }
+        /*switch ($driver){
             default:
-                if(!in_array($data['type'], [3, 32771, 32835]) || $data['wxid'] == 'weixin' || strpos($data['wxid'], 'gh_') !== false){
+                if(!in_array($data['type'], [1, 3, 32771, 32835, 2051, 515, 8388611, 8388609])){
                     return true;
                 }
-        }
+        }*/
         return false;
     }
 

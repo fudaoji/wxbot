@@ -143,6 +143,8 @@ class Jsftask extends Botbase
             'plan_time' => date('Y-m-d H:i:s')
         ];
 
+        //todo  建议避开高峰期检测
+        
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')

@@ -142,6 +142,7 @@ class Bot extends Base
 
             $update = ['id' => $task['id'], 'status' => JsfTask::STATUS_ACTIVE];
             if(empty($wxids)){
+                $update['complete_time'] = time() + 5;
                 $update['status'] = JsfTask::STATUS_OVER;
             }
             JsfTask::model()->updateOne($update);

@@ -173,6 +173,9 @@ class Index extends Base
      * @author: fudaoji<fdj@kuryun.cn>
      */
     public function getSystemInit(){
+        if(!input('safe', 0)){
+            $this->redirect(url('index/index'));
+        }
         $homeInfo = [
             'title' => '首页',
             'href'  => '/admin/index/welcome',

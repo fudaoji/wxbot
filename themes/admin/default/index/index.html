@@ -211,7 +211,7 @@
                 });
 
                 var options = {
-                    iniUrl: "{:url('getSystemInit')}",    // 初始化接口
+                    iniUrl: "{:url('getSystemInit', ['safe' => 1])}",    // 初始化接口
                     clearUrl: "{:url('clearCache')}", // 缓存清理接口
                     urlHashLocation: true,      // 是否打开hash定位
                     bgColorDefault: false,      // 主题默认配置

@@ -1260,6 +1260,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				top: '-140px',
 				bottom: reHeight + 3 + 'px'
 			});*/
+			/*dl.css({
+				top: 'auto',
+				bottom: reHeight + 3 + 'px'
+			});*/
 			dl.css({
 				top: reHeight + 'px',
 				bottom: 'auto'

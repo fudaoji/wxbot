@@ -63,6 +63,7 @@ class Handler extends BaseCtl
     protected $ajaxData;
     protected $addonOptions;
     protected $isNewFriend = false;
+    protected $isNewGroup = false;
     protected $beAtStr = [];
     protected $conversationId = '';
 
@@ -432,6 +433,7 @@ class Handler extends BaseCtl
         $this->addonOptions['group'] = $this->group;
         $this->addonOptions['content'] = $this->content;
         $this->addonOptions['is_new_friend'] = $this->isNewFriend;
+        $this->addonOptions['is_new_group'] = $this->isNewGroup;
         $this->addonOptions['be_at_str'] = $this->beAtStr;
 
         /*if($this->groupWxid == '34503818873@chatroom'){
@@ -476,7 +478,7 @@ class Handler extends BaseCtl
                     $class = new $class_name();
                     if(method_exists($class, $this->addonHandlerName)){
                         file_exists($common = addon_path($v['name'], 'common.php')) and require_once $common;
-
+                        //Logger::error($this->getAddonOptions());
                         $class->init($this->getAddonOptions())->{$this->addonHandlerName}();
 
                     }

@@ -56,9 +56,13 @@ class Jsftask extends Botbase
 
                 foreach ($list as $k => $v){
                     if($v['wxids']){
-                        $jsfs = model('admin/botMember')->getField(['nickname'], ['wxid' => ['in', $v['wxids']], 'uin' => $this->bot['uin']]);{}
+                        $jsfs = model('admin/botMember')->getField(['wxid','nickname','username'], ['wxid' => ['in', $v['wxids']], 'uin' => $this->bot['uin']]);
+                        $_str = '';
                         if(count($jsfs)){
-                            $v['jsf'] = implode(',', $jsfs);
+                            foreach ($jsfs as $jsf){
+                                $_str .= $jsf['nickname'] . "(".($jsf['username'] ?: $jsf['wxid'])."),";
+                            }
+                            $v['jsf'] = trim($_str, ',');
                         }
                     }else{
                         $v['jsf'] = '无';
@@ -144,7 +148,7 @@ class Jsftask extends Botbase
         ];
 
         //todo  建议避开高峰期检测
-        
+
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')

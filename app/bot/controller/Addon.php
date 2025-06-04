@@ -10,9 +10,11 @@
 namespace app\bot\controller;
 
 use app\bot\handler\Handler;
+use ky\Logger;
 
 class Addon extends Handler
 {
+
     public function init($options = []){
         $this->botClient = $options['bot_client'];
         $this->botWxid = $options['bot_wxid'];
@@ -23,6 +25,7 @@ class Addon extends Handler
         $this->group = $options['group'];
         $this->content = $options['content'];
         $this->isNewFriend = $options['is_new_friend'];
+        $this->isNewGroup = $options['is_new_group'];
 
         $this->driver = $options['driver'];
         $this->ajaxData = $options['ajax_data'];

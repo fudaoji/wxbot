@@ -51,7 +51,7 @@ class Bot extends Base
             $arr[] = $wxid;
             $arr = array_unique($arr);
             $update = ['id' => $t['id'], 'wxids' => trim(implode(',', $arr), ',')];
-            if($index == $total){
+            if($index >= $total){
                 $update['complete_time'] = time() + 5;
                 $update['status'] = JsfTask::STATUS_OVER;
             }

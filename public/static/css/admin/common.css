@@ -101,6 +101,7 @@ body {
     padding: 20px;
     background-color: #fff;
     width: 100%;
+    z-index: 100;
 }
 #ajax-form{
     padding-bottom: 60px;
@@ -110,8 +111,4 @@ body {
 .layui-elem-quote-right{
     border-left: none;
     border-right: 5px solid #16b777;
-}
-
-.xm-select-parent .xm-select{
-    z-index: 0 !important;
 }

@@ -14,8 +14,8 @@
         layui.use(['jquery','formSelects'], function(){
             var formSelects = layui.formSelects
                 , $ = layui.jquery
-                , obj = {:json_encode($form['options'])}
-        , initValue = {:json_encode($form['value'])}
+                , obj = {:json_encode($form['options'] ?? [])}
+        , initValue = {:json_encode($form['value'] ?? [])}
         , data = [];
             for(var i in obj){
                 data.push({name: obj[i], value: i});

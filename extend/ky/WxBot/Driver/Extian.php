@@ -385,7 +385,7 @@ class Extian extends Base
         $params['wxid'] = $params['to_wxid'];
         $res = $this->doRequest(self::API_SEND_IMG, $params);
         if($params['imgType'] == 'url' && empty($res['code'])){
-            $params['img'] = base64_encode(file_get_contents($params['path']));
+            $params['img'] = base64_encode(@file_get_contents($params['path']));
             $params['imgType'] = "base64";
             $res = $this->doRequest(self::API_SEND_IMG, $params);
         }
@@ -426,7 +426,13 @@ class Extian extends Base
         $params['file'] = $params['path'];
         $params['fileType'] = empty($params['file_type']) ? 'url' : $params['file_type'];
         $params['wxid'] = $params['to_wxid'];
-        return $this->doRequest(self::API_SEND_FILE_MSG, $params);
+        $res = $this->doRequest(self::API_SEND_FILE_MSG, $params);
+        if($params['fileType'] == 'url' && empty($res['code'])){
+            $params['file'] = base64_encode(@file_get_contents($params['path']));
+            $params['fileType'] = "base64";
+            $res = $this->doRequest(self::API_SEND_FILE_MSG, $params);
+        }
+        return $res;
     }
 
     public function sendShareLinkToFriends($params = [])

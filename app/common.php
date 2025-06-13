@@ -11,6 +11,51 @@
 
 use app\common\model\Upload;
 
+/**
+ * 获取远程文件的后缀名
+ */
+if(!function_exists('get_remote_file_extension')) {
+    function get_remote_file_extension($url)
+    {
+        // 1. 优先从URL路径解析扩展名
+        $path = parse_url($url, PHP_URL_PATH);
+        if ($path && preg_match('/\.([a-z0-9]+)(?:[\?#]|$)/i', $path, $matches)) {
+            return strtolower($matches[1]);
+        }
+
+        // 2. 通过HEAD请求获取Content-Type
+        $headers = @get_headers($url, 1);
+        if (isset($headers['Content-Type'])) {
+            $mime = $headers['Content-Type'];
+            $mimeMap = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'application/pdf' => 'pdf',
+                // 可扩展更多MIME映射...
+            ];
+            return $mimeMap[$mime] ?? null;
+        }
+
+        // 3. 终极方案：下载文件头检测二进制特征
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $data = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode == 200 && !empty($data)) {
+            $finfo = new finfo(FILEINFO_EXTENSION);
+            $ext = $finfo->buffer($data);
+            return $ext !== '???' ? explode('/', $ext)[0] : null;
+        }
+
+        return ''; // 所有方法均失败
+    }
+}
+
 if(!function_exists('replace_in_files')){
     /**
      * 替换文件内容

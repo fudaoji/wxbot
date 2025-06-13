@@ -383,8 +383,13 @@ class Extian extends Base
         $params['img'] = $params['path'];
         $params['imgType'] = empty($params['img_type']) ? 'url' : $params['img_type'];
         $params['wxid'] = $params['to_wxid'];
-        dump($params);
-        return $this->doRequest(self::API_SEND_IMG, $params);
+        $res = $this->doRequest(self::API_SEND_IMG, $params);
+        if($params['imgType'] == 'url' && empty($res['code'])){
+            $params['img'] = base64_encode(file_get_contents($params['path']));
+            $params['imgType'] = "base64";
+            $res = $this->doRequest(self::API_SEND_IMG, $params);
+        }
+        return $res;
     }
 
     public function sendTextToFriends($params = [])

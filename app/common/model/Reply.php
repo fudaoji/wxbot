@@ -45,6 +45,7 @@ class Reply extends Base
             'admin_id' => ['in', [$bot['staff_id'], $bot['admin_id']]],
             'id' => $reply['media_id']
         ]);*/
+
         $media = MediaService::getMedia([
             'media_type' => $reply['media_type'],
             'staff_id' => $bot['staff_id'],

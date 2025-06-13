@@ -384,9 +384,14 @@ class Extian extends Base
         $params['imgType'] = empty($params['img_type']) ? 'url' : $params['img_type'];
         $params['wxid'] = $params['to_wxid'];
         $res = $this->doRequest(self::API_SEND_IMG, $params);
-        if($params['imgType'] == 'url' && empty($res['code'])){
-            $params['img'] = base64_encode(@file_get_contents($params['path']));
-            $params['imgType'] = "base64";
+        if(empty($res['code']) && $params['imgType'] == 'url'){
+            $res = $this->saveFile([
+                'data' => $params['img']
+            ]);
+            if(!empty($res['code'])){
+                $params['img'] = $res['data'];
+            }
+            $params['imgType'] = "file";
             $res = $this->doRequest(self::API_SEND_IMG, $params);
         }
         return $res;
@@ -427,9 +432,14 @@ class Extian extends Base
         $params['fileType'] = empty($params['file_type']) ? 'url' : $params['file_type'];
         $params['wxid'] = $params['to_wxid'];
         $res = $this->doRequest(self::API_SEND_FILE_MSG, $params);
-        if($params['fileType'] == 'url' && empty($res['code'])){
-            $params['file'] = base64_encode(@file_get_contents($params['path']));
-            $params['fileType'] = "base64";
+        if(empty($res['code']) && $params['fileType'] == 'url'){
+            $res = $this->saveFile([
+                'data' => $params['file']
+            ]);
+            if(!empty($res['code'])){
+                $params['file'] = $res['data'];
+            }
+            $params['fileType'] = "file";
             $res = $this->doRequest(self::API_SEND_FILE_MSG, $params);
         }
         return $res;

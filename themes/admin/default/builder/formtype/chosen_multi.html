@@ -7,58 +7,41 @@
         {$form['title']}
     </label>
     <div class="layui-input-block">
-        <select
-                xm-select="{$form['name']}"
-                multiple="multiple"
-                lay-search
-                id="{$form['name']}"
-                name="{$form['name']}"
-                xm-select-show-count="10"
-                {$form['extra_attr']??''}
-                xm-select-search=""
-                xm-select-skin="normal"
-        >
-        {notempty name="form.options"}
-        {foreach $form['options'] as $k => $v}
-        <option
-                value="{$k}"
-                {if condition="isset($form['value']) and  in_array($k, $form['value'])"} selected {/if}
-        >{$v|raw}</option>
-        {/foreach}
-        {/notempty}
-        </select>
-
-        {if !empty($form['tip'])}
-        <tip class="form-tip">{$form['tip']}</tip>
-        {/if}
+        <div  id="{$form['name']}"></div>
     </div>
-
+    <script src="/static/libs/xm-select/xm-select.js"></script>
     <script>
         layui.use(['jquery','formSelects'], function(){
             var formSelects = layui.formSelects
-            , $ = layui.jquery;
+                , $ = layui.jquery
+                , obj = {:json_encode($form['options'])}
+        , initValue = {:json_encode($form['value'])}
+        , data = [];
+            for(var i in obj){
+                data.push({name: obj[i], value: i});
+            }
 
-            {if !empty($form['extra_attr']) && strpos($form['extra_attr'], 'required') !== false}
-            setTimeout(function () {
-                $("input[name='{$form.name}']").attr('required', true);
-            }, 1000);
-            {/if}
+            xmSelect.render({
+                el: "#{$form['name']}",
+                tips: "{$form['tip'] ?? ''}",
+                name: "{$form['name']}",
+                filterable: true,
+                initValue: initValue,
+                direction: 'auto',
+                //paging: true,
+                model: {
+                    label: {
+                        type: 'block',
+                        block: {
+                            //最大显示数量, 0:不限制
+                            showCount: 15,
+                            //是否显示删除图标
+                            showIcon: true,
+                        }
+                    }
+                },
+                data: data,
+            })
         });
     </script>
-
-    <style>
-        .xm-select-title {
-            height: auto !important;
-        }
-        .xm-select-parent .xm-select {
-            position: relative;
-        }
-        .xm-select--suffix {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: -1;
-        }
-    </style>
 </div>

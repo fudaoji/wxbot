@@ -34,4 +34,31 @@ class Addon extends Handler
         $this->beAtStr = $options['be_at_str'];
         return $this;
     }
+
+    /**
+     * 应用内省略模块和控制的快速url
+     * @param string $url
+     * @param array $vars
+     * @param bool $suffix
+     * @param bool $domain
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function url(string $url = '', array $vars = [], $suffix = true, $domain = false){
+        $url_arr = explode('/', $url);
+        switch (count($url_arr)){
+            case 1:
+                $url = $this->module.'/'.$this->controller . '/'.$url;
+                break;
+            case 2:
+                $url = $this->module.'/'.$url;
+                break;
+        }
+        $url = trim($url, '/');
+        $module = request()->root();
+        $rule = request()->rule()->getRule();
+        $rule_arr = explode('/', $rule);
+        $addon = $rule_arr[0];
+        return url("/{$module}/{$addon}/{$url}", $vars, $suffix, $domain)->build();
+    }
 }

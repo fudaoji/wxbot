@@ -205,7 +205,7 @@ class Keyword extends Botbase
         $keywords = trim($post_data['keyword'], '|');
         $keyword_arr = explode('|', $keywords);
 
-        if(count($post_data['media_id_type']) > 0){
+        if(!empty($post_data['media_id_type']) && count($post_data['media_id_type']) > 0){
             $medias = [];
             foreach ($post_data['media_id_type'] as $id_type){
                 list($id, $type) = explode('_', $id_type);

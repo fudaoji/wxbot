@@ -11,6 +11,7 @@ namespace app\common\service;
 
 
 use app\constants\Bot as BotConst;
+use ky\Logger;
 
 class Media
 {
@@ -42,21 +43,21 @@ class Media
      */
     static function getMedia($params = [], $refresh = false){
         ksort($params);
+        $params['media_id'] = intval($params['media_id']);
         $cache_key = serialize($params);
         $data = cache($cache_key);
         if(empty($data) || $refresh){
             $data = model('media_' . $params['media_type'])->getOneByMap([
                 'admin_id' => $params['staff_id'],
                 'id' => $params['media_id']
-            ], true);
+            ], true, true);
             if(empty($data)){
                 $data = model('media_' . $params['media_type'])->getOneByMap([
                     'admin_id' => $params['admin_id'],
                     'id' => $params['media_id']
-                ], true);
+                ], true, true);
             }
         }
-
         cache($cache_key, $data);
         return $data;
     }

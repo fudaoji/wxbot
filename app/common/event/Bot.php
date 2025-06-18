@@ -54,7 +54,6 @@ class Bot extends Base
                         'uuid' => $bot['uuid'],
                         'msgid' => $msg_id
                     ]);
-                    //Logger::error($res);
                     if(!empty($res['data'][0]['ext2'])){
                         $path = str_replace('.jpg', '.mp4', $res['data'][0]['ext2']);
                         $tries = 0;

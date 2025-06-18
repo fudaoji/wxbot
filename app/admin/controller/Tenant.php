@@ -74,7 +74,8 @@ class Tenant extends Base
             ->addTableColumn(['title' => '姓名', 'field' => 'realname', 'minWidth' => 100])
             ->addTableColumn(['title' => '注册时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 170])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status(), 'minWidth' => 100])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 160, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 180, 'type' => 'toolbar'])
+            ->addRightButton('self', ['text' => '快速登录','href' => url('index/index', ['quicklogin' => '__data_id__']), 'target' => '_blank'])
             ->addRightButton('edit')
             ->addRightButton('self', ['title' => '修改密码','class' => 'layui-btn layui-btn-warm layui-btn-xs','href' => url('admin/setPassword', ['id' => '__data_id__'])]);
         return $builder->show();

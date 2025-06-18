@@ -9,6 +9,7 @@
 
 namespace app\admin\controller;
 
+use app\admin\model\Admin as AdminM;
 use app\common\model\TjGroup;
 use think\facade\Cache;
 use app\constants\Bot;

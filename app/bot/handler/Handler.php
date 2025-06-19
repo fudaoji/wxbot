@@ -219,6 +219,17 @@ class Handler extends BaseCtl
     }
 
     /**
+     * 判断是否被艾特
+     * @return bool
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function checkBeAt(){
+        return ! (strpos($this->content['msg'], $this->beAtStr[0]) === false
+            && strpos($this->content['msg'], $this->beAtStr[1]) === false
+            && strpos($this->content['des'], "在群聊中@了你") === false);
+    }
+
+    /**
      * 验证回调事件类型
      * Author: fudaoji<fdj@kuryun.cn>
      */

@@ -64,13 +64,13 @@ class Base extends BaseCtl
     protected function isLogin(){
         $this->aid = (int)session($this->sKey);
         $this->adminInfo = model("admin/admin")->getOne($this->aid);
-        if(AdminM::isFounder($this->adminInfo) && ($aid = $this->quickLogin())){
-            $this->aid = $aid;
-            $this->adminInfo = model("admin/admin")->getOne($this->aid);
-        }
         if (empty($this->adminInfo)) {
             $this->request->isGet() && cookie('redirect_url', request()->url());
             $this->redirect(url('admin/auth/login'));
+        }
+        if(AdminM::isFounder($this->adminInfo) && ($aid = $this->quickLogin())){
+            $this->aid = $aid;
+            $this->adminInfo = model("admin/admin")->getOne($this->aid);
         }
         $this->adminInfo['is_founder'] = AdminM::isFounder($this->adminInfo);
         $this->assign['admin'] = $this->adminInfo;

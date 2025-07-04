@@ -72,9 +72,10 @@ class Tenant extends Base
             ->addTableColumn(['title' => '角色', 'field' => 'group_id', 'type' => 'enum', 'options' => $group_list, 'minWidth' => 100])
             ->addTableColumn(['title' => '手机号', 'field' => 'mobile', 'minWidth' => 100])
             ->addTableColumn(['title' => '姓名', 'field' => 'realname', 'minWidth' => 100])
+            ->addTableColumn(['title' => '备注', 'field' => 'remark', 'minWidth' => 200])
             ->addTableColumn(['title' => '注册时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 170])
             ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'switch', 'options' => Common::status(), 'minWidth' => 100])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 180, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 190, 'type' => 'toolbar'])
             ->addRightButton('self', ['text' => '快速登录','href' => url('index/index', ['quicklogin' => '__data_id__']), 'target' => '_blank'])
             ->addRightButton('edit')
             ->addRightButton('self', ['title' => '修改密码','class' => 'layui-btn layui-btn-warm layui-btn-xs','href' => url('admin/setPassword', ['id' => '__data_id__'])]);
@@ -93,7 +94,8 @@ class Tenant extends Base
             ->addFormItem('password', 'password', '密码', '6-20位', [], 'required minlength=6 maxlength=20')
             ->addFormItem('group_id', 'select', '角色', '角色', GroupService::getTenantGroupIdToTitle($this->adminInfo), 'required')
             ->addFormItem('mobile', 'text', '手机', '手机')
-            ->addFormItem('realname', 'text', '姓名', '姓名');
+            ->addFormItem('realname', 'text', '姓名', '姓名')
+            ->addFormItem('remark', 'textarea', '备注', '不超过200字');
 
         return $builder->show();
     }
@@ -118,6 +120,7 @@ class Tenant extends Base
             ->addFormItem('group_id', 'select', '角色', '角色', GroupService::getTenantGroupIdToTitle($this->adminInfo), 'required')
             ->addFormItem('mobile', 'text', '手机', '手机')
             ->addFormItem('realname', 'text', '姓名', '姓名')
+            ->addFormItem('remark', 'textarea', '备注', '不超过200字')
             ->setFormData($data);
 
         return $builder->show();

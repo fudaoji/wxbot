@@ -62,6 +62,7 @@ class Adminaddon extends Base
             ->addTableColumn(['title' => '应用信息', 'field' => 'app_info', 'minWidth' => 120])
             ->addTableColumn(['title' => '客户信息', 'field' => 'tenant_info', 'minWidth' => 120])
             ->addTableColumn(['title' => '到期时间', 'field' => 'deadline', 'minWidth' => 120])
+            ->addTableColumn(['title' => '备注', 'field' => 'remark', 'minWidth' => 200])
             ->addTableColumn(['title' => '首次开通时间', 'field' => 'create_time', 'minWidth' => 140])
             ->addTableColumn(['title' => '最后修改时间', 'field' => 'update_time', 'minWidth' => 140])
             ->addTableColumn(['title' => '操作', 'minWidth' => 160, 'type' => 'toolbar'])
@@ -76,6 +77,7 @@ class Adminaddon extends Base
             $post_data = input('post.');
             $data = [
                 'deadline' => strtotime($post_data['deadline']),
+                'remark' => $post_data['remark']
             ];
             Db::startTrans();
             try {
@@ -124,6 +126,7 @@ class Adminaddon extends Base
             ->addFormItem('app_name', 'chosen_multi', '应用', '应用', $app_list, 'required')
             ->addFormItem('company_id', 'chosen', '会员', '会员', $company_list, 'required')
             ->addFormItem('deadline', 'datetime', '到期时间', '到期时间', [], 'required')
+            ->addFormItem('remark', 'textarea', '备注', '不超过200字')
             ->setFormData(['company_id' => $company_id]);
         return $builder->show();
     }
@@ -146,6 +149,7 @@ class Adminaddon extends Base
         $builder->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('deadline', 'datetime', '到期时间', '到期时间', [], 'required')
+            ->addFormItem('remark', 'textarea', '备注', '不超过200字')
             ->setFormData($data);
         return $builder->show();
     }

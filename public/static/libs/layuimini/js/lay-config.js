@@ -14,6 +14,7 @@ layui.config({
     base: rootPath + "lay-module/",
     version: true
 }).extend({
+    uploadMulti: "uploadMulti/uploadMulti",  //多文件多类型多引擎上传组件
     stepprogress: 'stepprogress/stepprogress', // 分步表单扩展
     authtree: "authtree/authtree", //tree增强   https://gitee.com/kevin402502/layui-authtree
     excel: "excel/excel", //excel 操作  https://gitee.com/wangerzi/layui-excel

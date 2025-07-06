@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui多图多视频上传插件</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.18/css/layui.min.css">
+    <style>
+        /* 上传组件样式 */
+        .layui-upload-form {
+            display: inline-block;
+            width: 100%;
+        }
+
+        .layui-upload-form .layui-upload-box {
+            position: relative;
+            min-height: 100px;
+            border: 1px dashed #e6e6e6;
+            border-radius: 2px;
+            padding: 10px;
+            background-color: #fbfbfb;
+            transition: all 0.3s;
+        }
+
+        .layui-upload-form .layui-upload-box:hover {
+            border-color: #1E9FFF;
+        }
+
+        .layui-upload-form .layui-upload-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .layui-upload-form .layui-upload-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 2px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        }
+
+        .layui-upload-form .layui-upload-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .layui-upload-form .layui-upload-item-video {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+        }
+
+        .layui-upload-form .layui-upload-item-video i {
+            font-size: 30px;
+            color: #fff;
+        }
+
+        .layui-upload-form .layui-upload-item-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: rgba(0,0,0,.1);
+        }
+
+        .layui-upload-form .layui-upload-item-progress-bar {
+            height: 100%;
+            background-color: #1E9FFF;
+            transition: width 0.3s;
+        }
+
+        .layui-upload-form .layui-upload-item-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            background-color: rgba(0,0,0,.5);
+            padding: 2px;
+            border-radius: 0 0 0 2px;
+        }
+
+        .layui-upload-form .layui-upload-item:hover .layui-upload-item-actions {
+            opacity: 1;
+        }
+
+        .layui-upload-form .layui-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border: 1px dashed #e6e6e6;
+            border-radius: 2px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .layui-upload-form .layui-upload-btn:hover {
+            border-color: #1E9FFF;
+            color: #1E9FFF;
+        }
+
+        .layui-upload-form .layui-upload-btn i {
+            font-size: 24px;
+        }
+
+        .layui-upload-form .layui-upload-error {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,0,0,.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f00;
+            font-size: 12px;
+        }
+
+        .layui-upload-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row">
+        <div class="layui-col-md8 offset-md2">
+            <h3 class="layui-mt20 layui-mb20">多图多视频上传示例</h3>
+
+            <form class="layui-form" lay-filter="uploadForm">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">存储类型</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="storageType" value="aliyun" title="阿里云OSS" checked>
+                        <input type="radio" name="storageType" value="qiniu" title="七牛云">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图片上传</label>
+                    <div class="layui-input-block">
+                        <div id="imageUpload" class="layui-upload-form"></div>
+                        <div class="layui-form-mid layui-word-aux">支持多图上传，最大单文件10MB</div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">视频上传</label>
+                    <div class="layui-input-block">
+                        <div id="videoUpload" class="layui-upload-form"></div>
+                        <div class="layui-form-mid layui-word-aux">支持多视频上传，最大单文件50MB</div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.staticfile.org/layui/2.8.18/layui.min.js"></script>
+
+<script>
+    layui.define(['layer', 'upload'], function(exports) {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var upload = layui.upload;
+
+        // 存储类型枚举
+        var STORAGE_TYPE = {
+            ALIYUN: 'aliyun',
+            QINIU: 'qiniu'
+        };
+
+        // 存储SDK加载状态
+        var sdkLoaded = {
+            aliyun: false,
+            qiniu: false
+        };
+
+        // 存储SDK加载Promise
+        var sdkPromises = {
+            aliyun: null,
+            qiniu: null
+        };
+
+        // 加载SDK文件
+        function loadSdk(storageType, retryCount = 3) {
+            if (sdkLoaded[storageType]) {
+                return Promise.resolve();
+            }
+
+            if (sdkPromises[storageType]) {
+                return sdkPromises[storageType];
+            }
+
+            var scriptUrl;
+
+            switch(storageType) {
+                case STORAGE_TYPE.ALIYUN:
+                    scriptUrl = 'https://gosspublic.alicdn.com/aliyun-oss-sdk-6.17.0.min.js';
+                    break;
+
+                case STORAGE_TYPE.QINIU:
+                    scriptUrl = 'https://cdn.jsdelivr.net/npm/qiniu-js@3.0/dist/qiniu.min.js';
+                    break;
+            }
+
+            sdkPromises[storageType] = new Promise(function(resolve, reject) {
+                var script = document.createElement('script');
+                script.src = scriptUrl;
+
+                script.onload = function() {
+                    sdkLoaded[storageType] = true;
+                    resolve();
+                };
+
+                script.onerror = function() {
+                    if (retryCount > 0) {
+                        // 重试机制，延迟1秒后重试
+                        setTimeout(() => {
+                            loadSdk(storageType, retryCount - 1).then(resolve).catch(reject);
+                        }, 1000);
+                    } else {
+                        reject(new Error(`Failed to load ${storageType} SDK after ${3} attempts`));
+                    }
+                };
+
+                document.head.appendChild(script);
+            });
+
+            return sdkPromises[storageType];
+        }
+
+        // 上传组件构造函数
+        var UploadMulti = function(options) {
+            this.options = $.extend(true, {
+                elem: null,                 // 绑定元素
+                storageType: STORAGE_TYPE.ALIYUN, // 默认存储类型
+                maxCount: 10,               // 最大上传数量
+                maxSize: 10,                // 最大文件大小(MB)
+                accept: 'file',             // 接受的文件类型
+                multiple: true,             // 是否允许多文件
+                autoUpload: true,           // 是否自动上传
+                uploadText: '点击上传',     // 上传按钮文本
+                onSuccess: function(file, res) {}, // 上传成功回调
+                onError: function(file, error) {}, // 上传失败回调
+                onProgress: function(file, percent) {}, // 上传进度回调
+                onChange: function(files) {} // 文件列表变化回调
+            }, options);
+
+            this.init();
+        };
+
+        // 初始化方法
+        UploadMulti.prototype.init = function() {
+            var that = this;
+            var options = this.options;
+
+            // 创建上传容器
+            this.container = $(options.elem);
+            this.createUploadBox();
+
+            // 初始化上传实例
+            this.uploadInst = upload.render({
+                elem: this.uploadBtn[0],
+                url: 'about:blank', // 禁用默认上传
+                accept: options.accept,
+                acceptMime: options.acceptMime,
+                multiple: options.multiple,
+                size: options.maxSize * 1024, // MB转KB
+                auto: false,
+                number: options.maxCount,
+                choose: function(obj) {
+                    var files = obj.pushFile(); // 获取选择的文件
+                    that.handleFiles(obj, files);
+                }
+            });
+
+            // 加载存储SDK并初始化客户端
+            this.loadStorageSdk().then(function() {
+                that.initStorageClient();
+            }).catch(function(error) {
+                layer.msg(`加载存储SDK失败: ${error.message}`, {icon: 2});
+                console.error('加载存储SDK失败:', error);
+            });
+        };
+
+        // 加载存储SDK
+        UploadMulti.prototype.loadStorageSdk = function() {
+            var that = this;
+            var options = this.options;
+
+            // 显示加载状态
+            this.showLoading('正在加载存储SDK...');
+
+            return loadSdk(options.storageType).then(function() {
+                that.hideLoading();
+            });
+        };
+
+        // 创建上传容器
+        UploadMulti.prototype.createUploadBox = function() {
+            var options = this.options;
+
+            this.container.html(`
+          <div class="layui-upload-box">
+            <div class="layui-upload-loading layui-hide">
+              <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+            </div>
+            <div class="layui-upload-list" id="uploadList"></div>
+            <div class="layui-upload-btn" id="uploadBtn">
+              <i class="layui-icon layui-icon-upload-drag"></i>
+              <div>${options.uploadText}</div>
+            </div>
+          </div>
+        `);
+
+            this.uploadList = this.container.find('#uploadList');
+            this.uploadBtn = this.container.find('#uploadBtn');
+            this.loading = this.container.find('.layui-upload-loading');
+        };
+
+        // 显示加载状态
+        UploadMulti.prototype.showLoading = function(text) {
+            this.loading.find('i').next().remove();
+            if (text) {
+                this.loading.find('i').after(`<div class="layui-mt5">${text}</div>`);
+            }
+            this.loading.removeClass('layui-hide');
+        };
+
+        // 隐藏加载状态
+        UploadMulti.prototype.hideLoading = function() {
+            this.loading.addClass('layui-hide');
+        };
+
+        // 初始化存储客户端
+        UploadMulti.prototype.initStorageClient = function() {
+            var options = this.options;
+
+            switch(options.storageType) {
+                case STORAGE_TYPE.ALIYUN:
+                    this.storageClient = new OSS({
+                        region: options.aliyun.region,
+                        accessKeyId: options.aliyun.accessKeyId,
+                        accessKeySecret: options.aliyun.accessKeySecret,
+                        bucket: options.aliyun.bucket
+                    });
+                    break;
+
+                case STORAGE_TYPE.QINIU:
+                    this.storageClient = {
+                        upload: function(file, key, token, putExtra, config) {
+                            var observer = {
+                                next: function() {},
+                                error: function() {},
+                                complete: function() {}
+                            };
+
+                            var subscription = {
+                                subscribe: function(obs) {
+                                    observer = obs;
+
+                                    var formUploader = new qiniu.form_up.FormUploader(config);
+                                    var putExtra = putExtra || new qiniu.form_up.PutExtra();
+
+                                    formUploader.put(token, key, file, putExtra, function(respErr, respBody, respInfo) {
+                                        if (respErr) {
+                                            observer.error(respErr);
+                                        } else {
+                                            observer.complete(respBody);
+                                        }
+                                    });
+
+                                    return {
+                                        unsubscribe: function() {}
+                                    };
+                                }
+                            };
+
+                            return subscription;
+                        }
+                    };
+                    break;
+            }
+        };
+
+        // 处理选择的文件
+        UploadMulti.prototype.handleFiles = function(obj, files) {
+            var that = this;
+            var options = this.options;
+
+            // 检查文件数量是否超过限制
+            var currentCount = this.uploadList.find('.layui-upload-item').length;
+            var selectedCount = Object.keys(files).length;
+
+            if (currentCount + selectedCount > options.maxCount) {
+                layer.msg(`最多只能上传${options.maxCount}个文件`, {icon: 2});
+                return;
+            }
+
+            // 预览文件
+            obj.preview(function(index, file, result) {
+                var fileItem = that.createFileItem(file, result);
+                that.uploadList.append(fileItem);
+
+                if (options.autoUpload) {
+                    that.uploadFile(file, fileItem, index);
+                }
+
+                // 更新文件列表
+                that.updateFileList();
+            });
+        };
+
+        // 创建文件项
+        UploadMulti.prototype.createFileItem = function(file, result) {
+            var isImage = file.type.indexOf('image') !== -1;
+            var isVideo = file.type.indexOf('video') !== -1;
+
+            var fileItem = $(`
+          <div class="layui-upload-item" data-name="${file.name}">
+            ${isImage ? `<img src="${result}" alt="${file.name}">` :
+                    isVideo ? `<div class="layui-upload-item-video"><i class="layui-icon layui-icon-video"></i></div>` :
+                            `<div class="layui-upload-item-file"><i class="layui-icon layui-icon-file"></i>${file.name}</div>`}
+            <div class="layui-upload-item-progress">
+              <div class="layui-upload-item-progress-bar" style="width: 0%"></div>
+            </div>
+            <div class="layui-upload-item-actions">
+              <button class="layui-btn layui-btn-xs layui-btn-danger layui-upload-delete">
+                <i class="layui-icon layui-icon-delete"></i>
+              </button>
+            </div>
+          </div>
+        `);
+
+            // 绑定删除事件
+            fileItem.find('.layui-upload-delete').on('click', function() {
+                fileItem.remove();
+                that.updateFileList();
+            });
+
+            return fileItem;
+        };
+
+        // 上传文件
+        UploadMulti.prototype.uploadFile = function(file, fileItem, index) {
+            var that = this;
+            var options = this.options;
+            var progressBar = fileItem.find('.layui-upload-item-progress-bar');
+
+            // 生成文件名
+            var fileName = this.generateFileName(file);
+
+            // 检查存储客户端是否初始化
+            if (!this.storageClient) {
+                layer.msg('存储客户端未初始化', {icon: 2});
+                return;
+            }
+
+            // 根据存储类型选择上传方式
+            var uploadPromise;
+
+            switch(options.storageType) {
+                case STORAGE_TYPE.ALIYUN:
+                    uploadPromise = this.storageClient.put(fileName, file, {
+                        progress: function(p) {
+                            var percent = Math.round(p * 100);
+                            progressBar.width(percent + '%');
+                            options.onProgress(file, percent);
+                        }
+                    });
+                    break;
+
+                case STORAGE_TYPE.QINIU:
+                    uploadPromise = new Promise(function(resolve, reject) {
+                        // 使用新版七牛云SDK API
+                        const config = {
+                            useCdnDomain: true,
+                            region: qiniu.region[options.qiniu.region || 'z0']
+                        };
+
+                        const observer = {
+                            next: function(response) {
+                                var percent = Math.round(response.total.percent);
+                                progressBar.width(percent + '%');
+                                options.onProgress(file, percent);
+                            },
+                            error: function(err) {
+                                reject(err);
+                            },
+                            complete: function(res) {
+                                resolve({
+                                    key: res.key,
+                                    url: options.qiniu.domain + '/' + res.key
+                                });
+                            }
+                        };
+
+                        // 使用新版SDK的upload方法
+                        const subscription = qiniu.upload(
+                                file, fileName, options.qiniu.uploadToken, {}, config
+                        );
+
+                        subscription.subscribe(observer);
+                    });
+                    break;
+            }
+
+            // 处理上传结果
+            uploadPromise.then(function(res) {
+                fileItem.attr('data-url', res.url);
+                fileItem.attr('data-key', res.key);
+                options.onSuccess(file, res);
+                that.updateFileList();
+            }).catch(function(err) {
+                fileItem.append(`<div class="layui-upload-error">${err.message || '上传失败'}</div>`);
+                options.onError(file, err);
+            });
+        };
+
+        // 生成文件名
+        UploadMulti.prototype.generateFileName = function(file) {
+            var ext = file.name.split('.').pop();
+            var timestamp = new Date().getTime();
+            var randomStr = Math.random().toString(36).substr(2, 8);
+
+            return `${timestamp}_${randomStr}.${ext}`;
+        };
+
+        // 更新文件列表
+        UploadMulti.prototype.updateFileList = function() {
+            var files = [];
+
+            this.uploadList.find('.layui-upload-item').each(function() {
+                var item = $(this);
+                files.push({
+                    name: item.attr('data-name'),
+                    url: item.attr('data-url'),
+                    key: item.attr('data-key')
+                });
+            });
+
+            this.options.onChange(files);
+        };
+
+        // 暴露接口
+        exports('uploadMulti', function(options) {
+            return new UploadMulti(options);
+        });
+    });
+
+    // 使用示例
+    layui.use(['uploadMulti', 'form'], function() {
+        var uploadMulti = layui.uploadMulti;
+        var form = layui.form;
+
+        // 存储类型变更处理
+        form.on('radio(storageType)', function(data) {
+            layer.msg(`已切换到${data.value === 'aliyun' ? '阿里云' : '七牛云'}存储`);
+
+            // 这里可以重新初始化上传组件或执行其他操作
+        });
+
+        // 图片上传实例
+        var imageUpload = uploadMulti({
+            elem: '#imageUpload',
+            storageType: 'qiniu', // 默认存储类型
+            accept: 'images',
+            maxCount: 5,
+            maxSize: 10,
+            aliyun: {
+                region: 'oss-cn-hangzhou',
+                accessKeyId: 'LTAI5tQYu1MnTuHD4hd2TgDL',
+                accessKeySecret: '7ct2EfV9DvN8rBjo5BmKvgd7pqvImA',
+                bucket: 'guandaoji'
+            },
+            qiniu: {
+                domain: "{$qiniu.domain}",
+                uploadToken: "{$qiniu.uploadToken}",
+                region: "{$qiniu.region}"
+            },
+            onSuccess: function(file, res) {
+                layer.msg(`文件 ${file.name} 上传成功`);
+                console.log('上传成功:', res);
+            },
+            onError: function(file, error) {
+                layer.msg(`文件 ${file.name} 上传失败: ${error.message}`);
+                console.error('上传失败:', error);
+            }
+        });
+
+        // 视频上传实例
+        var videoUpload = uploadMulti({
+            elem: '#videoUpload',
+            storageType: 'qiniu',
+            accept: 'video',
+            maxCount: 3,
+            maxSize: 50,
+            uploadText: '点击上传视频',
+            aliyun: {
+                region: 'oss-cn-hangzhou',
+                accessKeyId: 'LTAI5tQYu1MnTuHD4hd2TgDL',
+                accessKeySecret: '7ct2EfV9DvN8rBjo5BmKvgd7pqvImA',
+                bucket: 'guandaoji'
+            },
+            qiniu: {
+                domain: "{$qiniu.domain}",
+                uploadToken: "{$qiniu.uploadToken}",
+                region: "{$qiniu.region}"
+            },
+            onSuccess: function(file, res) {
+                layer.msg(`视频 ${file.name} 上传成功`);
+                console.log('上传成功:', res);
+            },
+            onError: function(file, error) {
+                layer.msg(`视频 ${file.name} 上传失败: ${error.message}`);
+                console.error('上传失败:', error);
+            }
+        });
+
+        // 表单提交处理
+        form.on('submit(submit)', function(data) {
+            layer.msg('表单提交成功');
+            console.log('表单数据:', data.field);
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

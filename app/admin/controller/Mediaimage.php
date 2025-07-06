@@ -13,6 +13,10 @@ class Mediaimage extends Bbase
      * @var ImageM
      */
     protected $model;
+    /**
+     * @var array
+     */
+    private $tabList;
 
 
     /**
@@ -22,6 +26,10 @@ class Mediaimage extends Bbase
     {
         parent::initialize();
         $this->model = new ImageM();
+        $this->tabList = [
+            'add' => ['title' => '单个上传', 'href' => url('add')],
+            'addMulti' => ['title' => '批量上传', 'href' => url('addMulti')]
+        ];
     }
 
     public function index()
@@ -50,8 +58,10 @@ class Mediaimage extends Bbase
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "tip" => '图片名称']
         ])
             ->addTopButton('addnew')
+            ->addTopButton('addnew', ['text' => '批量上传', 'href' => url('addMulti')])
             ->addTableColumn(['title' => '图片名称', 'field' => 'title', 'minWidth' => 100])
             ->addTableColumn(['title' => '图片', 'field' => 'url', 'minWidth' => 120, "type" => 'picture'])
+            ->addTableColumn(['title' => '标签', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
@@ -70,9 +80,11 @@ class Mediaimage extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增图片')
+            ->setTabNav($this->tabList, __FUNCTION__)
             ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
-            ->addFormItem('image', 'picture_detail', '上传图片', '上传图片');
+            ->addFormItem('image', 'picture_detail', '上传图片', '上传图片')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
 
         return $builder->show();
     }
@@ -93,6 +105,7 @@ class Mediaimage extends Bbase
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('image', 'picture_detail', '上传图片', '上传图片', $data)
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,')
             ->setFormData($data);
 
         return $builder->show();
@@ -119,5 +132,45 @@ class Mediaimage extends Bbase
         }else{
             $this->error('数据保存出错');
         }
+    }
+
+    /**
+     * 批量添加
+     * @return mixed
+     */
+    public function addMulti()
+    {
+        if($this->request->isPost()){
+            $post_data = input('post.');
+            $post_data['admin_id'] = $this->adminInfo['id'];
+            if(empty($post_data['images'])){
+                $this->error('请上传图片!');
+            }
+            $images = explode('|', $post_data['images']);
+            unset($post_data['images']);
+            foreach ($images as $item){
+                [$post_data['title'], $post_data['url']] = explode('::', $item);
+                $res = $this->model->addOne($post_data);
+                if($res){
+                    MediaService::getMedia([
+                        'media_type' => 'text',
+                        'staff_id' => $this->bot['staff_id'],
+                        'admin_id' => $this->bot['admin_id'],
+                        'media_id' => $res['id']
+                    ], true);
+                }
+            }
+            $this->success('数据保存成功', '/undefined');
+        }
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('批量新增图片')
+            ->setTabNav($this->tabList, __FUNCTION__)
+            ->setPostUrl(url('addMulti'))
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
+            ->addFormItem('images', 'pictures_detail', '上传图片', '一次性不超过10张', ['maxCount' => 10], 'required')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
+
+        return $builder->show();
     }
 }

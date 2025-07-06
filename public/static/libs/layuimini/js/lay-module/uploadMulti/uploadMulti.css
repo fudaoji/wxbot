@@ -1,0 +1,230 @@
+/* 上传组件样式 */
+.layui-upload-form {
+    display: inline-block;
+    width: 100%;
+}
+
+.layui-upload-form .layui-upload-box {
+    position: relative;
+    min-height: 100px;
+    border: 1px dashed #e6e6e6;
+    border-radius: 2px;
+    padding: 10px;
+    background-color: #fbfbfb;
+    transition: all 0.3s;
+}
+
+.layui-upload-form .layui-upload-box:hover {
+    border-color: #1E9FFF;
+}
+
+.layui-upload-form .layui-upload-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.layui-upload-form .layui-upload-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 2px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    transition: all 0.3s;
+}
+
+.layui-upload-form .layui-upload-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+
+.layui-upload-form .layui-upload-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.layui-upload-form .layui-upload-item-video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    position: relative;
+}
+
+.layui-upload-form .layui-upload-item-video .play-icon {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+    transition: all 0.3s;
+}
+
+.layui-upload-form .layui-upload-item-video:hover .play-icon {
+    transform: scale(1.1);
+    background-color: rgba(30, 159, 255, 0.8);
+}
+
+.layui-upload-form .layui-upload-item-file {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f7fa;
+    flex-direction: column;
+    padding: 5px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.layui-upload-form .layui-upload-item-file i {
+    font-size: 24px;
+    margin-bottom: 5px;
+    transition: all 0.3s;
+}
+
+.layui-upload-form .layui-upload-item-file:hover i {
+    transform: scale(1.1);
+}
+
+/* 文件类型图标颜色 */
+.file-type-pdf i { color: #e34c26; }
+.file-type-doc i, .file-type-docx i { color: #2b579a; }
+.file-type-xls i, .file-type-xlsx i { color: #217346; }
+.file-type-ppt i, .file-type-pptx i { color: #d24726; }
+.file-type-txt i { color: #555555; }
+.file-type-zip i, .file-type-rar i { color: #ff7500; }
+.file-type-unknown i { color: #888888; }
+
+.layui-upload-form .layui-upload-item-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background-color: rgba(0,0,0,.1);
+}
+
+.layui-upload-form .layui-upload-item-progress-bar {
+    height: 100%;
+    background-color: #1E9FFF;
+    transition: width 0.3s;
+}
+
+.layui-upload-form .layui-upload-item-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background-color: rgba(0,0,0,.5);
+    padding: 2px;
+    border-radius: 0 0 0 2px;
+}
+
+.layui-upload-form .layui-upload-item:hover .layui-upload-item-actions {
+    opacity: 1;
+}
+
+.layui-upload-form .layui-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border: 1px dashed #e6e6e6;
+    border-radius: 2px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.layui-upload-form .layui-upload-btn:hover {
+    border-color: #1E9FFF;
+    color: #1E9FFF;
+    transform: translateY(-2px);
+}
+
+.layui-upload-form .layui-upload-btn i {
+    font-size: 24px;
+}
+
+.layui-upload-form .layui-upload-error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,0,0,.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f00;
+    font-size: 12px;
+    z-index: 2;
+}
+
+.layui-upload-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* 视频预览窗口样式 */
+.video-preview-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.video-preview-name {
+    padding: 10px 0;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.video-preview-player {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+.video-preview-player video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 视频列表项名称样式 */
+.layui-upload-item-video .video-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 2px 4px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 10px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    z-index: 1;
+}

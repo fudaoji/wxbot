@@ -12,8 +12,10 @@ namespace app\admin\controller;
 
 use app\admin\model\Bot;
 use app\admin\model\BotMember;
+use app\BaseController;
 use app\common\model\kefu\ChatLog;
 use app\common\model\kefu\Kefu;
+use think\facade\View;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use ky\Quark;
@@ -22,8 +24,63 @@ use tests\cases\bot\AutoAuth;
 use Symfony\Component\Panther\Client as PantherClient;
 use zjkal\ChinaHoliday;
 
-class Test
+class Test extends BaseController
 {
+    function form(){
+        if(request()->isPost()){
+            dump(input('post.'));exit;
+        }
+
+        $video_options = [
+            //'maxCount' => 2,
+            'initFiles' => [
+                ['name' => "111", 'url' => 'https://guandaoji.oss-cn-hangzhou.aliyuncs.com/file/1-%E8%81%9A%E7%BE%8E%E4%BC%98%E5%93%81-20240513172659.mp4']
+            ]
+        ];
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('新增视频')
+            ->setPostUrl(url('form'))
+            ->addFormItem('images', 'pictures_detail', '上传图片', '上传图片')
+            ->addFormItem('video', 'videos_url', '多视频', '上传视频', $video_options)
+            ->setFormData(['video' => 'https://guandaoji.oss-cn-hangzhou.aliyuncs.com/file/1-%E8%81%9A%E7%BE%8E%E4%BC%98%E5%93%81-20240513172659.mp4']);
+
+        return $builder->show();
+    }
+
+    function uploadMulti(){
+        $assign = [
+            'qiniu' => [
+                "domain" => 'https://cdn.jingtuixuan.com',
+                "uploadToken" =>  (new \app\common\event\Base())->getQiniu()
+                    ->upToken(),
+                "region" => 'up-z2'
+            ],
+            "tencent" => [
+                "secretId" => "AKIDITVQ9gHnDWfaHjwwjGZfaHkuxtjOr53q",
+                "secretKey" => "c9TZWIqANJ9wkNn058DAuRl097qKZu55",
+                "bucket" => "kuryun-1253825348",
+                "region" => "ap-shanghai"
+            ]
+        ];
+
+        return View::fetch("default/test/uploadmulti", $assign);
+    }
+
+    function upload(){
+        $assign = [
+            'qiniu' => [
+                "domain" => 'https://cdn.jingtuixuan.com',
+                "uploadToken" =>  (new \app\common\event\Base())->getQiniu()
+                    ->upToken(),
+                "region" => 'up-z2'
+            ]
+        ];
+
+        return $this->show($assign);
+    }
+
+
     function streamQvqMax() {
 // 流式响应配置
         header('Content-Type: text/event-stream');

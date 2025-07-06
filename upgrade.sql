@@ -33,3 +33,22 @@ CREATE TABLE `__PREFIX__user_third` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `username` (`nickname`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='三方登录表';
+
+
+ALTER TABLE `__PREFIX__media_image_1` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_image_2` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_image_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_image_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_image_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+
+ALTER TABLE `__PREFIX__media_file_1` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_file_2` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_file_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_file_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_file_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+
+ALTER TABLE `__PREFIX__media_video_1` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_video_2` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_video_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_video_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_video_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;

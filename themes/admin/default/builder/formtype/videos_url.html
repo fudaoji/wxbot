@@ -1,0 +1,98 @@
+<!--
+value 格式： url|url|url
+-->
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']}" for="{$form['name']}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <input style="display: inline-block;width: 75%;"
+           placeholder="{$form['tip'] ?? ''}"
+           type="hidden"
+           value="{$form['value'] ?? ''}"
+           id="{$form['name']}"
+           name="{$form['name']}"
+           class="layui-input hide"
+           {$form['extra_attr']}
+    ／>
+    <div class="layui-input-block">
+        <div id="{$form.name}-upload" class="layui-upload-form"></div>
+        <div class="layui-form-mid layui-word-aux">最多支持{$form['options']['maxCount'] ?? 5}个视频上传，最大单文件{:intval(config('system.upload.video_size') ? (config('system.upload.video_size')/1000/1000) : 100)}MB</div>
+    </div>
+
+    <?php $form['value'] = empty($form['value']) ? [] : explode('|', $form['value']);?>
+
+
+    <script>
+        // 使用示例
+        layui.use(['uploadMulti', 'form', 'jquery'], function() {
+            var storageType = "{:config('system.upload.driver')}"
+                    , savePath = "{:config('system.upload.save_path')}"
+                    , maxSize = parseInt("{:config('system.upload.video_size') ? (config('system.upload.video_size')/1000/1000) : 100}")
+                    , options = {:json_encode($form['options'] ?? [])};
+            if(storageType === 'qcloud'){
+                storageType = 'tencent';
+            }
+
+            var $ = layui.jquery
+            , uploadMulti = layui.uploadMulti;
+
+            var settings = $.extend({
+                storageType: storageType,
+                savePath: savePath,
+                initFiles: options.initFiles, //[{name:'', url:''}]
+                maxCount: 5,
+                maxSize: maxSize,
+                uploadText: "点击上传",
+                elem: "#{$form.name}-upload",
+                accept: 'video',
+                fileType: 'video',
+                videoThumbnail: true,       // 启用视频缩略图生成
+                acceptExts: "{:config('system.upload.video_ext') ? config('system.upload.video_ext') : 'mp4,ogg,mov'}",
+                onSuccess: function(file, res) {
+                    var v = $("#{$form['name']}").val();
+                    var urls = v ? v.split('|') : [];
+                    urls.push(res.url);
+                    $("#{$form['name']}").val(urls.join('|'));
+                    console.log('video上传成功:', res);
+                },
+                onError: function(file, error) {
+                    layer.msg(`视频 ${file.name} 上传失败: ${error.message}`);
+                    //console.error('上传失败:', error);
+                }
+            }, options);
+            //console.log(settings);
+            switch (storageType) {
+                case 'aliyun':
+                    settings.aliyun = {
+                        region: "{:config('system.upload.aliyun_region')}",
+                        accessKeyId: "{:config('system.upload.aliyun_ak')}",
+                        accessKeySecret: "{:config('system.upload.aliyun_sk')}",
+                        bucket: "{:config('system.upload.aliyun_bucket')}"
+                    };
+                    break;
+                case "qiniu":
+                    settings.qiniu =  {
+                        domain: "{:config('system.upload.qiniu_domain')}",
+                        uploadToken: "{:get_qiniu_uptoken()}",
+                        region: "{:config('system.upload.qiniu_region')}"
+                    };
+                    break;
+                case "tencent":
+                    settings.tencent =  {
+                            secretId : "{:config('system.upload.qcloud_ak')}",
+                            secretKey: "{:config('system.upload.qcloud_sk')}",
+                            bucket: "{:config('system.upload.qcloud_bucket')}",
+                            region: "{:config('system.upload.qcloud_region')}"
+                    };
+                    break;
+            }
+
+            // 视频上传实例
+            var upload = uploadMulti(settings);
+
+        });
+    </script>
+</div>

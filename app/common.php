@@ -338,6 +338,20 @@ function fetch_img($url = '', $key = '')
     return false;
 }
 
+if (!function_exists('get_qiniu_uptoken')) {
+    /**
+     * 插件目录
+     * @param null $addon
+     * @param string $file
+     * @return string
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    function get_qiniu_uptoken($addon = null, $file = '')
+    {
+        return  (new \app\common\event\Base())->getQiniu()->upToken();
+    }
+}
+
 /**
  * 人民币格式化
  * @param $num

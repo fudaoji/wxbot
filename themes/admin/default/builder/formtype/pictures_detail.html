@@ -1,0 +1,95 @@
+<!--
+value 格式： name:url|name:url|name:url
+-->
+<div class="layui-form-item">
+    <label class="layui-form-label {$form['extra_class']}" for="{$form['name']}">
+        {if condition="is_int(strpos($form['extra_attr'], 'required'))"}
+        <span class="text-danger">*</span>
+        {/if}
+        {$form['title']}
+    </label>
+    <input style="display: inline-block;width: 75%;"
+           placeholder="{$form['tip'] ?? ''}"
+           type="hidden"
+           value="{$form['value'] ?? ''}"
+           id="{$form['name']}"
+           name="{$form['name']}"
+           class="layui-input hide"
+           {$form['extra_attr']}
+    ／>
+
+    <div class="layui-input-block">
+        <div id="{$form.name}-upload" class="layui-upload-form"></div>
+        <div class="layui-form-mid layui-word-aux">最多支持{$form['options']['maxCount'] ?? 5}张图片上传，最大单文件{:intval(config('system.upload.image_size') ? (config('system.upload.image_size')/1000/1000) : 100)}MB</div>
+    </div>
+
+    <script>
+
+        // 使用示例
+        layui.use(['uploadMulti', 'form', 'jquery'], function() {
+            var storageType = "{:config('system.upload.driver')}"
+                    , maxSize = parseInt("{:config('system.upload.image_size') ? (config('system.upload.image_size')/1000/1000) : 100}")
+                    , initFiles = {:json_encode($form['values'] ?? [])}
+        , options = {:json_encode($form['options'] ?? [])};
+            if(storageType === 'qcloud'){
+                storageType = 'tencent';
+            }
+
+            var $ = layui.jquery
+            , uploadMulti = layui.uploadMulti;
+
+            var settings = $.extend({
+                storageType: storageType,
+                initFiles: initFiles, //[{name:'', url:''}]
+                maxCount: 5,
+                maxSize: maxSize,
+                uploadText: "点击上传",
+                elem: "#{$form.name}-upload",
+                accept: 'images',
+                fileType: 'image',
+                acceptExts: "{:config('system.upload.image_ext') ? config('system.upload.image_ext') : 'jpg,png,jpeg'}",
+                onSuccess: function(file, res) {
+                    var v = $("#{$form['name']}").val();
+                    var urls = v ? v.split('|') : [];
+                    urls.push(res.originalName+"::"+res.url);
+                    $("#{$form['name']}").val(urls.join('|'));
+                    console.log('上传成功:', res);
+                },
+                onError: function(file, error) {
+                    layer.msg(`图片 ${file.name} 上传失败: ${error.message}`);
+                    //console.error('上传失败:', error);
+                }
+            }, options);
+
+            switch (storageType) {
+                case 'aliyun':
+                    settings.aliyun = {
+                        region: "{:config('system.upload.aliyun_region')}",
+                        accessKeyId: "{:config('system.upload.aliyun_ak')}",
+                        accessKeySecret: "{:config('system.upload.aliyun_sk')}",
+                        bucket: "{:config('system.upload.aliyun_bucket')}"
+                    };
+                    break;
+                case "qiniu":
+                    settings.qiniu =  {
+                        domain: "{:config('system.upload.qiniu_domain')}",
+                        uploadToken: "{:get_qiniu_uptoken()}",
+                        region: "{:config('system.upload.qiniu_region')}"
+                    };
+                    break;
+                case "tencent":
+                    settings.tencent =  {
+                            secretId : "{:config('system.upload.qcloud_ak')}",
+                            secretKey: "{:config('system.upload.qcloud_sk')}",
+                            bucket: "{:config('system.upload.qcloud_bucket')}",
+                            region: "{:config('system.upload.qcloud_region')}"
+                    };
+                    break;
+            }
+
+            // 图片上传实例
+            var upload = uploadMulti(settings);
+
+        });
+    </script>
+</div>

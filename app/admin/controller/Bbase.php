@@ -106,7 +106,7 @@ class Bbase extends Base
         return [
             Media::TEXT => ['title' => '文本', 'href' => url('mediatext/index')],
             Media::IMAGE => ['title' => '图片', 'href' => url('mediaimage/index')],
-            Media::FILE => ['title' => '文件', 'href' => url('mediafile/index')],
+            Media::FILE => ['title' => '文档', 'href' => url('mediafile/index')],
             Media::VIDEO => ['title' => '视频', 'href' => url('mediavideo/index')],
             Media::LINK => ['title' => '分享链接', 'href' => url('medialink/index')],
             Media::XML => ['title' => 'XML卡片', 'href' => url('mediaxml/index')]

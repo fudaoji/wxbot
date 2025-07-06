@@ -12,6 +12,10 @@ class Mediavideo extends Bbase
      * @var VideoM
      */
     protected $model;
+    /**
+     * @var array
+     */
+    private $tabList;
 
     /**
      * 初始化
@@ -20,6 +24,10 @@ class Mediavideo extends Bbase
     {
         parent::initialize();
         $this->model = new VideoM();
+        $this->tabList = [
+            'add' => ['title' => '单个上传', 'href' => url('add')],
+            'addMulti' => ['title' => '批量上传', 'href' => url('addMulti')]
+        ];
     }
 
     public function index()
@@ -48,8 +56,10 @@ class Mediavideo extends Bbase
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "tip" => '名称']
         ])
             ->addTopButton('addnew')
+            ->addTopButton('addnew', ['text' => '批量上传', 'href' => url('addMulti')])
             ->addTableColumn(['title' => '名称', 'field' => 'title', 'minWidth' => 100])
             ->addTableColumn(['title' => '视频', 'field' => 'url', 'minWidth' => 120, "type" => 'video'])
+            ->addTableColumn(['title' => '标签', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
@@ -68,9 +78,11 @@ class Mediavideo extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增视频')
+            ->setTabNav($this->tabList, __FUNCTION__)
             ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
-            ->addFormItem('video', 'video_detail', '上传视频', '上传视频');
+            ->addFormItem('video', 'video_detail', '上传视频', '上传视频')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
 
         return $builder->show();
     }
@@ -91,6 +103,7 @@ class Mediavideo extends Bbase
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('video', 'video_detail', '上传视频', '上传视频', $data)
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,')
             ->setFormData($data);
 
         return $builder->show();
@@ -117,5 +130,45 @@ class Mediavideo extends Bbase
         }else{
             $this->error('数据保存出错');
         }
+    }
+
+    /**
+     * 批量添加
+     * @return mixed
+     */
+    public function addMulti()
+    {
+        if($this->request->isPost()){
+            $post_data = input('post.');
+            $post_data['admin_id'] = $this->adminInfo['id'];
+            if(empty($post_data['videos'])){
+                $this->error('请上传视频!');
+            }
+            $images = explode('|', $post_data['videos']);
+            unset($post_data['videos']);
+            foreach ($images as $item){
+                [$post_data['title'], $post_data['url']] = explode('::', $item);
+                $res = $this->model->addOne($post_data);
+                if($res){
+                    MediaService::getMedia([
+                        'media_type' => 'text',
+                        'staff_id' => $this->bot['staff_id'],
+                        'admin_id' => $this->bot['admin_id'],
+                        'media_id' => $res['id']
+                    ], true);
+                }
+            }
+            $this->success('数据保存成功', '/undefined');
+        }
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('批量新增视频')
+            ->setTabNav($this->tabList, __FUNCTION__)
+            ->setPostUrl(url('addMulti'))
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
+            ->addFormItem('videos', 'videos_detail', '上传视频', '一次性不超过10个', ['maxCount' => 10], 'required')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
+
+        return $builder->show();
     }
 }

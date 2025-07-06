@@ -13,6 +13,10 @@ class Mediafile extends Bbase
      * @var FileM
      */
     protected $model;
+    /**
+     * @var array
+     */
+    private $tabList;
 
 
     /**
@@ -22,6 +26,10 @@ class Mediafile extends Bbase
     {
         parent::initialize();
         $this->model = new FileM();
+        $this->tabList = [
+            'add' => ['title' => '单个上传', 'href' => url('add')],
+            'addMulti' => ['title' => '批量上传', 'href' => url('addMulti')]
+        ];
     }
 
     public function index()
@@ -50,8 +58,10 @@ class Mediafile extends Bbase
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', "tip" => '名称']
         ])
             ->addTopButton('addnew')
+            ->addTopButton('addnew', ['text' => '批量上传', 'href' => url('addMulti')])
             ->addTableColumn(['title' => '名称', 'field' => 'title', 'minWidth' => 80])
             ->addTableColumn(['title' => '文件链接', 'field' => 'url', 'minWidth' => 250])
+            ->addTableColumn(['title' => '标签', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
@@ -70,9 +80,11 @@ class Mediafile extends Bbase
         // 使用FormBuilder快速建立表单页面
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增文件')
+            ->setTabNav($this->tabList, __FUNCTION__)
             ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
-            ->addFormItem('file', 'file_detail', '上传文件', '上传文件');
+            ->addFormItem('file', 'file_detail', '上传文件', '上传文件')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
 
         return $builder->show();
     }
@@ -93,6 +105,7 @@ class Mediafile extends Bbase
             ->addFormItem('id', 'hidden', 'ID', 'ID')
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('file', 'file_detail', '上传文件', '上传文件', $data)
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,')
             ->setFormData($data);
 
         return $builder->show();
@@ -118,5 +131,45 @@ class Mediafile extends Bbase
         }else{
             $this->error('数据保存出错');
         }
+    }
+
+    /**
+     * 批量添加
+     * @return mixed
+     */
+    public function addMulti()
+    {
+        if($this->request->isPost()){
+            $post_data = input('post.');
+            $post_data['admin_id'] = $this->adminInfo['id'];
+            if(empty($post_data['files'])){
+                $this->error('请上传文档!');
+            }
+            $images = explode('|', $post_data['files']);
+            unset($post_data['files']);
+            foreach ($images as $item){
+                [$post_data['title'], $post_data['url']] = explode('::', $item);
+                $res = $this->model->addOne($post_data);
+                if($res){
+                    MediaService::getMedia([
+                        'media_type' => 'text',
+                        'staff_id' => $this->bot['staff_id'],
+                        'admin_id' => $this->bot['admin_id'],
+                        'media_id' => $res['id']
+                    ], true);
+                }
+            }
+            $this->success('数据保存成功', '/undefined');
+        }
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('批量新增文档')
+            ->setTabNav($this->tabList, __FUNCTION__)
+            ->setPostUrl(url('addMulti'))
+            ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
+            ->addFormItem('files', 'files_detail', '上传文档', '一次性不超过10个', ['maxCount' => 10], 'required')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
+
+        return $builder->show();
     }
 }

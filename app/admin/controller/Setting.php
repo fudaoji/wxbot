@@ -150,6 +150,7 @@ class Setting extends Base
             case 'upload':
                 empty($data) && $data = [
                     'driver' => 'qiniu',
+                    'save_path' => 'uploads',
                     'file_size' => 53000000,
                     'image_size' => 5000000,
                     'image_ext' => 'jpg,gif,png,jpeg',
@@ -158,16 +159,19 @@ class Setting extends Base
                 //$data['driver'] = 'qiniu';
                 $builder->addFormItem('driver_title', 'legend', '上传驱动', '上传驱动')
                     ->addFormItem('driver', 'radio', '上传驱动', '上传驱动', model('upload')->locations())
+                    ->addFormItem('save_path', 'text', '保存目录', '代表仓库顶层目录名称,请以英文字母命名,前后不用加/,例如：uploads')
                     ->addFormItem('qiniu', 'legend', '七牛参数', '七牛参数')
                     ->addFormItem('qiniu_ak', 'text', '七牛accessKey', '七牛accessKey')
                     ->addFormItem('qiniu_sk', 'text', '七牛secretKey', '七牛secretKey')
                     ->addFormItem('qiniu_bucket', 'text', '七牛bucket', '七牛bucket')
                     ->addFormItem('qiniu_domain', 'url', '七牛domain', '七牛domain')
+                    ->addFormItem('qiniu_region', 'text', 'region', 'region')
                     ->addFormItem('aliyun', 'legend', '阿里云oss参数', '阿里云oss参数')
                     ->addFormItem('aliyun_ak', 'text', 'AccessKeyId', 'AccessKeyId')
                     ->addFormItem('aliyun_sk', 'text', 'AccessKeySecret', 'AccessKeySecret')
                     ->addFormItem('aliyun_bucket', 'text', 'bucket', 'bucket')
                     ->addFormItem('aliyun_domain', 'url', '域名', '域名')
+                    ->addFormItem('aliyun_region', 'text', 'region', 'region')
                     ->addFormItem('qcloud', 'legend', '腾讯云oss参数', '腾讯云oss参数')
                     ->addFormItem('qcloud_ak', 'text', 'secretId', 'secretId')
                     ->addFormItem('qcloud_sk', 'text', 'secretKey', 'secretKey')

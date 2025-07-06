@@ -21,6 +21,10 @@
 
             {foreach $form_items as $k => $form}
             {switch name="form.type"}
+            {case value="videos_detail"}{include file="default/builder/formtype/videos_detail" /}{/case}
+            {case value="files_detail"}{include file="default/builder/formtype/files_detail" /}{/case}
+            {case value="pictures_detail"}{include file="default/builder/formtype/pictures_detail" /}{/case}
+            {case value="videos_url"}{include file="default/builder/formtype/videos_url" /}{/case}
             {case value="textwithemoji"}{include file="default/builder/formtype/textwithemoji" /}{/case}
             {case value="import_file"}{include file="default/builder/formtype/import_file" /}{/case}
             {case value="choose_media_multi"}{include file="default/builder/formtype/choose_media_multi" /}{/case}

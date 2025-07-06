@@ -500,12 +500,12 @@ layui.define(['layer', 'upload', 'flow'], function(exports) {
             </div>
             ` : ''}
             <div class="layui-upload-item-actions">
-                <button class="layui-btn layui-btn-xs layui-btn-danger layui-upload-delete">
+                <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-danger layui-upload-delete">
                     <i class="layui-icon layui-icon-delete"></i>
-                </button>
-                <button class="layui-btn layui-btn-xs layui-btn-primary layui-upload-preview ${isInit ? '' : 'layui-hide'}">
-                    <i class="layui-icon layui-icon-eye"></i>
-                </button>
+                </a>
+                <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary layui-upload-preview ${isInit ? '' : 'layui-hide'}">
+                    <i class="layui-icon layui-icon-eye" style="color: #fff;"></i>
+                </a>
             </div>
         </div>
     `);

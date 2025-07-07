@@ -46,15 +46,15 @@ layui.define(['layer', 'upload', 'flow'], function(exports) {
 
         switch(storageType) {
             case STORAGE_TYPE.ALIYUN:
-                scriptUrl = 'https://gosspublic.alicdn.com/aliyun-oss-sdk-6.17.0.min.js';
+                scriptUrl = 'https://cdn.jingtuixuan.com/lib/bot/aliyun-oss-sdk-6.17.0.min.js';
                 break;
 
             case STORAGE_TYPE.QINIU:
-                scriptUrl = 'https://cdn.jsdelivr.net/npm/qiniu-js@3.0/dist/qiniu.min.js';
+                scriptUrl = 'https://cdn.jingtuixuan.com/lib/bot/qiniu.min.js';
                 break;
 
             case STORAGE_TYPE.TENCENT:
-                scriptUrl = 'https://cdn.jsdelivr.net/npm/cos-js-sdk-v5@1.4.4/dist/cos-js-sdk-v5.min.js';
+                scriptUrl = 'https://cdn.jingtuixuan.com/lib/bot/cos-js-sdk-v5.min.js';
                 break;
         }
 
@@ -855,7 +855,7 @@ layui.define(['layer', 'upload', 'flow'], function(exports) {
     };
 
     // 加载css
-    layui.link("https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css");
+    layui.link("https://cdn.jingtuixuan.com/lib/bot/font-awesome.min.css");
     layui.link(layui.cache.base + "uploadMulti/uploadMulti.css");
 
     // 暴露接口

@@ -11,6 +11,7 @@ namespace app\common\service;
 
 
 use app\constants\Bot as BotConst;
+use app\constants\Media as MediaConst;
 use ky\Logger;
 
 class Media
@@ -30,6 +31,18 @@ class Media
             BotConst::MSG_VIDEO => model('MediaVideo'),
         ];
         return isset($list[$type]) ? $list[$type] : null;
+    }
+
+    static function types($type = null){
+        $list = [
+            MediaConst::IMAGE => model('MediaImage'),
+            MediaConst::TEXT => model('MediaText'),
+            MediaConst::FILE => model('MediaFile'),
+            MediaConst::VIDEO => model('MediaVideo'),
+            MediaConst::LINK => model('MediaLink'),
+            MediaConst::XML => model('MediaXml'),
+        ];
+        return isset($list[$type]) ? $list[$type] : $list;
     }
 
     /**
@@ -60,5 +73,28 @@ class Media
         }
         cache($cache_key, $data);
         return $data;
+    }
+
+    /**
+     * @param array $params
+     * @param bool $refresh
+     * @return array|false|mixed|\PDOStatement|string|\think\Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function searchByTag($params = [], $refresh = false){
+        $medias = [];
+        foreach (self::types() as $type => $model){
+            $data = $model->getOneByMap([
+                'admin_id' => ['in', [$params['staff_id'], $params['admin_id']]],
+                'tags' => ['like', "%".$params['tag']."%"]
+            ]);
+            if(!empty($data)){
+                $medias[] = ['media_id' => $data['id'], 'media_type' => $type];
+            }
+        }
+        return $medias;
     }
 }

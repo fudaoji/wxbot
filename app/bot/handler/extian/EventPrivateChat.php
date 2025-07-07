@@ -43,6 +43,7 @@ class EventPrivateChat extends HandlerPrivateChat
         switch ($this->content['type']){
             case Bot::MSG_TEXT:
                 $this->keyword();
+                $this->tags();
                 break;
         }
 

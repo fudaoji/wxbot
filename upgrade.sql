@@ -34,6 +34,17 @@ CREATE TABLE `__PREFIX__user_third` (
   UNIQUE KEY `username` (`nickname`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='三方登录表';
 
+ALTER TABLE `__PREFIX__media_text_1` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_text_2` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_text_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_text_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_text_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+
+ALTER TABLE `__PREFIX__media_link_1` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_link_2` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_link_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_link_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_link_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
 
 ALTER TABLE `__PREFIX__media_image_1` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
 ALTER TABLE `__PREFIX__media_image_2` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
@@ -52,3 +63,9 @@ ALTER TABLE `__PREFIX__media_video_2` ADD COLUMN `tags` text COMMENT '标签' AF
 ALTER TABLE `__PREFIX__media_video_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
 ALTER TABLE `__PREFIX__media_video_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
 ALTER TABLE `__PREFIX__media_video_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+
+ALTER TABLE `__PREFIX__media_xml_1` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_xml_2` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_xml_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_xml_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+ALTER TABLE `__PREFIX__media_xml_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;

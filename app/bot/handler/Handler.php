@@ -203,7 +203,7 @@ class Handler extends BaseCtl
         empty($this->content['from_name']) && $this->content['from_name'] = $this->fromName;
         empty($this->content['robot_wxid']) && $this->content['robot_wxid'] = $this->botWxid;
         if($this->fromName == "DJ"){
-            Logger::error($this->content);
+            //Logger::error($this->content);
         }
         //save msg log seconds later
         invoke('\\app\\common\\event\\TaskQueue')->push([

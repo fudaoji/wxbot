@@ -15,6 +15,7 @@ use app\constants\Media;
 use app\constants\Reply;
 use app\constants\Task;
 use ky\Logger;
+use app\common\service\Media as MediaService;
 
 class HandlerPrivateChat extends Handler
 {
@@ -42,6 +43,35 @@ class HandlerPrivateChat extends Handler
             ]);
             $this->exit();
         }
+    }
+
+    /**
+     * 标签搜索素材
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DbException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function tags(){
+        $this->ignoreKeyword($this->content['msg']);
+        $medias = MediaService::searchByTag([
+            'staff_id' => $this->bot['staff_id'],
+            'admin_id' => $this->bot['admin_id'],
+            'tag' => $this->content['msg']
+        ]);
+        //Logger::error($medias);
+
+        $flag = false;
+        foreach ($medias as $media) {
+            $media['wxids'] = $this->fromWxid;
+            if (strpos($media['wxids'], $this->fromWxid) !== false) {
+                model('reply')->botReply($this->bot, $this->botClient, $media, $this->fromWxid, ['nickname' => $this->fromName]);
+                $flag = true;
+                parent::$replied = true;
+            }
+        }
+
+        return $flag;
     }
 
     /**

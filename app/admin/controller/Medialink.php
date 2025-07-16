@@ -54,6 +54,7 @@ class Medialink extends Bbase
             ->addTableColumn(['title' => '描述', 'field' => 'desc', 'minWidth' => 200])
             ->addTableColumn(['title' => '封面', 'field' => 'image_url', 'minWidth' => 100, "type" => 'picture'])
             ->addTableColumn(['title' => '跳转链接', 'field' => 'url', 'minWidth' => 200])
+            ->addTableColumn(['title' => '标签', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 180])
             ->addTableColumn(['title' => '操作', 'minWidth' => 130, 'type' => 'toolbar'])
@@ -77,7 +78,8 @@ class Medialink extends Bbase
             ->addFormItem('title', 'text', '标题', '100字内', [], 'required maxlength=150')
             ->addFormItem('desc', 'textarea', '描述', '200字内', [], 'required maxlength=200')
             ->addFormItem('image_url', 'choose_picture', '图片', '图片比例1:1', [], 'required')
-            ->addFormItem('url', 'text', '跳转链接', '跳转链接', [], 'required');
+            ->addFormItem('url', 'text', '跳转链接', '跳转链接', [], 'required')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
 
         return $builder->show();
     }
@@ -101,6 +103,7 @@ class Medialink extends Bbase
             ->addFormItem('desc', 'textarea', '描述', '200字内', [], 'required maxlength=150')
             ->addFormItem('image_url', 'choose_picture', '图片', '图片比例1:1', [], 'required')
             ->addFormItem('url', 'text', '跳转链接', '跳转链接', [], 'required')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,')
             ->setFormData($data);
 
         return $builder->show();

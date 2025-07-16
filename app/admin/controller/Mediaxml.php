@@ -59,6 +59,7 @@ class Mediaxml extends Bbase
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '备注', 'field' => 'title', 'minWidth' => 100])
             ->addTableColumn(['title' => '内容', 'field' => 'content', 'type' => 'article','minWidth' => 400])
+            ->addTableColumn(['title' => '标签', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
@@ -79,7 +80,8 @@ class Mediaxml extends Bbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textarea', 'xml内容', '查看消息体中的xml', [], 'required maxlength=1000000');
+            ->addFormItem('content', 'textarea', 'xml内容', '查看消息体中的xml', [], 'required maxlength=1000000')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
 
         return $builder->show();
     }
@@ -101,6 +103,7 @@ class Mediaxml extends Bbase
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
             ->addFormItem('content', 'textarea', 'xml内容', '查看消息体中的xml', [], 'required maxlength=1000000')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,')
             ->setFormData($data);
 
         return $builder->show();

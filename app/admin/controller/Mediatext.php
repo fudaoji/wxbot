@@ -60,6 +60,7 @@ class Mediatext extends Bbase
             ->addTopButton('addnew')
             ->addTableColumn(['title' => '备注', 'field' => 'title', 'minWidth' => 100])
             ->addTableColumn(['title' => '文本内容', 'field' => 'content', 'minWidth' => 400])
+            ->addTableColumn(['title' => '标签', 'field' => 'tags', 'minWidth' => 100])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '修改时间', 'field' => 'update_time', 'type' => 'datetime', 'minWidth' => 200])
             ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
@@ -81,7 +82,8 @@ class Mediatext extends Bbase
             ->setPostUrl(url('savePost'))
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
-            ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000');
+            ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,');
 
         return $builder->show();
     }
@@ -104,6 +106,7 @@ class Mediatext extends Bbase
             ->addFormItem('group_id', 'chosen', '分组', '分组', GroupService::getIdToTitle())
             ->addFormItem('title', 'text', '备注', '30字内', [], 'maxlength=30')
             ->addFormItem('content', 'textwithemoji', '文本内容', '1000字内', [], 'required maxlength=10000')
+            ->addFormItem('tags', 'text', '标签', '多个标签用半角,')
             ->setFormData($data);
 
         return $builder->show();

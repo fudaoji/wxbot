@@ -173,6 +173,8 @@ class HandlerGroupChat extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function keyword(){
+        $this->keywordGateway();
+
         $keywords = model('keyword')->searchByKeyword([
             'keyword' => str_replace($this->beAtStr, "", $this->content['msg']), //过滤组AT的字符
             'bot_id' => $this->bot['id'],

@@ -14,6 +14,7 @@ use app\admin\model\BotGroupmember;
 use app\admin\model\BotMember;
 use app\common\controller\BaseCtl;
 use app\common\service\Addon as AppService;
+use app\common\service\KeywordConfig;
 use app\common\service\MsgLog;
 use app\common\service\Platform;
 use app\constants\Addon;
@@ -547,5 +548,17 @@ class Handler extends BaseCtl
         empty($msg) && $msg = $this->content['msg'];
         $msg = trim(str_replace($this->beAtStr, "", $msg));
         return preg_replace('/[\x{2005}]/u', '', $msg); //e小天需要
+    }
+
+    /**
+     * 关键词开关
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function keywordGateway(){
+        $configs = KeywordConfig::getConf(['bot_id' => $this->bot['id']]);
+        $wxid = empty($this->groupWxid) ? $this->fromWxid : $this->groupWxid;
+        if(!empty($configs['wxids']) && strpos($configs['wxids'], $wxid) === false) {
+            $this->exit();
+        }
     }
 }

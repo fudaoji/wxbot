@@ -90,6 +90,7 @@ class Keyword extends Botbase
                 ['type' => 'text', 'name' => 'search_key', 'title' => '关键词']
             ])
             ->addTopButton('addnew')
+            ->addTopButton('addnew', ['title' => '设置', 'href' => url('keywordconfig/index'), 'class' => 'layui-btn layui-btn-sm'])
             ->addTopButton('addnew', ['title' => '从其他机器人复制', 'href' => url('copy'), 'class' => 'layui-btn layui-btn-sm'])
             ->addTopButton('forbid')
             ->addTableColumn(['title' => '', 'type' => 'checkbox'])

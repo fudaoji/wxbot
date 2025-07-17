@@ -116,6 +116,7 @@ class HandlerPrivateChat extends Handler
      */
     protected function keyword(){
         $this->ignoreKeyword($this->content['msg']);
+        $this->keywordGateway();
 
         $keywords = model('keyword')->searchByKeyword([
             'keyword' => $this->content['msg'],

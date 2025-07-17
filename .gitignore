@@ -11,3 +11,5 @@ runtime
 .user.ini
 themes/home/fox
 .well-known/
+themes/admin/default/test/
+app/admin/controller/Test.php

@@ -69,3 +69,6 @@ ALTER TABLE `__PREFIX__media_xml_2` ADD COLUMN `tags` text COMMENT '标签' AFTE
 ALTER TABLE `__PREFIX__media_xml_3` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
 ALTER TABLE `__PREFIX__media_xml_4` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
 ALTER TABLE `__PREFIX__media_xml_5` ADD COLUMN `tags` text COMMENT '标签' AFTER `group_id`;
+
+ALTER TABLE `__PREFIX__keyword` ADD INDEX `idx_bot_status_match` (`bot_id`, `status`, `match_type`);
+ALTER TABLE `__PREFIX__keyword` ADD FULLTEXT INDEX `ft_keyword` (`keyword`);

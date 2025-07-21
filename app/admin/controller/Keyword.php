@@ -144,7 +144,7 @@ class Keyword extends Botbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')
             ->setPostUrl(url('savePost'))
-            ->addFormItem('keyword', 'text', '关键词', '多个关键词用|分割', [], 'required maxlength=200')
+            ->addFormItem('keyword', 'text', '关键词', '多个关键词用半角|分割', [], 'required maxlength=200')
             ->addFormItem('match_type', 'radio', '匹配规则', '匹配规则', KeywordM::matchTypes(), 'required')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '选择素材', ['types' => Media::types()], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
@@ -185,7 +185,7 @@ class Keyword extends Botbase
         $builder->setMetaTitle('编辑')
             ->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'ID', 'ID')
-            ->addFormItem('keyword', 'text', '关键词', '编辑状态不支持多个关键词', [], 'required maxlength=30')
+            ->addFormItem('keyword', 'text', '关键词', '多个关键词用半角|分割', [], 'required maxlength=30')
             ->addFormItem('match_type', 'radio', '匹配规则', '匹配规则', KeywordM::matchTypes(), 'required')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
             ->addFormItem('need_at', 'radio', '艾特提问者', '在群聊中是否艾特提问者', [0 => '否', 1 => '是'], 'required')
@@ -220,10 +220,7 @@ class Keyword extends Botbase
 
         if(empty($post_data[$this->pk])){
             $post_data['admin_id'] = $this->adminInfo['id'];
-            foreach ($keyword_arr as $keyword){
-                $post_data['keyword'] = $keyword;
-                $this->model->addOne($post_data);
-            }
+            $this->model->addOne($post_data);
         }else {
             $this->model->updateOne($post_data);
         }

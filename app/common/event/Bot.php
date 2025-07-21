@@ -50,10 +50,12 @@ class Bot extends Base
         if($bot['protocol'] == BotConst::PROTOCOL_EXTIAN){
             switch ($type){
                 case BotConst::MSG_VIDEO:
-                    $res = $bot_client->getMsg([
+                    //视频转发失效了
+                    /*$res = $bot_client->getMsg([
                         'uuid' => $bot['uuid'],
                         'msgid' => $msg_id
                     ]);
+                    Logger::error($res);
                     if(!empty($res['data'][0]['ext2'])){
                         $path = str_replace('.jpg', '.mp4', $res['data'][0]['ext2']);
                         $tries = 0;
@@ -65,7 +67,25 @@ class Bot extends Base
                             ]);
                             $tries++;
                             sleep(1);
-                            //Logger::error($send_res);
+                        }while(empty($send_res['code']) && $tries < 10);
+                    }*/
+                    break;
+                case BotConst::MSG_IMG:
+                    $res = $bot_client->downloadFile([
+                        'uuid' => $bot['uuid'],
+                        'path' => $msg_id
+                    ]);
+                    if(!empty($res['data']['path'])){
+                        $path = $res['data']['path'];
+                        $tries = 0;
+                        do{
+                            $send_res = $bot_client->sendFileToFriends([
+                                'uuid' => $bot['uuid'],
+                                'to_wxid' => $to_wxid,
+                                'path' => $path
+                            ]);
+                            $tries++;
+                            sleep(1);
                         }while(empty($send_res['code']) && $tries < 10);
                     }
                     break;

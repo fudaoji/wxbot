@@ -167,7 +167,7 @@ class Msglog extends Botbase
         $builder = new ListBuilder();
         $builder->addTopButton('addnew', ['title' => '新增规则'])
             ->setTabNav($this->tabList, __FUNCTION__)
-            ->addTableColumn(['title' => 'ID', 'field' => 'id', 'minWidth' => 70])
+            //->addTableColumn(['title' => 'ID', 'field' => 'id', 'minWidth' => 70])
             ->addTableColumn(['title' => '分组', 'field' => 'group_title', 'minWidth' => 100])
             ->addTableColumn(['title' => '规则名称', 'field' => 'title', 'minWidth' => 100])
             ->addTableColumn(['title' => '接收对象', 'field' => 'wxids', 'minWidth' => 200])
@@ -175,8 +175,8 @@ class Msglog extends Botbase
             ->addTableColumn(['title' => '监听关键词', 'field' => 'keyword', 'minWidth' => 100])
             ->addTableColumn(['title' => '是否转存到素材库', 'field' => 'to_media', 'minWidth' => 80])
             ->addTableColumn(['title' => '有效期', 'field' => 'expire_time', 'type'=>'datetime', 'minWidth' => 180])
-            ->addTableColumn(['title' => '状态', 'field' => 'status', 'type' => 'enum', 'options' => Common::status(), 'minWidth' => 60])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 100, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '状态', 'field' => 'status', 'minWidth' => 50, 'type' => 'switch', 'options' => Common::status()])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 120, 'type' => 'toolbar'])
             ->addRightButton('edit')
             ->addRightButton('delete');
         return $builder->show();

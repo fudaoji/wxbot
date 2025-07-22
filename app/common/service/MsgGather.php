@@ -87,10 +87,15 @@ class MsgGather
                 //关键词判断
                 if(!empty($rule['keyword']) && $params['type'] == BotConst::MSG_TEXT){
                     $keyword_arr = explode(',', $rule['keyword']);
+                    $flag = false;
                     foreach ($keyword_arr as $keyword){
                         if(strpos($content['msg'], $keyword) !== false){
+                            $flag = true;
                             break; //只要有一个命中就记录
                         }
+                    }
+                    if($flag === false){
+                        continue;
                     }
                 }
 

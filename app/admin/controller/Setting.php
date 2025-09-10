@@ -123,7 +123,11 @@ class Setting extends Base
                     ->addFormItem('step_time', 'text', '群发间隔时间', '格式：1-4，单位秒')
                     ->addFormItem('file_storage_path', 'text', '微信文件保存位置', '请到微信客户端-》设置-》文件位置查看，填写“WeChat Files”之前的部分')
                     //->addFormItem('url', 'text', '默认接口地址', '默认接口地址')
-                    ->addFormItem('seat', 'legend', '微信号席位', '微信号席位')
+                    ->addFormItem('easycom', 'legend', 'easycom企微', 'easycom企微')
+                    ->addFormItem('easycom_uri', 'text', '接口地址', '接口地址')
+                    ->addFormItem('easycom_appkey', 'text', 'Appkey', 'Appkey')
+                    ->addFormItem('easycom_appsecret', 'text', 'AppSecret', 'AppSecret')
+                ->addFormItem('seat', 'legend', '微信号席位', '微信号席位')
                     ->addFormItem('seat_default', 'number', '默认额度', '注册客户默认有几个微信号席位', [], 'min=0')
                     ->addFormItem('seat_price', 'text', '售价', '每个号每月的费用', [], 'min=0');
                 break;

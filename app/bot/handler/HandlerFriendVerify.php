@@ -9,6 +9,7 @@
 
 namespace app\bot\handler;
 
+use app\constants\Bot as BotConst;
 use app\constants\Reply;
 use ky\Logger;
 
@@ -38,18 +39,13 @@ class HandlerFriendVerify extends Handler
         ]);
         foreach ($replys as $k => $reply){
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false){
-                switch ($reply['handle_type']){
-                    case Reply::HANDLE_ADDED_ACCEPT:
-                        //Logger::error($reply['handle_type']);
-                        $this->botClient->agreeFriendVerify([
-                            'uuid' => $this->bot['uuid'],
-                            'robot_wxid' => $this->bot['uin'],
-                            'encryptusername' => $this->content['encryptusername'],
-                            'ticket' => $this->content['ticket'],
-                            'scene' => $this->content['scene']
-                        ]);
-                        break;
-                }
+                $this->botClient->agreeFriendVerify([
+                    'uuid' => $this->bot['uuid'],
+                    'robot_wxid' => $this->bot['uin'],
+                    'encryptusername' => $this->content['encryptusername'],
+                    'ticket' => $this->content['ticket'],
+                    'scene' => $this->content['scene']
+                ]);
             }
         }
     }

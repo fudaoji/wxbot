@@ -15,6 +15,7 @@ use app\constants\Bot as BotConst;
 use app\constants\Media;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Easycom;
 use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
@@ -30,7 +31,7 @@ class Reply extends Base
     /**
      * 封装素材回复
      * @param $bot
-     * @param $client Vlw|Wxwork|Cat|My|Mycom|Qianxun|Extian
+     * @param $client Easycom|Extian
      * @param $reply
      * @param string $to_wxid
      * @param array $extra
@@ -145,7 +146,9 @@ class Reply extends Base
                     'robot_wxid' => $bot['uin'],
                     'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
-                    'path' => $media['url']
+                    'path' => $media['url'],
+                    'detail' => $media['detail'],
+                    'filename' => $media['title']
                 ]);
                 break;
             case Media::VIDEO:
@@ -163,27 +166,44 @@ class Reply extends Base
                     'robot_wxid' => $bot['uin'],
                     'uuid' => $bot['uuid'],
                     'to_wxid' => $to_wxid,
-                    'path' => $media['url']
+                    'path' => $media['url'],
+                    'detail' => $media['detail'],
+                    'filename' => $media['title']
                 ]);
                 break;
             case Media::FILE:
-                $res = $client->saveFile([
-                    'data' => $media['url'],
-                    'type' => 'url'
-                ]);
-                if(!empty($res['code'])){ //下载到本地提高成功率
-                    $path = $res['data'];
-                    $this->sendMsg([
-                        'type' => $reply['media_type'],
-                        'bot' => $bot,
-                        'payload' => [
+                switch ($bot['protocol']){
+                    case BotConst::PROTOCOL_EXTIAN:
+                        $res = $client->saveFile([
+                            'data' => $media['url'],
+                            'type' => 'url'
+                        ]);
+                        if(!empty($res['code'])){ //下载到本地提高成功率
+                            $path = $res['data'];
+                            $this->sendMsg([
+                                'type' => $reply['media_type'],
+                                'bot' => $bot,
+                                'payload' => [
+                                    'robot_wxid' => $bot['uin'],
+                                    'to_wxid' => $to_wxid,
+                                    'path' => $path,
+                                    'file_type' => 'file'
+                                ]
+                            ]);
+                        }
+                        break;
+                    default:
+                        $client->sendFileToFriends([
                             'robot_wxid' => $bot['uin'],
+                            'uuid' => $bot['uuid'],
                             'to_wxid' => $to_wxid,
-                            'path' => $path,
-                            'file_type' => 'file'
-                        ]
-                    ]);
+                            'path' => $media['url'],
+                            'detail' => $media['detail'],
+                            'filename' => $media['title']
+                        ]);
+                        break;
                 }
+
                 /*$client->sendFileToFriends([
                     'robot_wxid' => $bot['uin'],
                     'uuid' => $bot['uuid'],

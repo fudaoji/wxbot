@@ -13,6 +13,7 @@ namespace app\admin\model;
 use app\common\model\Base;
 use app\constants\Bot;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Easycom;
 use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
@@ -84,7 +85,7 @@ class BotGroupmember extends Base
      */
     public function pullMembers($bot, $group){
         /**
-         * @var $bot_client Vlw|Wxwork|Cat|Webgo|My|Mycom|Xbot|Extian
+         * @var $bot_client Easycom|Extian
          */
         $bot_client = model('admin/bot')->getRobotClient($bot);
         $res = $bot_client->getGroupMembers([
@@ -93,7 +94,49 @@ class BotGroupmember extends Base
             'group_wxid' => $group['wxid'],
             'is_refresh' => 1, //不使用缓存
         ]);
+        //dump($res);exit;
         switch ($bot['protocol']) {
+            case Bot::PROTOCOL_EASYCOM:
+                if($res['code'] && !empty($res['data']['memberList'])) {
+                    $list1 = $res['data']['roomList'][0]['memberList'];
+                    $list = $res['data']['memberList'];
+                    $wxid_arr = [];
+                    foreach ($list as $k => $v){
+                        $v1 = $list1[$k];
+                        $nickname = filter_emoji($v['nickname']);
+                        $group_nickname = filter_emoji($v1['roomRemarkName'] ?? '');
+                        $group_nickname = $group_nickname ? $group_nickname : $nickname;
+                        $invite_id = $v1['inviterId'] ?? '';
+                        $headimgurl = $v['avatarUrl'] ?? '';
+                        $wxid = $v['userId'];
+                        $wxid_arr[] = $wxid;
+                        if($data = $this->getOneByMap(['group_id' => $group['id'], 'wxid' => $wxid], ['id'])){
+                            $this->updateOne([
+                                'id' => $data['id'],
+                                'nickname' => $nickname,
+                                'group_nickname' => $group_nickname,
+                                'invite_wxid' => $invite_id,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }else{
+                            $this->addOne([
+                                'bot_id' => $bot['id'],
+                                'group_id' => $group['id'],
+                                'nickname' => $nickname,
+                                'group_nickname' => $group_nickname,
+                                'wxid' => $wxid,
+                                'invite_wxid' => $invite_id,
+                                'headimgurl' => $headimgurl
+                            ]);
+                        }
+                    }
+                    //删除无效数据
+                    $this->delByMap(['group_id' => $group['id'], 'wxid' => ['notin', $wxid_arr]]);
+                    return count($list);
+                } else{
+                    Logger::error("pullGroupMembers:" . json_encode($res, JSON_UNESCAPED_UNICODE));
+                }
+                break;
             case Bot::PROTOCOL_EXTIAN:
                 if($res['code'] && count($res['data'])) {
                     $list = $res['data'];

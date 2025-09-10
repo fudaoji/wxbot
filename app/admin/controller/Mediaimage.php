@@ -121,14 +121,16 @@ class Mediaimage extends Bbase
             $res = $this->model->updateOne($post_data);
         }
         if($res){
-            //$this->refreshMedia($res['id']);
-            MediaService::getMedia([
-                'media_type' => 'text',
-                'staff_id' => $this->bot['staff_id'],
-                'admin_id' => $this->bot['admin_id'],
-                'media_id' => $res['id']
-            ], true);
-
+            //refresh
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => 2,
+                'params' => [
+                    'do' => ['\\app\\common\\event\\Media', 'refresh'],
+                    'bot' => $this->bot,
+                    'media' => $res,
+                    'media_type' => 'image'
+                ]
+            ]);
             $this->success('数据保存成功', $jump_to);
         }else{
             $this->error('数据保存出错');
@@ -153,12 +155,16 @@ class Mediaimage extends Bbase
                 [$post_data['title'], $post_data['url']] = explode('::', $item);
                 $res = $this->model->addOne($post_data);
                 if($res){
-                    MediaService::getMedia([
-                        'media_type' => 'text',
-                        'staff_id' => $this->bot['staff_id'],
-                        'admin_id' => $this->bot['admin_id'],
-                        'media_id' => $res['id']
-                    ], true);
+                    //refresh
+                    invoke('\\app\\common\\event\\TaskQueue')->push([
+                        'delay' => 2,
+                        'params' => [
+                            'do' => ['\\app\\common\\event\\Media', 'refresh'],
+                            'bot' => $this->bot,
+                            'media' => $res,
+                            'media_type' => 'image'
+                        ]
+                    ]);
                 }
             }
             $this->success('数据保存成功', '/undefined');

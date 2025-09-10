@@ -11,8 +11,6 @@ namespace app\common\event;
 
 use app\constants\Bot as BotConst;
 use ky\Logger;
-use think\Db;
-use think\facade\Log;
 
 class Bot extends Base
 {
@@ -45,64 +43,185 @@ class Bot extends Base
         $bot_client = $this->botM->getRobotClient($bot);
         $to_wxid = $data['to_wxid'];
         $robot_wxid = $bot['uin'];
-        $msg_id = $data['msgid'];
-        $type = $data['content_type'] ?? BotConst::MSG_TEXT;
-        if($bot['protocol'] == BotConst::PROTOCOL_EXTIAN){
-            switch ($type){
-                case BotConst::MSG_VIDEO:
-                    //视频转发失效了
-                    /*$res = $bot_client->getMsg([
-                        'uuid' => $bot['uuid'],
-                        'msgid' => $msg_id
-                    ]);
-                    Logger::error($res);
-                    if(!empty($res['data'][0]['ext2'])){
-                        $path = str_replace('.jpg', '.mp4', $res['data'][0]['ext2']);
-                        $tries = 0;
-                        do{
-                            $send_res = $bot_client->sendVideoToFriends([
-                                'uuid' => $bot['uuid'],
-                                'to_wxid' => $to_wxid,
-                                'path' => $path
-                            ]);
-                            $tries++;
-                            sleep(1);
-                        }while(empty($send_res['code']) && $tries < 10);
-                    }*/
-                    break;
-                case BotConst::MSG_IMG:
-                    $res = $bot_client->downloadFile([
-                        'uuid' => $bot['uuid'],
-                        'path' => $msg_id
-                    ]);
-                    if(!empty($res['data']['path'])){
-                        $path = $res['data']['path'];
-                        $tries = 0;
-                        do{
-                            $send_res = $bot_client->sendFileToFriends([
-                                'uuid' => $bot['uuid'],
-                                'to_wxid' => $to_wxid,
-                                'path' => $path
-                            ]);
-                            $tries++;
-                            sleep(1);
-                        }while(empty($send_res['code']) && $tries < 10);
-                    }
-                    break;
-                default:
-                    $bot_client->forwardMsgToFriends([
-                        'robot_wxid' => $robot_wxid,
-                        'to_wxid' => $to_wxid,
-                        'msgid' => $msg_id
-                    ]);
-                    break;
-            }
-        }else{
-            $bot_client->forwardMsgToFriends([
-                'robot_wxid' => $robot_wxid,
-                'to_wxid' => $to_wxid,
-                'msgid' => $msg_id
-            ]);
+        $content = $data['content'];
+        $msg_id = $content['msg_id'];
+        $type = $content['type'] ?? BotConst::MSG_TEXT;
+        //Logger::error($type);
+        switch($bot['protocol']){
+            case BotConst::PROTOCOL_EASYCOM:
+                switch ($type){
+                    case BotConst::MSG_NEWS:
+                        $msg = $content['msg'];
+                        $file_type = 4;
+                        $params = [
+                            'fileAesKey' => $msg['iconAesKey'],
+                            'fileAuthKey' => $msg['iconAuthKey'],
+                            'fileSize' => $msg['iconSize'],
+                            'fileType' => $file_type,
+                            'fileUrl' => $msg['iconUrl'],
+                        ];
+                        $res = $bot_client->downloadFile($params);
+                        if(empty($res['code'])){
+                            Logger::error($res['errmsg']);
+                            break;
+                        }
+                        $res = $bot_client->sendShareLinkToFriends([
+                            'to_wxid' => $to_wxid,
+                            'title' => $msg['title'],
+                            'image_url' => $res['data']['cloudUrl'],
+                            'url' => $msg['linkUrl'],
+                            'desc' => $msg['desc']
+                        ]);
+
+                        break;
+                    case BotConst::MSG_FILE:
+                        $file_type = 5;
+                        $params = [
+                            'fileAesKey' => $content['msg']['fileAesKey'],
+                            'fileAuthKey' => $content['msg']['fileAuthKey'],
+                            'fileSize' => $content['msg']['fileSize'],
+                            'fileType' => $file_type,
+                            'fileUrl' => $content['msg']['fileHttpUrl'],
+                        ];
+                        $res = $bot_client->downloadFile($params);
+                        if(empty($res['code'])){
+                            Logger::error($res['errmsg']);
+                            break;
+                        }
+                        $res = $bot_client->uploadCdn([
+                            'url' => $res['data']['cloudUrl'],
+                            'file_type' => $file_type
+                        ]);
+                        if(empty($res['code'])){
+                            Logger::error($res['errmsg']);
+                            break;
+                        }
+                        $bot_client->sendFileToFriends([
+                            'to_wxid' => $to_wxid,
+                            'detail' => $res['data'],
+                            'filename' => $content['msg']['filename']
+                        ]);
+                        break;
+                    case BotConst::MSG_VIDEO:
+                        $file_type = 4;
+                        $params = [
+                            'fileAesKey' => $content['msg']['fileAesKey'],
+                            'fileAuthKey' => $content['msg']['fileAuthKey'],
+                            'fileSize' => $content['msg']['fileSize'],
+                            'fileType' => $file_type,
+                            'fileUrl' => $content['msg']['fileHttpUrl'],
+                        ];
+                        $res = $bot_client->downloadFile($params);
+                        if(empty($res['code'])){
+                            Logger::error($res['errmsg']);
+                            break;
+                        }
+                        $res = $bot_client->uploadCdn([
+                            'url' => $res['data']['cloudUrl'],
+                            'file_type' => $file_type
+                        ]);
+                        if(empty($res['code'])){
+                            Logger::error($res['errmsg']);
+                            break;
+                        }
+                        $bot_client->sendVideoToFriends([
+                            'to_wxid' => $to_wxid,
+                            'detail' => $res['data']
+                        ]);
+                        break;
+                    case BotConst::MSG_IMG:
+                        $file_type = 4;
+                        $params = [
+                            'fileAesKey' => $content['msg']['fileAesKey'],
+                            'fileAuthKey' => $content['msg']['fileAuthKey'],
+                            'fileSize' => $content['msg']['fileBigSize'],
+                            'fileType' => $file_type,
+                            'fileUrl' => $content['msg']['fileBigHttpUrl'],
+                        ];
+                        $res = $bot_client->downloadFile($params);
+                        if(empty($res['code'])){
+                            Logger::error($res['errmsg']);
+                            break;
+                        }
+                        $res = $bot_client->uploadCdn([
+                            'url' => $res['data']['cloudUrl'],
+                            'file_type' => $file_type
+                        ]);
+                        if(empty($res['code'])){
+                            Logger::error($res['errmsg']);
+                            break;
+                        }
+                        $bot_client->sendImgToFriends([
+                            'to_wxid' => $to_wxid,
+                            'detail' => $res['data']
+                        ]);
+                        break;
+                    case BotConst::MSG_TEXT:
+                        $bot_client->sendTextToFriends([
+                            'to_wxid' => $to_wxid,
+                            'msg' => $content['msg']
+                        ]);
+                        break;
+                }
+                break;
+            case BotConst::PROTOCOL_EXTIAN:
+                switch ($type){
+                    case BotConst::MSG_VIDEO:
+                        //视频转发失效了
+                        /*$res = $bot_client->getMsg([
+                            'uuid' => $bot['uuid'],
+                            'msgid' => $msg_id
+                        ]);
+                        Logger::error($res);
+                        if(!empty($res['data'][0]['ext2'])){
+                            $path = str_replace('.jpg', '.mp4', $res['data'][0]['ext2']);
+                            $tries = 0;
+                            do{
+                                $send_res = $bot_client->sendVideoToFriends([
+                                    'uuid' => $bot['uuid'],
+                                    'to_wxid' => $to_wxid,
+                                    'path' => $path
+                                ]);
+                                $tries++;
+                                sleep(1);
+                            }while(empty($send_res['code']) && $tries < 10);
+                        }*/
+                        break;
+                    case BotConst::MSG_IMG:
+                        $res = $bot_client->downloadFile([
+                            'uuid' => $bot['uuid'],
+                            'path' => $msg_id
+                        ]);
+                        if(!empty($res['data']['path'])){
+                            $path = $res['data']['path'];
+                            $tries = 0;
+                            do{
+                                $send_res = $bot_client->sendFileToFriends([
+                                    'uuid' => $bot['uuid'],
+                                    'to_wxid' => $to_wxid,
+                                    'path' => $path
+                                ]);
+                                $tries++;
+                                sleep(1);
+                            }while(empty($send_res['code']) && $tries < 10);
+                        }
+                        break;
+                    default:
+                        $bot_client->forwardMsgToFriends([
+                            'robot_wxid' => $robot_wxid,
+                            'to_wxid' => $to_wxid,
+                            'msgid' => $msg_id
+                        ]);
+                        break;
+                }
+                break;
+            default:
+                $bot_client->forwardMsgToFriends([
+                    'robot_wxid' => $robot_wxid,
+                    'to_wxid' => $to_wxid,
+                    'msgid' => $msg_id
+                ]);
+                break;
         }
 
         $job->delete();

@@ -16,8 +16,10 @@ Abstract class Base
     private $options = [];
     protected $errMsg = '';
     protected $appKey = '';
+    protected $appSecret = '';
     protected $baseUri = '';
     protected $stepTime = [2, 4];
+    protected $checkStatusCode = true;
 
     /**
      * @var Client
@@ -30,6 +32,9 @@ Abstract class Base
         $this->options = array_merge($this->options, $options);
         if(!empty($this->options['app_key'])){
             $this->appKey = $this->options['app_key'];
+        }
+        if(!empty($this->options['app_secret'])){
+            $this->appSecret = $this->options['app_secret'];
         }
         !empty($options['step_time']) && $this->stepTime = $options['step_time'];
     }
@@ -194,7 +199,7 @@ Abstract class Base
         }
         try {
             $response = $this->client->request($method, $url, $extra);
-            if($response->getStatusCode() !== 200){
+            if($this->checkStatusCode && $response->getStatusCode() !== 200){
                 $this->setError($response->getStatusCode());
             }else{
                 $contents = preg_replace('/[\x00-\x1F]/','', $response->getBody()->getContents());

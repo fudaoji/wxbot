@@ -9,6 +9,7 @@ use app\common\service\AdminLog as AdminLogService;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
+use ky\WxBot\Driver\Easycom;
 use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\Xbot;
 
@@ -48,9 +49,10 @@ class Bot extends Bbase
 
     private function getActiveDrivers(){
         $drivers = explode(',', config('system.bot.drivers'));
+        $hooks = BotConst::hooks();
         foreach ($drivers as $driver){
-            $this->tabs[$driver] = [
-                'title' => BotConst::hooks($driver),
+            isset($hooks[$driver]) &&  $this->tabs[$driver] = [
+                'title' => $hooks[$driver],
                 'href' => url('index', ['tab' => $driver])
             ];
         }
@@ -142,9 +144,7 @@ class Bot extends Bbase
             ->setDataUrl(url('index', ['tab' => $tab]))
             ->setTabNav($this->tabs, $tab)
             ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
-            ->addTopButton('addnew', ['title' => '拉取已登录微信', 'href' => url('add', ['tab' => $tab]),'class' => "layui-btn-warm"])
-            ->addTopButton('addnew', ['title' => '扫码登录微信', 'href' => url('hookadd')])
-            ->addTableColumn(['title' => 'PID|client_id', 'field' => 'uuid', 'minWidth' => 90])
+            ->addTableColumn(['title' => 'PID|UUID', 'field' => 'uuid', 'minWidth' => 90])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 150])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 100])
             ->addTableColumn(['title' => '备注名称', 'field' => 'title', 'minWidth' => 90])
@@ -154,15 +154,247 @@ class Bot extends Bbase
             ->addTableColumn(['title' => '登录状态', 'field' => 'alive', 'type' => 'enum', 'options' => [0 => '离线', 1 => '在线'], 'minWidth' => 70])
             ->addTableColumn(['title' => '启用状态', 'field' => 'status', 'type' => 'enum', 'options' => Common::status(), 'minWidth' => 90])
             ->addTableColumn(['title' => '创建时间', 'field' => 'create_time', 'type' => 'datetime', 'minWidth' => 180])
-            ->addTableColumn(['title' => '操作', 'minWidth' => 150, 'type' => 'toolbar'])
+            ->addTableColumn(['title' => '操作', 'minWidth' => 200, 'type' => 'toolbar'])
             ->addRightButton('self', ['title' => '操作', 'href' => url('console', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120])
             ->addRightButton('edit', ['title' => '设置', 'href' => url('edit', ['tab' => $tab, 'id' => '__data_id__'])]);
+        if($tab == BotConst::PROTOCOL_EXTIAN){
+            $builder->addTopButton('addnew', ['title' => '拉取已登录微信', 'href' => url('add', ['tab' => $tab]),'class' => "layui-btn-warm"]);
+        }
+        if($tab == BotConst::PROTOCOL_EASYCOM){
+            $builder->addTopButton('addnew', ['title' => '扫码登录', 'href' => url('hookadd', ['tab' => $tab])])
+                ->addRightButton('self', ['title' => '重新登录', 'href' => url('easycomrelogin', ['id' => '__data_id__']),'class' => 'layui-btn layui-btn-xs layui-btn-warm', 'minWidth' => 120]);
+        }
         if(AdminM::isLeader($this->adminInfo)){
             $builder/*->addRightButton('self', ['title' => '清空聊天记录', 'href' => url('cleanChatPost', ['id' => '__data_id__']), 'data-ajax' => 1, 'data-confirm' => 1])*/
                 ->addRightButton('delete', ['href' => url('delPost', ['id' => '__data_id__'])]);
         }
 
         return $builder->show();
+    }
+
+    /**
+     * 企业重新登录
+     * @throws \think\Exception
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function easycomReLogin()
+    {
+        $id = input('id', null);
+        $data = $this->model->getOneByMap(['id' => $id, 'admin_id' => $this->adminInfo['id']], true, true);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        $client = $this->model->getRobotClient($data);
+        $res = $client->getRobotInfo($data);
+        if($res['code']){
+            $this->success('登录成功！');
+        }
+        $res = $client->clientList();
+        if(empty($res['code'])){
+            $this->error($res['errmsg']);
+        }
+        $client_list = $res['data']['list'];
+        $need_restore = true;
+        foreach ($client_list as $cli){
+            if($cli['loginUserInfo']['uuid'] == $data['uuid']){
+                $need_restore = false;
+                break;
+            }
+        }
+        if($need_restore){
+            $res = $client->clientRestore();
+            if(empty($res['code'])){
+                $this->error($res['errmsg']);
+            }
+        }
+
+        $res = $client->checkAccountStatus(['guid' => $data['uuid']]);
+        if(empty($res['code'])){
+            $this->error($res['errmsg']);
+        }
+        $status = intval($res['data']['userOnlineStatus']);
+        switch ($status){
+            case 0:
+                $res = $client->reLogin(['guid' => $data['uuid']]);
+                if(empty($res['code'])){
+                    $this->error($res['errmsg']);
+                }else{
+                    $this->success('登录成功！');
+                }
+                break;
+            default:
+                $this->redirect(url('loginEasycom', ['guid' => $data['guid']]));
+                break;
+        }
+
+    }
+
+    /**
+     * 企微编辑
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function easycomEdit()
+    {
+        $id = input('id', null);
+        $data = $this->model->getOne($id);
+
+        if (!$data) {
+            $this->error('参数错误');
+        }
+        if($this->request->isPost()){
+            AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '编辑微信机器人'.$data['nickname'].'的信息']);
+            parent::savePost();
+        }
+
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('编辑机器人')
+            ->setTabNav($this->botConfigTabs($id), __FUNCTION__)
+            ->setPostUrl(url('edit'))
+            ->addFormItem('id', 'hidden', 'ID', 'ID')
+            ->addFormItem('title', 'text', '备注名称', '30字内', [], 'required maxlength=30')
+            ->addFormItem('status', 'radio', '启用', '是否启用', Common::yesOrNo())
+            ->setFormData($data);
+
+        return $builder->show();
+    }
+
+    /**
+     * easycom扫码登录
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function loginEasycom(){
+        $jump = '/undefined';
+        $guid = session('bot_client_id');
+        $data = [
+            'url' => config('system.bot.easycom_uri'),
+            'app_key' => config('system.bot.easycom_appkey'),
+            'protocol' => BotConst::PROTOCOL_EASYCOM,
+            'uuid' => $guid
+        ];
+
+        /**
+         * @var $bot_client Easycom
+         */
+        $bot_client = $this->model->getRobotClient($data);
+
+        if(request()->isPost()){
+            $code = input('code', '');
+            $res = $bot_client->verifyLoginCode(['guid' => $guid, 'code' => $code]);
+
+            if(empty($res['code'])){
+                $this->error($res['errmsg']);
+            }
+
+            //获取机器人信息
+            $info = $this->model->getRobotInfo($data);
+            if(!empty($info) && !is_string($info)){
+                if($bot = $this->model->getOneByMap(['uin' => $info['wxid']])){
+                    $data = $this->model->updateOne([
+                        'id' => $bot['id'],
+                        'username' => $info['username'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl'],
+                        'alive' => 1,
+                        'uuid' => $data['uuid'],
+                        'protocol' => $data['protocol'],
+                        'url' => $data['url'],
+                        'app_key' => $data['app_key'],
+                    ]);
+                }else{
+                    $data = $this->model->addOne([
+                        'uin' => $info['wxid'],
+                        'admin_id' => AdminM::getCompanyId($this->adminInfo),
+                        'staff_id' => $this->adminInfo['id'],
+                        'title' => $info['nickname'],
+                        'username' => $info['username'],
+                        'app_key' => $data['app_key'],
+                        'nickname' => $info['nickname'],
+                        'headimgurl' => $info['headimgurl'],
+                        'protocol' => $data['protocol'],
+                        'url' => $data['url'],
+                        'alive' => 1,
+                        'uuid' => $data['uuid']
+                    ]);
+                }
+                //把此机器人之前登录的状态下线
+                $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
+                    ['alive' => 0]
+                );
+                $jump = ($jump == '/undefined' ? url('index/index', ['id' => $data['id']]) : $jump);
+            }else{
+                $this->error($info);
+            }
+
+            AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '扫码登录微信'.$info['nickname']]);
+            //同步好友任务
+            invoke('\\app\\common\\event\\TaskQueue')->push([
+                'delay' => 3,
+                'params' => [
+                    'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                    'bot' => $data
+                ]
+            ]);
+            $this->success('登录成功', $jump);
+        }
+
+        $step = input('step', 1, 'intval');
+        switch ($step){
+            case 2:
+                $res = $bot_client->checkLogin(['guid' => $guid]);
+                if(empty($res['code'])){
+                    $this->error($res['errmsg'], '', ['guid' => $guid]);
+                }
+                //dump($res);exit;
+                $data = $res['data'];
+                switch ($data['loginQrcodeStatus']){
+                    case 2:
+                        //登录成功
+                        $this->success('success', url(url('index/index')));
+                        break;
+                    case 10:
+                        $this->success('success', url(__FUNCTION__, ['step' => 3]));
+                        break;
+                    default:
+                        $this->error('wait...' . $guid);
+                }
+                break;
+            case 3:
+                $builder = new FormBuilder();
+                $builder->setMetaTitle('输入验证码')
+                    ->setPostUrl(url('loginEasycom'))
+                    ->addFormItem('code', 'number', '验证码', '请输入手机登录提醒的验证码', [], 'required')
+                    ->setFormData($data);
+                return $builder->show();
+            default:
+                $res = $bot_client->clientCreate();
+                if(empty($res['code'])){
+                    $this->error($res['errmsg']);
+                }
+                $guid = $res['data']['guid'];
+                session('bot_client_id', $guid);
+                $login_code = $bot_client->getLoginCode(['guid' => $guid]);
+                if(empty($login_code['code'])){
+                    $this->error($login_code['errmsg']);
+                }
+
+                $data['qrcode'] = 'data:image/jpeg;base64,'. $login_code['data']['loginQrcodeBase64Data'];
+                break;
+        }
+
+
+        return $this->show($data);
     }
 
     /**
@@ -279,6 +511,11 @@ class Bot extends Bbase
             }
 
             $this->success('请等待加载登录二维码！', url($action, input('post.')));
+        }
+
+        $tab = input('tab', BotConst::PROTOCOL_EXTIAN);
+        if($tab == BotConst::PROTOCOL_EASYCOM){
+            $this->redirect(url('logineasycom'));
         }
 
         $data = array_merge([

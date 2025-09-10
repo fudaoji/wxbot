@@ -59,7 +59,6 @@ class HandlerPrivateChat extends Handler
             'admin_id' => $this->bot['admin_id'],
             'tag' => $this->content['msg']
         ]);
-        //Logger::error($medias);
 
         $flag = false;
         foreach ($medias as $media) {
@@ -79,7 +78,7 @@ class HandlerPrivateChat extends Handler
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function forward(){
-        //Logger::error($this->content);
+        //Logger::error($this->content['type']);
         if($group = model('common/Forward')->getGather([
             'group_wxid' => '',
             'from_wxid' => $this->fromWxid,
@@ -89,13 +88,14 @@ class HandlerPrivateChat extends Handler
             $groups = explode(',', $group['wxids']);
             //save msg log seconds later
             invoke('\\app\\common\\event\\TaskQueue')->push([
-                'delay' => 3,
+                'delay' => 1,
                 'params' => [
                     'do' => ["\\app\\common\\event\\Bot", 'forwardMsg'],
                     'bot_info' => $this->bot,
                     'to_wxid' => $groups,
-                    'msgid' => $this->content['msg_id'],
-                    'content_type' => $this->content['type']
+                    //'msgid' => $this->content['msg_id'],
+                    //'content_type' => $this->content['type'],
+                    'content' => $this->content
                 ]
             ]);
             parent::$replied = true;
@@ -154,6 +154,7 @@ class HandlerPrivateChat extends Handler
                             $keyword['wxids'] = $this->fromWxid;
                         }
                     }
+                    //Logger::error($this->fromWxid);
                     if (strpos($keyword['wxids'], $this->fromWxid) !== false) {
                         model('reply')->botReply($this->bot, $this->botClient, $keyword, $this->fromWxid, ['nickname' => $this->fromName]);
                         $flag = true;

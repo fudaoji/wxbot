@@ -16,6 +16,7 @@ use ky\WxBot\Client;
 use app\constants\Bot as BotConst;
 use ky\Logger;
 use ky\WxBot\Driver\Cat;
+use ky\WxBot\Driver\Easycom;
 use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
@@ -57,13 +58,18 @@ class Bot extends Base
     /**
      * 获取机器人客户端
      * @param array $bot
-     * @return Cat|Vlw|Wxwork|Webgo|Qianxun|My|Mycom|Extian|Xbotcom
-     * @throws \Exception
-     * Author: fudaoji<fdj@kuryun.cn>
+     * @return Cat|Vlw|Wxwork|Webgo|Qianxun|Easycom|Extian|Xbotcom
+     * @throws \Exception Author: fudaoji<fdj@kuryun.cn>
      */
     public function getRobotClient($bot = []){
         $options = ['app_key' => $bot['app_key'] ?? '', 'base_uri' => $bot['url'] ?? '', 'uuid' => $bot['uuid'] ?? ''];
         config('system.bot.step_time') && $options['step_time'] = explode('-', config('system.bot.step_time'));
+        if($bot['protocol'] == BotConst::PROTOCOL_EASYCOM){
+            $options += [
+                'app_secret' => config('system.bot.easycom_appsecret'),
+                'cache' => get_redis()
+            ];
+        }
         return (new Client($options, $bot['protocol']))->getBot();
     }
 
@@ -76,10 +82,32 @@ class Bot extends Base
      */
     public function getRobotInfo($params = []){
         /**
-         * @var $bot_client Vlw|Cat|Wxwork|My|Qianxun|Extian
+         * @var $bot_client Vlw|Cat|Wxwork|Easycom|Qianxun|Extian
          */
         $bot_client = $this->getRobotClient($params);
         switch ($params['protocol']){
+            case BotConst::PROTOCOL_EASYCOM:
+                $timer = 1;
+                $return = $bot_client->getRobotInfo(['guid' => $params['uuid']]);
+                while(empty($return['code']) && $timer <=5){
+                    sleep(1);
+                    $timer++;
+                    $return = $bot_client->getRobotInfo(['guid' => $params['uuid']]);
+                }
+
+                if($return['code'] && !empty($return['data'])){
+                    $data = $return['data'];
+                    return [
+                        'wxid' => $data['userId'],
+                        'nickname' => $data['nickname'] ?? '',
+                        'username' => $data['acctid']??'',
+                        'headimgurl' => $data['avatarUrl'] ?? '',
+                        'uuid' => $params['uuid']
+                    ];
+                }else{
+                    return  $bot_client->getError();
+                }
+                break;
             case BotConst::PROTOCOL_EXTIAN:
                 $return = $bot_client->getRobotInfo(['client_id' => $params['uuid']]);
                 if($return['code'] && !empty($return['data'])){

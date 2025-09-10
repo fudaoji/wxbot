@@ -11,10 +11,13 @@ namespace app\constants;
 
 use app\common\service\XmlMini;
 use ky\Logger;
+use ky\WxBot\Driver\Easycom;
 use function GuzzleHttp\Psr7\str;
 
 class Bot
 {
+    const PROTOCOL_EXTIAN = 'extian'; //e小天个微
+    const PROTOCOL_EASYCOM = 'easycom'; //Easy 企微
     const PROTOCOL_WEB = 'webgo';
     const PROTOCOL_CAT = 'cat';
     const PROTOCOL_VLW = 'vlw';
@@ -24,7 +27,6 @@ class Bot
     const PROTOCOL_QXUN = 'qianxun'; //千寻个微
     const PROTOCOL_XBOT = 'xbot'; //XBOT个微
     const PROTOCOL_XBOTCOM = 'xbotcom'; //XBOT企微
-    const PROTOCOL_EXTIAN = 'extian'; //e小天个微
     const PROTOCOL_XHX = 'xhx'; //小浣熊
     const PROTOCOL_XY = 'xy'; //星云
     const PROTOCOL_KUV = 'kuv'; //酷v
@@ -57,6 +59,7 @@ class Bot
     const MSG_LINK = 49; //分享链接、视频号
     const MSG_FINDER = 50; //视频号
     const MSG_FINDER_VIDEO = 51; //视频号短视频
+    const MSG_FINDER_LIVE = 52; //视频号直播
     const MSG_FILE = 2004;  //文件消息
     const MSG_EMOTICON = 47;   // 表情消息
     const MSG_CARD = 42; //名片消息
@@ -123,6 +126,8 @@ class Bot
     public static function protocols($id = null)
     {
         $list = [
+            self::PROTOCOL_EXTIAN => 'e小天个微',
+            self::PROTOCOL_EASYCOM => 'easy企微',
             self::PROTOCOL_KUV  => 'kuv',
             self::PROTOCOL_XY => '星云',
             self::PROTOCOL_QXUN => '千寻个微',
@@ -134,7 +139,6 @@ class Bot
             self::PROTOCOL_WXWORK => 'VLW企微',
             self::PROTOCOL_XBOT => 'XBOT个微',
             self::PROTOCOL_XBOTCOM => 'XBOT企微',
-            self::PROTOCOL_EXTIAN => 'e小天个微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
@@ -164,8 +168,8 @@ class Bot
         $list = [
             //self::PROTOCOL_MY => '西瓜个微',
             //self::PROTOCOL_CAT => '可爱猫个微',
-            self::PROTOCOL_EXTIAN => 'e小天个微',
-            self::PROTOCOL_MYCOM => 'xbot企微',
+            self::PROTOCOL_EXTIAN => '个微',
+            self::PROTOCOL_EASYCOM => '企微',
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }
@@ -196,6 +200,68 @@ class Bot
      */
     public static function getContentType(&$content, $protocol = self::PROTOCOL_EXTIAN){
         switch ($protocol){
+            case self::PROTOCOL_EASYCOM:
+                $content['msg'] = $content['msgData'];
+                $type = $content['msgType'];
+                switch ($content['msgType']){
+                    case 146:
+                        $type = self::MSG_FINDER_LIVE;
+                        break;
+                    case 141:
+                        $type = self::MSG_FINDER_VIDEO;
+                        break;
+                    case 147:
+                        $type = self::MSG_FINDER;
+                        break;
+                    case 78:
+                        $type = self::MSG_APP;
+                        break;
+                    case 16:
+                        $type = self::MSG_VOICE;
+                        break;
+                    case 26:
+                        $type = self::MSG_RED;
+                        break;
+                    case 41:
+                        $type = self::MSG_CARD;
+                        break;
+                    case 13:
+                        $type = self::MSG_NEWS;
+                        break;
+                    case 6:
+                        $type = self::MSG_LOCATION;
+                        break;
+                    case 29:
+                    case 104:
+                        $type = self::MSG_EMOTICON;
+                        break;
+                    case 7:
+                    case 14:
+                    case 101:
+                        $type = self::MSG_IMG;
+                        break;
+                    case 22:
+                    case 23:
+                    case 103:
+                        $type = self::MSG_VIDEO;
+                        break;
+                    case 20:
+                    case 15:
+                    case 102:
+                        $type = self::MSG_FILE;
+                        break;
+                    case Easycom::EVENT_FRIEND_VERIFY:
+                        $type = self::MSG_VERIFY;
+                        break;
+                    case 0:
+                    case 2:
+                        $type = self::MSG_TEXT;
+                        $content['msg'] = $content['msgData']['content'];
+                        break;
+                }
+
+                $content['type'] = $type;
+                break;
             default:
                 switch ($content['type']){
                     case self::MSG_VERIFY:

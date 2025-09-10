@@ -20,6 +20,7 @@ use app\common\service\Platform;
 use app\constants\Addon;
 use app\constants\Bot as BotConst;
 use ky\Helper;
+use ky\WxBot\Driver\Easycom;
 use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\My;
 use ky\WxBot\Driver\Mycom;
@@ -49,7 +50,7 @@ class Handler extends BaseCtl
     protected $groupMemberM;
     protected $bot;
     /**
-     * @var Vlw|Wxwork|Cat|Webgo|My|Mycom|Xbot|Extian
+     * @var Easycom|Extian
      */
     protected $botClient;
     protected $fromWxid = '';
@@ -87,7 +88,9 @@ class Handler extends BaseCtl
         $this->ajaxData = $options['ajax_data'];
         //Logger::error($this->ajaxData);
         $this->checkEvent();
+
         $class = "\\app\\bot\\handler\\{$this->driver}\\" . ucfirst($this->event);
+
         if(! class_exists($class)){
             //Logger::error("class: " . $class . " not exists!");
             $this->exit();
@@ -118,8 +121,21 @@ class Handler extends BaseCtl
         $this->ajaxData = $options['ajax_data'];
         $this->checkEvent();
 
-        //Logger::error($this->ajaxData);
         switch ($this->driver){
+            case BotConst::PROTOCOL_EASYCOM:
+                $this->botWxid = $this->content['userId'] ?? '';
+                $this->fromWxid = $this->content['senderId'] ?? '';
+                $this->fromName = $this->content['senderName'] ?? '';
+                if($this->event == BotConst::EVENT_FRIEND_VERIFY){
+                    $msg_data = $this->ajaxData['data'][1]['msgData'];
+                    $this->fromName = $msg_data['contactNickname'];
+                    $this->fromWxid = $msg_data['contactId'];
+                }
+
+                //消息类型转换
+                $this->content = BotConst::getContentType($this->content, $this->driver);
+                $this->content['msg_id'] = $this->content['seq'];
+                break;
             case BotConst::PROTOCOL_XHX:
                 $this->botWxid = $this->ajaxData['wxid'];
                 $this->fromWxid = $this->content['from_wxid'] ?? $this->botWxid;
@@ -194,10 +210,16 @@ class Handler extends BaseCtl
             "@{$this->bot['nickname']}"
         ];
 
-        if (strpos($this->fromWxid, 'gh_') !== false) { //公众号忽略
-            $this->exit();
-        }
+        $this->ignoreConversation();
 
+        if($this->driver === BotConst::PROTOCOL_EASYCOM && $this->event == BotConst::EVENT_PRIVATE_CHAT
+            && $this->fromWxid && empty($this->fromName)){
+            if($member = $this->memberM->getOneByMap(['uin' => $this->bot['uin'], 'wxid' => $this->fromWxid])){
+                $this->fromName = $member['nickname'];
+            }
+        }
+        $this->fromWxid = strval($this->fromWxid);
+        $this->groupWxid = strval($this->groupWxid);
         empty($this->content['from_group']) && $this->content['from_group'] = $this->groupWxid;
         empty($this->content['from_wxid']) && $this->content['from_wxid'] = $this->fromWxid;
         empty($this->content['from_group_name']) && $this->content['from_group_name'] = $this->groupName;
@@ -206,6 +228,7 @@ class Handler extends BaseCtl
         if($this->fromName == "DJ"){
             //Logger::error($this->content);
         }
+
         //save msg log seconds later
         invoke('\\app\\common\\event\\TaskQueue')->push([
             'delay' => 2,
@@ -222,12 +245,32 @@ class Handler extends BaseCtl
     }
 
     /**
+     * 忽略对话
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    protected function ignoreConversation(){
+        if (strpos($this->fromWxid, 'gh_') !== false) { //公众号忽略
+            $this->exit();
+        }
+    }
+
+    /**
      * 判断是否被艾特
      * @return bool
      * Author: fudaoji<fdj@kuryun.cn>
      */
     protected function checkBeAt(){
-        return ! (strpos($this->content['msg'], $this->beAtStr[0]) === false
+        //Logger::error($this->content['msgData']);
+        $easycom = false;
+        if(!empty($this->content['msgData']['atList'])){
+            foreach ($this->content['msgData']['atList'] as $at){
+                if(strval($at['userId']) == strval($this->botWxid)){
+                    $easycom = true;
+                    break;
+                }
+            }
+        }
+        return ! ($easycom === false && strpos($this->content['msg'], $this->beAtStr[0]) === false
             && strpos($this->content['msg'], $this->beAtStr[1]) === false
             && strpos($this->content['des'], "在群聊中@了你") === false);
     }
@@ -238,6 +281,36 @@ class Handler extends BaseCtl
      */
     public function checkEvent(){
         switch ($this->driver){
+            case BotConst::PROTOCOL_EASYCOM:
+                $this->content = $this->ajaxData['data'][0] ?? [];
+                //Logger::error($this->ajaxData);
+
+                switch (intval($this->content['msgType'])){
+                    case Easycom::EVENT_FRIEND_VERIFY:
+                        $this->event = BotConst::EVENT_FRIEND_VERIFY;
+                        break;
+                    case Easycom::EVENT_GROUP_ESTABLISH:
+                        $this->event = BotConst::EVENT_GROUP_ESTABLISH;
+                        break;
+                    case Easycom::EVENT_GROUP_MEMBER_ADD:
+                        $this->event = BotConst::EVENT_GROUP_MEMBER_ADD;
+                        break;
+                    default:
+                        $this->event = BotConst::EVENT_PRIVATE_CHAT;
+                        break;
+                }
+
+                if(in_array($this->content['msgType'], Easycom::EVENT_GROUP_MEMBER_DEC)){
+                    $this->event = BotConst::EVENT_GROUP_MEMBER_DEC;
+                }
+
+                if(!empty($this->content['fromRoomId']) && !empty($this->content['senderId'])){ //群聊
+                    $this->event = BotConst::EVENT_GROUP_CHAT;
+                }
+                if($this->isGroupEvent()){
+                    $this->groupWxid = $this->content['fromRoomId'];
+                }
+                break;
             case BotConst::PROTOCOL_EXTIAN:
                 $ignore_methods = ['chatroommember', Extian::EVENT_GET_CONTACT];
                 if(in_array($this->ajaxData['method'], $ignore_methods) ||

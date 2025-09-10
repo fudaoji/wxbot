@@ -12,6 +12,7 @@ use ky\Logger;
 use ky\WxBot\Driver\Easycom;
 use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\Xbot;
+use app\common\service\BotApply as ApplyService;
 
 class Bot extends Bbase
 {
@@ -143,7 +144,7 @@ class Bot extends Bbase
         ])
             ->setDataUrl(url('index', ['tab' => $tab]))
             ->setTabNav($this->tabs, $tab)
-            ->setTip("当前操作机器人：" . ($bot ? $bot['title'] : '无'))
+            ->setTip("当前操作机器人：" . ($bot ? $bot['nickname'] : '无'))
             ->addTableColumn(['title' => 'PID|UUID', 'field' => 'uuid', 'minWidth' => 90])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 150])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 100])
@@ -173,7 +174,7 @@ class Bot extends Bbase
     }
 
     /**
-     * 企业重新登录
+     * 企微重新登录
      * @throws \think\Exception
      * Author: fudaoji<fdj@kuryun.cn>
      */
@@ -189,6 +190,11 @@ class Bot extends Bbase
         $res = $client->getRobotInfo($data);
         if($res['code']){
             $this->success('登录成功！');
+        }
+
+        $seat = ApplyService::getSeatByAdmin();
+        if(empty($seat)){
+            $this->error('机器人席位不足，请联系客服！');
         }
         $res = $client->clientList();
         if(empty($res['code'])){
@@ -290,6 +296,12 @@ class Bot extends Bbase
         $bot_client = $this->model->getRobotClient($data);
 
         if(request()->isPost()){
+
+            $seat = ApplyService::getSeatByAdmin();
+            if(empty($seat)){
+                $this->error('您的机器人席位不足，请联系客服！');
+            }
+
             $code = input('code', '');
             $res = $bot_client->verifyLoginCode(['guid' => $guid, 'code' => $code]);
 
@@ -328,6 +340,10 @@ class Bot extends Bbase
                         'uuid' => $data['uuid']
                     ]);
                 }
+
+                //绑定席位
+                ApplyService::bindBot($seat, $data);
+
                 //把此机器人之前登录的状态下线
                 $this->model->updateByMap(['uin' => $data['uin'], 'id' => ['<>', $data['id']]],
                     ['alive' => 0]
@@ -515,6 +531,11 @@ class Bot extends Bbase
 
         $tab = input('tab', BotConst::PROTOCOL_EXTIAN);
         if($tab == BotConst::PROTOCOL_EASYCOM){
+            $seat = ApplyService::getSeatByAdmin();
+            if(empty($seat)){
+                $this->error('您的机器人席位不足，请联系客服！');
+            }
+
             $this->redirect(url('logineasycom'));
         }
 

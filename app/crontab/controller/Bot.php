@@ -12,6 +12,7 @@ namespace app\crontab\controller;
 
 use app\common\service\Addon as AppService;
 use app\common\service\Bot as BotService;
+use app\common\service\BotApply as ApplyService;
 use app\common\service\BotMember;
 use app\common\service\JsfTask;
 use app\constants\Addon;
@@ -69,6 +70,17 @@ class Bot extends Base
                 BotService::model()->updateOne(['id' => $bot['id'], 'alive' => 0]);
                 echo $bot['id'] . "下线了";
                 //todo 增加短信或公众号提醒
+
+                //解绑席位
+                if($bot['protocol'] == BotConst::PROTOCOL_EASYCOM){
+                    $seat = ApplyService::model()->getOneByMap([
+                        'admin_id' => $bot['admin_id'],
+                        'wx_num' => $bot['uin']
+                    ]);
+                    if($seat){
+                        ApplyService::unbindBot($seat);
+                    }
+                }
             }
         }
     }

@@ -55,7 +55,7 @@ class Bot extends Base
     }
 
     /**
-     * 检查机器人在线状态
+     * 检查机器人在线状态,5分钟检查一次
      * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -63,7 +63,8 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function checkBotStatus(){
-        $bot_list = BotService::model()->getList([1, 100], ['alive' => 1], []);
+        $where = ['alive' => 1, 'protocol' => BotConst::PROTOCOL_EASYCOM, 'update_time' => ['<', time() - 300]];
+        $bot_list = BotService::model()->getList([1, 100], $where, []);
         foreach ($bot_list as $bot){
             $res = BotService::model()->getRobotInfo($bot);
             if(is_string($res)){

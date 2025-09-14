@@ -76,6 +76,7 @@ class Easycom extends Base
     const API_REMOVE_GROUP_MEMBER = '/room/removeRoomMember'; //移除成员
     const API_GET_GROUP_MEMBER = "/room/batchGetRoomDetail"; //获取群成员列表
     const API_SET_GROUP_NAME = '/room/modifyRoomName'; //
+    const API_BUILDING_GROUP = '/room/createRoom'; //建群
     const API_GET_GROUP_LIST = '/room/getRoomList'; //获取客户群列表
     const API_GET_GROUP_QR = '/room/getRoomQrCode'; // 获取群二维码
     const API_DISMISS_GROUP = '/room/dismissRoom'; //解散群
@@ -630,6 +631,44 @@ class Easycom extends Base
     }
 
     /**
+     * 建群
+     * req:{
+            "guid": "{{guid}}",
+            "isOuterRoom": 1,  //1外部 0企业群
+            "memberList": ["168885**********", "16888501**********", "7881**********4"]
+        }
+     *
+     * resp:{
+        "code": 0,
+        "data": {
+            "memberList": [
+                "788130**********",
+                "16888**********91",
+                "1688850**********1"
+            ],
+            "roomCreatetime": 1709637022,
+            "roomCreatorId": "1688852**********1",
+            "roomId": "108854**********6"
+        },
+        "msg": "成功"
+        }
+     * @param array $params
+     * @return array
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function buildingGroup($params = [])
+    {
+        $memberList = is_string($params['wxids']) ? explode(',', $params['wxids']) : $params['wxids'];
+        $isOuterRoom = empty($params['isOuterRoom']) ? 1 : 0;
+        $params = [
+            'isOuterRoom' => $isOuterRoom,
+            'memberList' => $memberList
+        ];
+        //dump($params);exit;
+        return $this->doRequest(self::API_BUILDING_GROUP, $params);
+    }
+
+    /**
      * 群列表
      *req:{
     "guid": "{{guid}}",
@@ -1028,7 +1067,7 @@ class Easycom extends Base
     /**
      * 退出微信程序
      * @param array $params
-     * @return bool
+     * @return array
      * Author: fudaoji<fdj@kuryun.cn>
      */
     public function exit($params = [])
@@ -1193,11 +1232,6 @@ class Easycom extends Base
     public function getMemberInfo($params = [])
     {
         // TODO: Implement getMemberInfo() method.
-    }
-
-    public function buildingGroup($params = [])
-    {
-        // TODO: Implement buildingGroup() method.
     }
 
     public function getGuest($content = [], $field = '')

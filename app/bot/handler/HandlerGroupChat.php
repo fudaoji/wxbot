@@ -181,7 +181,7 @@ class HandlerGroupChat extends Handler
             'bot_id' => $this->bot['id'],
             'refresh' => true
         ]);
-        Logger::error($msg);
+        //Logger::error($msg);
         $flag = false;
         foreach ($keywords as $keyword){
             if(empty($keyword['medias'])){

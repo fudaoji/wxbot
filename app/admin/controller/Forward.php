@@ -151,7 +151,7 @@ class Forward extends Botbase
         }else{
             $builder->addFormItem('officer', 'linkage', '主讲群&人', '选择主讲人', ['data' => $this->getOfficers()], 'required');
         }
-        $builder->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+        $builder->addFormItem('zddx_legend', 'legend', '接收对象', '接收对象')
             ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
             ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $this->getMembers())
             ->setFormData($data);
@@ -178,7 +178,7 @@ class Forward extends Botbase
         }else{
             $builder->addFormItem('officer', 'linkage', '主讲人&群', '选择主讲人', ['data' => $this->getOfficers(), 'values' => [$data['group_id'], $data['officer']]], 'required');
         }
-        $builder->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+        $builder->addFormItem('zddx_legend', 'legend', '接收对象', '接收对象')
             ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
             ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $this->getMembers())
             ->setFormData($data);

@@ -204,7 +204,7 @@ class Task extends Botbase
             ->addFormItem('plan_time', 'datetime', '发送时间', '不填则默认当前时间，发送类型选择“每天发送”时，会忽略日期而只取时间段', [], '')
             ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types()], 'required')
             ->addFormItem('atall', 'radio', '艾特全体', '针对群才有效', [0 => '否', 1 => '是'], 'required')
-            ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+            ->addFormItem('zddx_legend', 'legend', '发送对象', '发送对象')
             ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
             ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $members)
             ->setFormData($default);
@@ -247,7 +247,7 @@ class Task extends Botbase
             ->addFormItem('media', 'choose_media_multi', '选择素材', '可多选', ['types' => Media::types(), 'materials' => $materials], 'required')
             ->addFormItem('atall', 'radio', '艾特全体', '艾特全体', [0 => '否', 1 => '是'], 'required')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'])
-            ->addFormItem('zddx_legend', 'legend', '指定对象', '指定对象')
+            ->addFormItem('zddx_legend', 'legend', '发送对象', '发送对象')
             ->addFormItem('member_tags', 'chosen_multi', '用户分组', '用户分组', model('memberTag')->getTitleToTitle($this->bot['id']))
             ->addFormItem('wxids', 'chosen_multi', '自由选择', '若填此项则用户分组的设置将失效', $members)
             ->setFormData($data);

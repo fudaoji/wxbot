@@ -175,12 +175,13 @@ class HandlerGroupChat extends Handler
     public function keyword(){
         $this->keywordGateway();
 
+        $msg = trim(str_replace($this->beAtStr, "", $this->content['msg']));
         $keywords = model('keyword')->searchByKeyword([
-            'keyword' => str_replace($this->beAtStr, "", $this->content['msg']), //过滤组AT的字符
+            'keyword' => $msg, //过滤组AT的字符
             'bot_id' => $this->bot['id'],
             'refresh' => true
         ]);
-        //Logger::error($keywords);
+        Logger::error($msg);
         $flag = false;
         foreach ($keywords as $keyword){
             if(empty($keyword['medias'])){

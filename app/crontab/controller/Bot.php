@@ -63,10 +63,14 @@ class Bot extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     private function checkBotStatus(){
-        $where = ['alive' => 1, 'protocol' => BotConst::PROTOCOL_EASYCOM, 'update_time' => ['<', time() - 300]];
+        $where = ['alive' => 1, /*'protocol' => BotConst::PROTOCOL_EASYCOM,*/ 'update_time' => ['<', time() - 300]];
         $bot_list = BotService::model()->getList([1, 100], $where, []);
         foreach ($bot_list as $bot){
             $res = BotService::model()->getRobotInfo($bot);
+            if($bot['protocol'] == BotConst::PROTOCOL_EXTIAN){
+                sleep(2);
+                $res = BotService::model()->getRobotInfo($bot);
+            }
             if(is_string($res)){
                 BotService::model()->updateOne(['id' => $bot['id'], 'alive' => 0]);
                 echo $bot['id'] . "下线了";

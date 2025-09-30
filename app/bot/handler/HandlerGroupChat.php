@@ -30,6 +30,7 @@ class HandlerGroupChat extends Handler
             'from_wxid' => $this->fromWxid,
             'bot_wxid' => $this->botWxid
         ])) {
+
             //2.取出机器人负责的群并转发
             $groups = explode(',', $group['wxids']);
             invoke('\\app\\common\\event\\TaskQueue')->push([
@@ -38,10 +39,12 @@ class HandlerGroupChat extends Handler
                     'do' => ["\\app\\common\\event\\Bot", 'forwardMsg'],
                     'bot_info' => $this->bot,
                     'to_wxid' => $groups,
-                    'msgid' => $this->content['msg_id'],
-                    'content_type' => $this->content['type']
+                    //'msgid' => $this->content['msg_id'],
+                    //'content_type' => $this->content['type'],
+                    'content' => $this->content
                 ]
             ]);
+            parent::$replied = true;
         }
     }
 

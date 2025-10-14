@@ -369,20 +369,12 @@ function ky_format_money($num)
  * @return string $result
  * @author Jason<1589856452@qq.com>
  */
-function wx_3rd_session($len)
+function wx_3rd_session($len = 32)
 {
-    $fp = @fopen('/dev/urandom', 'rb');
-    $result = '';
-    if ($fp !== false) {
-        $result .= @fread($fp, $len);
-        @fclose($fp);
-    } else {
-        trigger_error('Can not open /dev/urandom.');
-    }
-    // convert from binary to string
-    $result = base64_encode($result);
-    // remove none url chars
-    $result = strtr($result, '+/', '-_');
+    $header = request()->header();
+    $data = $header['user-agent'] . $header['host']
+        .time() . rand();
+    $result = md5($data);
     return substr($result, 0, $len);
 }
 

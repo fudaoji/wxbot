@@ -12,6 +12,7 @@ namespace app\common\service;
 
 use app\admin\model\Admin;
 use app\common\model\Server as M;
+use app\common\service\Server as ServerService;
 use app\constants\Bot as BotConst;
 use app\common\service\Bot;
 
@@ -54,7 +55,7 @@ class Server
                 $name = explode('.', $url)[0];
                 $type = self::CLOUD;
             }
-            $res = self::model()->addOne([
+            self::model()->addOne([
                 'name' => $name,
                 'url' => $url,
                 'app_key' => $config['app_key'],
@@ -62,7 +63,7 @@ class Server
                 'type' => $type
             ]);
         }
-        return $res;
+        return true;
     }
 
     /**
@@ -103,6 +104,10 @@ class Server
     public static function getServersByAdmin($admin_info = null)
     {
         empty($admin_info) && $admin_info = Admin::find(session(SESSION_AID));
+        $list = self::model()->getField(['name', 'url'], ['admin_id' => $admin_info['id']], true);
+        if(empty($list)){
+            ServerService::initServer();
+        }
         return self::model()->getField(['name', 'url'], ['admin_id' => $admin_info['id']], true);
     }
 

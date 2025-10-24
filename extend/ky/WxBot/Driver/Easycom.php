@@ -36,6 +36,7 @@ class Easycom extends Base
 
     const API_GET_TOKEN = '/member/login'; // 获取token
 
+    const API_GET_NOTIFY_URL = '/client/getNotifyUrls'; //获取回调地址
     const API_SET_NOTIFY_URL = '/client/setNotifyUrl'; //设置回调地址
     const API_CLIENT_LIST = '/client/list';
     const API_CLIENT_CREATE = '/client/createClient';
@@ -70,6 +71,7 @@ class Easycom extends Base
     const API_AGREE_FRIEND_VERIFY = '/contact/agreeContact'; // 同意好友请求
     const API_GET_FRIEND_DETAIL_LIST = '/contact/batchGetUserinfo'; //获取联系人详情列表
     const API_GET_FRIEND_LIST = '/contact/getWxContactList'; //获取外部联系人
+    const API_MODIFY_FRIEND_REMARK = '/contact/updateWxContact';
 
     const API_QUIT_GROUP = '/room/quitRoom'; // 退群
     const API_INVITE_IN_GROUP = '/room/inviteRoomMember'; //拉入群聊
@@ -137,6 +139,37 @@ class Easycom extends Base
         }
         //dump($params);exit;
         return $params;
+    }
+
+    /**
+     * req:{
+    "guid": "{{guid}}",
+    "userId": "788130**********",
+    "remark": "ffffffffxxxx",
+    "desc": "xxxxxx",
+    "mobileList": ["7881302**********"]
+    }
+     *
+     * resp:{
+    "code": 0,
+    "data": [
+    {}
+    ],
+    "msg": "string"
+    }
+     * @param array $params
+     * @return array 设置外部好友信息
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function setFriendRemarkName($params = [])
+    {
+        $params = [
+            'remark' => $params['note'],
+            'desc' => $params['desc'] ?? $params['note'],
+            'userId' => $params['to_wxid'],
+            "mobileList" => $params['mobileList'] ?? []
+        ];
+        return $this->doRequest(self::API_MODIFY_FRIEND_REMARK, $params);
     }
 
     /**
@@ -790,6 +823,30 @@ class Easycom extends Base
      * 设置回调地址
      * req:{
         "url": "http://127.0.0.1:8080"
+    }
+     *
+     * resp:{
+    "code": 0,
+    "data": {
+    "urls": [
+    "http://127.0.0.1:8081",
+    "http://127.0.0.1:8080"
+    ]
+    },
+    "msg": "成功"
+    }
+     * @param array $params
+     * @return bool|mixed
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    public function getNotifyUrl($params = []){
+        return $this->doRequest(self::API_GET_NOTIFY_URL, $params);
+    }
+
+    /**
+     * 设置回调地址
+     * req:{
+        "url": "http://127.0.0.1:8080"
         }
      *
      * resp:{
@@ -1207,11 +1264,6 @@ class Easycom extends Base
     public function sendLinkMsg($params = [])
     {
         // TODO: Implement sendLinkMsg() method.
-    }
-
-    public function setFriendRemarkName($params = [])
-    {
-        // TODO: Implement setFriendRemarkName() method.
     }
 
     public function deleteFriend($params = [])

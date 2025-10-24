@@ -30,7 +30,7 @@ class Api extends BaseCtl
             }
         }else{
             Logger::error('Request invalid!' . request()->method());
-            exit(0);
+            exit('非法请求！');
         }
     }
 

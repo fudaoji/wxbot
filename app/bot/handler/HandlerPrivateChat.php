@@ -92,7 +92,7 @@ class HandlerPrivateChat extends Handler
                 'params' => [
                     'do' => ["\\app\\common\\event\\Bot", 'forwardMsg'],
                     'bot_info' => $this->bot,
-                    'to_wxid' => $groups,
+                    'to_wxid' => array_unique($groups),
                     //'msgid' => $this->content['msg_id'],
                     //'content_type' => $this->content['type'],
                     'content' => $this->content

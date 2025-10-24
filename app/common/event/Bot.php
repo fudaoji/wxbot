@@ -35,9 +35,11 @@ class Bot extends Base
          * @var \think\queue\Job
          */
         $job = $data['job'];
-        if ($job->attempts() > 2) {
+        //Logger::error('尝试次数：'.$job->attempts());
+        if ($job->attempts() > 1) {
             //通过这个方法可以检查这个任务已经重试了几次了
             $job->delete();
+            return true;
         }
         $bot = $data['bot_info'];
         $bot_client = $this->botM->getRobotClient($bot);
@@ -237,9 +239,10 @@ class Bot extends Base
          * @var \think\queue\Job
          */
         $job = $data['job'];
-        if ($job->attempts() > 2) {
+        if ($job->attempts() > 1) {
             //通过这个方法可以检查这个任务已经重试了几次了
             $job->delete();
+            return true;
         }
         $field = $data['type'] == 'add' ? 'add_num' : 'decr_num';
         if(! $tj = model('common/TjGroup')->getOneByMap(['group_id' => $data['group_id'], 'day' => $data['day']], true, true)){

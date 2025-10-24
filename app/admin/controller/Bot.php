@@ -6,6 +6,7 @@ use app\admin\model\Bot as BotM;
 use app\admin\model\Admin as AdminM;
 use app\common\model\Upload;
 use app\common\service\AdminLog as AdminLogService;
+use app\common\service\Server as ServerService;
 use app\constants\Common;
 use app\constants\Bot as BotConst;
 use ky\Logger;
@@ -39,10 +40,8 @@ class Bot extends Bbase
         $this->model = new BotM();
         $this->tabs = $this->getActiveDrivers();
         $customDomains = $this->adminInfo['username'].".frp.kuryun.cn";
-        $this->tip = " <ul><li>【重要】： 本地主机部署e小天，需要安装内网穿透服务（具体教程点击下方新手必看教程）。内网穿透服务的配置为：<br> name=<bold>".$this->adminInfo['username']."</bold>, customDomains=".$customDomains."</li>
- <li>本地主机部署e小天:  下方服务器地址填写".$customDomains.":8203。如果是云服务，则下方服务器地址填写 云服务器ip:8203。</li>
- <li>e小天的接口回调地址: <a href='javascript:;' id='url-extian' class='js-clipboard' data-clipboard-target='#url-extian'>".request()->domain()."/bot/api/extian</a>。</li>
-<li>新手必看教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://doc.kuryun.com/web/#/642350114/229559988'>点击查看</a></li>。</ul>";
+        $this->tip = " <ul><li>新增服务器请到左侧菜单栏【服务器管理】中操作！</li>
+ <li>新手必看教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://doc.kuryun.com/web/#/642350114/229559988'>点击查看</a>。</li></ul>";
         $this->xbotTip = "<!--<p>若选择扫码登陆，请先在服务器上完成框架设置。加载二维码需要几秒钟，请耐心等待。</p>--> 
 <li>xbot企微的接口回调地址: <a href='javascript:;' id='url-xbotcom' class='js-clipboard' data-clipboard-target='#url-xbotcom'>".request()->domain()."/bot/api/xbotcom</a></li>
 <li>新手必看教程：<i class='fa fa-hand-o-right'></i><a target='_blank' href='https://doc.kuryun.com/web/#/642350114/229559988'>点击查看</a></li></ul>";
@@ -61,35 +60,39 @@ class Bot extends Bbase
     }
 
     /**
-     * 同步数据
+     * e小天个微拉取机器人
      * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      * Author: fudaoji<fdj@kuryun.cn>
      */
-    function syncBots(){
-        $bots = \app\common\service\Bot::model()->getAll([
-            'where' => ['staff_id' => $this->adminInfo['id'], 'status' => 1]
-        ])->toArray();
-        foreach ($bots as $bot){
-            $res = $this->model->getRobotList($bot);
+    function extianAdd(){
+        if($this->request->isPost()){
+            $name = input('post.server');
+            $server = ServerService::getServerByName($name);
+            $params = [
+                'app_key' => $server['app_key'],
+                'url' => $server['url'],
+                'protocol' => BotConst::PROTOCOL_EXTIAN
+            ];
+            $res = $this->model->getRobotList($params);
             if(is_string($res)){
-                continue;
+                $this->error($res);
             }
             foreach ($res as $item){
                 $bot = $this->model->getOneByMap(['uin' => $item['uin']], true, true);
                 if($bot){
-                    $res = $this->model->updateOne([
+                    $res = $this->model->updateOne(array_merge($params, [
                         'id' => $bot['id'],
                         'username' => $item['username'],
                         'nickname' => $item['nickname'],
                         'headimgurl' => $item['headimgurl'],
                         'alive' => 1,
                         'uuid' => $item['uuid'] ?? 0
-                    ]);
+                    ]));
                 }else{
-                    $res = $this->model->addOne(array_merge(['protocol' => BotConst::PROTOCOL_EXTIAN], [
+                    $res = $this->model->addOne(array_merge($params, [
                         'uin' => $item['uin'],
                         'admin_id' => AdminM::getCompanyId($this->adminInfo),
                         'staff_id' => $this->adminInfo['id'],
@@ -101,9 +104,28 @@ class Bot extends Bbase
                         'uuid' => $item['uuid'] ?? 0
                     ]));
                 }
+                AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '新增微信机器人']);
+                //同步好友任务
+                invoke('\\app\\common\\event\\TaskQueue')->push([
+                    'delay' => 3,
+                    'params' => [
+                        'do' => ['\\app\\crontab\\task\\Bot', 'pullMembers'],
+                        'bot' => $res
+                    ]
+                ]);
             }
+            $this->success("操作成功！", '/undefined');
         }
-        $this->success('同步成功！');
+
+        $servers = ServerService::getServersByAdmin();
+        // 使用FormBuilder快速建立表单页面
+        $builder = new FormBuilder();
+        $builder->setMetaTitle('拉取机器人')
+            ->setTip($this->tip)
+            ->setPostUrl(url(__FUNCTION__))
+            ->addFormItem('server', 'select', '选择服务器', '选择服务器', $servers);
+
+        return $builder->show();
     }
 
     /**
@@ -643,9 +665,7 @@ class Bot extends Bbase
     public function add()
     {
         $tab = input('tab', BotConst::PROTOCOL_EXTIAN);
-        if($tab != BotConst::PROTOCOL_EXTIAN){
-            $this->redirect(url($tab.'Add'));
-        }
+        $this->redirect(url($tab.'Add'));
         if($this->request->isPost()){
             $params = input('post.');
             $res = $this->model->getRobotList($params);
@@ -901,7 +921,7 @@ class Bot extends Bbase
      */
     public function getConfig(){
         if($config = $this->model->getOneByOrder([
-            'where' => ['admin_id' => $this->adminInfo['id']],
+            'where' => ['admin_id' => $this->adminInfo['id'], 'protocol' => BotConst::PROTOCOL_EXTIAN],
             'order' => ['alive' => 'desc', 'update_time' => 'desc'],
             'field' => ['app_key', 'url']
         ])){

@@ -32,8 +32,9 @@ class Media
          * @var \think\queue\Job
          */
         $job = $params['job'];
-        if ($job->attempts() > 2) {
+        if ($job->attempts() > 1) {
             $job->delete();
+            return true;
         }
         $bot = $params['bot'];
         $media = $params['media'];

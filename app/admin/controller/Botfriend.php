@@ -133,7 +133,8 @@ class Botfriend extends Botbase
         }
         if(request()->isPost()){
             $post_data = input('post.');
-            $res = model('admin/bot')->getRobotClient($this->bot)->setFriendRemarkName([
+            $res = model('admin/bot')->getRobotClient($this->bot)
+                ->setFriendRemarkName([
                 'robot_wxid' => $this->bot['uin'],
                 'to_wxid' => $data['wxid'],
                 'note' => $post_data['remark_name']

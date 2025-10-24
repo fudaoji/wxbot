@@ -50,10 +50,10 @@ class Server
             $url = $config['url'];
             if(strpos($url, 'frp.') === false){
                 $name = explode(':', $url)[0];
-                $type = self::LOCAL;
+                $type = self::CLOUD;
             }else{
                 $name = explode('.', $url)[0];
-                $type = self::CLOUD;
+                $type = self::LOCAL;
             }
             self::model()->addOne([
                 'name' => $name,

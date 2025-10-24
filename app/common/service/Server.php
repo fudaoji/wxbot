@@ -104,11 +104,12 @@ class Server
     public static function getServersByAdmin($admin_info = null)
     {
         empty($admin_info) && $admin_info = Admin::find(session(SESSION_AID));
-        $list = self::model()->getField(['name', 'url'], ['admin_id' => $admin_info['id']], true);
+        $list = self::model()->getField(['name', 'url'], ['admin_id' => $admin_info['id'],'status' => 1], true);
         if(empty($list)){
             ServerService::initServer();
+            $list = self::model()->getField(['name', 'url'], ['admin_id' => $admin_info['id']], true);
         }
-        return self::model()->getField(['name', 'url'], ['admin_id' => $admin_info['id']], true);
+        return $list;
     }
 
     /**

@@ -86,7 +86,7 @@ class Server extends Bbase
             ->setTip($tip)
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('name', 'text', '隧道名称', '隧道名称', [], 'required minlength=4 maxlength=20 readonly')
-            ->addFormItem('url', 'text', '接口地址', 'ip:port', [], 'required  maxlength=20 readonly')
+            ->addFormItem('url', 'text', '接口地址', 'ip:port', [], 'required  maxlength=50 readonly')
             ->addFormItem('app_key', 'text', 'Appkey', 'e小天的key', [], 'required')
             ->setFormData(['name' => $name, 'url' => $url]);
 
@@ -107,7 +107,7 @@ class Server extends Bbase
         ->setTabNav($this->tabList, 'cloud')
         ->setTip($tip)
             ->setPostUrl(url('savepost')) //设置表单提交地址
-            ->addFormItem('url', 'text', '接口地址', 'ip:port', [], 'required  maxlength="20"')
+            ->addFormItem('url', 'text', '接口地址', 'ip:port', [], 'required  maxlength="50"')
             ->addFormItem('app_key', 'text', 'Appkey', 'e小天的key', [], 'required');
 
         return $builder->show();
@@ -127,7 +127,7 @@ class Server extends Bbase
         $builder->setMetaTitle('编辑')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('url', 'text', '接口地址', 'ip:port', [], 'required  maxlength="20"')
+            ->addFormItem('url', 'text', '接口地址', 'ip:port', [], 'required  maxlength="50"')
             ->addFormItem('app_key', 'text', 'Appkey', 'e小天的key', [], 'required')
             //->addFormItem('num', 'number', '承载数量', '承载数量', [], 'required min=1')
             ->setFormData($data);

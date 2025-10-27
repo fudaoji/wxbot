@@ -40,7 +40,6 @@ class EventFriendVerify extends HandlerFriendVerify
             if(empty($reply['wxids']) || strpos($reply['wxids'], $this->fromWxid) !== false){
                 switch ($reply['handle_type']){
                     case Reply::HANDLE_ADDED_ACCEPT:
-                        //Logger::error($reply['handle_type']);
                         $this->botClient->agreeFriendVerify([
                             'uuid' => $this->bot['uuid'],
                             'robot_wxid' => $this->bot['uin'],
@@ -48,6 +47,19 @@ class EventFriendVerify extends HandlerFriendVerify
                             'ticket' => $this->content['ticket'],
                             'scene' => $this->content['scene']
                         ]);
+
+                        //增加其他通过好友的动作
+                        if(!empty($reply['group_wxids'])){
+                            Logger::error($reply['group_wxids']);
+                            $groups = explode(',', $reply['group_wxids']);
+                            foreach ($groups as $group_wxid){ //自动拉群
+                                $this->botClient->inviteInGroupByLink([
+                                    'robot_wxid' => $this->botWxid,
+                                    'group_wxid' => $group_wxid,
+                                    'to_wxid' => $this->fromWxid
+                                ]);
+                            }
+                        }
                         break;
                 }
             }

@@ -327,8 +327,9 @@ class Reply extends Botbase
             ->addFormItem('bot_id', 'hidden', 'botid', 'botid')
             ->addFormItem('event', 'hidden', 'event', 'event')
             ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
-            ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers())
             ->addFormItem('handle_type', 'select', '响应动作', '删除好友对私聊起作用，移出群对群聊起作用', ReplyConst::actionTypes())
+            ->addFormItem('wxids', 'chosen_multi', '作用对象', '对指定好友或群起作用', $this->getMembers())
+            ->addFormItem('group_wxids', 'chosen_multi', '拉入群聊', '动作响应后需要拉入的对应群聊', $this->getGroups())
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')
             ->setFormData($data);
@@ -350,13 +351,19 @@ class Reply extends Botbase
         }else{
             $reply['wxids'] = [];
         }
+        if(!empty($reply['group_wxids'])){
+            $reply['group_wxids'] = explode(',', $reply['group_wxids']);
+        }else{
+            $reply['group_wxids'] = [];
+        }
 
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'id', 'id')
             ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
-            ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers())
             ->addFormItem('handle_type', 'select', '响应动作', '删除好友对私聊起作用，移出群对群聊起作用', ReplyConst::actionTypes())
+            ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers())
+            ->addFormItem('group_wxids', 'chosen_multi', '拉入群聊', '动作响应后需要拉入的对应群聊', $this->getGroups())
             ->addFormItem('sort', 'number', '排序', '数字越大优先级越高', [], 'required min=0')
             ->addFormItem('status', 'radio', '状态', '状态', [1 => '启用', 0 => '禁用'], 'required')
             ->setFormData($reply);

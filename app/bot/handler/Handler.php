@@ -142,6 +142,10 @@ class Handler extends BaseCtl
                 break;
             case BotConst::PROTOCOL_EXTIAN:
                 $this->botWxid = $this->ajaxData['myid'] ?? '';
+                if(in_array($this->ajaxData['type'], [BotConst::MSG_LINK, BotConst::MSG_VERIFY, BotConst::MSG_FILE])){ //特殊消息类型
+                    $this->content = BotConst::getContentType($this->content);
+                }
+                //Logger::error($this->content);
                 if(in_array($this->event, [BotConst::EVENT_GROUP_MEMBER_ADD, BotConst::EVENT_GROUP_MEMBER_DEC])){
                     $new = $this->content['member'][0];
                     $this->fromWxid = $new['wxid'];
@@ -157,10 +161,6 @@ class Handler extends BaseCtl
                         $this->groupName = $this->content['nickName'] ?? '';
                         $this->groupWxid = $this->content['fromid'] ?? '';
                     }
-                }
-
-                if(in_array($this->ajaxData['type'], [BotConst::MSG_LINK, BotConst::MSG_VERIFY, BotConst::MSG_FILE])){ //特殊消息类型
-                    $this->content = BotConst::getContentType($this->content);
                 }
 
                 !empty($this->content['id']) && $this->content['msg_id'] = $this->content['id'];

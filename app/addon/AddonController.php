@@ -21,7 +21,17 @@ class AddonController extends BaseCtl
 
     public function initialize(){
         parent::initialize();
-        $rule = $this->request->rule()->getRule();
+        $this->decodeUrl();
+        $this->urlPrefix = $this->module . '/'.$this->controller . '/';
+        $this->addonMenus = get_addon_menu($this->addonName);
+        $this->addonInfo = get_addon_info();
+        if(empty($this->addonInfo['status'])){
+            exit('应用不存在或已下架');
+        }
+    }
+
+    protected function decodeUrl(){
+        $rule = request()->rule()->getRule();
         $rule_arr = explode('/', $rule);
         $this->addonName = $rule_arr[0];
         if(count($rule_arr) >= 4){
@@ -32,12 +42,9 @@ class AddonController extends BaseCtl
             $this->controller = $rule_arr[1];
             $this->action = $rule_arr[2];
         }
-        $this->urlPrefix = $this->module . '/'.$this->controller . '/';
-        $this->addonMenus = get_addon_menu($this->addonName);
-        $this->addonInfo = get_addon_info();
-        if(empty($this->addonInfo['status'])){
-            exit('应用不存在或已下架');
-        }
+        $this->action = strtolower($this->action);
+        $this->controller = strtolower($this->controller);
+        $this->module = strtolower($this->module);
     }
 
     public function show($assign = [], $view = ''){

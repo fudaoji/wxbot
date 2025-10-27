@@ -383,7 +383,6 @@ class AddonListBuilder extends AddonController
         unset($this->_meta_title, $this->_top_button_list, $this->_search, $this->_tab_nav, $this->_table_column_list, $this->_alter_data_list,
             $this->_table_data_list, $this->_table_data_list_key,$this->_table_data_page,$this->_right_button_list,$this->_extra_html,$this->_tip);
 
-
         return parent::show($assign, $this->_template);
     }
 

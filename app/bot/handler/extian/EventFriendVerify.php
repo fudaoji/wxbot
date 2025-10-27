@@ -50,7 +50,6 @@ class EventFriendVerify extends HandlerFriendVerify
 
                         //增加其他通过好友的动作
                         if(!empty($reply['group_wxids'])){
-                            Logger::error($reply['group_wxids']);
                             $groups = explode(',', $reply['group_wxids']);
                             foreach ($groups as $group_wxid){ //自动拉群
                                 $this->botClient->inviteInGroupByLink([

@@ -326,7 +326,7 @@ class Reply extends Botbase
             ->addFormItem('admin_id', 'hidden', 'adminid', 'adminid')
             ->addFormItem('bot_id', 'hidden', 'botid', 'botid')
             ->addFormItem('event', 'hidden', 'event', 'event')
-            ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
+            ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', BotConst::msgTypes())
             ->addFormItem('handle_type', 'select', '响应动作', '删除好友对私聊起作用，移出群对群聊起作用', ReplyConst::actionTypes())
             ->addFormItem('wxids', 'chosen_multi', '作用对象', '对指定好友或群起作用', $this->getMembers())
             ->addFormItem('group_wxids', 'chosen_multi', '拉入群聊', '动作响应后需要拉入的对应群聊', $this->getGroups())
@@ -360,7 +360,7 @@ class Reply extends Botbase
         $builder = new FormBuilder();
         $builder->setPostUrl(url('savePost'))
             ->addFormItem('id', 'hidden', 'id', 'id')
-            ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', \app\constants\Bot::msgTypes())
+            ->addFormItem('msg_type', 'select', '消息类型', '接收到的消息类型', BotConst::msgTypes())
             ->addFormItem('handle_type', 'select', '响应动作', '删除好友对私聊起作用，移出群对群聊起作用', ReplyConst::actionTypes())
             ->addFormItem('wxids', 'chosen_multi', '指定对象', '对指定好友或群起作用', $this->getMembers())
             ->addFormItem('group_wxids', 'chosen_multi', '拉入群聊', '动作响应后需要拉入的对应群聊', $this->getGroups())

@@ -109,7 +109,7 @@ class Bot
             self::MSG_RED => '红包',
             self::MSG_APP => 'app',
             self::MSG_GROUPINVITE => '进群邀请',
-            self::MSG_VERIFY => '加好友验证',
+            self::MSG_VERIFY => '好友请求',
             self::MSG_RECALLED => '消息撤回',
             self::MSG_QUOTE => '引用消息',
             self::MSG_OTHER => '其他'

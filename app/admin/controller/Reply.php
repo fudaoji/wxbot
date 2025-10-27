@@ -319,7 +319,8 @@ class Reply extends Botbase
             'admin_id' => $this->adminInfo['id'],
             'bot_id' => $this->bot['id'],
             'event' => $current_name,
-            'status' => 1
+            'status' => 1,
+            'sort' => 0
         ];
         $builder->setPostUrl(url('savePost'))
             ->setTip("添加【".ReplyConst::events($current_name)."】的响应动作")

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5555deffc6f5081e23c0faf09a8266d",
+    "content-hash": "322506bcd9574c401fe9b41172f7ea93",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -132,6 +132,44 @@
                 }
             ],
             "time": "2019-11-02T10:21:18+00:00"
+        },
+        {
+            "name": "fudaoji/php-sms",
+            "version": "1.1.1",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/fudaoji/php-sms/1.1.1/fudaoji-php-sms-1.1.1.zip",
+                "reference": "e907a3b406760066d07eabc03be752a08324fdc0",
+                "shasum": ""
+            },
+            "require": {
+                "aliyuncs/oss-sdk-php": "~2.0",
+                "php": ">=7.1.0",
+                "qcloud/cos-sdk-v5": ">=2.0",
+                "qiniu/php-sdk": "^7.7"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [],
+                "psr-4": {
+                    "Dao\\Upload\\": "src"
+                }
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Rocky",
+                    "email": "461960962@qq.com"
+                }
+            ],
+            "description": "Upload Manager",
+            "support": {
+                "issues": "https://github.com/fudaoji/php-upload/issues",
+                "source": "https://github.com/fudaoji/php-upload/tree/1.1.1"
+            },
+            "time": "2023-06-26T23:56:50+00:00"
         },
         {
             "name": "fudaoji/php-upload",

@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '0385174bf109a9aadfbc880f1f3268e9e673650e',
+    'reference' => '912ac28a9890326992796dba718312581fab8433',
     'name' => 'topthink/think',
   ),
   'versions' => 
@@ -59,6 +59,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '01490a47ba09e2883f07f87ee4cc00a09886e8d4',
+    ),
+    'fudaoji/php-sms' => 
+    array (
+      'pretty_version' => '1.1.1',
+      'version' => '1.1.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'e907a3b406760066d07eabc03be752a08324fdc0',
     ),
     'fudaoji/php-upload' => 
     array (
@@ -639,7 +648,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '0385174bf109a9aadfbc880f1f3268e9e673650e',
+      'reference' => '912ac28a9890326992796dba718312581fab8433',
     ),
     'topthink/think-captcha' => 
     array (

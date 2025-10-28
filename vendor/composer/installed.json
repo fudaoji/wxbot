@@ -210,6 +210,47 @@
             "install-path": "../ethanhann/redisearch-php"
         },
         {
+            "name": "fudaoji/php-sms",
+            "version": "1.1.1",
+            "version_normalized": "1.1.1.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/fudaoji/php-sms/1.1.1/fudaoji-php-sms-1.1.1.zip",
+                "reference": "e907a3b406760066d07eabc03be752a08324fdc0",
+                "shasum": ""
+            },
+            "require": {
+                "aliyuncs/oss-sdk-php": "~2.0",
+                "php": ">=7.1.0",
+                "qcloud/cos-sdk-v5": ">=2.0",
+                "qiniu/php-sdk": "^7.7"
+            },
+            "time": "2023-06-26T23:56:50+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "files": [],
+                "psr-4": {
+                    "Dao\\Upload\\": "src"
+                }
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Rocky",
+                    "email": "461960962@qq.com"
+                }
+            ],
+            "description": "Upload Manager",
+            "support": {
+                "issues": "https://github.com/fudaoji/php-upload/issues",
+                "source": "https://github.com/fudaoji/php-upload/tree/1.1.1"
+            },
+            "install-path": "../fudaoji/php-sms"
+        },
+        {
             "name": "fudaoji/php-upload",
             "version": "1.1.1",
             "version_normalized": "1.1.1.0",

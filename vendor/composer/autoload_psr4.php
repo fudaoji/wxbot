@@ -53,6 +53,6 @@ return array(
     'Ehann\\RediSearch\\' => array($vendorDir . '/ethanhann/redisearch-php/src'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
-    'Dao\\Upload\\' => array($vendorDir . '/fudaoji/php-upload/src'),
+    'Dao\\Upload\\' => array($vendorDir . '/fudaoji/php-sms/src', $vendorDir . '/fudaoji/php-upload/src'),
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
 );

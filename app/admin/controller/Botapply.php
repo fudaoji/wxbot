@@ -122,6 +122,9 @@ class Botapply extends Bbase
             if(isset($post_data['deadline_status']) && $post_data['deadline_status'] != 0){
                 $where['apply.deadline'] = [$post_data['deadline_status'] == 2 ? '<' : '>', time()];
             }
+            if(!empty($post_data['type'])){
+                $where['apply.type'] = $post_data['type'];
+            }
             $params = [
                 'alias' => 'apply',
                 'join' => [
@@ -155,7 +158,8 @@ class Botapply extends Bbase
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '搜索词','placeholder' => 'Wxid/客户手机号/客户账号'],
-            ['type' => 'select', 'name' => 'deadline_status', 'title' => '过期状态','options' => $deadline_status]
+            ['type' => 'select', 'name' => 'deadline_status', 'title' => '过期状态','options' => $deadline_status],
+            ['type' => 'select', 'name' => 'type', 'title' => '类型','options' => ['' => '所有']+ApplyService::types()]
         ])
             ->addTopButton('addnew', ['text' => '新增席位'])
             ->addTableColumn(['title' => '序号', 'type' => 'index'])

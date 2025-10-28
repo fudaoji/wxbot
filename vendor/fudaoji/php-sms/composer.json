@@ -1,0 +1,20 @@
+{
+    "name": "fudaoji/php-sms",
+    "description": "Sms Manager",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Rocky",
+            "email": "461960962@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dao\\Sms\\": "src"
+        },
+        "files": []
+    }
+}

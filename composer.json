@@ -38,7 +38,8 @@
     "textalk/websocket": "^1.6",
     "ethanhann/redisearch-php": "^1.9",
     "predis/predis": "^2.3",
-    "fukuball/jieba-php": "dev-master"
+    "fukuball/jieba-php": "dev-master",
+    "fudaoji/php-sms": "1.1.1"
   },
   "require-dev": {
     "symfony/var-dumper": "^4.2",

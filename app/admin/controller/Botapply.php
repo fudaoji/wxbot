@@ -19,6 +19,7 @@ class Botapply extends Bbase
      * @var ApplyM
      */
     protected $model;
+    protected $needAid = false;
 
     public function initialize(){
         parent::initialize();

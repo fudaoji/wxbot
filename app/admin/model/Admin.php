@@ -24,7 +24,7 @@ class Admin extends Base
      * @throws \think\db\exception\ModelNotFoundException
      */
     static function isFounderTeam($admin_info = []){
-        empty($admin_info) && $admin_info = self::find(session(SESSION_AID));
+        empty($admin_info) && $admin_info = self::sessionAdmin();
         return self::getCompanyId($admin_info) == self::getFounderId();
     }
 
@@ -38,7 +38,7 @@ class Admin extends Base
      * @throws \think\db\exception\ModelNotFoundException
      */
     static function getTeamIdToName($admin_info = []){
-        empty($admin_info) && $admin_info = self::find(session(SESSION_AID));
+        empty($admin_info) && $admin_info = self::sessionAdmin();
         return self::where('id|pid', $admin_info['id'])->column('username', 'id');
     }
 
@@ -79,6 +79,7 @@ class Admin extends Base
      * @throws \think\db\exception\ModelNotFoundException
      */
     static function isFounder($admin_info = []){
+        empty($admin_info) && $admin_info = self::sessionAdmin();
         return $admin_info['id'] == self::getFounderId();
     }
 
@@ -89,7 +90,7 @@ class Admin extends Base
      * Author: fudaoji<fdj@kuryun.cn>
      */
     static function getCompanyId($admin_info = []){
-        empty($admin_info) && $admin_info = self::find(session(SESSION_AID));
+        empty($admin_info) && $admin_info = self::sessionAdmin();
         return empty($admin_info['pid']) ? $admin_info['id'] : $admin_info['pid'];
     }
 
@@ -113,5 +114,17 @@ class Admin extends Base
      */
     function afterReg($admin = []){
 
+    }
+
+    /**
+     * session会话保存的数据
+     * @return Admin|array|mixed|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * Author: fudaoji<fdj@kuryun.cn>
+     */
+    static function sessionAdmin(){
+        return self::find(session(SESSION_AID));
     }
 }

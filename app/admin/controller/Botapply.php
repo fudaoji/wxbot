@@ -11,6 +11,7 @@ namespace app\admin\controller;
 use app\common\model\BotApply as ApplyM;
 use app\admin\model\Admin as AdminM;
 use app\constants\Common;
+use app\common\service\BotApply as ApplyService;
 
 class Botapply extends Bbase
 {
@@ -71,8 +72,10 @@ class Botapply extends Bbase
         $builder = new FormBuilder();
         $builder->setMetaTitle('新增')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
+            ->addFormItem('type', 'radio', '类型', '类型', ApplyService::types(), 'required')
             ->addFormItem('admin_id', 'chosen', '所属客户', '所属客户', AdminM::getTenantIdToName(), 'required')
-            ->addFormItem('deadline', 'datetime', '到期时间', '到期时间', [], 'required');
+            ->addFormItem('deadline', 'datetime', '到期时间', '到期时间', [], 'required')
+            ->setFormData(['type' => ApplyService::WECHAT]);
 
         return $builder->show();
     }
@@ -88,6 +91,7 @@ class Botapply extends Bbase
         $builder->setMetaTitle('编辑')  //设置页面标题
             ->setPostUrl(url('savepost')) //设置表单提交地址
             ->addFormItem('id', 'hidden', 'id', 'id')
+            ->addFormItem('type', 'radio', '类型', '类型', ApplyService::types(), 'required')
             ->addFormItem('admin_id', 'chosen', '所属客户', '所属客户', AdminM::getTenantIdToName(), 'required')
             ->addFormItem('deadline', 'datetime', '到期时间', '到期时间', [], 'required')
             ->setFormData($data);
@@ -114,7 +118,7 @@ class Botapply extends Bbase
             $post_data = input('post.');
             $where = [];
             !empty($post_data['search_key']) && $where['apply.wx_num|admin.username|admin.mobile'] = ['like', '%'.$post_data['search_key'].'%'];
-            if(isset($post_data['deadline_status'])){
+            if(isset($post_data['deadline_status']) && $post_data['deadline_status'] != 0){
                 $where['apply.deadline'] = [$post_data['deadline_status'] == 2 ? '<' : '>', time()];
             }
             $params = [
@@ -136,6 +140,7 @@ class Botapply extends Bbase
                     $v['admin_info'] = '账号：'.$v['username'] . '<br>手机号：'.$v['mobile'];
                     $v['deadline_status'] = $v['deadline'] > time() ? '未过期' : '已过期';
                     $v['deadline'] = date('Y-m-d H:i', $v['deadline']);
+                    $v['type_title'] = ApplyService::types($v['type']);
                     $list[$k] = $v;
                 }
             } else {
@@ -153,6 +158,7 @@ class Botapply extends Bbase
         ])
             ->addTopButton('addnew', ['text' => '新增席位'])
             ->addTableColumn(['title' => '序号', 'type' => 'index'])
+            ->addTableColumn(['title' => '类型', 'field' => 'type_title'])
             ->addTableColumn(['title' => '客户信息', 'field' => 'admin_info'])
             ->addTableColumn(['title' => '绑定Wxid', 'field' => 'wx_num'])
             //->addTableColumn(['title' => '有效时间(个月)', 'field' => 'month'])

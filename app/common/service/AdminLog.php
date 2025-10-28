@@ -17,12 +17,14 @@ class AdminLog
     const LOGIN = 'login';
     const BOT_LOGIN = 'bot_login';
     const DEL = 'del';
+    const BOT_KIK = 'bot_kik';
 
     public static function types($id = null){
         $list = [
             self::LOGIN => '账户登录',
             self::BOT_LOGIN => '机器人登录',
-            self::DEL => '数据删除'
+            self::DEL => '数据删除',
+            self::BOT_KIK => '被踢下线'
         ];
         return isset($list[$id]) ? $list[$id] : $list;
     }

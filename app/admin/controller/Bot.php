@@ -14,6 +14,7 @@ use ky\WxBot\Driver\Easycom;
 use ky\WxBot\Driver\Extian;
 use ky\WxBot\Driver\Xbot;
 use app\common\service\BotApply as ApplyService;
+use app\common\service\Bot as BotService;
 
 class Bot extends Bbase
 {
@@ -80,6 +81,7 @@ class Bot extends Bbase
             if(is_string($res)){
                 $this->error($res);
             }
+
             foreach ($res as $item){
                 $bot = $this->model->getOneByMap(['uin' => $item['uin']], true, true);
                 if($bot){
@@ -104,6 +106,8 @@ class Bot extends Bbase
                         'uuid' => $item['uuid'] ?? 0
                     ]));
                 }
+
+                //记录日志
                 AdminLogService::addLog(['year' => (int)date('Y'), 'type' => AdminLogService::BOT_LOGIN, 'desc' => $this->adminInfo['username'] . '新增微信机器人']);
                 //同步好友任务
                 invoke('\\app\\common\\event\\TaskQueue')->push([
@@ -160,13 +164,25 @@ class Bot extends Bbase
         }
 
         $bot = $this->getCurrentBot();
+
+        $tip = "当前操作机器人：" . ($bot ? $bot['nickname'] : '无');
+        if (in_array($tab, [BotConst::PROTOCOL_EASYCOM])){
+            $type = ApplyService::WXWORK;
+            $tip .= "<br>共有企微席位：" . ApplyService::getSeatNum(ApplyService::WXWORK).', 已用席位:' . BotService::getActiveNum(ApplyService::WXWORK);
+        }else{
+            $type = ApplyService::WECHAT;
+            $tip .= "<br>共有个微席位：" . ApplyService::getSeatNum($type).', 已用席位:' . BotService::getActiveNum($type);
+        }
+
+        BotService::kickBot($type);
+
         $builder = new ListBuilder();
         $builder->setSearch([
             ['type' => 'text', 'name' => 'search_key', 'title' => '关键词', 'placeholder' => '名称|昵称|wxid']
         ])
             ->setDataUrl(url('index', ['tab' => $tab]))
             ->setTabNav($this->tabs, $tab)
-            ->setTip("当前操作机器人：" . ($bot ? $bot['nickname'] : '无'))
+            ->setTip($tip)
             ->addTableColumn(['title' => 'PID|UUID', 'field' => 'uuid', 'minWidth' => 90])
             ->addTableColumn(['title' => 'Wxid', 'field' => 'uin', 'minWidth' => 150])
             ->addTableColumn(['title' => '微信号', 'field' => 'username', 'minWidth' => 100])
@@ -319,7 +335,7 @@ class Bot extends Bbase
 
         if(request()->isPost()){
 
-            $seat = ApplyService::getSeatByAdmin();
+            $seat = ApplyService::getSeatByAdmin(ApplyService::WXWORK);
             if(empty($seat)){
                 $this->error('您的机器人席位不足，请联系客服！');
             }
@@ -430,7 +446,6 @@ class Bot extends Bbase
                 $data['qrcode'] = 'data:image/jpeg;base64,'. $login_code['data']['loginQrcodeBase64Data'];
                 break;
         }
-
 
         return $this->show($data);
     }
@@ -553,7 +568,7 @@ class Bot extends Bbase
 
         $tab = input('tab', BotConst::PROTOCOL_EXTIAN);
         if($tab == BotConst::PROTOCOL_EASYCOM){
-            $seat = ApplyService::getSeatByAdmin();
+            $seat = ApplyService::getSeatByAdmin(ApplyService::WXWORK);
             if(empty($seat)){
                 $this->error('您的机器人席位不足，请联系客服！');
             }
